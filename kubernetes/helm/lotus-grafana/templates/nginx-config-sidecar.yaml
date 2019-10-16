@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lotus-grafana-nginx-sidecar
+  namespace: {{ .Release.Namespace }}
+data:
+  nginx.conf: |
+    server {
+      listen 8000;
+      location / {
+        proxy_pass http://localhost:3000;
+      }
+      location  = / {
+        return 301 https://{{ .Values.domain }}/d/z6FtI92Zz/chain/?orgId=1&refresh=5s&from=now-{{ .Values.metricsInterval }}&to=now&kiosk;
+      }
+      location /chain {
+        return 301 https://{{ .Values.domain }}/d/z6FtI92Zz/chain/?orgId=1&refresh=5s&from=now-{{ .Values.metricsInterval }}&to=now&kiosk;
+      }
+      location /login {
+        return 301 https://{{ .Values.domain }}/d/z6FtI92Zz/chain/?orgId=1&refresh=5s&from=now-{{ .Values.metricsInterval }}&to=now&kiosk;
+      }
+      location ~ ^/d/ {
+        if ($args = "orgId=1&refresh=5s&from=now-{{ .Values.metricsInterval }}&to=now&kiosk") {
+          proxy_pass http://localhost:3000/$uri$args;
+        }
+        if ($args != "orgId=1&refresh=5s&from=now-{{ .Values.metricsInterval }}&to=now&kiosk") {
+          return 301 https://{{ .Values.domain }}/d/z6FtI92Zz/chain/?orgId=1&refresh=5s&from=now-{{ .Values.metricsInterval }}&to=now&kiosk;
+        }
+      }
+    }
