@@ -3,7 +3,7 @@ data "aws_route53_zone" "default" {
 }
 
 locals {
-  faucet_subdomain = "lotus-faucet-test"
+  faucet_subdomain = "lotus-faucet"
 }
 
 resource "aws_route53_record" "faucet" {
