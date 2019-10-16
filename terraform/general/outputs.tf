@@ -2,7 +2,7 @@ output "nginx_public_ip" {
   value = "${aws_instance.nginx.public_ip}"
 }
 
-output "facuet_fqdn" {
+output "faucet_fqdn" {
   value = "${aws_route53_record.faucet.fqdn}"
 }
 
