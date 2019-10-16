@@ -7,7 +7,7 @@ locals {
 }
 
 resource "aws_route53_record" "faucet" {
-  name    = "faucet-record"
+  name    = "${local.faucet_subdomain}"
   zone_id = "${data.aws_route53_zone.default.zone_id}"
   type    = "A"
   records = ["${aws_instance.nginx.public_ip}"]
