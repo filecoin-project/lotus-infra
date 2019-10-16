@@ -5,7 +5,7 @@ variable "project_id" {
 
 variable "miner_count" {
   description = "number of miner machines"
-  default     = 10
+  default     = 29
 }
 
 variable "packet_auth_token" {
