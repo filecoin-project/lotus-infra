@@ -13,10 +13,7 @@ data:
       location  = / {
         return 301 https://{{ .Values.domain }}/d/z6FtI92Zz/chain/?orgId=1&refresh={{ .Values.metricsRefresh }}&from=now-{{ .Values.metricsRange }}&to=now&kiosk;
       }
-      location /chain {
-        return 301 https://{{ .Values.domain }}/d/z6FtI92Zz/chain/?orgId=1&refresh={{ .Values.metricsRefresh }}&from=now-{{ .Values.metricsRange }}&to=now&kiosk;
-      }
-      location /login {
+      location ~ ^/(chain|login|user) {
         return 301 https://{{ .Values.domain }}/d/z6FtI92Zz/chain/?orgId=1&refresh={{ .Values.metricsRefresh }}&from=now-{{ .Values.metricsRange }}&to=now&kiosk;
       }
       location ~ ^/d/ {

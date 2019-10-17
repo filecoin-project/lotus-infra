@@ -3,6 +3,7 @@
 # Declare variables to be passed into your templates.
 ---
 domain: lotus-metrics.kittyhawk.wtf
+domainInternal: lotus-metrics-internal.kittyhawk.wtf
 metricsRange: 30m
 metricsRefresh: 30s
 grafana:

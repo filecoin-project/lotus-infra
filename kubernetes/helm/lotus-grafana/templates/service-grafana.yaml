@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-internal
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: grafana
+  annotations:
+    external-dns.alpha.kubernetes.io/alias: "true"
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.domainInternal }}
+    external-dns.alpha.kubernetes.io/ttl: "60"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:657871693752:certificate/468a4a8a-3778-44ad-821f-d788bb2e898d
+spec:
+  type: LoadBalancer
+  ports:
+    - name: https
+      port: 443
+      targetPort: 3000
+  selector:
+    app: grafana
+    release: {{ .Release.Name }}
