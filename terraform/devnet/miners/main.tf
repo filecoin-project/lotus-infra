@@ -1,5 +1,5 @@
 resource "packet_device" "ams1" {
-  count               = "${var.miner_count}"
+  count               = 0
   hostname            = "devnet-miner-${count.index}"
   plan                = "c1.small.x86"
   facilities          = ["ams1"]
@@ -10,7 +10,7 @@ resource "packet_device" "ams1" {
 }
 
 resource "packet_device" "ewr1" {
-  count               = "${var.miner_count}"
+  count               = 0
   hostname            = "devnet-miner-${count.index}"
   plan                = "c1.small.x86"
   facilities          = ["ewr1"]
@@ -32,7 +32,7 @@ resource "packet_device" "nrt1" {
 }
 
 resource "packet_device" "sjc1" {
-  count               = 40
+  count               = 0
   hostname            = "devnet-miner-${count.index}"
   plan                = "c1.small.x86"
   facilities          = ["sjc1"]
