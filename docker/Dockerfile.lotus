@@ -1,0 +1,31 @@
+FROM ubuntu:18.04
+MAINTAINER Lotus Development Team
+
+# Base resources
+COPY --from=builder /etc/ssl/certs                       /etc/ssl/certs
+COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so  /lib/x86_64-linux-gnu/libdl-2.24.so
+COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1     /lib/x86_64-linux-gnu/librt.so.1
+COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1  /lib/x86_64-linux-gnu/libgcc_s.so.1
+COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1   /lib/x86_64-linux-gnu/libutil.so.1
+
+COPY --from=builder /usr/local/bin/lotus                 /usr/local/bin/lotus
+
+RUN adduser --home /var/filecoin -u 1000 --ingroup users --disabled-password --gecos "" filecoin
+RUN id filecoin
+
+ENV FILECOIN_PARAMETER_CACHE="/var/tmp/filecoin-proof-parameters"
+ENV LOTUS_PATH /var/filecoin
+ENV SHARED_DATA /var/shared-data
+
+# Swarm
+EXPOSE 1234
+
+VOLUME /var/shared-data
+VOLUME /var/filecoin
+VOLUME /var/tmp/filecoin-proof-parameters
+
+USER filecoin
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.bash"]
+
+CMD ["-help"]

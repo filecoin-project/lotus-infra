@@ -34,3 +34,55 @@ Public Dashboard is accessible at URL configured in `domain` helm chart value. T
 An internal dashboard is accessible at URL configured in `domainInternal` helm chart value that allows access to grafana unfettered by nginx.
 
 *DO NOT SHARE THE INTERNAL DOMAIN PUBLICLY AS IT COULD OPEN UP INFLUXDB TO DOS ATTACKS*
+=======
+
+### Lotus Stats
+
+Lotus stats is a service which monitors chain head events and writes chain data to an influx database.
+
+To setup correctly a `lotus-stats-values.yaml` file must be created with the following information filled out.
+Values can be found in the `filecoin dev` vault under `InfluxDB lotus credentials` of 1password.
+
+The default database is `lotus`
+
+```
+InfluxAddr: "http://<host>:<port>"
+InfluxUser: "<user>"
+InfluxPass: "<pass>"
+```
+
+```
+$ helm upgrade --install -f lotus-stats-values.yaml --namespace lotus-stats lotus-stats kubernetes/helm/lotus-stats
+```
+
+#### Creating containers
+
+```
+$ ./scripts/lotus-stats.bash master
+```
+
+#### Resetting for a new network
+
+Once the network is released and the `master` branch of `lotus` can be built to join:
+
+0) Take down the current `lotus-stats` service 
+
+```
+$ helm delete --purge lotus-stats
+$ kubectl --namespace lotus-stats delete pvc --all
+```
+
+1) Drop the influxdb database `lotus` and recreate it.
+
+This is currently a manual step we are taking.
+
+https://hillvalley-1b1e0a69.influxcloud.net/sources/0/admin-influxdb/databases
+
+2) Build new images and create `lotus-stats` service
+
+_Make sure you are logged into ecr `eval $(aws --profile filecoin --region us-east-1 ecr --no-include-email get-login)`_
+
+```
+$ ./scripts/lotus-stats.bash master
+$ helm upgrade --install -f lotus-stats-values.yaml --namespace lotus-stats lotus-stats kubernetes/helm/lotus-stats
+```
