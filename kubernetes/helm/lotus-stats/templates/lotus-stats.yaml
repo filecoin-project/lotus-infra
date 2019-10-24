@@ -37,8 +37,6 @@ spec:
             "mkdir -p /var/tmp/filecoin-proof-parameters && chown -R 1000:100 /var/tmp/filecoin-proof-parameters",
           ]
           volumeMounts:
-            - name: lotus-repo
-              mountPath: /var/filecoin
             - name: lotus-params
               mountPath: /var/tmp/filecoin-proof-parameters
       containers:
