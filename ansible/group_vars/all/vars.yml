@@ -1,0 +1,19 @@
+logz_io_shared_token: "{{ vault_logz_io_shared_token }}"
+telegraf:
+  global_tags:
+    - name: app
+      value: lotus
+  outputs:
+    influxdb:
+      enabled: true
+      username: lotus
+      password: "{{ vault_influxdb_lotus_password }}"
+      database: lotus
+      url: https://eightyeight-1b1e0a69.influxcloud.net:8086
+    file:
+      enabled: false
+    prometheus:
+      enabled: false
+  processor: ""
+  aggregators: ""
+

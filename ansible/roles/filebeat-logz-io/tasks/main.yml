@@ -1,0 +1,40 @@
+---
+- name: Add filebeat apt key
+  apt_key:
+    url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+
+- name: Add filebeat apt repository
+  apt_repository:
+    repo: "deb https://artifacts.elastic.co/packages/7.x/apt stable main"
+    state: present
+
+- name: Update repositories cache and install "filebeat" package
+  apt:
+    name: filebeat
+    update_cache: yes
+
+- name: Ensure filebeat started and enabled
+  systemd:
+    name: filebeat
+    state: started
+    enabled: yes
+
+- name: ensure logz.io certificate directory
+  file:
+    path: /etc/pki/tls/certs
+    state: directory
+    recurse: yes
+
+- name: fetch logz.io certificate
+  get_url:
+    url: "https://raw.githubusercontent.com/logzio/public-certificates/master/COMODORSADomainValidationSecureServerCA.crt"
+    dest: /etc/pki/tls/certs
+    mode: "0600"
+
+- name: Copy filebeat configuration template to hosts
+  template:
+    src: templates/filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+    mode: '0600'
+  notify:
+    - restart_filebeat

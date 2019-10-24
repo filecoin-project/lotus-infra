@@ -12,6 +12,14 @@ Located in `terraform/devnet/miners` this manages packet.net machines to be used
 
 Uses remote state, so `AWS_ACCESS_KEY_ID` and `AWS_ACCESS_KEY_ID` must also be exported with credentials allowing access to S3 bucket `filecoin-terraform-state` in `filecoin` AWS account.
 
+## Ansible
+
+A collection of roles and playbooks to use for Lotus infrastructure.
+
+Aims to be non-opinionated and modular, allowing targeted provisioning and playbook runs
+
+See `ansible/README.md` for more information
+
 ## Kubernetes
 
 ### Lotus Grafana Dashboard

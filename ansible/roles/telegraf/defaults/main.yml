@@ -1,0 +1,17 @@
+telegraf:
+  global_tags:
+    - name: foo
+      value: bar
+  outputs:
+    influxdb:
+      enabled: true
+      username: test
+      password: yo
+      database: lotus
+      url: http://localhost:3000
+    file:
+      enabled: true
+    prometheus:
+      enabled: false
+  aggregators: ""
+  processor: ""
