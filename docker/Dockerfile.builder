@@ -1,4 +1,4 @@
-FROM golang:1.12.1-stretch AS builder
+FROM golang:1.13.3-stretch AS builder
 MAINTAINER Lotus Development Team
 
 RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq

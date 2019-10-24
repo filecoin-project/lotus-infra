@@ -12,6 +12,7 @@ git clone git@github.com:filecoin-project/lotus.git
 
 pushd ./lotus
 git checkout "$1"
+sha=$(git rev-parse --short HEAD)
 popd
 
 docker build -t builder:latest     -f ../docker/Dockerfile.builder .
@@ -21,7 +22,13 @@ docker build -t stats-stats:latest -f ../docker/Dockerfile.stats . --cache-from 
 docker tag stats-lotus:latest $DOCKER_REGISTERY/stats-lotus:latest
 docker tag stats-stats:latest $DOCKER_REGISTERY/stats-stats:latest
 
+docker tag stats-lotus:latest $DOCKER_REGISTERY/stats-lotus:$sha
+docker tag stats-stats:latest $DOCKER_REGISTERY/stats-stats:$sha
+
 docker push $DOCKER_REGISTERY/stats-lotus:latest
 docker push $DOCKER_REGISTERY/stats-stats:latest
+
+docker push $DOCKER_REGISTERY/stats-lotus:$sha
+docker push $DOCKER_REGISTERY/stats-stats:$sha
 
 popd
