@@ -1,0 +1,8 @@
+---
+- name: ensure authorized keys
+  authorized_key:
+    user: "{{ ssh_user }}"
+    state: present
+    key: "{{ item }}"
+  with_file:
+    - public-keys/travisperson
