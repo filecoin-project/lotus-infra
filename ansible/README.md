@@ -6,6 +6,17 @@ Playbooks are organized in to individual files with `lotus.yml` being a single p
 
 Roles are used to modularize components and allow re-usability.
 
+## Vagrant
+
+Vagrant can be used to test role / playbook development agasint a locally running vm.
+
+```
+$ vagrant up --provision
+$ ansible-playbook -i hosts-vagrant <playbook>.yml --vault-password-file $HOME/.ansible_vault_pass.txt
+```
+
+When provisioning vagrant will run the `vagrant.yml` playbook. This playbook should maintain a minimal amount of configuration.
+
 ## Secrets
 
 Secrets are managed by [ansible-vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html). Global secrets such as passwords for influxdb and logz.io are kept in `group_vars/all/vault.yml`.
