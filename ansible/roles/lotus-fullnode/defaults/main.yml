@@ -1,0 +1,7 @@
+lotus_binary_src:
+lotus_reset: no
+lotus_user: lotus
+lotus_path: /var/lib/lotus
+lotus_golog_file: /var/log/lotus.log
+lotus_golog_log_fmt: json
+lotus_env: {}

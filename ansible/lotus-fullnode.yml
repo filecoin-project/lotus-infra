@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    lotus_binary_src: "/tmp/lotus"
+  roles:
+    - role: lotus-fullnode
+
