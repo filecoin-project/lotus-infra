@@ -1,4 +1,6 @@
 ---
+ansible_ssh_user: root
+
 logz_io_shared_token: "{{ vault_logz_io_shared_token }}"
 telegraf_global_tags:
   - name: app
