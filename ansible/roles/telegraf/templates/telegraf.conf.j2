@@ -16,7 +16,7 @@
 
 # Global tags can be specified here in key="value" format.
 [global_tags]
-{% for tag in telegraf.global_tags %}
+{% for tag in telegraf_global_tags %}
   {{ tag.name }} = "{{ tag.value }}"
 {% endfor %}
 
@@ -70,7 +70,7 @@
 ###############################################################################
 
 # Configuration for sending metrics to InfluxDB
-{% if telegraf.outputs.influxdb.enabled %}
+{% if telegraf_outputs_influxdb_enabled %}
 [[outputs.influxdb]]
   ## The full HTTP or UDP URL for your InfluxDB instance.
   ##
@@ -78,11 +78,11 @@
   ## urls will be written to each interval.
   # urls = ["unix:///var/run/influxdb.sock"]
   # urls = ["udp://127.0.0.1:8089"]
-  urls = ["{{ telegraf.outputs.influxdb.url }}"]
+  urls = ["{{ telegraf_outputs_influxdb_url }}"]
 
   ## The target database for metrics; will be created as needed.
   ## For UDP url endpoint database needs to be configured on server side.
-  database = "{{ telegraf.outputs.influxdb.database }}"
+  database = "{{ telegraf_outputs_influxdb_database }}"
 
   ## The value of this tag will be used to determine the database.  If this
   ## tag is not set the 'database' option is used as the default.
@@ -108,8 +108,8 @@
   # timeout = "5s"
 
   ## HTTP Basic Auth
-  username = "{{ telegraf.outputs.influxdb.username }}"
-  password = "{{ telegraf.outputs.influxdb.password }}"
+  username = "{{ telegraf_outputs_influxdb_username }}"
+  password = "{{ telegraf_outputs_influxdb_password }}"
 
   ## HTTP User-Agent
   # user_agent = "telegraf"
@@ -142,7 +142,7 @@
   # influx_uint_support = false
 {% endif %}
 
-{% if telegraf.outputs.file.enabled %}
+{% if telegraf_outputs_file_enabled %}
 
 # # Send telegraf metrics to file(s)
 [[outputs.file]]
@@ -168,15 +168,17 @@
 #   data_format = "influx"
 {% endif %}
 
-{% if telegraf.outputs.prometheus.enabled %}
+{% if telegraf_outputs_prometheus_enabled %}
 # # Configuration for the Prometheus client to spawn
-# [[outputs.prometheus_client]]
-#   ## Address to listen on
-#   listen = ":9273"
+[[outputs.prometheus_client]]
+  ## Address to listen on
+  listen = "{{ telegraf_outputs_prometheus_listen }}"
 #
 #   ## Use HTTP Basic Authentication.
-#   # basic_username = "Foo"
-#   # basic_password = "Bar"
+{% if telegraf_outputs_prometheus_http_auth_username and telegraf_outputs_prometheus_http_auth_password%}
+  basic_username = "{{ telegraf_outputs_prometheus_http_auth_username }}"
+  basic_password = "{{ telegraf_outputs_prometheus_http_auth_password }}"
+{% endif %}
 #
 #   ## If set, the IP Ranges which are allowed to access metrics.
 #   ##   ex: ip_range = ["192.168.0.0/24", "192.168.1.0/30"]
@@ -212,16 +214,13 @@
 ###############################################################################
 #                            PROCESSOR PLUGINS                                #
 ###############################################################################
-{% if telegraf.processor %}
-{{ telegraf.processor }}
-{% endif %}
+{{ telegraf_processor }}
 
 ###############################################################################
 #                            AGGREGATOR PLUGINS                               #
 ###############################################################################
-{% if telegraf.aggregators %}
-{{ telegraf.aggregators }}
-{% endif %}
+{{ telegraf_aggregators }}
+
 ###############################################################################
 #                            INPUT PLUGINS                                    #
 ###############################################################################
@@ -316,3 +315,5 @@
 # Read TCP metrics such as established, time wait and sockets counts.
 [[inputs.netstat]]
   # no configuration
+
+{{ telegraf_additional_inputs }}
