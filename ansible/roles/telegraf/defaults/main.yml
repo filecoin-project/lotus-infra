@@ -1,0 +1,15 @@
+---
+telegraf_global_tags: []
+telegraf_outputs_influxdb_enabled: false
+telegraf_outputs_influxdb_username: ""
+telegraf_outputs_influxdb_password: ""
+telegraf_outputs_influxdb_database: ""
+telegraf_outputs_influxdb_url: ""
+telegraf_outputs_file_enabled: false
+telegraf_outputs_prometheus_enabled: false
+telegraf_outputs_prometheus_listen: ":9273"
+telegraf_outputs_prometheus_http_auth_username: ""
+telegraf_outputs_prometheus_http_auth_password: ""
+telegraf_processor: ""
+telegraf_aggregators: ""
+telegraf_additional_inputs: ""

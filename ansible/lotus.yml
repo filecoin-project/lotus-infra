@@ -1,0 +1,3 @@
+---
+- import_playbook: filebeat.yml
+- import_playbook: telegraf.yml
