@@ -1,0 +1,7 @@
+---
+- import_playbook: access-control.yml
+- hosts: all
+  become: yes
+  tasks:
+    - name: Open firewall ports
+      shell: ufw allow out 53/udp
