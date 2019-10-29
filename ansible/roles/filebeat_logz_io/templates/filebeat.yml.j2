@@ -1,32 +1,7 @@
 ############################# Filebeat #####################################
 
 filebeat.inputs:
-
-- type: log
-  paths:
-    - /root/.lotusstorage/logs
-  fields:
-    logzio_codec: json
-    token: {{ logz_io_shared_token }}
-    type: lotus-miner
-  fields_under_root: true
-  json.keys_under_root: false
-  json.message_key: msg
-
-  encoding: utf-8
-  ignore_older: 3h
-- type: log
-  paths:
-    - /root/.lotus/logs
-  fields:
-    logzio_codec: json
-    token: {{ logz_io_shared_token }}
-    type: lotus-daemon
-  fields_under_root: true
-  json.keys_under_root: false
-  json.message_key: msg
-  encoding: utf-8
-  ignore_older: 3h
+{{ logz_inputs | to_yaml }}
 
 #For version 7 and higher
 filebeat.registry.path: /var/lib/filebeat
