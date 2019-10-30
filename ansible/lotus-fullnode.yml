@@ -6,7 +6,7 @@
     logz_inputs:
       - type: log
         paths:
-          - /var/log/lotus.log
+          - "{{ lotus_golog_file }}"
         fields:
           logzio_codec: json
           token: "{{ logz_io_shared_token }}"
