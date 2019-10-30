@@ -29,6 +29,15 @@
     group: "{{ lotus_user }}"
     mode: "0700"
 
+- name: proof params directory
+  file:
+    path: "{{ lotus_proof_params_path }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+
+
 - name: lotus golog file
   file:
     state: touch
