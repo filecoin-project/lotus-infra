@@ -31,5 +31,5 @@
   roles:
     - role: telegraf
     - role: filebeat_logz_io
-    - role: lotus-fullnode
+    - role: lotus_fullnode
 
