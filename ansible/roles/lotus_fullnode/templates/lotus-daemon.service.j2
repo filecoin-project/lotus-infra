@@ -12,6 +12,8 @@ Environment=GOLOG_LOG_FMT="{{ lotus_golog_log_fmt }}"
 {% for item in lotus_env | dict2items -%}
 Environment={{ item.key }}="{{ item.value }}"
 {% endfor %}
+Restart=always
+RestartSec=30
 
 [Install]
 WantedBy=multiuser.target
