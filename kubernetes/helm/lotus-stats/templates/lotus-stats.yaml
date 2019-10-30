@@ -15,6 +15,22 @@ spec:
     spec:
       terminationGracePeriodSeconds: 10
       initContainers:
+        {{- if .Values.Debug }}
+        - name: debug
+          securityContext:
+            runAsUser: 0
+          image: "{{ .Values.ImageFullNode }}"
+          command: [
+            "sh",
+            "-c",
+            "tail -f /dev/null",
+          ]
+          volumeMounts:
+            - name: lotus-repo
+              mountPath: /var/filecoin
+            - name: lotus-params
+              mountPath: /var/tmp/filecoin-proof-parameters
+        {{- end }}
         - name: set-repo-ownership
           securityContext:
             runAsUser: 0
