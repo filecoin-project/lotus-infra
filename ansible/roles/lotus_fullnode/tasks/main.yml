@@ -69,4 +69,5 @@
 - name: lotus service started
   systemd:
     name: "lotus-daemon"
+    enabled: yes
     state: started
