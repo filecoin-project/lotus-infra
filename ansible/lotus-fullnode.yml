@@ -2,7 +2,6 @@
 - hosts: all
   become: yes
   vars:
-    lotus_binary_src: "/tmp/lotus"
     logz_inputs:
       - type: log
         paths:
