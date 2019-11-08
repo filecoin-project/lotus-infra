@@ -1,0 +1,73 @@
+- name: check for required vars
+  fail: msg="Variable '{{ item }}' is not defined"
+  when: vars[item] == undefined
+  with_items: "{{ required_vars }}"
+
+- name: lotus daemon user
+  user:
+    name: "{{ lotus_user }}"
+    state: present
+    system: yes
+
+- name: remove current lotus repository
+  block:
+    - name: stop
+      systemd:
+        name: lotus-daemon
+        state: stopped
+    - name: remove repo
+      file:
+        path: "{{ lotus_path }}"
+        state: absent
+  when: lotus_reset == "yes"
+
+- name: lotus path directory
+  file:
+    path: "{{ lotus_path }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+
+- name: proof params directory
+  file:
+    path: "{{ lotus_proof_params_path }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+
+
+- name: lotus golog file
+  file:
+    state: touch
+    path: "{{ lotus_golog_file }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"
+
+- name: lotus systemd service file
+  template:
+    src: ../templates/lotus-daemon.service.j2
+    dest: /etc/systemd/system/lotus-daemon.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload-systemd
+
+- name: lotus binary
+  copy:
+    src: "{{ lotus_binary_src }}"
+    dest: /usr/local/bin/lotus
+    owner: root
+    group: root
+    mode: "0755"
+  notify:
+    - restart-systemd
+
+- name: lotus service started
+  systemd:
+    name: "lotus-daemon"
+    enabled: yes
+    state: started
