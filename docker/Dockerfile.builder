@@ -1,7 +1,7 @@
 FROM golang:1.13.3-stretch AS builder
 MAINTAINER Lotus Development Team
 
-RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq
+RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1
 
 COPY ./lotus /go/lotus
 
@@ -19,6 +19,7 @@ COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so  /lib/x86_64-linux-gnu/l
 COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1     /lib/x86_64-linux-gnu/librt.so.1
 COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1  /lib/x86_64-linux-gnu/libgcc_s.so.1
 COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1   /lib/x86_64-linux-gnu/libutil.so.1
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1
 
 COPY --from=builder /go/lotus/lotus                      /usr/local/bin/lotus
 COPY --from=builder /go/lotus/stats                      /usr/local/bin/stats
