@@ -36,6 +36,11 @@
     group: "{{ lotus_user }}"
     mode: "0700"
 
+- name: lotus ensure LOTUS_PATH env
+  lineinfile:
+    path: /etc/environment
+    line: LOTUS_PATH="{{ lotus_path }}"
+
 - name: proof params directory
   file:
     path: "{{ lotus_proof_params_path }}"
