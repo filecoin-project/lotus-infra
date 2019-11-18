@@ -3,12 +3,19 @@
   when: vars[item] == undefined
   with_items: "{{ required_vars }}"
 
-- name: Update repos and install opencl
+- name: Update repos and install deps
   apt:
     pkg:
       - mesa-opencl-icd
       - ocl-icd-opencl-dev
+      - ntp
     update_cache: yes
+
+- name: lotus start ntp
+  systemd:
+    name: "ntp"
+    enabled: yes
+    state: started
 
 - name: lotus daemon user
   user:
