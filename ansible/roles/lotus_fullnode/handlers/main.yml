@@ -1,8 +1,8 @@
-- name: reload-systemd
+- name: reload-lotus
   systemd:
     daemon_reload: yes
 
-- name: restart-systemd
+- name: restart-lotus
   systemd:
     name: 'lotus-daemon'
     state: restarted
