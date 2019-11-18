@@ -3,6 +3,13 @@
   when: vars[item] == undefined
   with_items: "{{ required_vars }}"
 
+- name: Update repos and install opencl
+  apt:
+    pkg:
+      - mesa-opencl-icd
+      - ocl-icd-opencl-dev
+    update_cache: yes
+
 - name: lotus daemon user
   user:
     name: "{{ lotus_user }}"
