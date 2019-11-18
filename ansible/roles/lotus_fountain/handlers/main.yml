@@ -1,0 +1,8 @@
+- name: reload-fountain
+  systemd:
+    daemon_reload: yes
+
+- name: restart-fountain
+  systemd:
+    name: 'lotus-fountain'
+    state: restarted
