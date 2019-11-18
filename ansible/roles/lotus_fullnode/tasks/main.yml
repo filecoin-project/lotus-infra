@@ -78,6 +78,15 @@
   notify:
     - restart-lotus
 
+- name: lotus config
+  template:
+    src: ../templates/config.toml.j2
+    dest: "{{ lotus_path }}/config.toml"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"
+  notify:
+    - restart-lotus
 - name: lotus service started
   systemd:
     name: "lotus-daemon"
