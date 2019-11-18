@@ -54,7 +54,7 @@
     group: root
     mode: "0644"
   notify:
-    - reload-systemd
+    - reload-lotus
 
 - name: lotus binary
   copy:
@@ -64,7 +64,7 @@
     group: root
     mode: "0755"
   notify:
-    - restart-systemd
+    - restart-lotus
 
 - name: lotus service started
   systemd:
