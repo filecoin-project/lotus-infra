@@ -1,0 +1,18 @@
+---
+- hosts: bootstrap
+  vars:
+    lotus_binary_src: /tmp/lotus
+  roles:
+    - role: lotus_fullnode
+
+- hosts: genesis
+  vars:
+    lotus_binary_src: /tmp/lotus
+    lotus_miner_binary_src: /tmp/lotus-storage-miner
+    lotus_miner_is_genesis: yes
+    lotus_fountain_binary_src: /tmp/lotus-fountain
+    lotus_fountain_wallet: "{{ lotus_wallet_address }}"
+  roles:
+    - role: lotus_fullnode
+    - role: lotus_miner
+    - role: lotus_fountain
