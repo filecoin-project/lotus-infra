@@ -87,6 +87,38 @@
     mode: "0644"
   notify:
     - restart-lotus
+
+- name: lotus service started
+  systemd:
+    name: "lotus-daemon"
+    state: started
+
+- name: get default wallet
+  shell: /usr/local/bin/lotus wallet default
+  environment:
+    LOTUS_PATH: "{{ lotus_path }}"
+  ignore_errors: yes
+  register: r_default_wallet
+
+- debug:
+    msg: lotus wallet default {{ r_default_wallet.stdout }}
+
+- name: import wallet
+  block:
+    - name: wait for daemon online
+      shell: sleep 10
+    - name: import wallet
+      shell: /usr/local/bin/lotus wallet import
+      args:
+        stdin: "{{ lotus_wallet_keyinfo }}"
+      environment:
+        LOTUS_PATH: "{{ lotus_path }}"
+    - name: set default
+      shell: /usr/local/bin/lotus wallet set-default "{{ lotus_wallet_address }}"
+      environment:
+        LOTUS_PATH: "{{ lotus_path }}"
+  when: lotus_wallet_keyinfo is defined and r_default_wallet.stdout != lotus_wallet_address
+
 - name: lotus service started
   systemd:
     name: "lotus-daemon"
