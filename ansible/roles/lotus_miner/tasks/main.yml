@@ -1,0 +1,82 @@
+- name: check for required vars
+  fail: msg="Variable '{{ item }}' is not defined"
+  when: vars[item] == undefined
+  with_items: "{{ required_vars }}"
+
+- name: remove current lotus miner repository
+  block:
+    - name: stop
+      systemd:
+        name: lotus-miner
+        state: stopped
+    - name: remove repo
+      file:
+        path: "{{ lotus_miner_path }}"
+        state: absent
+  when: lotus_miner_reset == "yes"
+
+- name: lotus path directory
+  file:
+    path: "{{ lotus_miner_path }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+
+- name: lotus ensure LOTUS_PATH env
+  lineinfile:
+    path: /etc/environment
+    line: LOTUS_STORAGE_PATH="{{ lotus_miner_path }}"
+
+- name: lotus golog file
+  file:
+    state: touch
+    path: "{{ lotus_miner_golog_file }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"
+
+- name: lotus systemd service file
+  template:
+    src: ../templates/lotus-miner.service.j2
+    dest: /etc/systemd/system/lotus-miner.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload-miner
+
+- name: lotus binary
+  copy:
+    src: "{{ lotus_miner_binary_src }}"
+    dest: /usr/local/bin/lotus-storage-miner
+    owner: root
+    group: root
+    mode: "0755"
+  notify:
+    - restart-miner
+
+- debug:
+    msg: is_genesis {{ lotus_miner_is_genesis }}
+
+- name: check if lotus miner config is present
+  stat:
+    path: "{{ lotus_miner_path }}/config.toml"
+  register: r_miner_config
+
+- name: genesis miner
+  block:
+    - name: init miner
+      shell: /usr/local/bin/lotus-storage-miner init --genesis-miner --actor=t0101
+      environment:
+        LOTUS_PATH: "{{ lotus_path }}"
+        LOTUS_STORAGE_PATH: "{{ lotus_miner_path }}"
+  become: yes
+  become_user: "{{ lotus_user }}"
+  when: lotus_miner_is_genesis == True and r_miner_config.stat.exists == False
+
+- name: lotus service started
+  systemd:
+    name: "lotus-miner"
+    enabled: yes
+    state: started
