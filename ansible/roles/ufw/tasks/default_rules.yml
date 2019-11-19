@@ -1,0 +1,22 @@
+---
+#- set_fact: public_ipv4="{{ ansible_facts['bond0']['ipv4']['address'] }}"
+# pluck the address with global scope from the array of IPV6 addresses
+#- set_fact: public_ipv6="{{ ansible_facts['bond0']['ipv6'] | selectattr('scope', 'equalto', 'global') | map(attribute='address') | first }}"
+
+- name: Allow default outgoing
+  ufw:
+    direction: outgoing
+    policy: allow
+
+# WARNING! Order here matters, as rules are applied immediately.
+# We need to run the allow rules before denying all incoming traffic
+- name: Allow SSH incoming
+  ufw:
+    rule: allow
+    name: OpenSSH
+    #to_ip: "{{ ansible_facts['bond0']['ipv4']['address'] }}"
+
+- name: Deny default incoming
+  ufw:
+    direction: incoming
+    default: deny

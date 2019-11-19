@@ -82,6 +82,7 @@
     owner: root
     group: root
     mode: "0755"
+  when: lotus_copy_binary
   notify:
     - restart-lotus
 
@@ -131,3 +132,8 @@
     name: "lotus-daemon"
     enabled: yes
     state: started
+
+- set_fact:
+    lotus_fullnode_ufw_profile:
+      name: Lotus Daemon
+      value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"

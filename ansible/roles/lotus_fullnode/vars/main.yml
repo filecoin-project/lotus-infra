@@ -1,4 +1,4 @@
 undefined:
 required_vars:
   - lotus_binary_src
-
+lotus_ufw_name: "Lotus Daemon"
