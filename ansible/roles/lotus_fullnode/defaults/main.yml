@@ -6,3 +6,5 @@ lotus_proof_params_path: /var/tmp/filecoin-proof-parameters
 lotus_golog_file: /var/log/lotus.log
 lotus_golog_log_fmt: json
 lotus_env: {}
+lotus_p2p_port: 1347
+lotus_copy_binary: false

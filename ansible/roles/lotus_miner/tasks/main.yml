@@ -53,6 +53,7 @@
     owner: root
     group: root
     mode: "0755"
+  when: lotus_miner_copy_binary
   notify:
     - restart-miner
 

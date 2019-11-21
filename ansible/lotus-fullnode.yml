@@ -15,8 +15,12 @@
         json.message_key: msg
         encoding: utf-8
         ignore_older: 3h
+    ufw_profiles:
+      - "{{ lotus_fullnode_ufw_profile }}"
+    lotus_binary_src: /tmp/lotus
   roles:
-    - role: telegraf
-    - role: filebeat_logz_io
+    #- role: telegraf
+    #- role: filebeat_logz_io
     - role: lotus_fullnode
+    - role: ufw
 

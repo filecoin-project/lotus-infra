@@ -6,3 +6,4 @@
     key: "{{ item }}"
   with_file:
     - public-keys/travisperson
+    - public-keys/ognots
