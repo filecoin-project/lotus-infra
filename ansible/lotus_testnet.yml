@@ -2,8 +2,11 @@
 - hosts: bootstrap
   vars:
     lotus_binary_src: /tmp/lotus
+    ufw_profiles:
+      - "{{ lotus_fullnode_ufw_profile }}"
   roles:
     - role: lotus_fullnode
+    - role: ufw
 
 - hosts: genesis
   vars:
@@ -12,7 +15,11 @@
     lotus_miner_is_genesis: yes
     lotus_fountain_binary_src: /tmp/lotus-fountain
     lotus_fountain_wallet: "{{ lotus_wallet_address }}"
+    ufw_profiles:
+      - "{{ lotus_fullnode_ufw_profile }}"
+      - "{{ lotus_fountain_ufw_profile }}"
   roles:
     - role: lotus_fullnode
     - role: lotus_miner
     - role: lotus_fountain
+    - role: ufw
