@@ -6,3 +6,7 @@ variable "project_id" {
 variable "packet_auth_token" {
   description = "packet api token"
 }
+
+variable "zone_id" {
+  description = "fil-test.net"
+}

@@ -86,3 +86,25 @@ locals {
     travisperson = "e9febf12-1da7-43b3-b326-3f84a3ad47fa"
   }
 }
+
+data "aws_route53_zone" "default" {
+  zone_id = "${var.zone_id}"
+}
+
+resource "aws_route53_record" "hkg" {
+  count   = 2
+  name    = "bootstrap-${count.index}.hkg"
+  zone_id = "${data.aws_route53_zone.default.zone_id}"
+  type    = "A"
+  records = ["${packet_device.lotus_bootstrap_hkg[count.index].access_public_ipv4}"]
+  ttl     = 30
+}
+
+resource "aws_route53_record" "yyz" {
+  count   = 2
+  name    = "bootstrap-${count.index}.yyz"
+  zone_id = "${data.aws_route53_zone.default.zone_id}"
+  type    = "A"
+  records = ["${packet_device.lotus_bootstrap_yyz[count.index].access_public_ipv4}"]
+  ttl     = 30
+}
