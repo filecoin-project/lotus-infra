@@ -14,3 +14,11 @@ variable "zone_id" {
 variable "lotus_copy_binary" {
   default = false
 }
+
+variable "lotus_miner_copy_binary" {
+  default = false
+}
+
+variable "lotus_fountain_copy_binary" {
+  default = false
+}

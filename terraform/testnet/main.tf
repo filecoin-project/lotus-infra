@@ -108,8 +108,8 @@ resource "null_resource" "lotus_genesis" {
       }
 
       extra_vars = {
-        lotus_miner_copy_binary    = true
-        lotus_fountain_copy_binary = true
+        lotus_miner_copy_binary    = var.lotus_miner_copy_binary
+        lotus_fountain_copy_binary = var.lotus_fountain_copy_binary
       }
 
       # shared attributes
