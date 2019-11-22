@@ -80,10 +80,51 @@ resource "null_resource" "lotus_bootstrap_hkg" {
   }
 }
 
+resource "packet_device" "lotus_genesis" {
+  hostname            = "lotus-genesis"
+  plan                = "x1.small.x86"
+  facilities          = ["hkg"]
+  operating_system    = "ubuntu_19_04"
+  billing_cycle       = "hourly"
+  project_id          = "${var.project_id}"
+  project_ssh_key_ids = "${values(local.ssh_keys)}"
+}
+
+resource "null_resource" "lotus_genesis" {
+  depends_on = ["packet_device.lotus_genesis"]
+
+  triggers = {
+    script_sha1 = "${sha1(file("${path.module}/../../ansible/lotus_genesis.yml"))}"
+  }
+
+  provisioner "ansible" {
+    plays {
+      hosts = [
+        "${packet_device.lotus_genesis.access_public_ipv4}",
+      ]
+
+      playbook {
+        file_path = "../../ansible/lotus_genesis.yml"
+      }
+
+      extra_vars = {
+        lotus_miner_copy_binary    = var.lotus_miner_copy_binary
+        lotus_fountain_copy_binary = var.lotus_fountain_copy_binary
+      }
+
+      # shared attributes
+      enabled  = true
+      vault_id = [".vault_password"]
+      groups   = ["bootstrap"]
+    }
+  }
+}
+
 locals {
   ssh_keys = {
     ognots       = "e0eb55a6-b2e7-48f8-9bd9-a7c5987332dc"
     travisperson = "e9febf12-1da7-43b3-b326-3f84a3ad47fa"
+    bastion      = "0241a4c6-a515-4969-aac7-e0335993c941"
   }
 }
 
