@@ -10,3 +10,7 @@ variable "packet_auth_token" {
 variable "zone_id" {
   description = "fil-test.net"
 }
+
+variable "lotus_copy_binary" {
+  default = false
+}
