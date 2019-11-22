@@ -1,0 +1,9 @@
+---
+- hosts: bootstrap
+  vars:
+    lotus_binary_src: /tmp/lotus
+    ufw_profiles:
+      - "{{ lotus_fullnode_ufw_profile }}"
+  roles:
+    - role: lotus_fullnode
+    - role: ufw
