@@ -114,7 +114,7 @@ resource "null_resource" "lotus_genesis" {
 
       # shared attributes
       enabled  = true
-      vault_id = ["/home/ognots/.ansible_vault_pass.txt"]
+      vault_id = [".vault_password"]
       groups   = ["bootstrap"]
     }
   }
