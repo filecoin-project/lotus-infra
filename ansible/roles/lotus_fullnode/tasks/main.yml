@@ -96,6 +96,20 @@
   notify:
     - restart-lotus
 
+- name: lotus create keystore path
+  file:
+    path: "{{ lotus_path }}/keystore/"
+    state: directory
+    mode: "0700"
+
+- name: lotus peerkey
+  copy:
+    content: "{{ lotus_libp2p_privkey }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0600"
+    dest: "{{ lotus_path }}/keystore/{{ lotus_libp2p_keyname }}"
+
 - name: lotus service started
   systemd:
     name: "lotus-daemon"
