@@ -31,7 +31,7 @@ resource "null_resource" "lotus_bootstrap_yyz" {
   provisioner "ansible" {
     plays {
       hosts = [
-        "${packet_device.lotus_bootstrap_yyz[count.index].access_public_ipv4}",
+        "${aws_route53_record.yyz[count.index].fqdn}",
       ]
 
       playbook {
@@ -39,12 +39,12 @@ resource "null_resource" "lotus_bootstrap_yyz" {
       }
 
       extra_vars = {
-        lotus_copy_binary = true
+        lotus_copy_binary = var.lotus_copy_binary
       }
 
       # shared attributes
       enabled  = true
-      vault_id = ["/home/ognots/.ansible_vault_pass.txt"]
+      vault_id = [".vault_password"]
       groups   = ["bootstrap"]
     }
   }
@@ -61,7 +61,7 @@ resource "null_resource" "lotus_bootstrap_hkg" {
   provisioner "ansible" {
     plays {
       hosts = [
-        "${packet_device.lotus_bootstrap_hkg[count.index].access_public_ipv4}",
+        "${aws_route53_record.hkg[count.index].fqdn}",
       ]
 
       playbook {
@@ -69,12 +69,12 @@ resource "null_resource" "lotus_bootstrap_hkg" {
       }
 
       extra_vars = {
-        lotus_copy_binary = true
+        lotus_copy_binary = var.lotus_copy_binary
       }
 
       # shared attributes
       enabled  = true
-      vault_id = ["/home/ognots/.ansible_vault_pass.txt"]
+      vault_id = [".vault_password"]
       groups   = ["bootstrap"]
     }
   }
