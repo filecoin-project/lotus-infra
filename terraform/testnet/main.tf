@@ -83,7 +83,7 @@ resource "null_resource" "lotus_bootstrap_hkg" {
 resource "packet_device" "lotus_genesis" {
   hostname            = "lotus-genesis"
   plan                = "x1.small.x86"
-  facilities          = ["hkg"]
+  facilities          = ["hkg1"]
   operating_system    = "ubuntu_19_04"
   billing_cycle       = "hourly"
   project_id          = "${var.project_id}"
@@ -108,6 +108,7 @@ resource "null_resource" "lotus_genesis" {
       }
 
       extra_vars = {
+        lotus_copy_binary          = var.lotus_copy_binary
         lotus_miner_copy_binary    = var.lotus_miner_copy_binary
         lotus_fountain_copy_binary = var.lotus_fountain_copy_binary
       }
@@ -115,7 +116,7 @@ resource "null_resource" "lotus_genesis" {
       # shared attributes
       enabled  = true
       vault_id = [".vault_password"]
-      groups   = ["bootstrap"]
+      groups   = ["genesis"]
     }
   }
 }
