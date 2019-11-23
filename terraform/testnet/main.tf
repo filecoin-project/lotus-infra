@@ -91,7 +91,7 @@ resource "packet_device" "lotus_genesis" {
 }
 
 resource "null_resource" "lotus_genesis" {
-  depends_on = ["packet_device.lotus_genesis"]
+  depends_on = ["packet_device.lotus_genesis", "aws_route53_record.faucet"]
 
   triggers = {
     script_sha1 = "${sha1(file("${path.module}/../../ansible/lotus_genesis.yml"))}"
@@ -111,6 +111,7 @@ resource "null_resource" "lotus_genesis" {
         lotus_copy_binary          = var.lotus_copy_binary
         lotus_miner_copy_binary    = var.lotus_miner_copy_binary
         lotus_fountain_copy_binary = var.lotus_fountain_copy_binary
+        lotus_fountain_server_name = "${aws_route53_record.faucet.fqdn}"
       }
 
       # shared attributes
@@ -150,3 +151,16 @@ resource "aws_route53_record" "yyz" {
   records = ["${packet_device.lotus_bootstrap_yyz[count.index].access_public_ipv4}"]
   ttl     = 30
 }
+
+data "aws_route53_zone" "lotus" {
+  zone_id = "${var.lotus_zone_id}"
+}
+
+resource "aws_route53_record" "faucet" {
+  name    = "faucet"
+  zone_id = "${data.aws_route53_zone.lotus.zone_id}"
+  type    = "A"
+  records = ["${packet_device.lotus_genesis.access_public_ipv4}"]
+  ttl     = 30
+}
+
