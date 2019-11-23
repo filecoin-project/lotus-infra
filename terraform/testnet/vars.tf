@@ -11,6 +11,10 @@ variable "zone_id" {
   description = "fil-test.net"
 }
 
+variable "lotus_zone_id" {
+  description = "lotu.sh"
+}
+
 variable "lotus_copy_binary" {
   default = false
 }
