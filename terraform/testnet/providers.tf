@@ -1,5 +1,5 @@
 provider "packet" {
-  auth_token = "${var.packet_auth_token}"
+  auth_token = var.packet_auth_token
 }
 
 provider "aws" {
