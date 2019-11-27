@@ -4,6 +4,21 @@
     lotus_binary_src: /tmp/lotus
     ufw_profiles:
       - "{{ lotus_fullnode_ufw_profile }}"
+    logz_inputs:
+      - type: log
+        paths:
+          - "{{ lotus_golog_file }}"
+        fields:
+          logzio_codec: json
+          token: "{{ logz_io_shared_token }}"
+          type: lotus-daemon
+        fields_under_root: true
+        json.keys_under_root: false
+        json.message_key: msg
+        encoding: utf-8
+        ignore_older: 3h
   roles:
+    - role: telegraf
+    - role: filebeat_logz_io
     - role: lotus_fullnode
     - role: ufw
