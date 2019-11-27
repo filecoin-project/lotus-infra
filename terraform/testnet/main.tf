@@ -5,8 +5,8 @@ resource "packet_device" "lotus_bootstrap_yyz" {
   facilities          = ["yyz1"]
   operating_system    = "ubuntu_19_04"
   billing_cycle       = "hourly"
-  project_id          = "${var.project_id}"
-  project_ssh_key_ids = "${values(local.ssh_keys)}"
+  project_id          = var.project_id
+  project_ssh_key_ids = values(local.ssh_keys)
 }
 
 resource "packet_device" "lotus_bootstrap_hkg" {
@@ -16,13 +16,13 @@ resource "packet_device" "lotus_bootstrap_hkg" {
   facilities          = ["hkg1"]
   operating_system    = "ubuntu_19_04"
   billing_cycle       = "hourly"
-  project_id          = "${var.project_id}"
-  project_ssh_key_ids = "${values(local.ssh_keys)}"
+  project_id          = var.project_id
+  project_ssh_key_ids = values(local.ssh_keys)
 }
 
 resource "null_resource" "lotus_bootstrap_yyz" {
   count      = 2
-  depends_on = ["packet_device.lotus_bootstrap_yyz"]
+  depends_on = [packet_device.lotus_bootstrap_yyz]
 
   triggers = {
     script_sha1 = "${sha1(file("${path.module}/../../ansible/lotus_bootstrap.yml"))}"
@@ -52,7 +52,7 @@ resource "null_resource" "lotus_bootstrap_yyz" {
 
 resource "null_resource" "lotus_bootstrap_hkg" {
   count      = 2
-  depends_on = ["packet_device.lotus_bootstrap_hkg"]
+  depends_on = [packet_device.lotus_bootstrap_hkg]
 
   triggers = {
     script_sha1 = "${sha1(file("${path.module}/../../ansible/lotus_bootstrap.yml"))}"
@@ -86,12 +86,12 @@ resource "packet_device" "lotus_genesis" {
   facilities          = ["hkg1"]
   operating_system    = "ubuntu_19_04"
   billing_cycle       = "hourly"
-  project_id          = "${var.project_id}"
-  project_ssh_key_ids = "${values(local.ssh_keys)}"
+  project_id          = var.project_id
+  project_ssh_key_ids = values(local.ssh_keys)
 }
 
 resource "null_resource" "lotus_genesis" {
-  depends_on = ["packet_device.lotus_genesis"]
+  depends_on = [packet_device.lotus_genesis]
 
   triggers = {
     script_sha1 = "${sha1(file("${path.module}/../../ansible/lotus_genesis.yml"))}"
@@ -136,7 +136,7 @@ data "aws_route53_zone" "default" {
 resource "aws_route53_record" "hkg" {
   count   = 2
   name    = "bootstrap-${count.index}.hkg"
-  zone_id = "${data.aws_route53_zone.default.zone_id}"
+  zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"
   records = ["${packet_device.lotus_bootstrap_hkg[count.index].access_public_ipv4}"]
   ttl     = 30
@@ -145,7 +145,7 @@ resource "aws_route53_record" "hkg" {
 resource "aws_route53_record" "yyz" {
   count   = 2
   name    = "bootstrap-${count.index}.yyz"
-  zone_id = "${data.aws_route53_zone.default.zone_id}"
+  zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"
   records = ["${packet_device.lotus_bootstrap_yyz[count.index].access_public_ipv4}"]
   ttl     = 30
