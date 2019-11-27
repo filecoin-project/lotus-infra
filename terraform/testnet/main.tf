@@ -1,6 +1,6 @@
 resource "packet_device" "lotus_bootstrap_yyz" {
   count               = 2
-  hostname            = "lotus-bootstrap-${count.index}"
+  hostname            = "lotus-bootstrap-${count.index}.yyz"
   plan                = "x1.small.x86"
   facilities          = ["yyz1"]
   operating_system    = "ubuntu_19_04"
@@ -11,7 +11,7 @@ resource "packet_device" "lotus_bootstrap_yyz" {
 
 resource "packet_device" "lotus_bootstrap_hkg" {
   count               = 2
-  hostname            = "lotus-bootstrap-${count.index}"
+  hostname            = "lotus-bootstrap-${count.index}.hkg"
   plan                = "x1.small.x86"
   facilities          = ["hkg1"]
   operating_system    = "ubuntu_19_04"
@@ -81,7 +81,7 @@ resource "null_resource" "lotus_bootstrap_hkg" {
 }
 
 resource "packet_device" "lotus_genesis" {
-  hostname            = "lotus-genesis"
+  hostname            = "lotus-genesis.hkg"
   plan                = "x1.small.x86"
   facilities          = ["hkg1"]
   operating_system    = "ubuntu_19_04"
@@ -135,7 +135,7 @@ data "aws_route53_zone" "default" {
 
 resource "aws_route53_record" "hkg" {
   count   = 2
-  name    = "bootstrap-${count.index}.hkg"
+  name    = "lotus-bootstrap-${count.index}.hkg"
   zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"
   records = ["${packet_device.lotus_bootstrap_hkg[count.index].access_public_ipv4}"]
@@ -144,7 +144,7 @@ resource "aws_route53_record" "hkg" {
 
 resource "aws_route53_record" "yyz" {
   count   = 2
-  name    = "bootstrap-${count.index}.yyz"
+  name    = "lotus-bootstrap-${count.index}.yyz"
   zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"
   records = ["${packet_device.lotus_bootstrap_yyz[count.index].access_public_ipv4}"]
