@@ -112,6 +112,7 @@ resource "null_resource" "lotus_genesis" {
         lotus_miner_copy_binary    = var.lotus_miner_copy_binary
         lotus_fountain_copy_binary = var.lotus_fountain_copy_binary
         lotus_fountain_server_name = "${aws_route53_record.faucet.fqdn}"
+        certbot_create_certificate = var.certbot_create_certificate
       }
 
       # shared attributes
@@ -157,7 +158,7 @@ data "aws_route53_zone" "lotus" {
 }
 
 resource "aws_route53_record" "faucet" {
-  name    = "faucet"
+  name    = "faucet-cert-test"
   zone_id = "${data.aws_route53_zone.lotus.zone_id}"
   type    = "A"
   records = ["${packet_device.lotus_genesis.access_public_ipv4}"]
