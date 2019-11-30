@@ -26,3 +26,7 @@ variable "lotus_miner_copy_binary" {
 variable "lotus_fountain_copy_binary" {
   default = false
 }
+
+variable "certbot_create_certificate" {
+  default = false
+}

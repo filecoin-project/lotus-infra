@@ -1,28 +1,28 @@
 resource "packet_device" "lotus_bootstrap_yyz" {
   count               = 2
-  hostname            = "lotus-bootstrap-${count.index}"
+  hostname            = "lotus-bootstrap-${count.index}.yyz"
   plan                = "x1.small.x86"
   facilities          = ["yyz1"]
   operating_system    = "ubuntu_19_04"
   billing_cycle       = "hourly"
-  project_id          = "${var.project_id}"
-  project_ssh_key_ids = "${values(local.ssh_keys)}"
+  project_id          = var.project_id
+  project_ssh_key_ids = values(local.ssh_keys)
 }
 
 resource "packet_device" "lotus_bootstrap_hkg" {
   count               = 2
-  hostname            = "lotus-bootstrap-${count.index}"
+  hostname            = "lotus-bootstrap-${count.index}.hkg"
   plan                = "x1.small.x86"
   facilities          = ["hkg1"]
   operating_system    = "ubuntu_19_04"
   billing_cycle       = "hourly"
-  project_id          = "${var.project_id}"
-  project_ssh_key_ids = "${values(local.ssh_keys)}"
+  project_id          = var.project_id
+  project_ssh_key_ids = values(local.ssh_keys)
 }
 
 resource "null_resource" "lotus_bootstrap_yyz" {
   count      = 2
-  depends_on = ["packet_device.lotus_bootstrap_yyz"]
+  depends_on = [packet_device.lotus_bootstrap_yyz]
 
   triggers = {
     script_sha1 = "${sha1(file("${path.module}/../../ansible/lotus_bootstrap.yml"))}"
@@ -52,7 +52,7 @@ resource "null_resource" "lotus_bootstrap_yyz" {
 
 resource "null_resource" "lotus_bootstrap_hkg" {
   count      = 2
-  depends_on = ["packet_device.lotus_bootstrap_hkg"]
+  depends_on = [packet_device.lotus_bootstrap_hkg]
 
   triggers = {
     script_sha1 = "${sha1(file("${path.module}/../../ansible/lotus_bootstrap.yml"))}"
@@ -81,17 +81,17 @@ resource "null_resource" "lotus_bootstrap_hkg" {
 }
 
 resource "packet_device" "lotus_genesis" {
-  hostname            = "lotus-genesis"
+  hostname            = "lotus-genesis.hkg"
   plan                = "x1.small.x86"
   facilities          = ["hkg1"]
   operating_system    = "ubuntu_19_04"
   billing_cycle       = "hourly"
-  project_id          = "${var.project_id}"
-  project_ssh_key_ids = "${values(local.ssh_keys)}"
+  project_id          = var.project_id
+  project_ssh_key_ids = values(local.ssh_keys)
 }
 
 resource "null_resource" "lotus_genesis" {
-  depends_on = ["packet_device.lotus_genesis", "aws_route53_record.faucet"]
+  depends_on = [packet_device.lotus_genesis, aws_route53_record.faucet]
 
   triggers = {
     script_sha1 = "${sha1(file("${path.module}/../../ansible/lotus_genesis.yml"))}"
@@ -137,8 +137,8 @@ data "aws_route53_zone" "default" {
 
 resource "aws_route53_record" "hkg" {
   count   = 2
-  name    = "bootstrap-${count.index}.hkg"
-  zone_id = "${data.aws_route53_zone.default.zone_id}"
+  name    = "lotus-bootstrap-${count.index}.hkg"
+  zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"
   records = ["${packet_device.lotus_bootstrap_hkg[count.index].access_public_ipv4}"]
   ttl     = 30
@@ -146,8 +146,8 @@ resource "aws_route53_record" "hkg" {
 
 resource "aws_route53_record" "yyz" {
   count   = 2
-  name    = "bootstrap-${count.index}.yyz"
-  zone_id = "${data.aws_route53_zone.default.zone_id}"
+  name    = "lotus-bootstrap-${count.index}.yyz"
+  zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"
   records = ["${packet_device.lotus_bootstrap_yyz[count.index].access_public_ipv4}"]
   ttl     = 30
@@ -158,8 +158,8 @@ data "aws_route53_zone" "lotus" {
 }
 
 resource "aws_route53_record" "faucet" {
-  name    = "faucet-cert-test"
-  zone_id = "${data.aws_route53_zone.lotus.zone_id}"
+  name    = "faucet"
+  zone_id = data.aws_route53_zone.lotus.zone_id
   type    = "A"
   records = ["${packet_device.lotus_genesis.access_public_ipv4}"]
   ttl     = 30
