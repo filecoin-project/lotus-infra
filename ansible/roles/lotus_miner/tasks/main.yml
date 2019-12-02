@@ -53,7 +53,7 @@
     owner: root
     group: root
     mode: "0755"
-  when: lotus_miner_copy_binary
+  when: lotus_miner_copy_binary | bool
   notify:
     - restart-miner
 
