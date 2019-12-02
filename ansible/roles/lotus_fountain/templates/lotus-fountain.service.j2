@@ -2,6 +2,7 @@
 Description=Lotus Fountain
 After=network.target
 After=lotus-daemon.service
+PartOf=lotus-daemon.service
 
 [Service]
 User={{ lotus_user }}
