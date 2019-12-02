@@ -7,3 +7,8 @@
 
 # .tfvars files
 *.tfvars
+
+.vault_password
+# .tfplan files
+*.tfplan
+
