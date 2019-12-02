@@ -82,7 +82,7 @@
     owner: root
     group: root
     mode: "0755"
-  when: lotus_copy_binary
+  when: lotus_copy_binary | bool
   notify:
     - restart-lotus
 
