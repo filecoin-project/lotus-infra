@@ -1,3 +1,5 @@
 ---
 dependencies:
   - role: nginx
+  - role: certbot
+  - role: lotus_fullnode
