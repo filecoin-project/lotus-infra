@@ -107,12 +107,12 @@
         mode: "0700"
     - name: lotus peerkey
       copy:
-        content: "{{ lotus_libp2p_privkey }}"
+        content: "{{ lotus_libp2p_keyinfo }}"
         owner: "{{ lotus_user }}"
         group: "{{ lotus_user }}"
         mode: "0600"
         dest: "{{ lotus_path }}/keystore/{{ lotus_libp2p_keyname }}"
-  when: lotus_libp2p_privkey is defined
+  when: lotus_libp2p_keyinfo is defined
 
 - name: lotus service started
   systemd:
