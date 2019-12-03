@@ -40,6 +40,25 @@
     mode: 0644
   notify:
     - restart nginx
+
+- name: create let's encrypt webroot
+  file:
+    path: /var/www/{{ lotus_fountain_server_name }}/.well-known
+    state: directory
+
+- name: create let's encrypt certificate
+  command: "certbot certonly --webroot -w /var/www/{{ lotus_fountain_server_name }} -d {{ lotus_fountain_server_name }} --non-interactive --agree-tos -m infra-accounts@protocol.ai"
+  run_once: true
+  when: certbot_create_certificate
+
+- name: copy nginx https config
+  template:
+    src: ../templates/nginx-https.conf.j2
+    dest: /etc/nginx/conf.d/lotus-fountain-https.conf
+    mode: 0644
+  notify:
+    - restart nginx
+
 - set_fact:
     lotus_fountain_ufw_profile:
       name: Lotus Fountain

@@ -91,7 +91,7 @@ resource "packet_device" "lotus_genesis" {
 }
 
 resource "null_resource" "lotus_genesis" {
-  depends_on = ["packet_device.lotus_genesis", "aws_route53_record.faucet"]
+  depends_on = [packet_device.lotus_genesis, dnsimple_record.faucet]
 
   triggers = {
     script_sha1 = "${sha1(file("${path.module}/../../ansible/lotus_genesis.yml"))}"
@@ -111,7 +111,7 @@ resource "null_resource" "lotus_genesis" {
         lotus_copy_binary          = var.lotus_copy_binary
         lotus_miner_copy_binary    = var.lotus_miner_copy_binary
         lotus_fountain_copy_binary = var.lotus_fountain_copy_binary
-        lotus_fountain_server_name = "${aws_route53_record.faucet.fqdn}"
+        lotus_fountain_server_name = "${dnsimple_record.faucet.hostname}"
         certbot_create_certificate = var.certbot_create_certificate
       }
 
@@ -153,15 +153,10 @@ resource "aws_route53_record" "yyz" {
   ttl     = 30
 }
 
-data "aws_route53_zone" "lotus" {
-  zone_id = "${var.lotus_zone_id}"
+resource "dnsimple_record" "faucet" {
+  domain = var.testnet_domain
+  name   = "faucet"
+  value  = packet_device.lotus_genesis.access_public_ipv4
+  type   = "A"
+  ttl    = 300
 }
-
-resource "aws_route53_record" "faucet" {
-  name    = "faucet-cert-test"
-  zone_id = "${data.aws_route53_zone.lotus.zone_id}"
-  type    = "A"
-  records = ["${packet_device.lotus_genesis.access_public_ipv4}"]
-  ttl     = 30
-}
-

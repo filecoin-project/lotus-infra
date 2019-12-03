@@ -3,8 +3,13 @@ provider "packet" {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region  = "us-east-1"
   profile = "filecoin"
+}
+
+provider "dnsimple" {
+  token   = var.dnsimple_token
+  account = var.dnsimple_account
 }
 
 terraform {
