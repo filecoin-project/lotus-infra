@@ -36,7 +36,7 @@ cmd_new_peerkey() {
 
   log 'Staring temp daemon'
 
-  ./lotus --repo="${LRPATH}" daemon 2>/dev/null 1>/dev/null &
+  ./lotus --repo="${LRPATH}" daemon --bootstrap=false 2>/dev/null 1>/dev/null &
   LPID=$!
 
   sleep 3
