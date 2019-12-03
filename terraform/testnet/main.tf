@@ -39,6 +39,7 @@ resource "null_resource" "lotus_bootstrap_yyz" {
       }
 
       extra_vars = {
+        lotus_reset       = var.lotus_reset
         lotus_copy_binary = var.lotus_copy_binary
       }
 
@@ -69,6 +70,7 @@ resource "null_resource" "lotus_bootstrap_hkg" {
       }
 
       extra_vars = {
+        lotus_reset       = var.lotus_reset
         lotus_copy_binary = var.lotus_copy_binary
       }
 
@@ -108,6 +110,8 @@ resource "null_resource" "lotus_genesis" {
       }
 
       extra_vars = {
+        lotus_reset                = var.lotus_reset
+        lotus_miner_reset          = var.lotus_reset
         lotus_copy_binary          = var.lotus_copy_binary
         lotus_miner_copy_binary    = var.lotus_miner_copy_binary
         lotus_fountain_copy_binary = var.lotus_fountain_copy_binary

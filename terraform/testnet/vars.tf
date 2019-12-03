@@ -22,3 +22,7 @@ variable "lotus_miner_copy_binary" {
 variable "lotus_fountain_copy_binary" {
   default = false
 }
+
+variable "lotus_reset" {
+  default = false
+}
