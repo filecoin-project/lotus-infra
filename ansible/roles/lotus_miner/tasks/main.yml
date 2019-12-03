@@ -67,13 +67,27 @@
 
 - name: genesis miner
   block:
+    - name: lotus presealed sector directory
+      file:
+        path: "{{ lotus_miner_presealed_sectors_path }}"
+        state: directory
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0700"
+    - name: move presealed sectors
+      copy:
+        src: "{{ lotus_miner_presealed_sector_src }}"
+        dest: "{{ lotus_miner_presealed_sectors_path }}"
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0700"
     - name: init miner
-      shell: /usr/local/bin/lotus-storage-miner init --genesis-miner --actor=t0101
+      shell: /usr/local/bin/lotus-storage-miner init --genesis-miner --actor=t0101 --pre-sealed-sectors="{{ lotus_miner_presealed_sectors_path }}"
       environment:
         LOTUS_PATH: "{{ lotus_path }}"
         LOTUS_STORAGE_PATH: "{{ lotus_miner_path }}"
-  become: yes
-  become_user: "{{ lotus_user }}"
+      become: yes
+      become_user: "{{ lotus_user }}"
   when: lotus_miner_is_genesis == True and r_miner_config.stat.exists == False
 
 - name: lotus service started

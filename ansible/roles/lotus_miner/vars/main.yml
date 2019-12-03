@@ -1,4 +1,5 @@
 undefined:
 required_vars:
   - lotus_miner_binary_src
+  - lotus_miner_presealed_sector_src
 

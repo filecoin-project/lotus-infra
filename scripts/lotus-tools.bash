@@ -77,13 +77,19 @@ cmd_new_genesis() {
 
   log '> Generating genesis'
 
-  make
+  make lotus lotus-seed
+
+  log 'Sealing sectors'
+
+  SEEDPATH=$(mktemp -d)
+
+  ./lotus-seed --sectorbuilder-dir="${SEEDPATH}" pre-seal
 
   GENPATH=$(mktemp -d)
 
   log 'Staring temp daemon'
 
-  ./lotus --repo="${GENPATH}" daemon --lotus-make-random-genesis="${GENPATH}/devnet.car" 2>/dev/null 1>/dev/null &
+  ./lotus --repo="${GENPATH}" daemon --lotus-make-random-genesis="${GENPATH}/devnet.car" --genesis-presealed-sectors="${SEEDPATH}/pre-seal-t0101.json" 2>/dev/null 1>/dev/null &
   GDPID=$!
 
   sleep 3
@@ -109,6 +115,8 @@ cmd_new_genesis() {
 lotus_wallet_keyinfo: $WALLET_KEYINFO
 lotus_wallet_address: $WALLET_ADDR
 EOF
+
+  mv "$SEEDPATH" /tmp/lotus-genesis-sectors
 }
 
 cmd_build_binaries() {
