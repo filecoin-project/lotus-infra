@@ -47,7 +47,7 @@
     state: directory
 
 - name: create let's encrypt certificate
-  command: "certbot certonly --webroot -w /var/www/{{ lotus_fountain_server_name }} -d {{ lotus_fountain_server_name }} --test-cert --non-interactive --agree-tos -m infra-accounts@protocol.ai"
+  command: "certbot certonly --webroot -w /var/www/{{ lotus_fountain_server_name }} -d {{ lotus_fountain_server_name }} --non-interactive --agree-tos -m infra-accounts@protocol.ai"
   run_once: true
   when: certbot_create_certificate
 
