@@ -67,17 +67,10 @@
 
 - name: genesis miner
   block:
-    - name: lotus presealed sector directory
-      file:
-        path: "{{ lotus_miner_presealed_sectors_path }}"
-        state: directory
-        owner: "{{ lotus_user }}"
-        group: "{{ lotus_user }}"
-        mode: "0700"
     - name: move presealed sectors
       copy:
         src: "{{ lotus_miner_presealed_sector_src }}"
-        dest: "{{ lotus_miner_presealed_sectors_path }}"
+        dest: "{{ lotus_miner_presealed_sectors_path }}/"
         owner: "{{ lotus_user }}"
         group: "{{ lotus_user }}"
         mode: "0700"
