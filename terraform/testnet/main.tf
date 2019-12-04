@@ -83,7 +83,7 @@ resource "null_resource" "lotus_bootstrap_hkg" {
 }
 
 resource "packet_device" "lotus_genesis" {
-  hostname            = "lotus-genesis.hkg"
+  hostname            = "lotus-genesis"
   plan                = "x1.small.x86"
   facilities          = ["hkg1"]
   operating_system    = "ubuntu_19_04"
@@ -154,6 +154,14 @@ resource "aws_route53_record" "yyz" {
   zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"
   records = ["${packet_device.lotus_bootstrap_yyz[count.index].access_public_ipv4}"]
+  ttl     = 30
+}
+
+resource "aws_route53_record" "genesis" {
+  name    = "lotus-genesis"
+  zone_id = data.aws_route53_zone.default.zone_id
+  type    = "A"
+  records = ["${packet_device.lotus_genesis.access_public_ipv4}"]
   ttl     = 30
 }
 
