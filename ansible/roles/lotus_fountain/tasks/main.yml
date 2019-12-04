@@ -45,8 +45,14 @@
     src: ../templates/nginx.conf.j2
     dest: /etc/nginx/conf.d/lotus-fountain.conf
     mode: 0644
-  notify:
-    - restart nginx
+
+- name: ensure nginx started
+  systemd:
+    name: nginx
+    state: started
+
+- name: reload nginx
+  command: "/etc/init.d/nginx reload"
 
 - name: create let's encrypt certificate
   command: "certbot certonly --webroot -w /var/www/{{ lotus_fountain_server_name }} -d {{ lotus_fountain_server_name }} --non-interactive --agree-tos -m infra-accounts@protocol.ai"
@@ -59,7 +65,7 @@
     dest: /etc/nginx/conf.d/lotus-fountain-https.conf
     mode: 0644
   notify:
-    - restart nginx
+    - reload nginx
 
 - set_fact:
     lotus_fountain_ufw_profile:

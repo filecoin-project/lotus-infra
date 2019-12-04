@@ -159,7 +159,7 @@ resource "aws_route53_record" "yyz" {
 
 resource "dnsimple_record" "faucet" {
   domain = var.testnet_domain
-  name   = "faucet-test"
+  name   = "faucet"
   value  = packet_device.lotus_genesis.access_public_ipv4
   type   = "A"
   ttl    = 300
