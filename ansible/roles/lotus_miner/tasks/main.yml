@@ -86,6 +86,9 @@
   notify:
     - restart-miner
 
+- name: lotus fetch params
+  shell: /usr/local/bin/lotus-storage-miner fetch-params
+
 - debug:
     msg: is_genesis {{ lotus_miner_is_genesis }}
 
