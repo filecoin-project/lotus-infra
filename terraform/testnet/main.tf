@@ -85,7 +85,7 @@ resource "null_resource" "lotus_bootstrap_hkg" {
 resource "packet_device" "lotus_genesis" {
   hostname            = "lotus-genesis"
   plan                = "g2.large"
-  facilities          = ["dfw1"]
+  facilities          = ["dfw2"]
   operating_system    = "ubuntu_18_04"
   billing_cycle       = "hourly"
   project_id          = var.project_id
