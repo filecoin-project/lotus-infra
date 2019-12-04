@@ -6,3 +6,6 @@
   systemd:
     name: 'lotus-miner'
     state: restarted
+
+- name: reboot-system
+  reboot:

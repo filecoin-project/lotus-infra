@@ -3,7 +3,7 @@
   vars:
     lotus_binary_src: /tmp/lotus
     lotus_miner_presealed_sector_src: /tmp/lotus-genesis-sectors.tar.gz
-    lotus_miner_gpu_driver: nvidia-headless-435
+    lotus_miner_nvidia_drivers_url: https://us.download.nvidia.com/tesla/440.33.01/NVIDIA-Linux-x86_64-440.33.01.run
     lotus_miner_env:
       BELLMAN_CUSTOM_GPU: "Tesla V100:5120"
     lotus_miner_binary_src: /tmp/lotus-storage-miner

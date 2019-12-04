@@ -3,11 +3,34 @@
   when: vars[item] == undefined
   with_items: "{{ required_vars }}"
 
+- name: uname
+  shell: uname -r
+  register: r_uname
+
 - name: Update repos and install deps
   apt:
     pkg:
-      - "{{ lotus_miner_gpu_driver }}"
+      - gcc
+      - "linux-headers-{{ r_uname.stdout }}"
     update_cache: yes
+
+
+- name: check if lotus miner config is present
+  shell: modinfo nvidia
+  register: r_nvidia
+
+- name: install gpu drivers
+  block:
+    - name: download nvidia drivers
+      get_url:
+        url: "{{ lotus_miner_nvidia_drivers_url }}"
+        dest: /tmp/nvidia-drivers
+        mode: "0755"
+
+    - name: install drivers
+      shell: /tmp/nvidia-drivers --ui=none --no-questions
+      notify: reboot-system
+  when: r_nvidia.rc == 1
 
 - name: remove current lotus miner repository
   block:
