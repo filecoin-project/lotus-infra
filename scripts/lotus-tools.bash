@@ -111,7 +111,7 @@ cmd_new_genesis() {
 
   popd
 
-  cat > ansible/group_vars/genesis/wallet.vault.yml <<EOF
+  cat > ansible/host_vars/lotus-genesis.fil-test.net/wallet.vault.yml <<EOF
 lotus_wallet_keyinfo: $WALLET_KEYINFO
 lotus_wallet_address: $WALLET_ADDR
 EOF
