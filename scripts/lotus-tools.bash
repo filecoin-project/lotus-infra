@@ -61,7 +61,7 @@ cmd_new_peerkey() {
   popd
 
   mkdir -p "ansible/host_vars/$host/"
-  
+
   cat > "ansible/host_vars/$host/libp2p.vault.yml" <<EOF
   lotus_libp2p_keyinfo: $P2P_KEYINFO
   lotus_libp2p_address: $P2P_ADDRESS
@@ -116,6 +116,7 @@ lotus_wallet_keyinfo: $WALLET_KEYINFO
 lotus_wallet_address: $WALLET_ADDR
 EOF
 
+  rm -rf /tmp/lotus-genesis-sectors
   mv "$SEEDPATH" /tmp/lotus-genesis-sectors
 }
 
