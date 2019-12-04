@@ -67,6 +67,10 @@
 
 - name: genesis miner
   block:
+    - name: remove repo
+      file:
+        path: "{{ lotus_miner_presealed_sectors_path }}"
+        state: absent
     - name: move presealed sectors
       copy:
         src: "{{ lotus_miner_presealed_sector_src }}"
