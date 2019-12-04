@@ -102,7 +102,7 @@ resource "null_resource" "lotus_genesis" {
   provisioner "ansible" {
     plays {
       hosts = [
-        "${packet_device.lotus_genesis.access_public_ipv4}",
+        "${aws_route53_record.genesis.fqdn}",
       ]
 
       playbook {
