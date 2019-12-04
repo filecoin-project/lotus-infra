@@ -77,7 +77,7 @@ cmd_new_genesis() {
 
   log '> Generating genesis'
 
-  make lotus lotus-seed
+  make clean lotus lotus-seed
 
   log 'Sealing sectors'
 
@@ -128,6 +128,7 @@ cmd_build_binaries() {
 
   log '> Building lotus'
 
+  make clean
   make lotus
 
   log '> Building lotus-storage-miner'
