@@ -67,14 +67,20 @@
 
 - name: genesis miner
   block:
-    - name: remove repo
+    - name: remove / create presealed directory
       file:
         path: "{{ lotus_miner_presealed_sectors_path }}"
-        state: absent
+        state: "{{ item }}"
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0700"
+      with_items:
+        - absent
+        - directory
     - name: move presealed sectors
-      copy:
+      unarchive:
         src: "{{ lotus_miner_presealed_sector_src }}"
-        dest: "{{ lotus_miner_presealed_sectors_path }}/"
+        dest: "{{ lotus_miner_presealed_sectors_path }}"
         owner: "{{ lotus_user }}"
         group: "{{ lotus_user }}"
         mode: "0700"

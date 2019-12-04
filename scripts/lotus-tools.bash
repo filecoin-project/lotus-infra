@@ -116,8 +116,9 @@ lotus_wallet_keyinfo: $WALLET_KEYINFO
 lotus_wallet_address: $WALLET_ADDR
 EOF
 
-  rm -rf /tmp/lotus-genesis-sectors
-  mv "$SEEDPATH" /tmp/lotus-genesis-sectors
+  rm -r /tmp/lotus-genesis-sectors.tar.gz
+  du -h "$SEEDPATH"
+  tar -vzcC "$SEEDPATH" -f /tmp/lotus-genesis-sectors.tar.gz .
 }
 
 cmd_build_binaries() {
