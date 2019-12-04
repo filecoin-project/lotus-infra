@@ -3,6 +3,12 @@
   when: vars[item] == undefined
   with_items: "{{ required_vars }}"
 
+- name: Update repos and install deps
+  apt:
+    pkg:
+      - "{{ lotus_miner_gpu_driver }}"
+    update_cache: yes
+
 - name: remove current lotus miner repository
   block:
     - name: stop

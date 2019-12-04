@@ -84,9 +84,9 @@ resource "null_resource" "lotus_bootstrap_hkg" {
 
 resource "packet_device" "lotus_genesis" {
   hostname            = "lotus-genesis"
-  plan                = "x1.small.x86"
-  facilities          = ["hkg1"]
-  operating_system    = "ubuntu_19_04"
+  plan                = "g2.large"
+  facilities          = ["dfw1"]
+  operating_system    = "ubuntu_18_04"
   billing_cycle       = "hourly"
   project_id          = var.project_id
   project_ssh_key_ids = values(local.ssh_keys)
