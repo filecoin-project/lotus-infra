@@ -36,4 +36,5 @@ module "seed01" {
   lotus_seed_copy_binary = var.lotus_seed_copy_binary
   lotus_seed_reset_repo = var.lotus_seed_reset_repo
   lotus_seed_binary_src = var.lotus_seed_binary_src
+  lotus_seed_miner_addr  = "t0101"
 }

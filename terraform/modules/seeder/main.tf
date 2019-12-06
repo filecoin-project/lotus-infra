@@ -6,6 +6,7 @@ variable "lotus_seed_num_sectors" {}
 variable "lotus_seed_reset_repo" {}
 variable "lotus_seed_copy_binary" {}
 variable "lotus_seed_binary_src" {}
+variable "lotus_seed_miner_addr" {}
 variable "zone_id" {}
 variable "name" {}
 
@@ -54,6 +55,7 @@ resource "null_resource" "lotus_seed" {
         lotus_seed_sector_size = var.lotus_seed_sector_size
         lotus_seed_num_sectors = var.lotus_seed_num_sectors
         lotus_seed_reset_repo  = var.lotus_seed_reset_repo
+        lotus_seed_miner_addr  = var.lotus_seed_miner_addr
       }
 
       # shared attributes
