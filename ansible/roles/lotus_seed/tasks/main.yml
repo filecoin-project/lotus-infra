@@ -1,0 +1,73 @@
+- name: Update repos and install deps
+  apt:
+    pkg:
+      - mesa-opencl-icd
+      - ocl-icd-opencl-dev
+      - ntp
+    update_cache: yes
+
+- name: lotus start ntp
+  systemd:
+    name: "ntp"
+    enabled: yes
+    state: started
+
+- name: lotus-seed user
+  user:
+    name: "{{ lotus_seed_user }}"
+    state: present
+    system: yes
+
+- name: remove current lotus-seed repository
+  block:
+    - name: remove repo
+      file:
+        path: "{{ lotus_seed_path }}"
+        state: absent
+  when: lotus_seed_reset_repo == "yes"
+
+- name: lotus-seed path directory
+  file:
+    path: "{{ lotus_seed_path }}"
+    state: directory
+    owner: "{{ lotus_seed_user }}"
+    group: "{{ lotus_seed_user }}"
+    mode: "0700"
+
+- name: proof params directory
+  file:
+    path: "{{ lotus_seed_proof_params_path }}"
+    state: directory
+    owner: "{{ lotus_seed_user }}"
+    group: "{{ lotus_seed_user }}"
+    mode: "0700"
+
+- name: lotus-seed golog file
+  file:
+    state: touch
+    path: "{{ lotus_seed_golog_file }}"
+    owner: "{{ lotus_seed_user }}"
+    group: "{{ lotus_seed_user }}"
+    mode: "0644"
+
+- name: lotus-seed binary
+  copy:
+    src: "{{ lotus_seed_binary_src }}"
+    dest: /usr/local/bin/lotus-seed
+    owner: root
+    group: root
+    mode: "0755"
+  when: lotus_seed_copy_binary | bool
+
+- name: lotus seed systemd service file
+  template:
+    src: ../templates/lotus-seed.service.j2
+    dest: /etc/systemd/system/lotus-seed.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+
