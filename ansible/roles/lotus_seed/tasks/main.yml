@@ -59,5 +59,3 @@
     group: root
     mode: "0755"
   when: lotus_seed_copy_binary | bool
-  notify:
-    - restart-lotus
