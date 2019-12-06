@@ -1,0 +1,5 @@
+lotus_fountain_binary_src:
+lotus_fountain_golog_file: /var/log/lotus-fountain.log
+lotus_fountain_golog_log_fmt: json
+lotus_fountain_env: {}
+lotus_fountain_copy_binary: false

@@ -3,6 +3,20 @@
   when: vars[item] == undefined
   with_items: "{{ required_vars }}"
 
+- name: Update repos and install deps
+  apt:
+    pkg:
+      - mesa-opencl-icd
+      - ocl-icd-opencl-dev
+      - ntp
+    update_cache: yes
+
+- name: lotus start ntp
+  systemd:
+    name: "ntp"
+    enabled: yes
+    state: started
+
 - name: lotus daemon user
   user:
     name: "{{ lotus_user }}"
@@ -29,6 +43,11 @@
     group: "{{ lotus_user }}"
     mode: "0700"
 
+- name: lotus ensure LOTUS_PATH env
+  lineinfile:
+    path: /etc/environment
+    line: LOTUS_PATH="{{ lotus_path }}"
+
 - name: proof params directory
   file:
     path: "{{ lotus_proof_params_path }}"
@@ -54,7 +73,7 @@
     group: root
     mode: "0644"
   notify:
-    - reload-systemd
+    - reload-lotus
 
 - name: lotus binary
   copy:
@@ -63,11 +82,76 @@
     owner: root
     group: root
     mode: "0755"
+  when: lotus_copy_binary | bool
   notify:
-    - restart-systemd
+    - restart-lotus
+
+- name: lotus config
+  template:
+    src: ../templates/config.toml.j2
+    dest: "{{ lotus_path }}/config.toml"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"
+  notify:
+    - restart-lotus
+
+- name: lotus import peerkey
+  block:
+    - name: lotus create keystore path
+      file:
+        path: "{{ lotus_path }}/keystore/"
+        state: directory
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0700"
+    - name: lotus peerkey
+      copy:
+        content: "{{ lotus_libp2p_keyinfo }}"
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0600"
+        dest: "{{ lotus_path }}/keystore/{{ lotus_libp2p_keyname }}"
+  when: lotus_libp2p_keyinfo is defined
+
+- name: lotus service started
+  systemd:
+    name: "lotus-daemon"
+    state: started
+
+- name: get default wallet
+  shell: /usr/local/bin/lotus wallet default
+  environment:
+    LOTUS_PATH: "{{ lotus_path }}"
+  ignore_errors: yes
+  register: r_default_wallet
+
+- debug:
+    msg: lotus wallet default {{ r_default_wallet.stdout }}
+
+- name: import wallet
+  block:
+    - name: wait for daemon online
+      shell: sleep 10
+    - name: import wallet
+      shell: /usr/local/bin/lotus wallet import
+      args:
+        stdin: "{{ lotus_wallet_keyinfo }}"
+      environment:
+        LOTUS_PATH: "{{ lotus_path }}"
+    - name: set default
+      shell: /usr/local/bin/lotus wallet set-default "{{ lotus_wallet_address }}"
+      environment:
+        LOTUS_PATH: "{{ lotus_path }}"
+  when: lotus_wallet_keyinfo is defined and r_default_wallet.stdout != lotus_wallet_address
 
 - name: lotus service started
   systemd:
     name: "lotus-daemon"
     enabled: yes
     state: started
+
+- set_fact:
+    lotus_fullnode_ufw_profile:
+      name: Lotus Daemon
+      value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"

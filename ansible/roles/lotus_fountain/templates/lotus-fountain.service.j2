@@ -1,0 +1,21 @@
+[Unit]
+Description=Lotus Fountain
+After=network.target
+After=lotus-daemon.service
+PartOf=lotus-daemon.service
+
+[Service]
+User={{ lotus_user }}
+Group={{ lotus_user }}
+ExecStart=/usr/local/bin/lotus-fountain run --front "0.0.0.0:7777" --from {{ lotus_fountain_wallet }}
+Environment=LOTUS_PATH="{{ lotus_path }}"
+Environment=GOLOG_FILE="{{ lotus_fountain_golog_file }}"
+Environment=GOLOG_LOG_FMT="{{ lotus_fountain_golog_log_fmt }}"
+{% for item in lotus_fountain_env | dict2items -%}
+Environment={{ item.key }}="{{ item.value }}"
+{% endfor %}
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

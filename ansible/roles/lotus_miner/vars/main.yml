@@ -1,0 +1,5 @@
+undefined:
+required_vars:
+  - lotus_miner_binary_src
+  - lotus_miner_presealed_sector_src
+  - lotus_miner_nvidia_drivers_url

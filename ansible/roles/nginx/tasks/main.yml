@@ -1,0 +1,9 @@
+- name: Apt via https
+  apt: name=apt-transport-https state=present
+- name: Install nginx
+  apt: pkg=nginx state=present
+- name: remove default nginx default
+  file: path=/etc/nginx/sites-enabled/default state=absent
+# https://weakdh.org/
+- name: Generate dhparams file
+  shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048

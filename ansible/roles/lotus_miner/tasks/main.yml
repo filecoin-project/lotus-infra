@@ -1,0 +1,132 @@
+- name: check for required vars
+  fail: msg="Variable '{{ item }}' is not defined"
+  when: vars[item] == undefined
+  with_items: "{{ required_vars }}"
+
+- name: uname
+  shell: uname -r
+  register: r_uname
+
+- name: Update repos and install deps
+  apt:
+    pkg:
+      - gcc
+      - "linux-headers-{{ r_uname.stdout }}"
+    update_cache: yes
+
+
+- name: check if lotus miner config is present
+  shell: modinfo nvidia
+  register: r_nvidia
+
+- name: install gpu drivers
+  block:
+    - name: download nvidia drivers
+      get_url:
+        url: "{{ lotus_miner_nvidia_drivers_url }}"
+        dest: /tmp/nvidia-drivers
+        mode: "0755"
+
+    - name: install drivers
+      shell: /tmp/nvidia-drivers --ui=none --no-questions
+      notify: reboot-system
+  when: r_nvidia.rc == 1
+
+- name: remove current lotus miner repository
+  block:
+    - name: stop
+      systemd:
+        name: lotus-miner
+        state: stopped
+    - name: remove repo
+      file:
+        path: "{{ lotus_miner_path }}"
+        state: absent
+  when: lotus_miner_reset == "yes"
+
+- name: lotus path directory
+  file:
+    path: "{{ lotus_miner_path }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+
+- name: lotus ensure LOTUS_PATH env
+  lineinfile:
+    path: /etc/environment
+    line: LOTUS_STORAGE_PATH="{{ lotus_miner_path }}"
+
+- name: lotus golog file
+  file:
+    state: touch
+    path: "{{ lotus_miner_golog_file }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"
+
+- name: lotus systemd service file
+  template:
+    src: ../templates/lotus-miner.service.j2
+    dest: /etc/systemd/system/lotus-miner.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload-miner
+
+- name: lotus binary
+  copy:
+    src: "{{ lotus_miner_binary_src }}"
+    dest: /usr/local/bin/lotus-storage-miner
+    owner: root
+    group: root
+    mode: "0755"
+  when: lotus_miner_copy_binary | bool
+  notify:
+    - restart-miner
+
+- name: lotus fetch params
+  shell: /usr/local/bin/lotus-storage-miner fetch-params
+
+- debug:
+    msg: is_genesis {{ lotus_miner_is_genesis }}
+
+- name: check if lotus miner config is present
+  stat:
+    path: "{{ lotus_miner_path }}/config.toml"
+  register: r_miner_config
+
+- name: genesis miner
+  block:
+    - name: remove / create presealed directory
+      file:
+        path: "{{ lotus_miner_presealed_sectors_path }}"
+        state: "{{ item }}"
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0700"
+      with_items:
+        - absent
+        - directory
+    - name: move presealed sectors
+      unarchive:
+        src: "{{ lotus_miner_presealed_sector_src }}"
+        dest: "{{ lotus_miner_presealed_sectors_path }}"
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0700"
+    - name: init miner
+      shell: /usr/local/bin/lotus-storage-miner init --genesis-miner --actor=t0101 --pre-sealed-sectors="{{ lotus_miner_presealed_sectors_path }}"
+      environment:
+        LOTUS_PATH: "{{ lotus_path }}"
+        LOTUS_STORAGE_PATH: "{{ lotus_miner_path }}"
+      become: yes
+      become_user: "{{ lotus_user }}"
+  when: lotus_miner_is_genesis == True and r_miner_config.stat.exists == False
+
+- name: lotus service started
+  systemd:
+    name: "lotus-miner"
+    enabled: yes
+    state: started

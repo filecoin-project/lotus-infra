@@ -1,0 +1,26 @@
+- name: Install ufw
+  apt:
+    name: ufw
+    force_apt_get: yes
+
+- name: Copy ufw application rules
+  copy:
+    force: yes
+    content: "{{ item.value }}"
+    dest: "/etc/ufw/applications.d/{{ item.name | replace(' ', '-') | lower }}"
+    mode: 0644
+    owner: root
+    group: root
+  with_items: "{{ ufw_profiles }}"
+
+- include: default_rules.yml
+
+- name: Allow incoming
+  ufw:
+    rule: allow
+    name: "{{ item.name }}"
+  with_items: "{{ ufw_profiles }}"
+
+- name: Enable ufw
+  ufw:
+    state: enabled

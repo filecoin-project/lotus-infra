@@ -1,4 +1,5 @@
 undefined:
 required_vars:
   - lotus_binary_src
-
+lotus_ufw_name: "Lotus Daemon"
+lotus_libp2p_keyname: "NRUWE4BSOAWWQ33TOQ"
