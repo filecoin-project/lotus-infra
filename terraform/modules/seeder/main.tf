@@ -1,6 +1,13 @@
 variable "instance_type" {}
 variable "vault_password_file" {}
 variable "security_groups" {}
+variable "lotus_seed_sector_size" {}
+variable "lotus_seed_num_sectors" {}
+variable "lotus_seed_reset_repo" {}
+variable "lotus_seed_copy_binary" {}
+variable "lotus_seed_binary_src" {}
+variable "zone_id" {}
+variable "name" {}
 
 resource "aws_instance" "lotus_seed" {
   ami             = "ami-01caa26d7860f2195"
@@ -42,8 +49,11 @@ resource "null_resource" "lotus_seed" {
 
       extra_vars = {
         ansible_ssh_user       = "ubuntu"
-        lotus_seed_copy_binary = true
-        lotus_seed_binary_src  = "/tmp/lotus-seed"
+        lotus_seed_copy_binary = var.lotus_seed_copy_binary
+        lotus_seed_binary_src  = var.lotus_seed_binary_src
+        lotus_seed_sector_size = var.lotus_seed_sector_size
+        lotus_seed_num_sectors = var.lotus_seed_num_sectors
+        lotus_seed_reset_repo  = var.lotus_seed_reset_repo
       }
 
       # shared attributes
@@ -54,4 +64,12 @@ resource "null_resource" "lotus_seed" {
       groups        = ["seeds"]
     }
   }
+}
+
+resource "aws_route53_record" "dns" {
+  name    = "lotus-seed.${var.name}"
+  zone_id = var.zone_id
+  type    = "A"
+  records = ["${aws_instance.lotus_seed.public_ip}"]
+  ttl     = 30
 }

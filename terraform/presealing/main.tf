@@ -19,10 +19,21 @@ resource "aws_security_group" "seed" {
   }
 }
 
+data "aws_route53_zone" "default" {
+  zone_id = "${var.zone_id}"
+}
+
 module "seed01" {
   source = "../modules/seeder"
 
+  name = "seed01"
   instance_type = "c5d.24xlarge"
   vault_password_file = "${path.module}/.vault_password"
   security_groups = [aws_security_group.seed.name]
+  zone_id = data.aws_route53_zone.default.zone_id
+  lotus_seed_sector_size = var.lotus_seed_sector_size
+  lotus_seed_num_sectors = var.lotus_seed_num_sectors
+  lotus_seed_copy_binary = var.lotus_seed_copy_binary
+  lotus_seed_reset_repo = var.lotus_seed_reset_repo
+  lotus_seed_binary_src = var.lotus_seed_binary_src
 }

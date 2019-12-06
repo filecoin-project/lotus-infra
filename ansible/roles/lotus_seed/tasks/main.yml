@@ -42,7 +42,6 @@
     group: "{{ lotus_seed_user }}"
     mode: "0700"
 
-
 - name: lotus-seed golog file
   file:
     state: touch
@@ -59,3 +58,16 @@
     group: root
     mode: "0755"
   when: lotus_seed_copy_binary | bool
+
+- name: lotus seed systemd service file
+  template:
+    src: ../templates/lotus-seed.service.j2
+    dest: /etc/systemd/system/lotus-seed.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+

@@ -1,4 +1,3 @@
-lotus_seed_binary_src:
 lotus_seed_user: lotus
 lotus_seed_path: /var/lib/lotus-seed
 lotus_seed_proof_params_path: /var/tmp/filecoin-proof-parameters
@@ -6,4 +5,4 @@ lotus_seed_golog_file: /var/log/lotus-seed.log
 lotus_seed_golog_log_fmt: json
 lotus_seed_env: {}
 lotus_seed_copy_binary: false
-lotus_seed_reset_repo: no
+lotus_seed_reset_repo: yes
