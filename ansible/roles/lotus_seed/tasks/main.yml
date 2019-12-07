@@ -86,10 +86,18 @@
     group: "{{ lotus_seed_user }}"
     mode: "0700"
 
-- name: lotus-seed golog file
+- name: lotus-seed golog file 0
   file:
     state: touch
-    path: "{{ lotus_seed_golog_file }}"
+    path: "{{ lotus_seed_golog_file_0 }}"
+    owner: "{{ lotus_seed_user }}"
+    group: "{{ lotus_seed_user }}"
+    mode: "0644"
+
+- name: lotus-seed golog file 1
+  file:
+    state: touch
+    path: "{{ lotus_seed_golog_file_1 }}"
     owner: "{{ lotus_seed_user }}"
     group: "{{ lotus_seed_user }}"
     mode: "0644"
