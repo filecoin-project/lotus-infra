@@ -28,12 +28,12 @@ variable "lotus_seed_sector_offset_1" {
 
 variable "lotus_seed_num_sectors" {
   description = "size of sectors to preseal"
-  default     = "128"
+  default     = "4"
 }
 
 variable "lotus_seed_sector_size" {
   description = "size of sectors to preseal"
-  default     = "1073741824"
+  default     = "34359738368"
 }
 
 variable "cidr" {
@@ -62,4 +62,8 @@ variable "public_subnets" {
 
 variable "vault_password_file" {
   default = ""
+}
+
+variable "ebs_volume_size" {
+  default = 6000
 }
