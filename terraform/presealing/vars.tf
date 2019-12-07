@@ -7,11 +7,11 @@ variable "region" {
 }
 
 variable "lotus_seed_copy_binary" {
-  default = false
+  default = true
 }
 
 variable "lotus_seed_reset_repo" {
-  default = "yes"
+  default = "no"
 }
 
 variable "lotus_seed_binary_src" {
@@ -27,10 +27,9 @@ variable "lotus_seed_num_sectors" {
   default     = "192"
 }
 
-
 variable "lotus_seed_sector_size" {
   description = "size of sectors to preseal"
-  default     = "1024"
+  default     = "1073741824"
 }
 
 variable "cidr" {
@@ -55,4 +54,8 @@ variable "public_subnets" {
     "10.0.7.0/24",
     "10.0.8.0/24",
   ]
+}
+
+variable "vault_password_file" {
+  default = ""
 }

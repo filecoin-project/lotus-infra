@@ -198,35 +198,6 @@ resource "aws_ebs_volume" "seedm4" {
   }
 }
 
-resource "null_resource" "lotus_seed_start" {
-  # make count 1 to execute
-  count = 0
-  provisioner "ansible" {
-    plays {
-      hosts = concat(module.seedm0.dns_names, module.seedm1.dns_names, module.seedm2.dns_names, module.seedm3.dns_names, module.seedm4.dns_names)
-
-      module {
-        module = "systemd"
-        args = {
-          name  = "lotus-seed"
-          state = "started"
-        }
-      }
-
-      extra_vars = {
-        ansible_ssh_user = "ubuntu"
-      }
-
-      # shared attributes
-      become        = true
-      become_method = "sudo"
-      enabled       = true
-      vault_id      = [local.vault_password_file]
-      groups        = ["seeds"]
-    }
-  }
-}
-
 output "sealing_machines" {
   value = concat(module.seedm0.dns_names, module.seedm1.dns_names, module.seedm2.dns_names, module.seedm3.dns_names, module.seedm4.dns_names)
 }

@@ -6,6 +6,7 @@
     lotus_seed_mnt: "/var/lib/lotus_seed"
     lotus_seed_env:
       RUST_LOG: info
+    lotus_start_seeding: yes
   tasks:
     - hostname:
         name: "{{ name }}"
@@ -13,3 +14,7 @@
         name: telegraf
     - include_role:
         name: lotus_seed
+    - systemd:
+        name: lotus-seed
+        state: started
+      when: lotus_start_seeding is defined
