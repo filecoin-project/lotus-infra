@@ -14,12 +14,12 @@ variable "instance_count" {}
 variable "ebs_volume_id" {}
 
 resource "aws_instance" "lotus_seed" {
-  count           = var.instance_count
-  ami             = "ami-01caa26d7860f2195"
-  instance_type   = var.instance_type
-  key_name        = "filecoin"
-  vpc_security_group_ids = var.vpc_security_group_ids
-  subnet_id     = var.subnet_id
+  count                       = var.instance_count
+  ami                         = "ami-01caa26d7860f2195"
+  instance_type               = var.instance_type
+  key_name                    = "filecoin"
+  vpc_security_group_ids      = var.vpc_security_group_ids
+  subnet_id                   = var.subnet_id
   associate_public_ip_address = "true"
 
   root_block_device {
@@ -41,7 +41,7 @@ resource "aws_volume_attachment" "this" {
 }
 
 resource "null_resource" "lotus_seed" {
-  count           = var.instance_count
+  count      = var.instance_count
   depends_on = [aws_instance.lotus_seed, aws_volume_attachment.this, aws_route53_record.dns]
 
   connection {
@@ -64,15 +64,15 @@ resource "null_resource" "lotus_seed" {
       }
 
       extra_vars = {
-        ansible_ssh_user       = "ubuntu"
-        name                   = "${var.lotus_seed_miner_addr}s${count.index}.seal"
-        lotus_seed_copy_binary = var.lotus_seed_copy_binary
-        lotus_seed_binary_src  = var.lotus_seed_binary_src
-        lotus_seed_sector_size = var.lotus_seed_sector_size
+        ansible_ssh_user         = "ubuntu"
+        name                     = "${var.lotus_seed_miner_addr}s${count.index}.seal"
+        lotus_seed_copy_binary   = var.lotus_seed_copy_binary
+        lotus_seed_binary_src    = var.lotus_seed_binary_src
+        lotus_seed_sector_size   = var.lotus_seed_sector_size
         lotus_seed_sector_offset = var.lotus_seed_sector_offset[count.index]
-        lotus_seed_num_sectors = var.lotus_seed_num_sectors
-        lotus_seed_reset_repo  = var.lotus_seed_reset_repo
-        lotus_seed_miner_addr  = var.lotus_seed_miner_addr
+        lotus_seed_num_sectors   = var.lotus_seed_num_sectors
+        lotus_seed_reset_repo    = var.lotus_seed_reset_repo
+        lotus_seed_miner_addr    = var.lotus_seed_miner_addr
       }
 
       # shared attributes
@@ -92,4 +92,8 @@ resource "aws_route53_record" "dns" {
   type    = "A"
   records = ["${aws_instance.lotus_seed[count.index].public_ip}"]
   ttl     = 30
+}
+
+output "dns_names" {
+  value = aws_route53_record.dns.*.fqdn
 }

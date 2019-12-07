@@ -7,7 +7,7 @@
     lotus_seed_env:
       RUST_LOG: info
   tasks:
-      hostname:
+    - hostname:
         name: "{{ name }}"
     - include_role:
         name: telegraf
