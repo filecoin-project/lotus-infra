@@ -3,22 +3,12 @@
   remote_user: ubuntu
   vars:
     lotus_seed_path: "/var/lib/lotus_seed/sectors"
+    lotus_seed_mnt: "/var/lib/lotus_seed"
     lotus_seed_env:
       RUST_LOG: info
-    mdadm_arrays:
-     - name: md0
-       devices:
-         - /dev/nvme0n1
-         - /dev/nvme1n1
-         - /dev/nvme2n1
-         - /dev/nvme3n1
-       filesystem: ext4
-       level: 0
-       mountpoint: "/var/lib/lotus_seed"
-       state: present
   tasks:
-    - include_role:
-        name: mrlesmithjr.mdadm
+      hostname:
+        name: "{{ name }}"
     - include_role:
         name: telegraf
     - include_role:

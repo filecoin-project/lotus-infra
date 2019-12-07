@@ -6,6 +6,25 @@
       - ntp
     update_cache: yes
 
+- name: Create a new primary partition
+  parted:
+    device: /dev/nvme1n1
+    number: 1
+    label: gpt
+    state: present
+
+- name: Create a ext4 filesystem on /dev/sdb1 and check disk blocks
+  filesystem:
+    fstype: ext4
+    dev: /dev/nvme1n1p1
+
+- name: wait
+  shell: sleep 10
+
+- name: mount
+  shell: mount /dev/nvme1n1p1 "{{ lotus_seed_mnt }}"
+  ignore_errors: yes
+
 - name: lotus start ntp
   systemd:
     name: "ntp"
