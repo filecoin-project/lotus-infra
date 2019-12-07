@@ -15,6 +15,10 @@
     - include_role:
         name: lotus_seed
     - systemd:
-        name: lotus-seed
+        name: lotus-seed-0
+        state: started
+      when: lotus_start_seeding is defined
+    - systemd:
+        name: lotus-seed-1
         state: started
       when: lotus_start_seeding is defined

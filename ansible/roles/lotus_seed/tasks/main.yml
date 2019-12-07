@@ -3,6 +3,7 @@
     pkg:
       - mesa-opencl-icd
       - ocl-icd-opencl-dev
+      - numactl
       - ntp
       - nvme-cli
     update_cache: yes
@@ -102,10 +103,18 @@
     mode: "0755"
   when: lotus_seed_copy_binary | bool
 
-- name: lotus seed systemd service file
+- name: lotus seed systemd service file 0
   template:
-    src: ../templates/lotus-seed.service.j2
-    dest: /etc/systemd/system/lotus-seed.service
+    src: ../templates/lotus-seed-0.service.j2
+    dest: /etc/systemd/system/lotus-seed-0.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: lotus seed systemd service file 1
+  template:
+    src: ../templates/lotus-seed-1.service.j2
+    dest: /etc/systemd/system/lotus-seed-1.service
     owner: root
     group: root
     mode: "0644"

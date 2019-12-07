@@ -4,7 +4,8 @@ variable "vpc_security_group_ids" {}
 variable "subnet_id" {}
 variable "lotus_seed_sector_size" {}
 variable "lotus_seed_num_sectors" {}
-variable "lotus_seed_sector_offset" {}
+variable "lotus_seed_sector_offset_0" {}
+variable "lotus_seed_sector_offset_1" {}
 variable "lotus_seed_reset_repo" {}
 variable "lotus_seed_copy_binary" {}
 variable "lotus_seed_binary_src" {}
@@ -64,15 +65,16 @@ resource "null_resource" "lotus_seed" {
       }
 
       extra_vars = {
-        ansible_ssh_user         = "ubuntu"
-        name                     = "${var.lotus_seed_miner_addr}s${count.index}.seal"
-        lotus_seed_copy_binary   = var.lotus_seed_copy_binary
-        lotus_seed_binary_src    = var.lotus_seed_binary_src
-        lotus_seed_sector_size   = var.lotus_seed_sector_size
-        lotus_seed_sector_offset = var.lotus_seed_sector_offset[count.index]
-        lotus_seed_num_sectors   = var.lotus_seed_num_sectors
-        lotus_seed_reset_repo    = var.lotus_seed_reset_repo
-        lotus_seed_miner_addr    = var.lotus_seed_miner_addr
+        ansible_ssh_user           = "ubuntu"
+        name                       = "${var.lotus_seed_miner_addr}s${count.index}.seal"
+        lotus_seed_copy_binary     = var.lotus_seed_copy_binary
+        lotus_seed_binary_src      = var.lotus_seed_binary_src
+        lotus_seed_sector_size     = var.lotus_seed_sector_size
+        lotus_seed_sector_offset_0 = var.lotus_seed_sector_offset_0[count.index]
+        lotus_seed_sector_offset_1 = var.lotus_seed_sector_offset_1[count.index]
+        lotus_seed_num_sectors     = var.lotus_seed_num_sectors
+        lotus_seed_reset_repo      = var.lotus_seed_reset_repo
+        lotus_seed_miner_addr      = var.lotus_seed_miner_addr
       }
 
       # shared attributes

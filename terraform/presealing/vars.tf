@@ -7,7 +7,7 @@ variable "region" {
 }
 
 variable "lotus_seed_copy_binary" {
-  default = true
+  default = false
 }
 
 variable "lotus_seed_reset_repo" {
@@ -18,13 +18,17 @@ variable "lotus_seed_binary_src" {
   default = "/tmp/lotus-seed"
 }
 
-variable "lotus_seed_sector_offset" {
-  default = ["0", "192", "384", "576", "768"]
+variable "lotus_seed_sector_offset_0" {
+  default = ["0", "2048", "4096", "6144", "8192"]
+}
+
+variable "lotus_seed_sector_offset_1" {
+  default = ["1024", "3072", "5120", "7168", "9216"]
 }
 
 variable "lotus_seed_num_sectors" {
   description = "size of sectors to preseal"
-  default     = "192"
+  default     = "128"
 }
 
 variable "lotus_seed_sector_size" {
