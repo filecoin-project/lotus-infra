@@ -1,0 +1,68 @@
+---
+- hosts: bootstrap_miner
+  become: yes
+  become_method: sudo
+  vars:
+    lotus_user: lotus
+    lotus_mount_path: /mnt/lotus-repos
+    lotus_path: "{{ lotus_mount_path }}/lotus-daemon"
+    lotus_miner_path: "{{ lotus_mount_path }}/lotus-miner"
+    lotus_fullnode_role_enabled: False
+    lotus_miner_role_enabled: False
+    lotus_miner_sector_size: 34359738368
+    lotus_merge_miner_addr: t0444
+    lotus_merge_sectordirs:
+      - "{{ sector_mount_path }}/0/sectors/0"
+      - "{{ sector_mount_path }}/0/sectors/1"
+      - "{{ sector_mount_path }}/1/sectors/0"
+      - "{{ sector_mount_path }}/1/sectors/1"
+      - "{{ sector_mount_path }}/2/sectors/0"
+      - "{{ sector_mount_path }}/2/sectors/1"
+      - "{{ sector_mount_path }}/3/sectors/0"
+      - "{{ sector_mount_path }}/3/sectors/1"
+      - "{{ sector_mount_path }}/4/sectors/0"
+      - "{{ sector_mount_path }}/4/sectors/1"
+    hostname: "t0444"
+    sector_merge_mount:
+      dev: /dev/xvde
+      part: 1
+      dest: /mnt/merged
+    lotus_repos_mount:
+      dev: /dev/xvdb
+      part: 1
+      dest: "{{ lotus_mount_path }}"
+    sector_mount_path: /mnt/volumes
+    sector_device_mounts:
+      - mount:
+          src: /dev/xvdf1
+          dest: "{{ sector_mount_path }}/0"
+      - mount:
+          src: /dev/xvdg1
+          dest: "{{ sector_mount_path }}/1"
+      - mount:
+          src: /dev/xvdh1
+          dest: "{{ sector_mount_path }}/2"
+      - mount:
+          src: /dev/xvdi1
+          dest: "{{ sector_mount_path }}/3"
+      - mount:
+          src: /dev/xvdj1
+          dest: "{{ sector_mount_path }}/4"
+  tasks:
+    - hostname:
+        name: "{{ hostname }}"
+    - name: Ensure lotus user exists
+      user:
+        name: "{{ lotus_user }}"
+        state: present
+        system: yes
+    - include_role:
+        name: telegraf
+    - include_role:
+        name: lotus_merge_sectors
+    - include_role:
+        name: lotus_fullnode
+      when: lotus_fullnode_role_enabled == True
+    - include_role:
+        name: lotus_miner
+      when: lotus_miner_role_enabled == True

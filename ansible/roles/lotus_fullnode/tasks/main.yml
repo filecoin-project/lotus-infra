@@ -1,9 +1,4 @@
-- name: check for required vars
-  fail: msg="Variable '{{ item }}' is not defined"
-  when: vars[item] == undefined
-  with_items: "{{ required_vars }}"
-
-- name: Update repos and install deps
+- name: Install packages
   apt:
     pkg:
       - mesa-opencl-icd
@@ -11,31 +6,25 @@
       - ntp
     update_cache: yes
 
-- name: lotus start ntp
+- name: Ensure ntp service enabled & started
   systemd:
     name: "ntp"
     enabled: yes
     state: started
 
-- name: lotus daemon user
-  user:
-    name: "{{ lotus_user }}"
-    state: present
-    system: yes
-
-- name: remove current lotus repository
+- name: Reset lotus
   block:
-    - name: stop
+    - name: Ensure lotus stopped
       systemd:
         name: lotus-daemon
         state: stopped
-    - name: remove repo
+    - name: Remove lotus repository
       file:
         path: "{{ lotus_path }}"
         state: absent
   when: lotus_reset == "yes"
 
-- name: lotus path directory
+- name: Ensure lotus repository exists
   file:
     path: "{{ lotus_path }}"
     state: directory
@@ -43,12 +32,12 @@
     group: "{{ lotus_user }}"
     mode: "0700"
 
-- name: lotus ensure LOTUS_PATH env
+- name: Ensure LOTUS_PATH global env is set
   lineinfile:
     path: /etc/environment
     line: LOTUS_PATH="{{ lotus_path }}"
 
-- name: proof params directory
+- name: Ensure proof parameters directory exists
   file:
     path: "{{ lotus_proof_params_path }}"
     state: directory
@@ -56,8 +45,7 @@
     group: "{{ lotus_user }}"
     mode: "0700"
 
-
-- name: lotus golog file
+- name: Ensure log file exists
   file:
     state: touch
     path: "{{ lotus_golog_file }}"
@@ -65,7 +53,7 @@
     group: "{{ lotus_user }}"
     mode: "0644"
 
-- name: lotus systemd service file
+- name: Ensure service file
   template:
     src: ../templates/lotus-daemon.service.j2
     dest: /etc/systemd/system/lotus-daemon.service
@@ -75,7 +63,7 @@
   notify:
     - reload-lotus
 
-- name: lotus binary
+- name: Copy binary
   copy:
     src: "{{ lotus_binary_src }}"
     dest: /usr/local/bin/lotus
@@ -86,7 +74,7 @@
   notify:
     - restart-lotus
 
-- name: lotus config
+- name: Ensure lotus configuration
   template:
     src: ../templates/config.toml.j2
     dest: "{{ lotus_path }}/config.toml"
@@ -96,16 +84,16 @@
   notify:
     - restart-lotus
 
-- name: lotus import peerkey
+- name: Ensure lotus peerkey
   block:
-    - name: lotus create keystore path
+    - name: Ensure keystore path created
       file:
         path: "{{ lotus_path }}/keystore/"
         state: directory
         owner: "{{ lotus_user }}"
         group: "{{ lotus_user }}"
         mode: "0700"
-    - name: lotus peerkey
+    - name: Ensure peerkey exists
       copy:
         content: "{{ lotus_libp2p_keyinfo }}"
         owner: "{{ lotus_user }}"
@@ -114,38 +102,7 @@
         dest: "{{ lotus_path }}/keystore/{{ lotus_libp2p_keyname }}"
   when: lotus_libp2p_keyinfo is defined
 
-- name: lotus service started
-  systemd:
-    name: "lotus-daemon"
-    state: started
-
-- name: get default wallet
-  shell: /usr/local/bin/lotus wallet default
-  environment:
-    LOTUS_PATH: "{{ lotus_path }}"
-  ignore_errors: yes
-  register: r_default_wallet
-
-- debug:
-    msg: lotus wallet default {{ r_default_wallet.stdout }}
-
-- name: import wallet
-  block:
-    - name: wait for daemon online
-      shell: sleep 10
-    - name: import wallet
-      shell: /usr/local/bin/lotus wallet import
-      args:
-        stdin: "{{ lotus_wallet_keyinfo }}"
-      environment:
-        LOTUS_PATH: "{{ lotus_path }}"
-    - name: set default
-      shell: /usr/local/bin/lotus wallet set-default "{{ lotus_wallet_address }}"
-      environment:
-        LOTUS_PATH: "{{ lotus_path }}"
-  when: lotus_wallet_keyinfo is defined and r_default_wallet.stdout != lotus_wallet_address
-
-- name: lotus service started
+- name: Ensure lotus service enabled & started
   systemd:
     name: "lotus-daemon"
     enabled: yes

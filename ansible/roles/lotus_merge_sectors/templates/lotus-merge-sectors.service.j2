@@ -1,0 +1,16 @@
+[Unit]
+Description=Lotus Merge Sectors
+After=network.target
+
+[Service]
+User={{ lotus_user }}
+Group={{ lotus_user }}
+ExecStart=/usr/local/bin/lotus-seed aggregate-sector-dirs --miner="{{ lotus_merge_miner_addr }}" --dest="{{ sector_merge_mount.dest }}" --sector-size="{{ lotus_miner_sector_size }}" {{ lotus_merge_sectordirs_list }}
+Environment=GOLOG_FILE="{{ lotus_merge_sectors_golog_file }}"
+Environment=GOLOG_LOG_FMT="{{ lotus_merge_sectors_golog_log_fmt }}"
+{% for item in lotus_merge_sectors_env | dict2items -%}
+Environment={{ item.key }}="{{ item.value }}"
+{% endfor %}
+
+[Install]
+WantedBy=multi-user.target

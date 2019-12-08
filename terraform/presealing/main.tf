@@ -46,6 +46,7 @@ data "aws_route53_zone" "default" {
   zone_id = "${var.zone_id}"
 }
 
+/*
 module "seedm0" {
   source = "../modules/seeder"
 
@@ -65,6 +66,7 @@ module "seedm0" {
   lotus_seed_binary_src      = var.lotus_seed_binary_src
   ebs_volume_id              = aws_ebs_volume.seedm0
 }
+*/
 
 resource "aws_ebs_volume" "seedm0" {
   count             = length(var.lotus_seed_sector_offset_0)
@@ -81,6 +83,7 @@ resource "aws_ebs_volume" "seedm0" {
   }
 }
 
+/*
 module "seedm1" {
   source = "../modules/seeder"
 
@@ -100,6 +103,7 @@ module "seedm1" {
   lotus_seed_binary_src      = var.lotus_seed_binary_src
   ebs_volume_id              = aws_ebs_volume.seedm1
 }
+*/
 
 resource "aws_ebs_volume" "seedm1" {
   count             = length(var.lotus_seed_sector_offset_0)
@@ -117,6 +121,7 @@ resource "aws_ebs_volume" "seedm1" {
 }
 
 
+/*
 module "seedm2" {
   source = "../modules/seeder"
 
@@ -136,6 +141,7 @@ module "seedm2" {
   lotus_seed_binary_src      = var.lotus_seed_binary_src
   ebs_volume_id              = aws_ebs_volume.seedm2
 }
+*/
 
 resource "aws_ebs_volume" "seedm2" {
   count             = length(var.lotus_seed_sector_offset_0)
@@ -152,6 +158,7 @@ resource "aws_ebs_volume" "seedm2" {
   }
 }
 
+/*
 module "seedm3" {
   source = "../modules/seeder"
 
@@ -171,6 +178,18 @@ module "seedm3" {
   lotus_seed_binary_src      = var.lotus_seed_binary_src
   ebs_volume_id              = aws_ebs_volume.seedm3
 }
+*/
+
+module "t0444" {
+  source = "../modules/presealing_miner"
+
+  instance_type              = "p3.2xlarge"
+  lotus_seed_miner_addr      = "t0444"
+  subnet_id                  = module.vpc.public_subnets[3]
+  vpc_security_group_ids     = [aws_security_group.seed.id]
+  zone_id                    = data.aws_route53_zone.default.zone_id
+  ebs_volume_id              = aws_ebs_volume.seedm3
+}
 
 resource "aws_ebs_volume" "seedm3" {
   count             = length(var.lotus_seed_sector_offset_0)
@@ -187,6 +206,8 @@ resource "aws_ebs_volume" "seedm3" {
   }
 }
 
+/*
 output "sealing_machines" {
   value = concat(module.seedm0.dns_names, module.seedm1.dns_names, module.seedm2.dns_names, module.seedm3.dns_names)
 }
+*/
