@@ -67,6 +67,18 @@ module "seedm0" {
   ebs_volume_id              = aws_ebs_volume.seedm0
 }
 */
+/*
+module "t0111" {
+  source = "../modules/presealing_miner"
+
+  instance_type              = "p3.2xlarge"
+  lotus_seed_miner_addr      = "t0111"
+  subnet_id                  = module.vpc.public_subnets[0]
+  vpc_security_group_ids     = [aws_security_group.seed.id]
+  zone_id                    = data.aws_route53_zone.default.zone_id
+  ebs_volume_id              = aws_ebs_volume.seedm3
+}
+*/
 
 resource "aws_ebs_volume" "seedm0" {
   count             = length(var.lotus_seed_sector_offset_0)
@@ -104,6 +116,16 @@ module "seedm1" {
   ebs_volume_id              = aws_ebs_volume.seedm1
 }
 */
+module "t0222" {
+  source = "../modules/presealing_miner"
+
+  instance_type              = "p3.2xlarge"
+  lotus_seed_miner_addr      = "t0222"
+  subnet_id                  = module.vpc.public_subnets[1]
+  vpc_security_group_ids     = [aws_security_group.seed.id]
+  zone_id                    = data.aws_route53_zone.default.zone_id
+  ebs_volume_id              = aws_ebs_volume.seedm1
+}
 
 resource "aws_ebs_volume" "seedm1" {
   count             = length(var.lotus_seed_sector_offset_0)
@@ -142,6 +164,18 @@ module "seedm2" {
   ebs_volume_id              = aws_ebs_volume.seedm2
 }
 */
+
+module "t0333" {
+  source = "../modules/presealing_miner"
+
+  instance_type              = "p3.2xlarge"
+  lotus_seed_miner_addr      = "t0333"
+  subnet_id                  = module.vpc.public_subnets[2]
+  vpc_security_group_ids     = [aws_security_group.seed.id]
+  zone_id                    = data.aws_route53_zone.default.zone_id
+  ebs_volume_id              = aws_ebs_volume.seedm2
+}
+
 
 resource "aws_ebs_volume" "seedm2" {
   count             = length(var.lotus_seed_sector_offset_0)
@@ -211,3 +245,7 @@ output "sealing_machines" {
   value = concat(module.seedm0.dns_names, module.seedm1.dns_names, module.seedm2.dns_names, module.seedm3.dns_names)
 }
 */
+
+output "sealing_machines" {
+  value = [module.t0222.dns_name, module.t0333.dns_name, module.t0444.dns_name]
+}
