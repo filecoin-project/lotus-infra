@@ -44,4 +44,3 @@ variable "certbot_create_certificate" {
 variable "lotus_reset" {
   default = false
 }
-

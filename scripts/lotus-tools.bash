@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -xe
+
 # This is the name of the libp2p host key stored on disk in the lotus keystore
 # See the lotus keystore implemenation for details
 # base32 encoded string "libp2p-host" with zero padding
@@ -83,7 +85,7 @@ cmd_new_genesis() {
 
   SEEDPATH=$(mktemp -d)
 
-  ./lotus-seed --sectorbuilder-dir="${SEEDPATH}" pre-seal
+  ./lotus-seed --sectorbuilder-dir="${SEEDPATH}" pre-seal --sector-size 16777216 --miner-addr t0101
 
   GENPATH=$(mktemp -d)
 
