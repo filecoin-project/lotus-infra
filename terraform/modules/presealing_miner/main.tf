@@ -64,9 +64,9 @@ resource "aws_ebs_volume" "repos" {
 }
 
 resource "aws_volume_attachment" "repos" {
-  device_name  = "/dev/sdb"
+  device_name  = "/dev/sdd"
   volume_id    = aws_ebs_volume.repos.id
-  instance_id  = aws_instance.repos.id
+  instance_id  = aws_instance.miner.id
   force_detach = false
 }
 

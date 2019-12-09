@@ -28,7 +28,7 @@
       part: 1
       dest: /mnt/merged
     lotus_repos_mount:
-      dev: /dev/xvdb
+      dev: /dev/xvdd
       part: 1
       dest: "{{ lotus_mount_path }}"
     sector_mount_path: /mnt/volumes
