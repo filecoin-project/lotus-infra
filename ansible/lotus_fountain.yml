@@ -1,13 +1,14 @@
 ---
-- hosts: bootstrap
+- hosts: fountain
   vars:
-    lotus_user: lotus
+    lotus_user: "lotus"
     lotus_binary_src: /tmp/lotus
+    lotus_fountain_binary_src: /tmp/lotus-fountain
     lotus_golog_file: /var/log/lotus.log
-    lotus_miner_golog_file: /var/log/lotus-miner.log
-    lotus_fullnode_role_enabled: true
+    lotus_fountain_wallet: "replaceme"
     ufw_profiles:
       - "{{ lotus_fullnode_ufw_profile }}"
+      - "{{ lotus_fountain_ufw_profile }}"
     logz_inputs:
       - type: log
         paths:
@@ -32,6 +33,9 @@
         name: telegraf
     - include_role:
         name: lotus_fullnode
-      when: lotus_fullnode_role_enabled == true
+    - include_role:
+        name: lotus_fountain
     - include_role:
         name: ufw
+  roles:
+    - role: lotus_fountain

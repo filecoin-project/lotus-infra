@@ -1,3 +1,5 @@
 ---
 lotus_merge_miner_addr: t0222
 lotus_miner_sector_size: 34359738368
+lotus_miner_genesis_miner: "true"
+lotus_miner_nosync: "true"

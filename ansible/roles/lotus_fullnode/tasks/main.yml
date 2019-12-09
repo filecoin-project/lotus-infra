@@ -71,8 +71,6 @@
     group: root
     mode: "0755"
   when: lotus_copy_binary | bool
-  notify:
-    - restart-lotus
 
 - name: Ensure lotus configuration
   template:
@@ -81,8 +79,6 @@
     owner: "{{ lotus_user }}"
     group: "{{ lotus_user }}"
     mode: "0644"
-  notify:
-    - restart-lotus
 
 - name: Ensure lotus peerkey
   block:

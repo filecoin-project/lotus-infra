@@ -1,7 +1,8 @@
 lotus_miner_binary_src:
 lotus_miner_nvidia_drivers_url:
 lotus_miner_presealed_sector_src:
-lotus_miner_genesis_miner: false
+lotus_miner_genesis_miner: "false"
+lotus_miner_nosync: "true"
 lotus_miner_copy_binary: false
 lotus_miner_reset: no
 lotus_miner_path: /var/lib/lotus-miner

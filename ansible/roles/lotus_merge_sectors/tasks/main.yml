@@ -54,6 +54,13 @@
     state: mounted
     fstype: ext4
 
+- name: Ensure lotus ownership of merged volume
+  file:
+    path: "{{ sector_merge_mount.dest }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+
 ##########################################
 ## Mount repos volume
 ##########################################
@@ -84,6 +91,13 @@
     path: "{{ lotus_repos_mount.dest }}"
     state: mounted
     fstype: ext4
+
+- name: Ensure lotus ownership of repos volume
+  file:
+    path: "{{ lotus_repos_mount.dest }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
 
 ########################################
 

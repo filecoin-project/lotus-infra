@@ -20,10 +20,6 @@ variable "zone_id" {
   description = "fil-test.net"
 }
 
-variable "lotus_zone_id" {
-  description = "lotu.sh"
-}
-
 variable "testnet_domain" {
   description = "the testnet domain managed in dnsimple"
   default     = "testnet.filecoin.io"

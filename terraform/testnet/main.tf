@@ -82,38 +82,36 @@ resource "null_resource" "lotus_bootstrap_hkg" {
   }
 }
 
-resource "packet_device" "lotus_genesis" {
-  hostname            = "lotus-genesis"
-  plan                = "g2.large"
-  facilities          = ["dfw2"]
+resource "packet_device" "lotus_fountain" {
+  hostname            = "lotus-fountain"
+  plan                = "x1.small.x86"
+  facilities          = ["yyz1"]
   operating_system    = "ubuntu_18_04"
   billing_cycle       = "hourly"
   project_id          = var.project_id
   project_ssh_key_ids = values(local.ssh_keys)
 }
 
-resource "null_resource" "lotus_genesis" {
-  depends_on = [packet_device.lotus_genesis, dnsimple_record.faucet]
+resource "null_resource" "lotus_fountain" {
+  depends_on = [packet_device.lotus_fountain, dnsimple_record.faucet, aws_route53_record.fountain]
 
   triggers = {
-    script_sha1 = "${sha1(file("${path.module}/../../ansible/lotus_genesis.yml"))}"
+    script_sha1 = "${sha1(file("${path.module}/../../ansible/lotus_fountain.yml"))}"
   }
 
   provisioner "ansible" {
     plays {
       hosts = [
-        "${aws_route53_record.genesis.fqdn}",
+        "${aws_route53_record.fountain.fqdn}",
       ]
 
       playbook {
-        file_path = "../../ansible/lotus_genesis.yml"
+        file_path = "../../ansible/lotus_fountain.yml"
       }
 
       extra_vars = {
         lotus_reset                = var.lotus_reset
-        lotus_miner_reset          = var.lotus_reset
         lotus_copy_binary          = var.lotus_copy_binary
-        lotus_miner_copy_binary    = var.lotus_miner_copy_binary
         lotus_fountain_copy_binary = var.lotus_fountain_copy_binary
         lotus_fountain_server_name = "${dnsimple_record.faucet.hostname}"
         certbot_create_certificate = var.certbot_create_certificate
@@ -122,7 +120,7 @@ resource "null_resource" "lotus_genesis" {
       # shared attributes
       enabled  = true
       vault_id = [".vault_password"]
-      groups   = ["genesis"]
+      groups   = ["fountain"]
     }
   }
 }
@@ -157,18 +155,18 @@ resource "aws_route53_record" "yyz" {
   ttl     = 30
 }
 
-resource "aws_route53_record" "genesis" {
-  name    = "lotus-genesis"
+resource "aws_route53_record" "fountain" {
+  name    = "lotus-fountain.yyz"
   zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"
-  records = ["${packet_device.lotus_genesis.access_public_ipv4}"]
+  records = ["${packet_device.lotus_fountain.access_public_ipv4}"]
   ttl     = 30
 }
 
 resource "dnsimple_record" "faucet" {
   domain = var.testnet_domain
   name   = "faucet"
-  value  = packet_device.lotus_genesis.access_public_ipv4
+  value  = packet_device.lotus_fountain.access_public_ipv4
   type   = "A"
   ttl    = 300
 }

@@ -29,7 +29,7 @@ variable "device_names" {
 
 resource "aws_ebs_volume" "merge" {
   availability_zone = var.ebs_volume_id[0].availability_zone
-  size              = 5000
+  size              = 8000
   type              = "gp2"
 
   tags = {
@@ -51,7 +51,7 @@ resource "aws_volume_attachment" "merge" {
 
 resource "aws_ebs_volume" "repos" {
   availability_zone = var.ebs_volume_id[0].availability_zone
-  size              = 5000
+  size              = 8000
   type              = "gp2"
 
   tags = {

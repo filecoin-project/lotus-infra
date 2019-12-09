@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User={{ lotus_user }}
 Group={{ lotus_user }}
-ExecStart=/usr/local/bin/lotus daemon
+ExecStart=/usr/local/bin/lotus daemon --bootstrap="{{ lotus_daemon_bootstrap }}"
 Environment=LOTUS_PATH="{{ lotus_path }}"
 Environment=GOLOG_FILE="{{ lotus_golog_file }}"
 Environment=GOLOG_LOG_FMT="{{ lotus_golog_log_fmt }}"
