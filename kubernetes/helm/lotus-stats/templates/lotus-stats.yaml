@@ -60,6 +60,7 @@ spec:
           command: [
             "stats",
             "-repo=/var/filecoin",
+            "-database={{ .Values.InfluxDatabase }}"
           ]
           env:
             - name: INFLUX_ADDR
