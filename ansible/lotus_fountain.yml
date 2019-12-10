@@ -29,9 +29,13 @@
         state: present
         uid: 996
         system: yes
-  roles:
-    - role: telegraf
-    - role: filebeat_logz_io
-    - role: lotus_fullnode
-    - role: lotus_fountain
-    - role: ufw
+    - include_role:
+        name: telegraf
+    - include_role:
+        name: filebeat_logz_io
+    - include_role:
+        name: lotus_fullnode
+    - include_role:
+        name: lotus_fountain
+    - include_role:
+        name: ufw

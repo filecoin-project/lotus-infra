@@ -42,8 +42,8 @@
 
 - name: copy nginx http config
   template:
-    src: ../templates/nginx.conf.j2
-    dest: /etc/nginx/conf.d/lotus-fountain.conf
+    src: ../templates/nginx-http.conf.j2
+    dest: /etc/nginx/conf.d/lotus-fountain-http.conf
     mode: 0644
 
 - name: ensure nginx started
