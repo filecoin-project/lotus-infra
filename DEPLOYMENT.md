@@ -61,10 +61,12 @@ $ ./scripts/lotus-tools.bash build-binaries
    ```
 1. Generate new bootstrapper peerkeys
    ```
-   $ ./scripts/lotus-tools.bash new-peerkey lotus-bootstrap-0.yyz.fil-test.net
-   $ ./scripts/lotus-tools.bash new-peerkey lotus-bootstrap-1.yyz.fil-test.net
-   $ ./scripts/lotus-tools.bash new-peerkey lotus-bootstrap-0.hkg.fil-test.net
-   $ ./scripts/lotus-tools.bash new-peerkey lotus-bootstrap-1.hkg.fil-test.net
+   $ ./scripts/lotus-tools.bash new-peerkey lotus-bootstrap-0.dfw.fil-test.net
+   $ ./scripts/lotus-tools.bash new-peerkey lotus-bootstrap-1.dfw.fil-test.net
+   $ ./scripts/lotus-tools.bash new-peerkey lotus-bootstrap-0.fra.fil-test.net
+   $ ./scripts/lotus-tools.bash new-peerkey lotus-bootstrap-1.fra.fil-test.net
+   $ ./scripts/lotus-tools.bash new-peerkey lotus-bootstrap-0.sin.fil-test.net
+   $ ./scripts/lotus-tools.bash new-peerkey lotus-bootstrap-1.sin.fil-test.net
    ```
 1. Generate genesis and presealed sectors and build release binaries for deployment
    ```
@@ -78,7 +80,10 @@ $ ./scripts/lotus-tools.bash build-binaries
    $ terraform12 apply testnet.tfplan
    $ popd
    ```
-1. Commit lotus arifacts
+
+   If this is a new deploy, drop the `lotus_reset` var.
+
+1. Commit lotus artifacts
    ```
    $ pushd $LOTUS_SRC
    $ git add build/bootstrap/bootstrappers.pi
