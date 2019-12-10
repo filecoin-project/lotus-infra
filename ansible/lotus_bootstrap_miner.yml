@@ -13,17 +13,20 @@
     lotus_miner_nvidia_drivers_url: https://us.download.nvidia.com/tesla/440.33.01/NVIDIA-Linux-x86_64-440.33.01.run
     lotus_mount_path: /mnt/lotus-repos
     lotus_miner_env:
-      BELLMAN_CUSTOM_GPU: "Tesla V100-SXM2-16GB"
+      BELLMAN_CUSTOM_GPU: "Tesla V100-SXM2-16GB:5120"
 #   lotus_miner_presealed_sector_src: /tmp/lotus-genesis-sectors.tar.gz
-    lotus_path: "{{ lotus_mount_path }}/lotus-daemon"
+    lotus_path: "/var/lib/lotus-daemon"
     lotus_daemon_bootstrap: "false"
 #   lotus_miner_presealed_sectors_path: /mnt/merged
     lotus_miner_presealed_sectors_path: "{{ sector_mount_path }}/0/sectors/0"
-    lotus_miner_path: "{{ lotus_mount_path }}/lotus-miner"
+    lotus_miner_path: "/var/lib/lotus-miner"
+    lotus_miner_symlink_import: "true"
     lotus_fullnode_role_enabled: true
     lotus_miner_role_enabled: true
     lotus_miner_addr: "{{ lotus_merge_miner_addr }}"
     lotus_merge_sectors_role_enabled: false
+    ufw_profiles:
+      - "{{ lotus_fullnode_ufw_profile }}"
     lotus_merge_sectordirs:
       - "{{ sector_mount_path }}/0/sectors/0"
       - "{{ sector_mount_path }}/0/sectors/1"
@@ -40,10 +43,6 @@
       dev: /dev/xvde
       part: 1
       dest: "{{ lotus_miner_presealed_sectors_path }}"
-    lotus_repos_mount:
-      dev: /dev/xvdd
-      part: 1
-      dest: "{{ lotus_mount_path }}"
     sector_mount_path: /mnt/volumes
     sector_device_mounts:
       - mount:
@@ -106,3 +105,5 @@
     - include_role:
         name: lotus_miner
       when: lotus_miner_role_enabled == true
+    - include_role:
+        name: ufw

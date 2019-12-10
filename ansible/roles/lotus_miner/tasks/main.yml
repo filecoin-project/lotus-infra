@@ -10,6 +10,7 @@
       - jq
       - "linux-headers-{{ release_name.stdout }}"
     update_cache: yes
+  when: release_name is defined
 
 - name: Register modinfo_nvidia
   shell: modinfo nvidia
@@ -27,7 +28,7 @@
     - name: Install drivers
       shell: /tmp/nvidia-drivers --ui=none --no-questions
       notify: reboot-system
-  when: modinfo_nvidia.rc == 1
+  when: modinfo_nvidia is defined and modinfo_nvidia.rc == 1
 
 - name: Reset miner
   block:
@@ -125,27 +126,34 @@
 
 - debug:
     msg: "miner_raw_wallet {{ miner_raw_wallet.stdout }}"
+  when: miner_raw_wallet is defined
 
 - name: Register base16_encoded_wallet
   shell: lotus-shed base16 '{{ miner_raw_wallet.stdout }}'
   register: miner_base16_encoded_wallet
+  when: miner_raw_wallet is defined
 
 - debug:
     msg: "miner_base16_encoded_wallet {{ miner_base16_encoded_wallet.stdout }}"
+  when: miner_base16_encoded_wallet is defined
 
 - name: Register miner_wallet_addr
   shell: lotus-shed keyinfo --format {%raw%}"{{.Address}}"{%endraw%} "{{ miner_base16_encoded_wallet.stdout }}"
   register: miner_wallet_addr
+  when: miner_base16_encoded_wallet is defined
 
 - debug:
     msg: "miner_wallet_addr {{ miner_wallet_addr.stdout }}"
+  when: miner_wallet_addr is defined
 
 - name: Register base32_encoded_wallet_addr
   shell: lotus-shed base32 "wallet-{{ miner_wallet_addr.stdout }}" 
   register: miner_base32_encoded_wallet_addr
+  when: miner_wallet_addr is defined
 
 - debug:
     msg: "miner_base32_encoded_wallet_addr {{ miner_base32_encoded_wallet_addr.stdout }}"
+  when: miner_base32_encoded_wallet_addr is defined
 
 - name: Ensure miner wallet exists
   copy:
@@ -154,6 +162,7 @@
     group: "{{ lotus_user }}"
     mode: "0600"
     dest: "{{ lotus_path }}/keystore/{{ miner_base32_encoded_wallet_addr.stdout }}"
+  when: miner_raw_wallet is defined and miner_base32_encoded_wallet_addr is defined
 
 - name: Ensure service enabled
   systemd:

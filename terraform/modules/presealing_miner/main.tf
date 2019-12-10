@@ -48,28 +48,6 @@ resource "aws_volume_attachment" "merge" {
   force_detach = false
 }
 
-
-resource "aws_ebs_volume" "repos" {
-  availability_zone = var.ebs_volume_id[0].availability_zone
-  size              = 8000
-  type              = "gp2"
-
-  tags = {
-    Name = "${var.lotus_seed_miner_addr} repos"
-  }
-
-  lifecycle {
-    prevent_destroy = false
-  }
-}
-
-resource "aws_volume_attachment" "repos" {
-  device_name  = "/dev/sdd"
-  volume_id    = aws_ebs_volume.repos.id
-  instance_id  = aws_instance.miner.id
-  force_detach = false
-}
-
 resource "aws_volume_attachment" "this" {
   count        = length(var.ebs_volume_id)
   device_name  = var.device_names[count.index]

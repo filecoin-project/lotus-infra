@@ -61,44 +61,6 @@
     group: "{{ lotus_user }}"
     mode: "0700"
 
-##########################################
-## Mount repos volume
-##########################################
-
-- name: Ensure repos mount point exists
-  file:
-    name: "{{ lotus_repos_mount.dest }}"
-    owner: "{{ lotus_user }}"
-    group: "{{ lotus_user }}"
-    mode: "0700"
-    state: directory
-
-- name: Create repos primary partition
-  parted:
-    device: "{{ lotus_repos_mount.dev }}"
-    number: "{{ lotus_repos_mount.part }}"
-    label: gpt
-    state: present
-
-- name: Create ext4 filesystem for repos parition
-  filesystem:
-    fstype: ext4
-    dev: "{{ lotus_repos_mount.dev }}{{ lotus_repos_mount.part }}"
-
-- name: Ensure repos mounted
-  mount:
-    src: "{{ lotus_repos_mount.dev }}{{ lotus_repos_mount.part }}"
-    path: "{{ lotus_repos_mount.dest }}"
-    state: mounted
-    fstype: ext4
-
-- name: Ensure lotus ownership of repos volume
-  file:
-    path: "{{ lotus_repos_mount.dest }}"
-    owner: "{{ lotus_user }}"
-    group: "{{ lotus_user }}"
-    mode: "0700"
-
 ########################################
 
 - name: Copy binary
