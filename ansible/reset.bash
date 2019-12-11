@@ -81,5 +81,14 @@ ansible --vault-password-file .vault_password all \
   --become-method=sudo                            \
   --become                                        \
   -m shell                                        \
-  -a 'tail -n25 /var/log/lotus-miner.log'
+  -a 'tail -n1 /var/log/lotus-miner.log'
+
+# ^ Rerun the above till you see the message to run lotus-storage-miner run for all miners
+# Then execute `systemctl start lotus-miner`
+# Random Note: terraform/testnet
+# Random Note: taint.sh
+# Random Note: terraform12 plan -out plan.tfplan -var 'lotus_copy_binary=true' -var 'lotus_fountain_copy_binary=true' -var 'lotus_reset=yes'
+# Random Note: Login to the fountain and create a wallet `lotus wallet new`, copy the key to `/etc/systemd/system/lotus-fountain.service
+# Random Note: and replace `replaceme`, systemctl daemon-reload, systemctl restart lotus-fountain
+
 
