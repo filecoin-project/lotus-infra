@@ -5,11 +5,11 @@
 domain: stats.testnet.filecoin.io
 domainInternal: stats-internal.testnet.filecoin.io
 metricsRange: 30m
-metricsRefresh: 30s
+metricsRefresh: 45s
 grafana:
   image:
     repository: 657871693752.dkr.ecr.us-east-1.amazonaws.com/lotus-grafana
-    tag: v1.6
+    tag: v1.7
   sidecar:
     datasources:
       enabled: true
