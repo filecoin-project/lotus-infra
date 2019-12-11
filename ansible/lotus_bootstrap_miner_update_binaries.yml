@@ -1,0 +1,33 @@
+---
+- hosts: bootstrap_miner
+  become: yes
+  become_method: sudo
+  vars:
+    lotus_user: lotus
+    lotus_binary_src: /tmp/lotus
+    lotus_miner_binary_src: /tmp/lotus-storage-miner
+    lotus_copy_binary: false
+    lotus_miner_copy_binary: false
+    lotus_daemon_restart: false
+  tasks:
+    - name: Copy lotus binary
+      copy:
+        src: "{{ lotus_binary_src }}"
+        dest: /usr/local/bin/lotus
+        owner: root
+        group: root
+        mode: "0755"
+      when: lotus_copy_binary | bool
+    - name: Copy lotus miner binary
+      copy:
+        src: "{{ lotus_miner_binary_src }}"
+        dest: /usr/local/bin/lotus-storage-miner
+        owner: root
+        group: root
+        mode: "0755"
+      when: lotus_miner_copy_binary | bool
+    - name: restart-lotus
+      systemd:
+        name: 'lotus-daemon'
+        state: restarted
+      when: lotus_daemon_restart | bool
