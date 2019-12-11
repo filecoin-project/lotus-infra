@@ -57,6 +57,7 @@ resource "null_resource" "lotus_bootstrap_dfw" {
 
       extra_vars = {
         lotus_reset       = var.lotus_reset
+        lotus_daemon_bootstrap = "true"
         lotus_copy_binary = var.lotus_copy_binary
       }
 
@@ -88,6 +89,7 @@ resource "null_resource" "lotus_bootstrap_fra" {
 
       extra_vars = {
         lotus_reset       = var.lotus_reset
+        lotus_daemon_bootstrap = "true"
         lotus_copy_binary = var.lotus_copy_binary
       }
 
@@ -119,6 +121,7 @@ resource "null_resource" "lotus_bootstrap_sin" {
 
       extra_vars = {
         lotus_reset       = var.lotus_reset
+        lotus_daemon_bootstrap = "true"
         lotus_copy_binary = var.lotus_copy_binary
       }
 
@@ -159,6 +162,7 @@ resource "null_resource" "lotus_fountain" {
 
       extra_vars = {
         lotus_reset                = var.lotus_reset
+        lotus_daemon_bootstrap = "true"
         lotus_copy_binary          = var.lotus_copy_binary
         lotus_fountain_copy_binary = var.lotus_fountain_copy_binary
         lotus_fountain_server_name = "${dnsimple_record.faucet.hostname}"
@@ -226,7 +230,7 @@ resource "aws_route53_record" "sin" {
 }
 
 resource "aws_route53_record" "fountain" {
-  name    = "lotus-fountain.dfw"
+  name    = "lotus-fountain.yyz"
   zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"
   records = ["${packet_device.lotus_fountain.access_public_ipv4}"]
