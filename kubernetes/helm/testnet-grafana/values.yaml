@@ -9,7 +9,7 @@ metricsRefresh: 30s
 grafana:
   image:
     repository: 657871693752.dkr.ecr.us-east-1.amazonaws.com/lotus-grafana
-    tag: v1.5
+    tag: v1.6
   sidecar:
     datasources:
       enabled: true
