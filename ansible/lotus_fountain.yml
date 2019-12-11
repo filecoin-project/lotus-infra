@@ -3,9 +3,12 @@
   vars:
     lotus_user: "lotus"
     lotus_binary_src: /tmp/lotus
+    lotus_shed_binary_src: /tmp/lotus-shed
     lotus_fountain_binary_src: /tmp/lotus-fountain
     lotus_golog_file: /var/log/lotus.log
-    lotus_fountain_wallet: "replaceme"
+    lotus_fountain_wallet: "{{ lotus_wallet_address }}"
+    lotus_env:
+      RUST_LOG: "info"
     ufw_profiles:
       - "{{ lotus_fullnode_ufw_profile }}"
       - "{{ lotus_fountain_ufw_profile }}"

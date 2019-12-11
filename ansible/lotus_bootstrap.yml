@@ -3,9 +3,12 @@
   vars:
     lotus_user: lotus
     lotus_binary_src: /tmp/lotus
+    lotus_shed_binary_src: /tmp/lotus-shed
     lotus_golog_file: /var/log/lotus.log
     lotus_miner_golog_file: /var/log/lotus-miner.log
     lotus_fullnode_role_enabled: true
+    lotus_env:
+      RUST_LOG: "info"
     ufw_profiles:
       - "{{ lotus_fullnode_ufw_profile }}"
     logz_inputs:
@@ -30,6 +33,8 @@
         system: yes
     - include_role:
         name: telegraf
+    - include_role:
+        name: filebeat_logz_io
     - include_role:
         name: lotus_fullnode
       when: lotus_fullnode_role_enabled == true

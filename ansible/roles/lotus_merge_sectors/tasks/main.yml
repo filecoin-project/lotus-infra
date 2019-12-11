@@ -51,6 +51,7 @@
   mount:
     src: "{{ sector_merge_mount.dev }}{{ sector_merge_mount.part }}"
     path: "{{ sector_merge_mount.dest }}"
+    opts: ro,noatime
     state: mounted
     fstype: ext4
 

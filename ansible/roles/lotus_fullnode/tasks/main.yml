@@ -75,6 +75,14 @@
     mode: "0755"
   when: lotus_copy_binary | bool
 
+- name: Copy binary - lotus shed
+  copy:
+    src: "{{ lotus_shed_binary_src }}"
+    dest: /usr/local/bin/lotus-shed
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Ensure lotus configuration
   template:
     src: ../templates/config.toml.j2
@@ -100,6 +108,30 @@
         mode: "0600"
         dest: "{{ lotus_path }}/keystore/{{ lotus_libp2p_keyname }}"
   when: lotus_libp2p_keyinfo is defined
+
+- name: Ensure wallet is imported
+  block:
+    - name: Ensure keystore path created
+      file:
+        path: "{{ lotus_path }}/keystore/"
+        state: directory
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0700"
+    - name: Register lotus_raw_wallet
+      shell: lotus-shed base16 -decode "{{ lotus_wallet_keyinfo }}"
+      register: lotus_raw_wallet
+    - name: Register base32_encoded_wallet_addr
+      shell: lotus-shed base32 "wallet-{{ lotus_wallet_address }}"
+      register: lotus_wallet_base32_encoded_addr
+    - name: Ensure miner wallet exists
+      copy:
+        content: "{{ lotus_raw_wallet.stdout }}"
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0600"
+        dest: "{{ lotus_path }}/keystore/{{ lotus_wallet_base32_encoded_addr.stdout }}"
+  when: lotus_wallet_keyinfo is defined
 
 - name: Ensure lotus service enabled & started
   systemd:

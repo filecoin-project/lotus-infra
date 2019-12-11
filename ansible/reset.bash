@@ -29,7 +29,7 @@ ansible --vault-password-file .vault_password all \
   --become-method=sudo                            \
   --become                                        \
   -m shell                                        \
-  -a 'lotus net connect /dns4/t0222.miner.fil-test.net/tcp/1347/p2p/12D3KooWJgcCF8wBK5oUPrdGT4vZzBPYG1Td5QoJZDbUCMBQgSud | true'
+  -a 'lotus net connect /dns4/t0222.miner.fil-test.net/tcp/1347/p2p/12D3KooWCAAydigrBmWfLNfyWVag6wHJu1K2pqTn8JbgFWYzShbB | true'
 
 ansible --vault-password-file .vault_password all \
   -i bootstrap_miners                             \
@@ -37,7 +37,7 @@ ansible --vault-password-file .vault_password all \
   --become-method=sudo                            \
   --become                                        \
   -m shell                                        \
-  -a 'lotus net connect /dns4/t0333.miner.fil-test.net/tcp/1347/p2p/12D3KooWFFGEXXWNUS1xWo3GSWvyFfW1odryU6g3xx77rbdZQUXa | true'
+  -a 'lotus net connect /dns4/t0333.miner.fil-test.net/tcp/1347/p2p/12D3KooWBkCcQfJyb3Hxa4Cegt2zkRX2kAPW8ZSQEDkn7qe5PP2j | true'
 
 ansible --vault-password-file .vault_password all \
   -i bootstrap_miners                             \
@@ -45,7 +45,7 @@ ansible --vault-password-file .vault_password all \
   --become-method=sudo                            \
   --become                                        \
   -m shell                                        \
-  -a 'lotus net connect /dns4/t0444.miner.fil-test.net/tcp/1347/p2p/12D3KooWJhRvKcfFWKRjonZQgfy6TtRyNJgFAFpzDSrG3JDc72xz | true'
+  -a 'lotus net connect /dns4/t0444.miner.fil-test.net/tcp/1347/p2p/12D3KooWJwRrEhECqBiacJzcxdGHZWbmAuKseV7L7HU1fhkmnVGm | true'
 
 ansible --vault-password-file .vault_password all \
   -i bootstrap_miners                             \
@@ -74,6 +74,16 @@ ansible --vault-password-file .vault_password all \
   -a 'systemctl status lotus-miner-init'
 
 sleep 10
+
+ansible --vault-password-file .vault_password all \
+  -i bootstrap_miners                             \
+  -e ansible_ssh_user=ubuntu                      \
+  --become-method=sudo                            \
+  --become                                        \
+  -m shell                                        \
+  -a 'tail -n1 /var/log/lotus-miner.log'
+
+sleep 30
 
 ansible --vault-password-file .vault_password all \
   -i bootstrap_miners                             \

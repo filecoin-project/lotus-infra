@@ -229,10 +229,13 @@
   systemd_unit = "lotus-daemon.service"
 
 [[inputs.procstat]]
-  systemd_unit = "lotus-seed-0.service"
+  systemd_unit = "lotus-miner.service"
 
 [[inputs.procstat]]
-  systemd_unit = "lotus-seed-1.service"
+  systemd_unit = "lotus-miner-init.service"
+
+[[inputs.procstat]]
+  systemd_unit = "lotus-fountain.service"
 
 # Read metrics about cpu usage
 [[inputs.cpu]]
