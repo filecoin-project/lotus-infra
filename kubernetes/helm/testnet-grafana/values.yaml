@@ -9,7 +9,7 @@ metricsRefresh: 45s
 grafana:
   image:
     repository: 657871693752.dkr.ecr.us-east-1.amazonaws.com/lotus-grafana
-    tag: v1.7
+    tag: v1.9
   sidecar:
     datasources:
       enabled: true
@@ -44,6 +44,7 @@ grafana:
     GF_AUTH_DISABLE_LOGIN_FORM: "false"
     GF_AUTH_ANONYMOUS_ENABLED: "true"
     GF_AUTH_ANONYMOUS_ORG_NAME: "Main Org."
+    GF_AUTH_BASIC_ENABLED: "false"
     GF_SMTP_ENABLED: "true"
     GF_SMTP_HOST: "smtp.mailgun.org:587"
     GF_SMTP_FROM_ADDRESS: "no-reply@mg.kittyhawk.wtf"
