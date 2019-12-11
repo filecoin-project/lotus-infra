@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: lotus-stats
+  name: {{ .Release.Name }}-lotus-stats
 spec:
   selector:
     matchLabels:
-      app: lotus-stats
-  serviceName: "lotus-stats"
+      app: {{ .Release.Name }}-lotus-stats
+  serviceName: "{{ .Release.Name }}-lotus-stats"
   replicas: 1
   template:
     metadata:
       labels:
-        app: lotus-stats
+        app: {{ .Release.Name }}-lotus-stats
     spec:
       terminationGracePeriodSeconds: 10
       initContainers:
@@ -78,7 +78,7 @@ spec:
         runAsGroup: 100
   volumeClaimTemplates:
   - metadata:
-      name: lotus-repo
+      name: {{ .Release.Name }}-lotus-repo
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: "{{ .Values.StorageClassName }}"
