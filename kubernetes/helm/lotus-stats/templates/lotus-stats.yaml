@@ -25,7 +25,7 @@ spec:
             "mkdir -p /var/filecoin && chown -R 1000:100 /var/filecoin",
           ]
           volumeMounts:
-            - name: lotus-repo
+            - name: {{ .Release.Name }}-lotus-repo
               mountPath: /var/filecoin
         - name: set-params-ownership
           securityContext:
@@ -50,7 +50,7 @@ spec:
           ports:
             - containerPort: 1234
           volumeMounts:
-            - name: lotus-repo
+            - name: {{ .Release.Name }}-lotus-repo
               mountPath: /var/filecoin
             - name: lotus-params
               mountPath: /var/tmp/filecoin-proof-parameters
@@ -70,7 +70,7 @@ spec:
             - name: INFLUX_PASS
               value: "{{ .Values.InfluxPass }}"
           volumeMounts:
-            - name: lotus-repo
+            - name: {{ .Release.Name }}-lotus-repo
               mountPath: /var/filecoin
               readOnly: true
       securityContext:
