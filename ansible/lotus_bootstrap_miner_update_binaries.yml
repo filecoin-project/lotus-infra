@@ -1,5 +1,5 @@
 ---
-- hosts: bootstrap_miner
+- hosts: all
   become: yes
   become_method: sudo
   vars:
