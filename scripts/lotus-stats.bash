@@ -8,15 +8,12 @@ rm -rf ./work || true
 mkdir -p ./work
 pushd ./work
 
-cp -r /home/ognots/go/src/github.com/filecoin-project/lotus .
+git clone git@github.com:filecoin-project/lotus.git
 
-#git clone git@github.com:filecoin-project/lotus.git
-
-#pushd ./lotus
-#git checkout "$1"
+pushd ./lotus
+git checkout "$1"
 sha=$(git rev-parse --short HEAD)
-#popd
-
+popd
 
 docker build -t builder:latest     -f ../docker/Dockerfile.builder .
 docker build -t stats-lotus:latest -f ../docker/Dockerfile.lotus . --cache-from builder:latest
