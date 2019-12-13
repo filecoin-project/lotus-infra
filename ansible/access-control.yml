@@ -1,6 +1,14 @@
 ---
-- hosts: all
-  become: yes
+- hosts: packet
+  vars:
+    ssh_user: root
   roles:
-    - role: ssh-keys
-      ssh_user: root
+    - ssh_keys
+
+- hosts: aws
+  vars:
+    ansible_ssh_user: ubuntu
+    ssh_user: ubuntu
+  roles:
+    - ssh_keys
+
