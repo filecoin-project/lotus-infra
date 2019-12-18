@@ -84,7 +84,7 @@ spec:
       storageClassName: "{{ .Values.StorageClassName }}"
       resources:
         requests:
-          storage: 10Gi
+          storage: 240Gi
   - metadata:
       name: lotus-params
     spec:
