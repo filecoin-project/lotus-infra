@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: lotus-stats
+  name: {{ .Release.Name }}-lotus-stats
 spec:
   selector:
     matchLabels:
-      app: lotus-stats
-  serviceName: "lotus-stats"
+      app: {{ .Release.Name }}-lotus-stats
+  serviceName: "{{ .Release.Name }}-lotus-stats"
   replicas: 1
   template:
     metadata:
       labels:
-        app: lotus-stats
+        app: {{ .Release.Name }}-lotus-stats
     spec:
       terminationGracePeriodSeconds: 10
       initContainers:
@@ -25,7 +25,7 @@ spec:
             "mkdir -p /var/filecoin && chown -R 1000:100 /var/filecoin",
           ]
           volumeMounts:
-            - name: lotus-repo
+            - name: {{ .Release.Name }}-lotus-repo
               mountPath: /var/filecoin
         - name: set-params-ownership
           securityContext:
@@ -50,7 +50,7 @@ spec:
           ports:
             - containerPort: 1234
           volumeMounts:
-            - name: lotus-repo
+            - name: {{ .Release.Name }}-lotus-repo
               mountPath: /var/filecoin
             - name: lotus-params
               mountPath: /var/tmp/filecoin-proof-parameters
@@ -60,6 +60,7 @@ spec:
           command: [
             "stats",
             "-repo=/var/filecoin",
+            "-database={{ .Values.InfluxDatabase }}"
           ]
           env:
             - name: INFLUX_ADDR
@@ -69,7 +70,7 @@ spec:
             - name: INFLUX_PASS
               value: "{{ .Values.InfluxPass }}"
           volumeMounts:
-            - name: lotus-repo
+            - name: {{ .Release.Name }}-lotus-repo
               mountPath: /var/filecoin
               readOnly: true
       securityContext:
@@ -77,13 +78,13 @@ spec:
         runAsGroup: 100
   volumeClaimTemplates:
   - metadata:
-      name: lotus-repo
+      name: {{ .Release.Name }}-lotus-repo
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: "{{ .Values.StorageClassName }}"
       resources:
         requests:
-          storage: 10Gi
+          storage: 240Gi
   - metadata:
       name: lotus-params
     spec:
