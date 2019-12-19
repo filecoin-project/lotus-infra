@@ -29,7 +29,7 @@
         fields:
           logzio_codec: plain
           token: "{{ logz_io_shared_token }}"
-          type: lotus-daemon
+          type: stats
         fields_under_root: true
         encoding: utf-8
         ignore_older: 3h
