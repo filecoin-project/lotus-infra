@@ -53,5 +53,8 @@
         name: stats
       vars:
         stats_repo: "{{ lotus_path }}"
+        stats_influxdb_url: "{{ telegraf_outputs_influxdb_url }}"
+        stats_influxdb_username: "{{ telegraf_outputs_influxdb_username }}"
+        stats_influxdb_password: "{{ telegraf_outputs_influxdb_password }}"
     - include_role:
         name: ufw
