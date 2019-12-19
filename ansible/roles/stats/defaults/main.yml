@@ -1,0 +1,9 @@
+stats_influxdb_url: ""
+stats_influxdb_database: "testnet"
+stats_influxdb_username: "lotus"
+stats_influxdb_password: ""
+stats_repo: ""
+stats_copy_binary: false
+stats_binary_src:
+stats_golog_file: "/var/log/lotus-stats.log"
+stats_user: "lotus"

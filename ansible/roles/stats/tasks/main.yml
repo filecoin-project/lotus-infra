@@ -1,0 +1,26 @@
+- name: Ensure log file exists
+  file:
+    state: touch
+    path: "{{ stats_golog_file }}"
+    owner: "{{ stats_user }}"
+    group: "{{ stats_user }}"
+    mode: "0644"
+
+- name: Ensure service file
+  template:
+    src: ../templates/stats.service.j2
+    dest: /etc/systemd/system/stats.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload-stats
+
+- name: Copy binary
+  copy:
+    src: "{{ stats_binary_src }}"
+    dest: /usr/local/bin/stats
+    owner: root
+    group: root
+    mode: "0755"
+  when: stats_copy_binary | bool

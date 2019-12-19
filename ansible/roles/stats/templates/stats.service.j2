@@ -1,0 +1,19 @@
+[Unit]
+Description=Lotus Stats
+After=network.target
+After=lotus-daemon.service
+PartOf=lotus-daemon.service
+
+[Service]
+User=lotus
+Group=lotus
+ExecStart=/usr/local/bin/stats -repo=/var/lib/lotus -database={{ stats_influxdb_database }}
+Environment=INFLUX_ADDR="{{ stats_influxdb_url }}"
+Environment=INFLUX_USER="{{ stats_influxdb_username }}"
+Environment=INFLUX_PASS="{{ stats_influxdb_password }}"
+Environment=GOLOG_FILE="{{ stats_golog_file }}"
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
