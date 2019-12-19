@@ -82,6 +82,7 @@
     owner: root
     group: root
     mode: "0755"
+  when: lotus_shed_copy_binary | bool
 
 - name: Ensure lotus configuration
   template:

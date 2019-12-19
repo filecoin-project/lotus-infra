@@ -214,7 +214,7 @@ resource "null_resource" "stats" {
       # shared attributes
       enabled  = true
       vault_id = [".vault_password"]
-      groups   = ["stats", "packet"]
+      groups   = ["stats"]
     }
   }
 }
