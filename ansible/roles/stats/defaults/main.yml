@@ -6,4 +6,5 @@ stats_repo: ""
 stats_copy_binary: false
 stats_binary_src:
 stats_golog_file: "/var/log/lotus-stats.log"
+stats_golog_log_fmt: json
 stats_user: "lotus"

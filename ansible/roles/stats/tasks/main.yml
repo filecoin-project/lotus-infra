@@ -25,4 +25,4 @@
     mode: "0755"
   when: stats_copy_binary | bool
   notify:
-    - restart-starts
+    - restart-stats
