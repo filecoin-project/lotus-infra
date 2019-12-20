@@ -40,6 +40,12 @@
     owner: www-data
     mode: 0755
 
+- name: copy nginx maintance file
+  template:
+    src: ../templates/maintance.html.j2
+    dest: /var/www/{{ lotus_fountain_server_name }}/index.html
+    mode: 0644
+
 - name: copy nginx http config
   template:
     src: ../templates/nginx-http.conf.j2

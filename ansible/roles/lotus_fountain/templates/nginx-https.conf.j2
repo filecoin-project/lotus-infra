@@ -14,7 +14,7 @@ server {
     ssl_stapling_verify on;
 
     server_name {{ lotus_fountain_server_name }};
-
+{% if lotus_fountain_enabled | bool %}
     location / {
         proxy_pass http://localhost:7777/;
         proxy_set_header            X-Real-IP $remote_addr;
@@ -23,4 +23,10 @@ server {
         proxy_read_timeout          900;
         send_timeout                900;
     }
+{% else %}
+    location / {
+        root /var/www/{{ lotus_fountain_server_name }}/
+        index index.html
+    }
+{% endif %}
 }
