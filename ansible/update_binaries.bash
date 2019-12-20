@@ -24,6 +24,7 @@ HOSTS1=(
 
 HOSTS2=(
   lotus-fountain.yyz.fil-test.net
+  stats.fil-test.net
   lotus-bootstrap-0.dfw.fil-test.net
   lotus-bootstrap-1.dfw.fil-test.net
   lotus-bootstrap-0.fra.fil-test.net
@@ -34,11 +35,14 @@ HOSTS2=(
 
 for HOST in "${HOSTS1[@]}"; do
     ansible-playbook --vault-password-file .vault_password            \
-    -i testnet_hosts lotus_bootstrap_miner_update_binaries.yml        \
+    -i testnet_hosts.yml lotus_bootstrap_miner_update_binaries.yml    \
     -e ansible_ssh_user=ubuntu                                        \
     -e lotus_binary_src="${LOTUS_SRC}/lotus"                          \
     -e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
-    --limit $HOST                                                     \
+    -e lotus_copy_binary=True                                         \
+    -e lotus_miner_copy_binary=True                                   \
+  # -e lotus_daemon_restart=True                                      \
+    --limit $HOST                                                     \                                                           \
     $@
 
     read  -n 1 -p "Press any key to continue"
@@ -46,11 +50,13 @@ done
 
 for HOST in "${HOSTS2[@]}"; do
     ansible-playbook --vault-password-file .vault_password            \
-    -i testnet_hosts lotus_bootstrap_miner_update_binaries.yml        \
+    -i testnet_hosts.yml lotus_bootstrap_miner_update_binaries.yml    \
     -e ansible_ssh_user=root                                          \
     -e lotus_binary_src="${LOTUS_SRC}/lotus"                          \
     -e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
-    --limit $HOST                                                     \
+    -e lotus_copy_binary=True                                         \
+  # -e lotus_daemon_restart=True                                      \
+    --limit $HOST                                                     \                                                       \
     $@
 
     read  -n 1 -p "Press any key to continue"
