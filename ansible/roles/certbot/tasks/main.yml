@@ -17,7 +17,7 @@
     - python-certbot-nginx
 
 - name: Add crontab to renew certificates
-  cron: minute="30" hour="2" weekday="1" job="/usr/local/bin/certbot renew >> /var/log/le-renew.log"
+  cron: name="renew certificates" minute="30" hour="2" weekday="1" job="/usr/local/bin/certbot renew >> /var/log/le-renew.log"
 
 - name: Add crontab to reload server
-  cron: minute="35" hour="2" weekday="1" job="/etc/init.d/nginx reload"
+  cron: name="reload server" minute="35" hour="2" weekday="1" job="/etc/init.d/nginx reload"
