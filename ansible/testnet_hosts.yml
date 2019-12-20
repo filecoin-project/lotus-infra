@@ -2,6 +2,8 @@
 all:
   children:
     aws:
+      vars:
+        ansible_user: ubuntu
       children:
         miners:
           hosts:
@@ -9,6 +11,9 @@ all:
             t0333.miner.fil-test.net:
             t0444.miner.fil-test.net:
     packet:
+      vars:
+        ansible_user: root
+        ansible_python_interpreter: /usr/bin/python3
       children:
         fountain:
           hosts:
