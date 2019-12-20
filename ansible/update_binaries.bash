@@ -38,15 +38,15 @@ RESTART_LOTUS="${restart:-"False"}"
 ANSIBLE_CHECK_MODE="${check:- ""}"
 LOTUS_SRC=$(mktemp -d)
 
-git fetch origin
+if [ "$COPY_BINARY" = "True" ]; then
+  git clone --branch $UPDATE_BRANCH https://github.com/filecoin-project/lotus.git $LOTUS_SRC
 
-git clone --branch $UPDATE_BRANCH https://github.com/filecoin-project/lotus.git $LOTUS_SRC
+  pushd $LOTUS_SRC
 
-pushd $LOTUS_SRC
+  make clean deps lotus lotus-storage-miner
 
-make clean deps lotus lotus-storage-miner
-
-popd
+  popd
+fi
 
 HOSTS1=(
   t0222.miner.fil-test.net
@@ -72,6 +72,7 @@ for HOST in "${HOSTS1[@]}"; do
     -e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
     -e lotus_copy_binary=$COPY_BINARY                                 \
     -e lotus_miner_copy_binary=$COPY_BINARY                           \
+    -e lotus_daemon_restart=$RESTART_LOTUS
     --limit $HOST                                                     \
     $ANSIBLE_CHECK_MODE                                               \
     $@
