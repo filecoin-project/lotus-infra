@@ -2,7 +2,40 @@
 
 set -xe
 
-UPDATE_BRANCH="master"
+usage() {
+  set +x
+  echo "usage: update_binaries.bash
+    [-b <branch> | --branch <branch>]
+    [-c | --copy]
+    [-r | --restart]
+    [-k | --check]
+    [-h | --help]"
+}
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -b | --branch )         shift
+                                branch=$1
+                                ;;
+        -c | --copy )           copy="True"
+                                ;;
+        -r | --restart )        restart="True"
+                                ;;
+        -k | --check )          check="--check"
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+
+UPDATE_BRANCH="${branch:-"master"}"
+COPY_BINARY="${copy:-"False"}"
+RESTART_LOTUS="${restart:-"False"}"
+ANSIBLE_CHECK_MODE="${check:- ""}"
 LOTUS_SRC=$(mktemp -d)
 
 git fetch origin
@@ -34,29 +67,26 @@ HOSTS2=(
 )
 
 for HOST in "${HOSTS1[@]}"; do
-    ansible-playbook --vault-password-file .vault_password            \
-    -i testnet_hosts.yml lotus_bootstrap_miner_update_binaries.yml    \
-    -e ansible_ssh_user=ubuntu                                        \
+    ansible-playbook lotus_bootstrap_miner_update_binaries.yml        \
     -e lotus_binary_src="${LOTUS_SRC}/lotus"                          \
     -e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
-    -e lotus_copy_binary=True                                         \
-    -e lotus_miner_copy_binary=True                                   \
-  # -e lotus_daemon_restart=True                                      \
-    --limit $HOST                                                     \                                                           \
+    -e lotus_copy_binary=$COPY_BINARY                                 \
+    -e lotus_miner_copy_binary=$COPY_BINARY                           \
+    --limit $HOST                                                     \
+    $ANSIBLE_CHECK_MODE                                               \
     $@
 
     read  -n 1 -p "Press any key to continue"
 done
 
 for HOST in "${HOSTS2[@]}"; do
-    ansible-playbook --vault-password-file .vault_password            \
-    -i testnet_hosts.yml lotus_bootstrap_miner_update_binaries.yml    \
-    -e ansible_ssh_user=root                                          \
+    ansible-playbook lotus_bootstrap_miner_update_binaries.yml        \
     -e lotus_binary_src="${LOTUS_SRC}/lotus"                          \
     -e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
-    -e lotus_copy_binary=True                                         \
-  # -e lotus_daemon_restart=True                                      \
-    --limit $HOST                                                     \                                                       \
+    -e lotus_copy_binary=$COPY_BINARY                                 \
+    -e lotus_daemon_restart=$RESTART_LOTUS                            \
+    --limit $HOST                                                     \
+    $ANSIBLE_CHECK_MODE                                               \
     $@
 
     read  -n 1 -p "Press any key to continue"
