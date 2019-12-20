@@ -33,9 +33,7 @@ HOSTS2=(
 )
 
 for HOST in "${HOSTS1[@]}"; do
-    ansible-playbook --vault-password-file .vault_password            \
-    -i testnet_hosts lotus_bootstrap_miner_update_binaries.yml        \
-    -e ansible_ssh_user=ubuntu                                        \
+    ansible-playbook lotus_bootstrap_miner_update_binaries.yml        \
     -e lotus_binary_src="${LOTUS_SRC}/lotus"                          \
     -e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
     --limit $HOST                                                     \
@@ -45,9 +43,7 @@ for HOST in "${HOSTS1[@]}"; do
 done
 
 for HOST in "${HOSTS2[@]}"; do
-    ansible-playbook --vault-password-file .vault_password            \
-    -i testnet_hosts lotus_bootstrap_miner_update_binaries.yml        \
-    -e ansible_ssh_user=root                                          \
+    ansible-playbook lotus_bootstrap_miner_update_binaries.yml        \
     -e lotus_binary_src="${LOTUS_SRC}/lotus"                          \
     -e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
     --limit $HOST                                                     \
