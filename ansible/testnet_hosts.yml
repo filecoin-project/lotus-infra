@@ -21,3 +21,6 @@ all:
             lotus-bootstrap-1.fra.fil-test.net:
             lotus-bootstrap-0.sin.fil-test.net:
             lotus-bootstrap-1.sin.fil-test.net:
+        stats:
+          hosts:
+            stats.fil-test.net:

@@ -1,0 +1,62 @@
+---
+- hosts: stats
+  vars:
+    lotus_user: "lotus"
+    lotus_binary_src: /tmp/lotus
+    lotus_golog_file: /var/log/lotus.log
+    lotus_env:
+      RUST_LOG: "info"
+    stats_binary_src: /tmp/stats
+    stats_golog_file: /var/log/stats.log
+    ufw_profiles:
+      - "{{ lotus_fullnode_ufw_profile }}"
+    logz_inputs:
+      - type: log
+        paths:
+          - "{{ lotus_golog_file }}"
+        fields:
+          logzio_codec: json
+          token: "{{ logz_io_shared_token }}"
+          type: lotus-daemon
+        fields_under_root: true
+        json.keys_under_root: false
+        json.message_key: msg
+        encoding: utf-8
+        ignore_older: 3h
+      - type: log
+        paths:
+          - "{{ stats_golog_file }}"
+        fields:
+          logzio_codec: plain
+          token: "{{ logz_io_shared_token }}"
+          type: stats
+        fields_under_root: true
+        json.keys_under_root: false
+        json.message_key: msg
+        encoding: utf-8
+        ignore_older: 3h
+    telegraf_global_tags:
+      - name: role
+        value: stats
+  tasks:
+    - name: Ensure lotus user exists
+      user:
+        name: "{{ lotus_user }}"
+        state: present
+        uid: 996
+        system: yes
+    - include_role:
+        name: telegraf
+    - include_role:
+        name: filebeat_logz_io
+    - include_role:
+        name: lotus_fullnode
+    - include_role:
+        name: stats
+      vars:
+        stats_repo: "{{ lotus_path }}"
+        #stats_influxdb_url: "{{ telegraf_outputs_influxdb_url }}"
+        #stats_influxdb_username: "{{ telegraf_outputs_influxdb_username }}"
+        #stats_influxdb_password: "{{ telegraf_outputs_influxdb_password }}"
+    - include_role:
+        name: ufw

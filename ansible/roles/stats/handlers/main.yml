@@ -1,0 +1,8 @@
+- name: reload-stats
+  systemd:
+    daemon_reload: yes
+
+- name: restart-stats
+  systemd:
+    name: 'stats'
+    state: restarted

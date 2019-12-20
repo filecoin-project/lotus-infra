@@ -56,9 +56,9 @@ resource "null_resource" "lotus_bootstrap_dfw" {
       }
 
       extra_vars = {
-        lotus_reset       = var.lotus_reset
+        lotus_reset            = var.lotus_reset
         lotus_daemon_bootstrap = "true"
-        lotus_copy_binary = var.lotus_copy_binary
+        lotus_copy_binary      = var.lotus_copy_binary
       }
 
       # shared attributes
@@ -88,9 +88,9 @@ resource "null_resource" "lotus_bootstrap_fra" {
       }
 
       extra_vars = {
-        lotus_reset       = var.lotus_reset
+        lotus_reset            = var.lotus_reset
         lotus_daemon_bootstrap = "true"
-        lotus_copy_binary = var.lotus_copy_binary
+        lotus_copy_binary      = var.lotus_copy_binary
       }
 
       # shared attributes
@@ -120,9 +120,9 @@ resource "null_resource" "lotus_bootstrap_sin" {
       }
 
       extra_vars = {
-        lotus_reset       = var.lotus_reset
+        lotus_reset            = var.lotus_reset
         lotus_daemon_bootstrap = "true"
-        lotus_copy_binary = var.lotus_copy_binary
+        lotus_copy_binary      = var.lotus_copy_binary
       }
 
       # shared attributes
@@ -162,7 +162,7 @@ resource "null_resource" "lotus_fountain" {
 
       extra_vars = {
         lotus_reset                = var.lotus_reset
-        lotus_daemon_bootstrap = "true"
+        lotus_daemon_bootstrap     = "true"
         lotus_copy_binary          = var.lotus_copy_binary
         lotus_fountain_copy_binary = var.lotus_fountain_copy_binary
         lotus_fountain_server_name = "${dnsimple_record.faucet.hostname}"
@@ -176,6 +176,49 @@ resource "null_resource" "lotus_fountain" {
     }
   }
 }
+
+resource "packet_device" "stats" {
+  hostname            = "stats"
+  plan                = "x1.small.x86"
+  facilities          = ["sea1"]
+  operating_system    = "ubuntu_19_04"
+  billing_cycle       = "hourly"
+  project_id          = var.project_id
+  project_ssh_key_ids = values(local.ssh_keys)
+}
+
+resource "null_resource" "stats" {
+  depends_on = [packet_device.stats]
+
+  triggers = {
+    script_sha1 = "${sha1(file("${path.module}/../../ansible/stats.yml"))}"
+  }
+
+  provisioner "ansible" {
+    plays {
+      hosts = [
+        "${aws_route53_record.stats.fqdn}",
+      ]
+
+      playbook {
+        file_path = "../../ansible/stats.yml"
+      }
+
+      extra_vars = {
+        lotus_reset            = var.lotus_reset
+        lotus_daemon_bootstrap = "true"
+        lotus_copy_binary      = var.lotus_copy_binary
+        stats_copy_binary      = var.stats_copy_binary
+      }
+
+      # shared attributes
+      enabled  = true
+      vault_id = [".vault_password"]
+      groups   = ["stats"]
+    }
+  }
+}
+
 
 locals {
   ssh_keys = {
@@ -234,6 +277,14 @@ resource "aws_route53_record" "fountain" {
   zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"
   records = ["${packet_device.lotus_fountain.access_public_ipv4}"]
+  ttl     = 30
+}
+
+resource "aws_route53_record" "stats" {
+  name    = "stats"
+  zone_id = data.aws_route53_zone.default.zone_id
+  type    = "A"
+  records = ["${packet_device.stats.access_public_ipv4}"]
   ttl     = 30
 }
 
