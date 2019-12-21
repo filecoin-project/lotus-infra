@@ -72,7 +72,8 @@ for HOST in "${HOSTS1[@]}"; do
     -e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
     -e lotus_copy_binary=$COPY_BINARY                                 \
     -e lotus_miner_copy_binary=$COPY_BINARY                           \
-    -e lotus_daemon_restart=$RESTART_LOTUS
+    -e lotus_daemon_restart=$RESTART_LOTUS                            \
+    -e lotus_miner_restart=$RESTART_LOTUS                             \
     --limit $HOST                                                     \
     $ANSIBLE_CHECK_MODE                                               \
     $@

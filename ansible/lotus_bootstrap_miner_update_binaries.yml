@@ -9,6 +9,7 @@
     lotus_copy_binary: false
     lotus_miner_copy_binary: false
     lotus_daemon_restart: false
+    lotus_miner_restart: false
   tasks:
     - name: Copy lotus binary
       copy:
@@ -31,3 +32,8 @@
         name: 'lotus-daemon'
         state: restarted
       when: lotus_daemon_restart | bool
+    - name: restart-lotus-miner
+      systemd:
+        name: 'lotus-miner'
+        state: restarted
+      when: lotus_miner_restart | bool
