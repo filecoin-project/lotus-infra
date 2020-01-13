@@ -15,6 +15,7 @@
       mode: "0644"
   notify:
       - reload-fountain
+  when: lotus_wallet_address is defined
 
 - name: lotus binary
   copy:
