@@ -40,7 +40,7 @@ Verify that the funds show up in the wallet
 ansible $ ansible -m shell -a 'lotus wallet list | xargs -L1 lotus wallet balance' bootstrappers --limit lotus-bootstrap-0.fra.fil-test.net
 ```
 
-While waiting, montior the mpool
+While waiting, monitor the mpool
 
 ```
 ansible -m shell -a 'lotus mpool pending | jq "select( .Message.From == \"$(lotus wallet default)\")"' fountain
