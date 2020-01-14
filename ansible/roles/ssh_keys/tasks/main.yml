@@ -5,5 +5,9 @@
     state: present
     key: "{{ item }}"
   with_file:
-    - public-keys/travisperson
+    - public-keys/kubuxu
+    - public-keys/lanzafame
+    - public-keys/magik6k
     - public-keys/ognots
+    - public-keys/travisperson
+    - public-keys/whyrusleeping

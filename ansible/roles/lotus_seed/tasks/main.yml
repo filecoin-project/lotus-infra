@@ -3,8 +3,52 @@
     pkg:
       - mesa-opencl-icd
       - ocl-icd-opencl-dev
+      - numactl
       - ntp
+      - nvme-cli
     update_cache: yes
+
+- name: Ensure mount point exists
+  file:
+    name: "{{ lotus_seed_mnt }}"
+    state: directory
+
+- name: Check if /dev/nvme0n1 is /dev/sdx
+  shell: nvme id-ctrl --raw-binary /dev/nvme0n1 |  cut -c3073-3104 | tr -s ' ' | sed 's/ $//g' | grep '/dev/sdx'
+  register: check_nvme0n1
+  failed_when: check_nvme0n1.rc == 2
+
+- name: Check if /dev/nvme1n1 is /dev/sdx
+  shell: nvme id-ctrl --raw-binary /dev/nvme1n1 |  cut -c3073-3104 | tr -s ' ' | sed 's/ $//g'   | grep '/dev/sdx'
+  register: check_nvme1n1
+  failed_when: check_nvme1n1.rc == 2
+
+- set_fact:
+    nvme_device: /dev/nvme0n1
+  when: check_nvme0n1.rc == 0
+
+- set_fact:
+    nvme_device: /dev/nvme1n1
+  when: check_nvme1n1.rc == 0
+
+- name: Create a new primary partition
+  parted:
+    device: "{{ nvme_device }}"
+    number: 1
+    label: gpt
+    state: present
+
+- name: Create a ext4 filesystem on /dev/sdb1 and check disk blocks
+  filesystem:
+    fstype: ext4
+    dev: "{{ nvme_device }}p1"
+
+- name: wait
+  shell: sleep 10
+
+- name: mount
+  shell: mount "{{ nvme_device }}p1" "{{ lotus_seed_mnt }}"
+  ignore_errors: yes
 
 - name: lotus start ntp
   systemd:
@@ -42,10 +86,18 @@
     group: "{{ lotus_seed_user }}"
     mode: "0700"
 
-- name: lotus-seed golog file
+- name: lotus-seed golog file 0
   file:
     state: touch
-    path: "{{ lotus_seed_golog_file }}"
+    path: "{{ lotus_seed_golog_file_0 }}"
+    owner: "{{ lotus_seed_user }}"
+    group: "{{ lotus_seed_user }}"
+    mode: "0644"
+
+- name: lotus-seed golog file 1
+  file:
+    state: touch
+    path: "{{ lotus_seed_golog_file_1 }}"
     owner: "{{ lotus_seed_user }}"
     group: "{{ lotus_seed_user }}"
     mode: "0644"
@@ -59,10 +111,18 @@
     mode: "0755"
   when: lotus_seed_copy_binary | bool
 
-- name: lotus seed systemd service file
+- name: lotus seed systemd service file 0
   template:
-    src: ../templates/lotus-seed.service.j2
-    dest: /etc/systemd/system/lotus-seed.service
+    src: ../templates/lotus-seed-0.service.j2
+    dest: /etc/systemd/system/lotus-seed-0.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: lotus seed systemd service file 1
+  template:
+    src: ../templates/lotus-seed-1.service.j2
+    dest: /etc/systemd/system/lotus-seed-1.service
     owner: root
     group: root
     mode: "0644"

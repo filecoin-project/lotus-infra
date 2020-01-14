@@ -1,0 +1,94 @@
+- name: Install packages
+  apt:
+    pkg:
+      - mesa-opencl-icd
+      - ocl-icd-opencl-dev
+    update_cache: yes
+
+- name: Ensure mount point exists
+  file:
+    name: "{{ sector_mount_path }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+    state: directory
+
+- name: Ensure volumes mounted
+  mount:
+    src: "{{ item.mount.src }}"
+    path: "{{ item.mount.dest }}"
+    opts: ro,noatime
+    state: mounted
+    fstype: ext4
+  loop: "{{ sector_device_mounts }}"
+
+
+##########################################
+## Mount sector merge volume
+##########################################
+
+- name: Ensure merged mount point exists
+  file:
+    name: "{{ sector_merge_mount.dest }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+    state: directory
+
+- name: Create merged primary partition
+  parted:
+    device: "{{ sector_merge_mount.dev }}"
+    number: "{{ sector_merge_mount.part }}"
+    label: gpt
+    state: present
+
+- name: Create ext4 filesystem for merged parition
+  filesystem:
+    fstype: ext4
+    dev: "{{ sector_merge_mount.dev }}{{ sector_merge_mount.part }}"
+
+- name: Ensure merged mounted
+  mount:
+    src: "{{ sector_merge_mount.dev }}{{ sector_merge_mount.part }}"
+    path: "{{ sector_merge_mount.dest }}"
+    opts: ro,noatime
+    state: mounted
+    fstype: ext4
+
+- name: Ensure lotus ownership of merged volume
+  file:
+    path: "{{ sector_merge_mount.dest }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+
+########################################
+
+- name: Copy binary
+  copy:
+    src: "{{ lotus_merge_sectors_binary_src }}"
+    dest: /usr/local/bin/lotus-seed
+    owner: root
+    group: root
+    mode: "0755"
+  when: lotus_merge_sectors_copy_binary | bool
+
+- name: SetFact lotus_merge_sectordirs_list
+  set_fact:
+    lotus_merge_sectordirs_list: "{{ lotus_merge_sectordirs | join(' ') }}"
+
+- name: Ensure service file
+  template:
+    src: ../templates/lotus-merge-sectors.service.j2
+    dest: /etc/systemd/system/lotus-merge-sectors.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Ensure log file exists
+  file:
+    state: touch
+    path: "{{ lotus_merge_sectors_golog_file }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"

@@ -1,0 +1,23 @@
+- name: Update apt cache
+  apt: update_cache=yes cache_valid_time=86400
+
+- name: Install dependencies
+  apt: name={{ item }} state=latest
+  with_items:
+    - software-properties-common
+
+- name: Add certbot repo
+  apt_repository:
+    repo: ppa:certbot/certbot
+
+- name: Install certbot
+  apt: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - certbot
+    - python-certbot-nginx
+
+- name: Add crontab to renew certificates
+  cron: name="renew certificates" minute="30" hour="2" weekday="1" job="/usr/local/bin/certbot renew >> /var/log/le-renew.log"
+
+- name: Add crontab to reload server
+  cron: name="reload server" minute="35" hour="2" weekday="1" job="/etc/init.d/nginx reload"

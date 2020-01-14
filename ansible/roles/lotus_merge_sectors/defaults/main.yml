@@ -1,0 +1,7 @@
+lotus_merge_sectors_binary_src:
+lotus_merge_sectors_reset: no
+lotus_merge_sectors_presealed_sectors_path: /var/lib/lotus-miner-presealed-sectors
+lotus_merge_sectors_golog_file: /var/log/lotus-merge-sectors.log
+lotus_merge_sectors_golog_log_fmt: json
+lotus_merge_sectors_env: {}
+lotus_merge_sectors_copy_binary: false

@@ -1,0 +1,114 @@
+---
+- hosts: miners
+  become: yes
+  gather_facts: no
+  become_method: sudo
+  vars:
+    lotus_user: lotus
+    lotus_golog_file: /var/log/lotus.log
+    lotus_miner_golog_file: /var/log/lotus-miner.log
+    lotus_binary_src: /tmp/lotus
+    lotus_miner_binary_src: /tmp/lotus-storage-miner
+    lotus_shed_binary_src: /tmp/lotus-shed
+    lotus_miner_nvidia_drivers_url: https://us.download.nvidia.com/tesla/440.33.01/NVIDIA-Linux-x86_64-440.33.01.run
+    lotus_mount_path: /mnt/lotus-repos
+    lotus_miner_env:
+      BELLMAN_CUSTOM_GPU: "Tesla V100-SXM2-16GB:5120"
+      RUST_LOG: "info"
+    lotus_env:
+      RUST_LOG: "info"
+#   lotus_miner_presealed_sector_src: /tmp/lotus-genesis-sectors.tar.gz
+    lotus_path: "/var/lib/lotus-daemon"
+    lotus_daemon_bootstrap: "false"
+    lotus_miner_presealed_sectors_path: "/mnt/merged"
+#   lotus_miner_presealed_sectors_path: "{{ sector_mount_path }}/0/sectors/0"
+    lotus_miner_path: "/var/lib/lotus-miner"
+    lotus_miner_symlink_import: "true"
+    lotus_fullnode_role_enabled: true
+    lotus_miner_role_enabled: true
+    lotus_miner_addr: "{{ lotus_merge_miner_addr }}"
+    lotus_merge_sectors_role_enabled: false
+    ufw_profiles:
+      - "{{ lotus_fullnode_ufw_profile }}"
+    lotus_merge_sectordirs:
+      - "{{ sector_mount_path }}/0/sectors/0"
+      - "{{ sector_mount_path }}/0/sectors/1"
+      - "{{ sector_mount_path }}/1/sectors/0"
+      - "{{ sector_mount_path }}/1/sectors/1"
+      - "{{ sector_mount_path }}/2/sectors/0"
+      - "{{ sector_mount_path }}/2/sectors/1"
+      - "{{ sector_mount_path }}/3/sectors/0"
+      - "{{ sector_mount_path }}/3/sectors/1"
+      - "{{ sector_mount_path }}/4/sectors/0"
+      - "{{ sector_mount_path }}/4/sectors/1"
+    hostname: "{{ lotus_merge_miner_addr }}"
+    sector_merge_mount:
+      dev: /dev/xvde
+      part: 1
+      dest: "{{ lotus_miner_presealed_sectors_path }}"
+    sector_mount_path: /mnt/volumes
+    sector_device_mounts:
+      - mount:
+          src: /dev/xvdf1
+          dest: "{{ sector_mount_path }}/0"
+      - mount:
+          src: /dev/xvdg1
+          dest: "{{ sector_mount_path }}/1"
+      - mount:
+          src: /dev/xvdh1
+          dest: "{{ sector_mount_path }}/2"
+      - mount:
+          src: /dev/xvdi1
+          dest: "{{ sector_mount_path }}/3"
+      - mount:
+          src: /dev/xvdj1
+          dest: "{{ sector_mount_path }}/4"
+    logz_inputs:
+      - type: log
+        paths:
+          - "{{ lotus_golog_file }}"
+        fields:
+          logzio_codec: json
+          token: "{{ logz_io_shared_token }}"
+          type: lotus-daemon
+        fields_under_root: true
+        json.keys_under_root: false
+        json.message_key: msg
+        encoding: utf-8
+        ignore_older: 3h
+      - type: log
+        paths:
+          - "{{ lotus_miner_golog_file }}"
+        fields:
+          logzio_codec: json
+          token: "{{ logz_io_shared_token }}"
+          type: lotus-miner
+        fields_under_root: true
+        json.keys_under_root: false
+        json.message_key: msg
+        encoding: utf-8
+        ignore_older: 3h
+  tasks:
+    - hostname:
+        name: "{{ hostname }}"
+    - name: Ensure lotus user exists
+      user:
+        name: "{{ lotus_user }}"
+        state: present
+        uid: 996
+        system: yes
+    - include_role:
+        name: telegraf
+    - include_role:
+        name: filebeat_logz_io
+    - include_role:
+        name: lotus_merge_sectors
+      when: lotus_merge_sectors_role_enabled == true
+    - include_role:
+        name: lotus_fullnode
+      when: lotus_fullnode_role_enabled == true
+    - include_role:
+        name: lotus_miner
+      when: lotus_miner_role_enabled == true
+    - include_role:
+        name: ufw

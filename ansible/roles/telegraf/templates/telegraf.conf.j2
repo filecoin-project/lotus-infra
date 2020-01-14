@@ -228,6 +228,18 @@
 [[inputs.procstat]]
   systemd_unit = "lotus-daemon.service"
 
+[[inputs.procstat]]
+  systemd_unit = "lotus-miner.service"
+
+[[inputs.procstat]]
+  systemd_unit = "lotus-miner-init.service"
+
+[[inputs.procstat]]
+  systemd_unit = "lotus-fountain.service"
+
+  [[inputs.procstat]]
+  systemd_unit = "stats.service"
+
 # Read metrics about cpu usage
 [[inputs.cpu]]
   ## Whether to report per-cpu stats or not

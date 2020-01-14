@@ -1,3 +1,4 @@
+/*
 resource "aws_security_group" "seed" {
   name        = "lotus-seed-all"
   description = "Allow all traffic"
@@ -18,3 +19,4 @@ module "seed01" {
   vault_password_file = "${path.module}/.vault_password"
   security_groups = [aws_security_group.seed.name]
 }
+*/

@@ -20,10 +20,6 @@ variable "zone_id" {
   description = "fil-test.net"
 }
 
-variable "lotus_zone_id" {
-  description = "lotu.sh"
-}
-
 variable "testnet_domain" {
   description = "the testnet domain managed in dnsimple"
   default     = "testnet.filecoin.io"
@@ -41,6 +37,10 @@ variable "lotus_fountain_copy_binary" {
   default = false
 }
 
+variable "stats_copy_binary" {
+  default = false
+}
+
 variable "certbot_create_certificate" {
   default = false
 }
@@ -48,4 +48,3 @@ variable "certbot_create_certificate" {
 variable "lotus_reset" {
   default = false
 }
-
