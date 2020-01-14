@@ -6,7 +6,7 @@ set -xe
 # See the lotus keystore implemenation for details
 # base32 encoded string "libp2p-host" with zero padding
 LIBP2P_KEYNAME="NRUWE4BSOAWWQ33TOQ"
-GENESISTIMESTAMP="2019-12-11T17:30:00Z"
+GENESISTIMESTAMP="2020-01-14T01:00:00Z"
 
 log() {
   echo -e "\e[33m$1\e[39m"
@@ -55,7 +55,7 @@ cmd_new_peerkey() {
   log "New peerkey $P2P_ADDRESS for $host"
 
   P2P_KEYINFO=$(cat ${LRPATH}/keystore/${LIBP2P_KEYNAME})
- 
+
   sed -i "/$host/c /dns4/$host/tcp/1347/p2p/$P2P_ADDRESS" build/bootstrap/bootstrappers.pi
   if ! grep "$host" build/bootstrap/bootstrappers.pi ; then
     echo "/dns4/$host/tcp/1347/p2p/$P2P_ADDRESS" >> build/bootstrap/bootstrappers.pi
@@ -98,7 +98,7 @@ cmd_new_genesis() {
   log 'Staring temp daemon'
 
 
-  ./lotus --repo="${GENPATH}" daemon --genesis-timestamp="${GENESISTIMESTAMP}" --lotus-make-random-genesis="${GENPATH}/testnet.car" --genesis-presealed-sectors="${SEEDPATH}/genesis.json" --bootstrap=false
+  ./lotus --repo="${GENPATH}" daemon --genesis-timestamp="${GENESISTIMESTAMP}" --lotus-make-random-genesis="${GENPATH}/testnet.car" --genesis-presealed-sectors="${SEEDPATH}/genesis.json" --bootstrap=false &
   GDPID=$!
 
   sleep 3
@@ -109,7 +109,7 @@ cmd_new_genesis() {
 
   log '> Creating genesis binary'
 
-  cp "${GENPATH}/devnet.car" build/genesis/devnet.car
+  cp "${GENPATH}/testnet.car" build/genesis/devnet.car
 
   popd
 }

@@ -2,12 +2,11 @@
 
 set -xe
 
-ansible-playbook                                            \
-  --vault-password-file .vault_password                     \
-  -i bootstrap_miners lotus_bootstrap_miner.yml             \
-  -e ansible_ssh_user=ubuntu                                \
+ansible-playbook lotus_bootstrap_miner.yml                  \
   -e lotus_merge_sectors_binary_src=/tmp/lotus-seed         \
   -e lotus_merge_sectors_copy_binary=true                   \
+  -e lotus_shed_binary_src=/tmp/lotus-shed                  \
+  -e lotus_shed_copy_binary=true                            \
   -e lotus_binary_src=/tmp/lotus                            \
   -e lotus_copy_binary=true                                 \
   -e lotus_miner_binary_src=/tmp/lotus-storage-miner        \
@@ -15,80 +14,53 @@ ansible-playbook                                            \
   -e lotus_reset=yes                                        \
   -e lotus_miner_reset=yes -e lotus_daemon_bootstrap="true"
 
-ansible --vault-password-file .vault_password all \
-  -i bootstrap_miners                             \
-  -e ansible_ssh_user=ubuntu                      \
-  --become-method=sudo                            \
+ansible --vault-password-file .vault_password miners \
   --become                                        \
   -m systemd                                      \
   -a 'name=lotus-miner state=stopped'
 
-ansible --vault-password-file .vault_password all \
-  -i bootstrap_miners                             \
-  -e ansible_ssh_user=ubuntu                      \
-  --become-method=sudo                            \
+ansible --vault-password-file .vault_password miners \
   --become                                        \
   -m shell                                        \
-  -a 'lotus net connect /dns4/t0222.miner.fil-test.net/tcp/1347/p2p/12D3KooWCAAydigrBmWfLNfyWVag6wHJu1K2pqTn8JbgFWYzShbB | true'
+  -a 'lotus net connect /dns4/t0222.miner.fil-test.net/tcp/1347/p2p/12D3KooWNB9a7NrrLvMMxZR7kGRgwEjtHFE43APyf7pcQqFxY5gM | true'
 
-ansible --vault-password-file .vault_password all \
-  -i bootstrap_miners                             \
-  -e ansible_ssh_user=ubuntu                      \
-  --become-method=sudo                            \
+ansible --vault-password-file .vault_password miners \
   --become                                        \
   -m shell                                        \
-  -a 'lotus net connect /dns4/t0333.miner.fil-test.net/tcp/1347/p2p/12D3KooWBkCcQfJyb3Hxa4Cegt2zkRX2kAPW8ZSQEDkn7qe5PP2j | true'
+  -a 'lotus net connect /dns4/t0333.miner.fil-test.net/tcp/1347/p2p/12D3KooWK3W7mVL4yfUGST71V9Um54wVwWb8jmMLu3vW17gW8c3Y | true'
 
-ansible --vault-password-file .vault_password all \
-  -i bootstrap_miners                             \
-  -e ansible_ssh_user=ubuntu                      \
-  --become-method=sudo                            \
+ansible --vault-password-file .vault_password miners \
   --become                                        \
   -m shell                                        \
-  -a 'lotus net connect /dns4/t0444.miner.fil-test.net/tcp/1347/p2p/12D3KooWJwRrEhECqBiacJzcxdGHZWbmAuKseV7L7HU1fhkmnVGm | true'
+  -a 'lotus net connect /dns4/t0444.miner.fil-test.net/tcp/1347/p2p/12D3KooWL4D6xmgEqaLsWR4Qdp11a6bbkJXrEkQsKde9NVtciqzT | true'
 
-ansible --vault-password-file .vault_password all \
-  -i bootstrap_miners                             \
-  -e ansible_ssh_user=ubuntu                      \
-  --become-method=sudo                            \
+ansible --vault-password-file .vault_password miners \
   --become                                        \
   -m shell                                        \
   -a 'lotus net peers'
 
-ansible --vault-password-file .vault_password all \
-  -i bootstrap_miners                             \
-  -e ansible_ssh_user=ubuntu                      \
-  --become-method=sudo                            \
+ansible --vault-password-file .vault_password miners \
   --become                                        \
   -m systemd                                      \
   -a 'name=lotus-miner-init state=started'
 
 sleep 3
 
-ansible --vault-password-file .vault_password all \
-  -i bootstrap_miners                             \
-  -e ansible_ssh_user=ubuntu                      \
-  --become-method=sudo                            \
+ansible --vault-password-file .vault_password miners \
   --become                                        \
   -m shell                                        \
   -a 'systemctl status lotus-miner-init'
 
 sleep 10
 
-ansible --vault-password-file .vault_password all \
-  -i bootstrap_miners                             \
-  -e ansible_ssh_user=ubuntu                      \
-  --become-method=sudo                            \
+ansible --vault-password-file .vault_password miners \
   --become                                        \
   -m shell                                        \
   -a 'tail -n1 /var/log/lotus-miner.log'
 
 sleep 30
 
-ansible --vault-password-file .vault_password all \
-  -i bootstrap_miners                             \
-  -e ansible_ssh_user=ubuntu                      \
-  --become-method=sudo                            \
+ansible --vault-password-file .vault_password miners \
   --become                                        \
   -m shell                                        \
   -a 'tail -n1 /var/log/lotus-miner.log'
