@@ -1,0 +1,5 @@
+lotus_health_lotus_daemon_systemd_unit: "lotus-daemon.service"
+lotus_health_lotus_repo: "/var/lib/lotus"
+lotus_health_golog_file: "/var/log/lotus-health.log"
+lotus_health_binary_src:
+lotus_health_copy_binary: false

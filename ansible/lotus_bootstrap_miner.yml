@@ -10,6 +10,8 @@
     lotus_binary_src: /tmp/lotus
     lotus_miner_binary_src: /tmp/lotus-storage-miner
     lotus_shed_binary_src: /tmp/lotus-shed
+    lotus_health_binary_src: /tmp/lotus-health
+    lotus_health_golog_file: "/var/log/lotus-health.log"
     lotus_miner_nvidia_drivers_url: https://us.download.nvidia.com/tesla/440.33.01/NVIDIA-Linux-x86_64-440.33.01.run
     lotus_mount_path: /mnt/lotus-repos
     lotus_miner_env:
@@ -88,6 +90,18 @@
         json.message_key: msg
         encoding: utf-8
         ignore_older: 3h
+      - type: log
+        paths:
+          - "{{ lotus_health_golog_file }}"
+        fields:
+          logzio_codec: json
+          token: "{{ logz_io_shared_token }}"
+          type: lotus-health
+        fields_under_root: true
+        json.keys_under_root: false
+        json.message_key: msg
+        encoding: utf-8
+        ignore_older: 3h
   tasks:
     - hostname:
         name: "{{ hostname }}"
@@ -110,5 +124,7 @@
     - include_role:
         name: lotus_miner
       when: lotus_miner_role_enabled == true
+    - include_role:
+        name: lotus_health
     - include_role:
         name: ufw

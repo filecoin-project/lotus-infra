@@ -1,22 +1,15 @@
 ---
-- hosts: bootstrap
+- hosts: all
+  become: yes
+  become_method: sudo
   vars:
-    lotus_user: lotus
-    lotus_binary_src: /tmp/lotus
-    lotus_shed_binary_src: /tmp/lotus-shed
-    lotus_golog_file: /var/log/lotus.log
-    lotus_miner_golog_file: /var/log/lotus-miner.log
     lotus_health_binary_src: /tmp/lotus-health
     lotus_health_golog_file: "/var/log/lotus-health.log"
-    lotus_fullnode_role_enabled: true
-    lotus_env:
-      RUST_LOG: "info"
-    ufw_profiles:
-      - "{{ lotus_fullnode_ufw_profile }}"
+    lotus_health_copy_binary: True
     logz_inputs:
       - type: log
         paths:
-          - "{{ lotus_golog_file }}"
+          - "{{ lotus_fullnode.lotus_golog_file }}"
         fields:
           logzio_codec: json
           token: "{{ logz_io_shared_token }}"
@@ -39,20 +32,12 @@
         encoding: utf-8
         ignore_older: 3h
   tasks:
-    - name: Ensure lotus user exists
-      user:
-        name: "{{ lotus_user }}"
-        state: present
-        uid: 996
-        system: yes
+    - include_vars:
+        file: roles/lotus_fullnode/defaults/main.yml
+        name: lotus_fullnode
     - include_role:
         name: telegraf
     - include_role:
         name: filebeat_logz_io
     - include_role:
-        name: lotus_fullnode
-      when: lotus_fullnode_role_enabled == true
-    - include_role:
         name: lotus_health
-    - include_role:
-        name: ufw

@@ -6,6 +6,8 @@
     lotus_shed_binary_src: /tmp/lotus-shed
     lotus_fountain_binary_src: /tmp/lotus-fountain
     lotus_golog_file: /var/log/lotus.log
+    lotus_health_binary_src: /tmp/lotus-health
+    lotus_health_golog_file: "/var/log/lotus-health.log"
     lotus_fountain_wallet: "{{ lotus_wallet_address }}"
     lotus_env:
       RUST_LOG: "info"
@@ -45,6 +47,18 @@
         fields_under_root: true
         encoding: utf-8
         ignore_older: 3h
+      - type: log
+        paths:
+          - "{{ lotus_health_golog_file }}"
+        fields:
+          logzio_codec: json
+          token: "{{ logz_io_shared_token }}"
+          type: lotus-health
+        fields_under_root: true
+        json.keys_under_root: false
+        json.message_key: msg
+        encoding: utf-8
+        ignore_older: 3h
   tasks:
     - name: Ensure lotus user exists
       user:
@@ -60,5 +74,7 @@
         name: lotus_fullnode
     - include_role:
         name: lotus_fountain
+    - include_role:
+        name: lotus_health
     - include_role:
         name: ufw

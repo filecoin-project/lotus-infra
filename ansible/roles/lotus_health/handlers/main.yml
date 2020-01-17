@@ -1,0 +1,8 @@
+- name: reload-lotus-health
+  systemd:
+    daemon_reload: yes
+
+- name: restart-lotus-health
+  systemd:
+    name: 'lotus-health'
+    state: restarted

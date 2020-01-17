@@ -92,3 +92,15 @@ for HOST in "${HOSTS2[@]}"; do
 
     read  -n 1 -p "Press any key to continue"
 done
+
+read -n 1 -p "Press any key to enable lotus health agent"
+
+ansible-playbook lotus_bootstrap_miner_update_binaries.yml        \
+-e lotus_binary_src="${LOTUS_SRC}/lotus"                          \
+-e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
+-e lotus_copy_binary=False                                        \
+-e lotus_miner_copy_binary=False                                  \
+-e lotus_daemon_restart=False                                     \
+-e lotus_health_status="started"                                  \
+$ANSIBLE_CHECK_MODE                                               \
+$@

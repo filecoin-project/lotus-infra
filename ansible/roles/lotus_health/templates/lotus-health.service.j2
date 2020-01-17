@@ -1,0 +1,15 @@
+[Unit]
+Description=Lotus Health Agent
+After=network.target
+After={{lotus_health_lotus_daemon_systemd_unit}}
+Requires={{lotus_health_lotus_daemon_systemd_unit}}
+
+[Service]
+Restart=always
+RestartSec=30s
+ExecStart=/usr/local/bin/lotus-health --repo={{lotus_health_lotus_repo}} watch-head
+Environment=GOLOG_FILE="{{lotus_health_golog_file}}"
+Environment=GOLOG_LOG_FMT="json"
+
+[Install]
+WantedBy=multi-user.target
