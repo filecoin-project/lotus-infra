@@ -1,0 +1,13 @@
+---
+all:
+  children:
+    vagrant:
+      vars:
+        ansible_user: vagrant
+      children:
+        vagrant0:
+          hosts:
+            10.10.100.100:
+    presealers:
+      children:
+        vagrant0:

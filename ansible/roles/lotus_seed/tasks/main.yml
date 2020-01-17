@@ -1,108 +1,18 @@
-- name: Update repos and install deps
-  apt:
-    pkg:
-      - mesa-opencl-icd
-      - ocl-icd-opencl-dev
+- include_tasks: ../../../includes/required_vars.yml
+- include_tasks: ../../../includes/lotus_general_runtime_deps.yml
+
+- name: Ensure dependencies are installed
+  package:
+    name:
       - numactl
-      - ntp
-      - nvme-cli
-    update_cache: yes
 
-- name: Ensure mount point exists
-  file:
-    name: "{{ lotus_seed_mnt }}"
-    state: directory
-
-- name: Check if /dev/nvme0n1 is /dev/sdx
-  shell: nvme id-ctrl --raw-binary /dev/nvme0n1 |  cut -c3073-3104 | tr -s ' ' | sed 's/ $//g' | grep '/dev/sdx'
-  register: check_nvme0n1
-  failed_when: check_nvme0n1.rc == 2
-
-- name: Check if /dev/nvme1n1 is /dev/sdx
-  shell: nvme id-ctrl --raw-binary /dev/nvme1n1 |  cut -c3073-3104 | tr -s ' ' | sed 's/ $//g'   | grep '/dev/sdx'
-  register: check_nvme1n1
-  failed_when: check_nvme1n1.rc == 2
-
-- set_fact:
-    nvme_device: /dev/nvme0n1
-  when: check_nvme0n1.rc == 0
-
-- set_fact:
-    nvme_device: /dev/nvme1n1
-  when: check_nvme1n1.rc == 0
-
-- name: Create a new primary partition
-  parted:
-    device: "{{ nvme_device }}"
-    number: 1
-    label: gpt
-    state: present
-
-- name: Create a ext4 filesystem on /dev/sdb1 and check disk blocks
-  filesystem:
-    fstype: ext4
-    dev: "{{ nvme_device }}p1"
-
-- name: wait
-  shell: sleep 10
-
-- name: mount
-  shell: mount "{{ nvme_device }}p1" "{{ lotus_seed_mnt }}"
-  ignore_errors: yes
-
-- name: lotus start ntp
-  systemd:
-    name: "ntp"
+- name: Ensure ntp is started
+  service:
+    name: ntp
     enabled: yes
     state: started
 
-- name: lotus-seed user
-  user:
-    name: "{{ lotus_seed_user }}"
-    state: present
-    system: yes
-
-- name: remove current lotus-seed repository
-  block:
-    - name: remove repo
-      file:
-        path: "{{ lotus_seed_path }}"
-        state: absent
-  when: lotus_seed_reset_repo == "yes"
-
-- name: lotus-seed path directory
-  file:
-    path: "{{ lotus_seed_path }}"
-    state: directory
-    owner: "{{ lotus_seed_user }}"
-    group: "{{ lotus_seed_user }}"
-    mode: "0700"
-
-- name: proof params directory
-  file:
-    path: "{{ lotus_seed_proof_params_path }}"
-    state: directory
-    owner: "{{ lotus_seed_user }}"
-    group: "{{ lotus_seed_user }}"
-    mode: "0700"
-
-- name: lotus-seed golog file 0
-  file:
-    state: touch
-    path: "{{ lotus_seed_golog_file_0 }}"
-    owner: "{{ lotus_seed_user }}"
-    group: "{{ lotus_seed_user }}"
-    mode: "0644"
-
-- name: lotus-seed golog file 1
-  file:
-    state: touch
-    path: "{{ lotus_seed_golog_file_1 }}"
-    owner: "{{ lotus_seed_user }}"
-    group: "{{ lotus_seed_user }}"
-    mode: "0644"
-
-- name: lotus-seed binary
+- name: Copy lotus-seed binary
   copy:
     src: "{{ lotus_seed_binary_src }}"
     dest: /usr/local/bin/lotus-seed
@@ -111,23 +21,6 @@
     mode: "0755"
   when: lotus_seed_copy_binary | bool
 
-- name: lotus seed systemd service file 0
-  template:
-    src: ../templates/lotus-seed-0.service.j2
-    dest: /etc/systemd/system/lotus-seed-0.service
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: lotus seed systemd service file 1
-  template:
-    src: ../templates/lotus-seed-1.service.j2
-    dest: /etc/systemd/system/lotus-seed-1.service
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: reload systemd
-  systemd:
-    daemon_reload: yes
-
+- name: Creating seed workers
+  include_tasks: worker.yml
+  loop: "{{ lotus_seed_workers }}"

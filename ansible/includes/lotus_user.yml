@@ -1,0 +1,6 @@
+- name: Ensure lotus user exists
+  user:
+    name: "{{ lotus_user }}"
+    state: present
+    uid: "{{ lotus_user_uid }}"
+    system: yes

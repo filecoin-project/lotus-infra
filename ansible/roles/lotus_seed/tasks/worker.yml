@@ -1,0 +1,27 @@
+- name: Removing sectorbuilder directory
+  block:
+    - file:
+        path: "{{ item.path }}"
+        state: absent
+  when: lotus_seed_reset_repo == "yes"
+- name: Create sectorbuilder directory
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+- name: Create worker log file
+  file:
+    state: touch
+    path: "{{ item.log_file }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"
+- name: "Make service file"
+  template:
+    src: ../templates/lotus-seed-0.service.j2
+    dest: "/etc/systemd/system/lotus-seed-{{ item.index }}.service"
+    owner: root
+    group: root
+    mode: "0644"

@@ -1,0 +1,7 @@
+# These are the general dependencies required for most filecoin binaries
+- name: Ensure dependencies are installed
+  package:
+    name:
+      - mesa-opencl-icd
+      - ocl-icd-opencl-dev
+    state: present
