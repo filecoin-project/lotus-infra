@@ -6,10 +6,17 @@
     lotus_user: lotus
     lotus_binary_src: /tmp/lotus
     lotus_miner_binary_src: /tmp/lotus-storage-miner
+    lotus_health_binary_src: /tmp/lotus-health
     lotus_copy_binary: false
     lotus_miner_copy_binary: false
+    lotus_health_copy_binary: false
     lotus_daemon_restart: false
+    lotus_health_status: stopped
   tasks:
+    - name: Set lotus-health service status
+      systemd:
+        name: 'lotus-health'
+        state: "{{lotus_health_status}}"
     - name: Copy lotus binary
       copy:
         src: "{{ lotus_binary_src }}"

@@ -237,8 +237,11 @@
 [[inputs.procstat]]
   systemd_unit = "lotus-fountain.service"
 
-  [[inputs.procstat]]
-  systemd_unit = "stats.service"
+[[inputs.procstat]]
+systemd_unit = "stats.service"
+
+[[inputs.procstat]]
+systemd_unit = "lotus-health.service"
 
 # Read metrics about cpu usage
 [[inputs.cpu]]

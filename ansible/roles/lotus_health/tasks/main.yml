@@ -1,0 +1,35 @@
+- name: Ensure log file exists
+  file:
+    state: touch
+    path: "{{ lotus_health_golog_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Ensure service file
+  template:
+    src: ../templates/lotus-health.service.j2
+    dest: /etc/systemd/system/lotus-health.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload-lotus-health
+
+- name: Copy binary
+  copy:
+    src: "{{ lotus_health_binary_src }}"
+    dest: /usr/local/bin/lotus-health
+    owner: root
+    group: root
+    mode: "0755"
+  when: lotus_health_copy_binary | bool
+  notify:
+    - restart-lotus-health
+
+
+- name: Ensure lotus-health service enabled & started
+  systemd:
+    name: "lotus-health"
+    enabled: yes
+    state: started
