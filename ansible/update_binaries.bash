@@ -15,7 +15,7 @@ usage() {
 while [ "$1" != "" ]; do
     case $1 in
         -b | --branch )         shift
-                                branch=$1
+                                branch="$1"
                                 ;;
         -c | --copy )           copy="True"
                                 ;;
@@ -39,9 +39,9 @@ ANSIBLE_CHECK_MODE="${check:- ""}"
 LOTUS_SRC=$(mktemp -d)
 
 if [ "$COPY_BINARY" = "True" ]; then
-  git clone --branch $UPDATE_BRANCH https://github.com/filecoin-project/lotus.git $LOTUS_SRC
+  git clone --branch "$UPDATE_BRANCH" https://github.com/filecoin-project/lotus.git "$LOTUS_SRC"
 
-  pushd $LOTUS_SRC
+  pushd "$LOTUS_SRC"
 
   make clean deps lotus lotus-storage-miner
 
@@ -73,9 +73,9 @@ for HOST in "${HOSTS1[@]}"; do
     -e lotus_copy_binary=$COPY_BINARY                                 \
     -e lotus_miner_copy_binary=$COPY_BINARY                           \
     -e lotus_daemon_restart=$RESTART_LOTUS                            \
-    --limit $HOST                                                     \
+    --limit "$HOST"                                                   \
     $ANSIBLE_CHECK_MODE                                               \
-    $@
+    "$@"
 
     read  -n 1 -p "Press any key to continue"
 done
@@ -86,9 +86,9 @@ for HOST in "${HOSTS2[@]}"; do
     -e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
     -e lotus_copy_binary=$COPY_BINARY                                 \
     -e lotus_daemon_restart=$RESTART_LOTUS                            \
-    --limit $HOST                                                     \
+    --limit "$HOST"                                                   \
     $ANSIBLE_CHECK_MODE                                               \
-    $@
+    "$@"
 
     read  -n 1 -p "Press any key to continue"
 done
@@ -103,4 +103,4 @@ ansible-playbook lotus_bootstrap_miner_update_binaries.yml        \
 -e lotus_daemon_restart=False                                     \
 -e lotus_health_status="started"                                  \
 $ANSIBLE_CHECK_MODE                                               \
-$@
+"$@"

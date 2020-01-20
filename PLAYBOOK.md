@@ -14,17 +14,36 @@ Check to see how many messages are in the mpool for the fountain address
 ansible -m shell -a 'lotus mpool stat | grep $(lotus wallet default)' fountain
 ```
 
-If `past` is greater than `0` this is bad contact lotus devs
-If `future` is greater than `0` this is bad contact lotus devs
-
 If `curr` is greater than `0` this is okay, just means that there is a queue of messages.
+Messages can be mined into blocks at around 512 messages per block.
 
-If `curr` is greater than 200, put the faucet into maintance mode and monitor the mpool till
-it drops below 50
+If `past` is greater than `0` this is bad contact lotus devs
 
+----------------
+
+If `future` is greater than `0`, this means there is a nonce gap that needs to be fixed.
+
+Get the next nonce for the wallet actor, this will be  `<START>`
 ```
-lotus-infra $ ./scripts/faucet_to_maintenance.bash
+ansible $ ansible -m shell -a 'lotus state get-actor $(lotus wallet default) | grep Nonce' fountain
 ```
+
+Get the lowest nonce from the pending messages, this will be `<END>`
+```
+ansible $ ansible -m shell -a 'lotus mpool pending | jq " . | select( .Message.From == \"$(lotus wallet default)\" ) | .Message.Nonce " | sort | head -n1' fountain
+```
+
+Replace the `<START>` and `<END>` values and execute
+```
+ansible $ ansible -m shell -a 'lotus-shed noncefix --start <START> --end <END>  --addr $(lotus wallet default)' fountain
+```
+
+Verify that the future value is now `0`
+```
+ansible -m shell -a 'lotus mpool stat | grep $(lotus wallet default)' fountain
+```
+
+----------------
 
 If `curr` is zero or a low number try the faucet yourself
 
