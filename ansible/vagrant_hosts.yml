@@ -8,6 +8,9 @@ all:
         vagrant0:
           hosts:
             10.10.100.100:
+    lotus_daemon:
+      children:
+        vagrant0:
     presealers:
       children:
         vagrant0:

@@ -1,30 +1,28 @@
-- name: Install packages
-  apt:
-    pkg:
-      - mesa-opencl-icd
-      - ocl-icd-opencl-dev
-      - ntp
-    update_cache: yes
+- include_tasks: ../../../includes/required_vars.yml
+- include_tasks: ../../../includes/lotus_general_runtime_deps.yml
 
-- name: Ensure ntp service enabled & started
-  systemd:
-    name: "ntp"
-    enabled: yes
-    state: started
+- name: Copy binary
+  copy:
+    src: "{{ lotus_binary_src }}"
+    dest: /usr/local/bin/lotus
+    owner: root
+    group: root
+    mode: "0755"
+  when: lotus_binary_src is defined
 
-- debug:
-    msg: "Reset lotus? {{ lotus_reset }}"
-
-- name: Reset lotus
+- name: Reset system
   block:
     - name: Ensure lotus stopped
-      systemd:
+      service:
         name: lotus-daemon
         state: stopped
     - name: Remove lotus repository
       file:
         path: "{{ lotus_path }}"
         state: absent
+    - name: Truncate log file
+      shell:
+        cmd: truncate -s 0 "{{ lotus_golog_file }}"
   when: lotus_reset == "yes"
 
 - name: Ensure lotus repository exists
@@ -38,6 +36,7 @@
 - name: Ensure LOTUS_PATH global env is set
   lineinfile:
     path: /etc/environment
+    regex: "^LOTUS_PATH"
     line: LOTUS_PATH="{{ lotus_path }}"
 
 - name: Ensure proof parameters directory exists
@@ -66,24 +65,6 @@
   notify:
     - reload-lotus
 
-- name: Copy binary
-  copy:
-    src: "{{ lotus_binary_src }}"
-    dest: /usr/local/bin/lotus
-    owner: root
-    group: root
-    mode: "0755"
-  when: lotus_copy_binary | bool
-
-- name: Copy binary - lotus shed
-  copy:
-    src: "{{ lotus_shed_binary_src }}"
-    dest: /usr/local/bin/lotus-shed
-    owner: root
-    group: root
-    mode: "0755"
-  when: lotus_shed_copy_binary | bool
-
 - name: Ensure lotus configuration
   template:
     src: ../templates/config.toml.j2
@@ -92,53 +73,19 @@
     group: "{{ lotus_user }}"
     mode: "0644"
 
-- name: Ensure lotus peerkey
-  block:
-    - name: Ensure keystore path created
-      file:
-        path: "{{ lotus_path }}/keystore/"
-        state: directory
-        owner: "{{ lotus_user }}"
-        group: "{{ lotus_user }}"
-        mode: "0700"
-    - name: Ensure peerkey exists
-      copy:
-        content: "{{ lotus_libp2p_keyinfo }}"
-        owner: "{{ lotus_user }}"
-        group: "{{ lotus_user }}"
-        mode: "0600"
-        dest: "{{ lotus_path }}/keystore/{{ lotus_libp2p_keyname }}"
-  when: lotus_libp2p_keyinfo is defined
+- name:
+  include_tasks: import_peerkey.yml
+  when: lotus_import_peerkey | bool
 
-- name: Ensure wallet is imported
-  block:
-    - name: Ensure keystore path created
-      file:
-        path: "{{ lotus_path }}/keystore/"
-        state: directory
-        owner: "{{ lotus_user }}"
-        group: "{{ lotus_user }}"
-        mode: "0700"
-    - name: Register lotus_raw_wallet
-      shell: lotus-shed base16 -decode "{{ lotus_wallet_keyinfo }}"
-      register: lotus_raw_wallet
-    - name: Register base32_encoded_wallet_addr
-      shell: lotus-shed base32 "wallet-{{ lotus_wallet_address }}"
-      register: lotus_wallet_base32_encoded_addr
-    - name: Ensure miner wallet exists
-      copy:
-        content: "{{ lotus_raw_wallet.stdout }}"
-        owner: "{{ lotus_user }}"
-        group: "{{ lotus_user }}"
-        mode: "0600"
-        dest: "{{ lotus_path }}/keystore/{{ lotus_wallet_base32_encoded_addr.stdout }}"
-  when: lotus_wallet_keyinfo is defined
+- name:
+  include_tasks: import_wallet.yml
+  when: lotus_import_wallet | bool
 
-- name: Ensure lotus service enabled & started
-  systemd:
+- name: Ensure lotus service enabled and in correct state ({{ lotus_systemd_state}})
+  service:
     name: "lotus-daemon"
     enabled: yes
-    state: started
+    state: "{{ lotus_service_state }}"
 
 - set_fact:
     lotus_fullnode_ufw_profile:

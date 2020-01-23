@@ -1,0 +1,8 @@
+- name: Copy binary
+  copy:
+    src: "{{ lotus_shed_binary_src }}"
+    dest: /usr/local/bin/lotus-shed
+    owner: root
+    group: root
+    mode: "0755"
+  when: lotus_shed_binary_src is defined
