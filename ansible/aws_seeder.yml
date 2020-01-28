@@ -1,0 +1,11 @@
+---
+- hosts: seeder
+  tasks:
+    - hostname:
+        name: "{{ hostname }}"
+    - apt:
+        update_cache: true
+    - include_tasks: includes/aws_volume.yml
+      loop: "{{ devices.split(';') }}"
+      loop_control:
+        index_var: index

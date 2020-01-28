@@ -1,0 +1,11 @@
+lotus_seed_sector_size: 1024
+lotus_seed_sector_count: 32
+lotus_seed_workers:
+  - path: "/mnt/disk0/data"
+    index: 0
+    log_file: "/var/log/lotus-seed-0.log"
+    numanode: 0
+  - path: "/mnt/disk1/data"
+    index: 1
+    log_file: "/var/log/lotus-seed-1.log"
+    numanode: 0

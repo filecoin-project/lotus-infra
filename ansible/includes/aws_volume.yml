@@ -1,0 +1,24 @@
+---
+- name: Ensure merged mount point exists
+  file:
+    name: "/mnt/disk{{ index }}"
+    state: directory
+
+- name: Create merged primary partition
+  parted:
+    device: "{{ item }}"
+    number: "1"
+    label: gpt
+    state: present
+
+- name: Create ext4 filesystem for merged parition
+  filesystem:
+    fstype: ext4
+    dev: "{{ item }}1"
+
+- name: Ensure merged mounted
+  mount:
+    src: "{{ item }}1"
+    path: "/mnt/disk{{ index }}"
+    state: mounted
+    fstype: ext4

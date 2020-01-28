@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User={{ lotus_user }}
 Group={{ lotus_user }}
-ExecStart=/usr/bin/numactl --cpunodebind="{{ item.numanode }}" --membind="{{ item.numanode }}" /usr/local/bin/lotus-seed --sectorbuilder-dir="{{ item.path }}" pre-seal --sector-size="{{ lotus_seed_sector_size }}" --num-sectors="{{ lotus_seed_sector_count }}" --miner-addr="{{ lotus_seed_miner_addr }}" --sector-offset="{{ item.index * lotus_seed_sector_count + lotus_seed_sector_offset }}"
+ExecStart=/usr/bin/numactl --cpunodebind="{{ item.numanode }}" --membind="{{ item.numanode }}" /usr/local/bin/lotus-seed --sectorbuilder-dir="{{ item.path }}" pre-seal --sector-size="{{ lotus_seed_sector_size }}" --num-sectors="{{ lotus_seed_sector_count }}" --miner-addr="{{ lotus_seed_miner_addr }}" --sector-offset="{{ (item.index|int) * (lotus_seed_sector_count|int) + (lotus_seed_sector_offset|int) }}"
 Environment=GOLOG_FILE="{{ item.log_file}}"
 Environment=GOLOG_LOG_FMT="{{ lotus_seed_golog_log_fmt }}"
 {% for item in lotus_seed_env | dict2items -%}
