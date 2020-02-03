@@ -14,3 +14,6 @@ all:
     presealers:
       children:
         vagrant0:
+    presealed_miners:
+      children:
+        vagrant0:

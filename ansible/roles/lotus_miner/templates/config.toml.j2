@@ -1,0 +1,8 @@
+[SectorBuilder]
+
+Storage = [
+{% for item in lotus_miner_presealed_sectors -%}
+{ Path = "{{ item }}", Cache = true, Weight = 0 },
+{% endfor %}
+]
+

@@ -1,0 +1,18 @@
+---
+- hosts: presealed_miners
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+    - import_tasks: includes/lotus_user.yml
+    - include_role: name=common
+    - include_role: name=ntp
+    - include_role: name=lotus_fullnode
+    - include_role: name=lotus_miner
+    - include_role: name=ufw
+      vars:
+        ufw_profiles:
+          - "{{ lotus_fullnode_ufw_profile }}"
+      when:
+        - lotus_fullnode_ufw_profile is defined

@@ -1,0 +1,30 @@
+- name: Register release_name
+  shell: uname -r
+  register: release_name
+
+- name: Ensure nvidia driver install dependencies are installed
+  package:
+    name:
+      - gcc
+      - make
+      - "linux-headers-{{ release_name.stdout }}"
+  when: release_name is defined
+
+- name: Register modinfo_nvidia
+  shell: modinfo nvidia
+  ignore_errors: yes
+  register: modinfo_nvidia
+
+- name: Ensure nvidia drivers are installed
+  block:
+    - name: Download drivers
+      get_url:
+        url: "{{ lotus_miner_nvidia_drivers_url }}"
+        dest: /tmp/nvidia-drivers
+        mode: "0755"
+
+    - name: Install drivers
+      shell: /tmp/nvidia-drivers --ui=none --no-questions
+      notify: reboot-system
+  when: modinfo_nvidia is defined and modinfo_nvidia.rc == 1
+

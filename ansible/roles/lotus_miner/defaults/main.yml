@@ -1,12 +1,5 @@
-lotus_miner_binary_src:
-lotus_miner_nvidia_drivers_url:
-lotus_miner_presealed_sector_src:
 lotus_miner_genesis_miner: "false"
-lotus_miner_nosync: "true"
-lotus_miner_copy_binary: false
 lotus_miner_reset: no
-lotus_miner_path: /var/lib/lotus-miner
-lotus_miner_presealed_sectors_path: /var/lib/lotus-miner-presealed-sectors
-lotus_miner_golog_file: /var/log/lotus-miner.log
 lotus_miner_golog_log_fmt: json
 lotus_miner_env: {}
+lotus_miner_import_wallet: false

@@ -16,7 +16,7 @@
     - name: Register base32_encoded_wallet_addr
       shell: lotus-shed base32 "wallet-{{ lotus_wallet_address }}"
       register: lotus_wallet_base32_encoded_addr
-    - name: Ensure miner wallet exists
+    - name: Ensure wallet exists
       copy:
         content: "{{ lotus_wallet_raw.stdout }}"
         owner: "{{ lotus_user }}"

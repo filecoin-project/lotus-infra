@@ -1,0 +1,28 @@
+- name: Ensure wallet is imported
+  block:
+    - name: Ensure keystore path created
+      file:
+        path: "{{ lotus_path }}/keystore/"
+        state: directory
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0700"
+    - name: Register miner_wallet_keyinfo
+      shell: jq -rc ".{{ lotus_miner_addr }}.Key" < "{{ lotus_miner_presealed_metadata }}"
+      register: miner_wallet_keyinfo
+    - name: Register base16_encoded_wallet
+      shell: lotus-shed base16 '{{ miner_wallet_keyinfo.stdout }}'
+      register: miner_base16_encoded_wallet
+    - name: Register miner_wallet_addr
+      shell: lotus-shed keyinfo --format {%raw%}"{{.Address}}"{%endraw%} "{{ miner_base16_encoded_wallet.stdout }}"
+      register: miner_wallet_addr
+    - name: Register base32_encoded_wallet_addr
+      shell: lotus-shed base32 "wallet-{{ miner_wallet_addr.stdout }}"
+      register: miner_base32_encoded_wallet_addr
+    - name: Ensure miner wallet exists
+      copy:
+        content: "{{ miner_wallet_keyinfo.stdout }}"
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0600"
+        dest: "{{ lotus_path }}/keystore/{{ miner_base32_encoded_wallet_addr.stdout }}"
