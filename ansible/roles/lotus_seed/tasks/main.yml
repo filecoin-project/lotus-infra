@@ -19,7 +19,7 @@
     owner: root
     group: root
     mode: "0755"
-  when: lotus_seed_copy_binary | bool
+  when: lotus_seed_binary_src is defined
 
 - name: Creating seed workers
   include_tasks: worker.yml
