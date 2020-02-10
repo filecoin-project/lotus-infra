@@ -67,7 +67,8 @@ resource "null_resource" "this" {
       extra_vars = {
         ansible_user = "ubuntu"
         hostname     = aws_route53_record.this[0].fqdn
-        devices      = join(";", aws_volume_attachment.this.*.device_name)
+        devices_id   = join(";", aws_volume_attachment.this.*.volume_id)
+        devices_name = join(";", aws_volume_attachment.this.*.device_name)
       }
 
       # shared attributes
@@ -80,7 +81,7 @@ resource "null_resource" "this" {
   }
 
   provisioner "remote-exec" {
-      inline     = ["sudo umount ${join(" ", formatlist("%s1", aws_volume_attachment.this.*.device_name))}"]
+      inline     = ["sudo shutdown -h now"]
       when       = destroy
       on_failure = continue
   }

@@ -11,14 +11,18 @@
     label: gpt
     state: present
 
-- name: Create ext4 filesystem for merged parition
+- name:
+  shell: fdisk -l -o Device "{{ item }}" | grep '^{{ item }}'
+  register: partition
+
+- name: Create ext4 filesystem for merged partition
   filesystem:
     fstype: ext4
-    dev: "{{ item }}1"
+    dev: "{{ partition.stdout }}"
 
 - name: Ensure merged mounted
   mount:
-    src: "{{ item }}1"
+    src: "{{ partition.stdout }}"
     path: "/mnt/disk{{ index }}"
     state: mounted
     fstype: ext4
