@@ -39,6 +39,13 @@
     regex: "^LOTUS_PATH"
     line: LOTUS_PATH="{{ lotus_path }}"
 
+- name: Ensure IPFS_GATEWAY global env is set
+  lineinfile:
+    path: /etc/environment
+    regex: "^IPFS_GATEWAY"
+    line: IPFS_GATEWAY="{{ lotus_ipfs_gateway }}"
+  when: lotus_ipfs_gateway is defined
+
 - name: Ensure proof parameters directory exists
   file:
     path: "{{ lotus_proof_params_path }}"
