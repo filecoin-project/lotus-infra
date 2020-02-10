@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: lotus_daemon
   become: true
   module_defaults:
     package:
