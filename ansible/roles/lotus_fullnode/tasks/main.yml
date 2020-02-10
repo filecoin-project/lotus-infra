@@ -91,3 +91,11 @@
     lotus_fullnode_ufw_profile:
       name: Lotus Daemon
       value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"
+
+- set_fact:
+    lotus_fullnode_filebeat_input:
+      paths:
+        - "{{ lotus_golog_file }}"
+      fields:
+        type: "lotus-daemon"
+

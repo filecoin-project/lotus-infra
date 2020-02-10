@@ -106,3 +106,11 @@
     name: "lotus-miner"
     enabled: yes
     state: stopped
+
+- set_fact:
+    lotus_miner_filebeat_input:
+      paths:
+        - "{{ lotus_miner_golog_file }}"
+      fields:
+        type: "lotus-miner"
+
