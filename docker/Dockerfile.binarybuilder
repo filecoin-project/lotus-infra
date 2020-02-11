@@ -1,0 +1,21 @@
+FROM golang:1.13.3-stretch AS builder
+MAINTAINER Lotus Development Team
+
+RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1
+
+ARG UID=1000
+ARG GID=1000
+
+ENV XDG_CACHE_HOME="/tmp"
+
+RUN addgroup -gid $GID lotus && \
+    adduser --no-create-home --disabled-password -uid $UID --ingroup lotus --gecos "" lotus && \
+    mkdir -p "/go/pkg/mod" && \
+    chown -R lotus:lotus "/go/pkg/mod"
+
+VOLUME /go/pkg/mod
+
+USER lotus
+WORKDIR /opt/lotus
+
+CMD ["make"]

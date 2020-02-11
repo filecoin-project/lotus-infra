@@ -2,6 +2,14 @@ Vagrant
 =======
 
 Install [vagrant `2.2.6`](https://releases.hashicorp.com/vagrant/2.2.6/)
+Image: ubuntu/bionic64
+ - https://ipfs.io/ipfs/QmQvvzXTUydatqHaFs15rSyowocsfTWZUWszE4nNEBqFBv/ubuntu-18.04-server-cloudimg-amd64-vagrant.box
+ - http://cloud-images.ubuntu.com/releases/bionic/release-20200129.1/ubuntu-18.04-server-cloudimg-amd64-vagrant.box
+
+```
+ipfs get -o . QmQvvzXTUydatqHaFs15rSyowocsfTWZUWszE4nNEBqFBv/ubuntu-18.04-server-cloudimg-amd64-vagrant.box
+vagrant box add --name "ubuntu/bionic64" ubuntu-18.04-server-cloudimg-amd64-vagrant.box
+```
 
 ```
 vagrant plugin install vagrant-disksize
@@ -22,6 +30,15 @@ Whenever you want to reset the machine, instead of destroying the machine, just 
 ```
 vagrant snapshot restore vagrant0 provisioned --no-provision
 ```
+
+Building Binaries
+-----------------
+
+```
+../scripts/build_binaries.bash --debug
+```
+
+*assumes your code is under `$GOPATH/src/github.com/filecoin-project/lotus`*
 
 Presealer
 ---------
