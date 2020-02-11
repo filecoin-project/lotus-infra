@@ -85,6 +85,11 @@ resource "null_resource" "this" {
       when       = destroy
       on_failure = continue
   }
+
+  provisioner "local-exec" {
+    command = "sleep 30"
+    when    = destroy
+  }
 }
 
 resource "aws_route53_record" "this" {

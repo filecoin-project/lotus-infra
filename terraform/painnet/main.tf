@@ -10,6 +10,11 @@ variable "public_subnets" {
   default = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24"]
 }
 
+variable "seeders_enabled" {
+  type = number
+  default = 0
+}
+
 locals {
   vault_password_file = "${path.module}/.vault_password"
   worker_count = 5
@@ -59,11 +64,11 @@ module "t0201" {
   zone_id                     = var.zone_id
   vpc_security_group_ids      = [aws_security_group.this.id]
   subnet_id                   = module.vpc.public_subnets[0]
-  worker0_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 0 * local.worker_thread_count, 1 * local.worker_thread_count)
-  worker1_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 1 * local.worker_thread_count, 2 * local.worker_thread_count)
-  worker2_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 2 * local.worker_thread_count, 3 * local.worker_thread_count)
-  worker3_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 3 * local.worker_thread_count, 4 * local.worker_thread_count)
-  worker4_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 4 * local.worker_thread_count, 5 * local.worker_thread_count)
+  worker0_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled)
+  worker1_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled)
+  worker2_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled)
+  worker3_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled)
+  worker4_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled)
 }
 
 module "t0202" {
@@ -75,11 +80,11 @@ module "t0202" {
   zone_id                     = var.zone_id
   vpc_security_group_ids      = [aws_security_group.this.id]
   subnet_id                   = module.vpc.public_subnets[0]
-  worker0_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 0 * local.worker_thread_count, 1 * local.worker_thread_count)
-  worker1_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 1 * local.worker_thread_count, 2 * local.worker_thread_count)
-  worker2_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 2 * local.worker_thread_count, 3 * local.worker_thread_count)
-  worker3_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 3 * local.worker_thread_count, 4 * local.worker_thread_count)
-  worker4_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 4 * local.worker_thread_count, 5 * local.worker_thread_count)
+  worker0_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled)
+  worker1_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled)
+  worker2_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled)
+  worker3_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled)
+  worker4_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled)
 }
 
 resource "aws_ebs_volume" "t0201" {
