@@ -15,6 +15,11 @@ variable "seeders_enabled" {
   default = 0
 }
 
+variable "miners_enabled" {
+  type = number
+  default = 0
+}
+
 locals {
   vault_password_file = "${path.module}/.vault_password"
   worker_count = 5
@@ -55,7 +60,7 @@ resource "aws_security_group" "this" {
   }
 }
 
-module "t0201" {
+module "t0201sg" {
   source = "../modules/seeder_group"
 
   miner_addr                  = "t0201"
@@ -71,20 +76,17 @@ module "t0201" {
   worker4_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled)
 }
 
-module "t0202" {
-  source = "../modules/seeder_group"
+module "t0201pm" {
+  source = "../modules/presealing_miner"
 
-  miner_addr                  = "t0202"
-  instance_type               = "t2.large"
+  miner_addr                  = "t0201"
+  #instance_type               = "t2.large"
+  instance_type              = "p3.2xlarge"
   vault_password_file         = local.vault_password_file
   zone_id                     = var.zone_id
   vpc_security_group_ids      = [aws_security_group.this.id]
   subnet_id                   = module.vpc.public_subnets[0]
-  worker0_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled)
-  worker1_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled)
-  worker2_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled)
-  worker3_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled)
-  worker4_ebs_volume_ids      = slice(aws_ebs_volume.t0202, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled)
+  ebs_volume_ids              = slice(aws_ebs_volume.t0201, 0, length(aws_ebs_volume.t0201) * var.miners_enabled)
 }
 
 resource "aws_ebs_volume" "t0201" {
@@ -95,21 +97,6 @@ resource "aws_ebs_volume" "t0201" {
 
   tags = {
     Name = "t0201v${count.index}"
-  }
-
-  lifecycle {
-    prevent_destroy = false
-  }
-}
-
-resource "aws_ebs_volume" "t0202" {
-  count             = local.worker_count * local.worker_thread_count
-  availability_zone = data.aws_availability_zones.available.names[0]
-  size              = 32
-  type              = "gp2"
-
-  tags = {
-    Name = "t0202v${count.index}"
   }
 
   lifecycle {
