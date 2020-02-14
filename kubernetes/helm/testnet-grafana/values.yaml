@@ -4,6 +4,7 @@
 ---
 domain: stats.testnet.filecoin.io
 domainInternal: stats-internal.testnet.filecoin.io
+htpasswd: protocol:$apr1$IWwZ.TPe$esqo2KqTYQRagnQRk.xvx0
 metricsRange: 30m
 metricsRefresh: 45s
 grafana:
@@ -26,7 +27,7 @@ grafana:
     targetPort: 8000
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-1:657871693752:certificate/38da7d4f-cfef-4b2c-8fc6-2b75be230cb6"
-      external-dns.alpha.kubernetes.io/hostname: stats.testnet.filecoin.io
+      external-dns.alpha.kubernetes.io/hostname: stats.testnet.filecoin.io,stats-internal.testnet.filecoin.io
       external-dns.alpha.kubernetes.io/alias: "true"
       external-dns.alpha.kubernetes.io/ttl: "60"
   tolerations:
@@ -58,10 +59,17 @@ grafana:
         - name: config-volume
           mountPath: /opt/bitnami/nginx/conf/server_blocks
           readOnly: true
+        - name: htpasswd
+          mountPath: /opt/bitnami/nginx/htpasswd
+          readOnly: true
   extraConfigmapMounts:
     - name: config-volume
       mountPath: /opt/bitnami/nginx/conf/server_blocks
       configMap: testnet-grafana-nginx-sidecar
+      readOnly: true
+    - name: htpasswd
+      mountPath: /opt/bitnami/nginx/htpasswd
+      configMap: testnet-grafana-nginx-htpasswd
       readOnly: true
   smtp:
     existingSecret: mailgun

@@ -7,6 +7,7 @@ data:
   nginx.conf: |
     server {
       listen 8000;
+      server_name {{ .Values.domain }};
       location / {
         proxy_pass http://localhost:3000;
       }
@@ -25,3 +26,24 @@ data:
         }
       }
     }
+
+    server {
+      listen 8000;
+      server_name {{ .Values.domainInternal }};
+      location / {
+        auth_basic "Internal Dashboards";
+        auth_basic_user_file /opt/bitnami/nginx/htpasswd/.htpasswd;
+        proxy_pass http://localhost:3000;
+      }
+    }
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name}}-nginx-htpasswd
+  namespace: {{ .Release.Namespace }}
+data:
+  .htpasswd: |
+    {{ .Values.htpasswd }}
