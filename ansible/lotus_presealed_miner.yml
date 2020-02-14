@@ -24,3 +24,12 @@
           - "{{ lotus_fullnode_ufw_profile }}"
       when:
         - lotus_fullnode_ufw_profile is defined
+    - include_role: name=telegraf
+      vars:
+        telegraf_global_tag_groups:
+          - component: presealed_miner
+          - "{{ lotus_fullnode_telegraf_tags }}"
+          - "{{ lotus_miner_telegraf_tags }}"
+      when:
+        - lotus_fullnode_telegraf_tags is defined
+        - lotus_miner_telegraf_tags is defined

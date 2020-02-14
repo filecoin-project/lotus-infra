@@ -114,3 +114,6 @@
       fields:
         type: "lotus-miner"
 
+- set_fact:
+    lotus_miner_telegraf_tags:
+      miner: "{{ lotus_miner_addr }}"

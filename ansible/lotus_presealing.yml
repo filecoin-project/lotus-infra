@@ -11,3 +11,10 @@
     - import_tasks: includes/lotus_user.yml
     - include_role: name=ntp
     - include_role: name=lotus_seed
+    - include_role: name=telegraf
+      vars:
+        telegraf_global_tag_groups:
+          - component: presealer
+          - "{{ lotus_seed_telegraf_tags }}"
+      when:
+        - lotus_seed_telegraf_tags is defined

@@ -24,3 +24,9 @@
 - name: Creating seed workers
   include_tasks: worker.yml
   loop: "{{ lotus_seed_workers }}"
+
+- set_fact:
+    lotus_seed_filebeat_input:
+      paths: "{{ lotus_seed_workers | map(attribute='log_file') | list }}"
+      fields:
+        type: "lotus-seed"

@@ -106,3 +106,5 @@
       fields:
         type: "lotus-daemon"
 
+- set_fact:
+    lotus_fullnode_telegraf_tags: {}

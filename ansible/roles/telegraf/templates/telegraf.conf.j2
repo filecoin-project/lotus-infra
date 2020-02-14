@@ -16,8 +16,8 @@
 
 # Global tags can be specified here in key="value" format.
 [global_tags]
-{% for tag in telegraf_global_tags %}
-  {{ tag.name }} = "{{ tag.value }}"
+{% for tag in telegraf_global_tags | dict2items %}
+  {{ tag.key}} = "{{ tag.value }}"
 {% endfor %}
 
 # Configuration for telegraf agent

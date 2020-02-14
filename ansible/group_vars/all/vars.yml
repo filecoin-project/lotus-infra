@@ -1,8 +1,6 @@
 ---
 logz_io_shared_token: "{{ vault_logz_io_shared_token }}"
-telegraf_global_tags:
-  - name: app
-    value: lotus
+telegraf_global_tags: {}
 telegraf_outputs_influxdb_enabled: true
 telegraf_outputs_influxdb_username: lotus
 telegraf_outputs_influxdb_password: "{{ vault_influxdb_lotus_password }}"
