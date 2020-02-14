@@ -6,6 +6,7 @@
       force_apt_get: yes
   tasks:
     - import_tasks: includes/lotus_user.yml
+    - include_role: name=common
     - include_role: name=ntp
     - include_role: name=lotus_seed
     - include_role: name=filebeat_logz_io
