@@ -4,9 +4,6 @@
   module_defaults:
     package:
       force_apt_get: yes
-  vars:
-    lotus_user: "fc"
-    lotus_user_uid: "532"
   tasks:
     - import_tasks: includes/lotus_user.yml
     - include_role: name=ntp
