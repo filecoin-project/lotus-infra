@@ -26,3 +26,6 @@
     path: "/mnt/disk{{ index }}"
     state: mounted
     fstype: ext4
+
+- name: Write Hostname
+  shell: "echo '{{ hostname }}' >> /mnt/disk{{ index }}/hostnames"
