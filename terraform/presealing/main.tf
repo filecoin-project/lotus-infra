@@ -86,7 +86,7 @@ module "t0111" {
   ebs_volume_id              = aws_ebs_volume.seedm3
 }
 */
-
+/*
 resource "aws_ebs_volume" "seedm0" {
   count             = length(var.lotus_seed_sector_offset_0)
   availability_zone = data.aws_availability_zones.available.names[0]
@@ -101,6 +101,7 @@ resource "aws_ebs_volume" "seedm0" {
     prevent_destroy = false
   }
 }
+*/
 
 /*
 module "seedm1" {
@@ -131,9 +132,12 @@ module "t0222" {
   subnet_id                  = module.vpc.public_subnets[1]
   vpc_security_group_ids     = [aws_security_group.seed.id]
   zone_id                    = data.aws_route53_zone.default.zone_id
-  ebs_volume_id              = aws_ebs_volume.seedm1
+  availability_zone          = data.aws_availability_zones.available.names[1]
+  ebs_volume_id              = [] #aws_ebs_volume.seedm1
 }
 
+
+/*
 resource "aws_ebs_volume" "seedm1" {
   count             = length(var.lotus_seed_sector_offset_0)
   availability_zone = data.aws_availability_zones.available.names[1]
@@ -148,7 +152,7 @@ resource "aws_ebs_volume" "seedm1" {
     prevent_destroy = false
   }
 }
-
+*/
 
 /*
 module "seedm2" {
@@ -180,10 +184,12 @@ module "t0333" {
   subnet_id                  = module.vpc.public_subnets[2]
   vpc_security_group_ids     = [aws_security_group.seed.id]
   zone_id                    = data.aws_route53_zone.default.zone_id
-  ebs_volume_id              = aws_ebs_volume.seedm2
+  availability_zone          = data.aws_availability_zones.available.names[2]
+  ebs_volume_id              = [] #aws_ebs_volume.seedm2
 }
 
 
+/*
 resource "aws_ebs_volume" "seedm2" {
   count             = length(var.lotus_seed_sector_offset_0)
   availability_zone = data.aws_availability_zones.available.names[2]
@@ -198,6 +204,7 @@ resource "aws_ebs_volume" "seedm2" {
     prevent_destroy = false
   }
 }
+*/
 
 /*
 module "seedm3" {
@@ -229,9 +236,11 @@ module "t0444" {
   subnet_id                  = module.vpc.public_subnets[3]
   vpc_security_group_ids     = [aws_security_group.seed.id]
   zone_id                    = data.aws_route53_zone.default.zone_id
-  ebs_volume_id              = aws_ebs_volume.seedm3
+  availability_zone          = data.aws_availability_zones.available.names[3]
+  ebs_volume_id              = []#aws_ebs_volume.seedm3
 }
 
+/*
 resource "aws_ebs_volume" "seedm3" {
   count             = length(var.lotus_seed_sector_offset_0)
   availability_zone = data.aws_availability_zones.available.names[3]
@@ -246,6 +255,7 @@ resource "aws_ebs_volume" "seedm3" {
     prevent_destroy = false
   }
 }
+*/
 
 /*
 output "sealing_machines" {
