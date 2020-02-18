@@ -4,6 +4,7 @@ variable "ebs_volume_id" {}
 variable "zone_id" {}
 variable "vpc_security_group_ids" {}
 variable "subnet_id" {}
+variable "availability_zone" {}
 
 resource "aws_instance" "miner" {
   ami                         = "ami-01caa26d7860f2195"
@@ -28,7 +29,7 @@ variable "device_names" {
 }
 
 resource "aws_ebs_volume" "merge" {
-  availability_zone = var.ebs_volume_id[0].availability_zone
+  availability_zone = var.availability_zone
   size              = 8000
   type              = "gp2"
 
