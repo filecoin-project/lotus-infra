@@ -3,7 +3,7 @@
     - file:
         path: "{{ item.path }}"
         state: absent
-  when: lotus_seed_reset_repo == "yes"
+  when: lotus_seed_reset == "yes"
 - name: Create sectorbuilder directory
   file:
     path: "{{ item.path }}"

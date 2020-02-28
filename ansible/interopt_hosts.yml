@@ -1,0 +1,19 @@
+---
+all:
+  children:
+    aws:
+      vars:
+        ansible_user: ubuntu
+      children:
+        t01000:
+          hosts:
+            t01000.miner.interoptnet.kittyhawk.wtf:
+    lotus_daemon:
+      children:
+        t01000:
+    presealers:
+      children:
+        t01000:
+    presealed_miners:
+      children:
+        t01000:

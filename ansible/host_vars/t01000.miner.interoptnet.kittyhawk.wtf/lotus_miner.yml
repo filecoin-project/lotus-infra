@@ -1,0 +1,23 @@
+lotus_miner_addr: t01000
+lotus_ipfs_gateway: "https://ipfs.io/ipfs/"
+lotus_miner_genesis_miner: true
+lotus_miner_sector_size: 1024
+lotus_miner_presealed_sectors:
+  - /mnt/disk0/data
+  - /mnt/disk1/data
+lotus_miner_wallet_keyinfo: 7b2254797065223a22626c73222c22507269766174654b6579223a22647230376472472f616f4a776a78685348494d636445796f494e305853534c3079544b46495262513431733d227d
+lotus_miner_wallet_address: t3qf7bgzm4idijum7vo2bywknhqjvkqmcmngdbvrgwbssp3gs5ixsmmlklxvi6rvi6xzamknxurpukny7kxluq
+lotus_seed_sector_size: 1024
+lotus_seed_sector_count: 32
+lotus_seed_workers:
+  - path: "/mnt/disk0/data"
+    index: 0
+    log_file: "/var/log/lotus-seed-0.log"
+    numanode: 0
+  - path: "/mnt/disk1/data"
+    index: 1
+    log_file: "/var/log/lotus-seed-1.log"
+    numanode: 0
+lotus_seed_sector_offset: "{{ 0 * lotus_seed_sector_count * (lotus_seed_workers | length) }}"
+lotus_seed_miner_addr: "t01000"
+lotus_seed_miner_wallet_keyinfo: "{{ lotus_miner_wallet_keyinfo }}"
