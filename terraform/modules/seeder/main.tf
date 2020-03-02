@@ -8,7 +8,7 @@ variable "ebs_volume_ids" {}
 variable "index" {}
 
 locals {
-  devices = ["/dev/xvdca", "/dev/xvdcb", "/dev/xvdcc", "/dev/xvdcd"]
+  devices = ["/dev/xvdca", "/dev/xvdcb", "/dev/xvdcc", "/dev/xvdcd", "/dev/xvdce", "/dev/xvdcf"]
   name    = "${var.miner_addr}w${var.index}"
   count   = length(var.ebs_volume_ids) > 0 ? 1 : 0
 }
