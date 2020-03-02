@@ -21,6 +21,7 @@ resource "aws_instance" "this" {
   vpc_security_group_ids      = var.vpc_security_group_ids
   subnet_id                   = var.subnet_id
   associate_public_ip_address = "true"
+  availability_zone           = var.ebs_volume_ids[0].availability_zone
 
   root_block_device {
     volume_type = "gp2"
