@@ -6,11 +6,13 @@ variable "miner_addr" {}
 variable "zone_id" {}
 variable "ebs_volume_ids" {}
 variable "index" {}
+variable "swap_enabled" {}
 
 locals {
   devices = ["/dev/xvdca", "/dev/xvdcb", "/dev/xvdcc", "/dev/xvdcd", "/dev/xvdce", "/dev/xvdcf"]
   name    = "${var.miner_addr}w${var.index}"
   count   = length(var.ebs_volume_ids) > 0 ? 1 : 0
+  swap    = (length(var.ebs_volume_ids) > 0 && var.swap_enabled == true) ? 1 : 0
 }
 
 resource "aws_instance" "this" {
@@ -38,6 +40,30 @@ resource "aws_volume_attachment" "this" {
   count        = length(var.ebs_volume_ids)
   device_name  = local.devices[count.index]
   volume_id    = var.ebs_volume_ids[count.index].id
+  instance_id  = aws_instance.this[0].id
+  force_detach = false
+}
+
+resource "aws_ebs_volume" "swap" {
+  count             = local.swap
+  availability_zone = var.ebs_volume_ids[0].availability_zone
+  size              = 4 * length(var.ebs_volume_ids) + 4
+  iops              = (4 * length(var.ebs_volume_ids) + 4) * 50
+  type              = "io1"
+
+  tags = {
+    Name = "${local.name}swap"
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_volume_attachment" "swap" {
+  count        = local.swap
+  device_name  = "/dev/xvds"
+  volume_id    = aws_ebs_volume.swap[count.index].id
   instance_id  = aws_instance.this[0].id
   force_detach = false
 }
@@ -70,6 +96,8 @@ resource "null_resource" "this" {
         hostname     = aws_route53_record.this[0].fqdn
         devices_id   = join(";", aws_volume_attachment.this.*.volume_id)
         devices_name = join(";", aws_volume_attachment.this.*.device_name)
+        swap_id      = local.swap > 0 ? join("", aws_volume_attachment.swap.*.volume_id): ""
+        swap_name    = local.swap > 0 ? join("", aws_volume_attachment.swap.*.device_name): ""
       }
 
       # shared attributes

@@ -21,6 +21,7 @@ module "worker0" {
   ebs_volume_ids              = var.worker0_ebs_volume_ids
   vault_password_file         = var.vault_password_file
   index                       = 0
+  swap_enabled                = true
 }
 
 module "worker1" {
@@ -34,6 +35,7 @@ module "worker1" {
   ebs_volume_ids              = var.worker1_ebs_volume_ids
   vault_password_file         = var.vault_password_file
   index                       = 1
+  swap_enabled                = true
 }
 
 module "worker2" {
@@ -47,6 +49,7 @@ module "worker2" {
   ebs_volume_ids              = var.worker2_ebs_volume_ids
   vault_password_file         = var.vault_password_file
   index                       = 2
+  swap_enabled                = true
 }
 
 module "worker3" {
@@ -60,6 +63,7 @@ module "worker3" {
   ebs_volume_ids              = var.worker3_ebs_volume_ids
   vault_password_file         = var.vault_password_file
   index                       = 3
+  swap_enabled                = true
 }
 
 module "worker4" {
@@ -73,4 +77,5 @@ module "worker4" {
   ebs_volume_ids              = var.worker4_ebs_volume_ids
   vault_password_file         = var.vault_password_file
   index                       = 4
+  swap_enabled                = true
 }

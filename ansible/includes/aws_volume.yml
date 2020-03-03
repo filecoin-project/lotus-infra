@@ -1,10 +1,10 @@
 ---
-- name: Ensure merged mount point exists
+- name: Ensure mount point exists
   file:
     name: "/mnt/disk{{ index }}"
     state: directory
 
-- name: Create merged primary partition
+- name: Create partition
   parted:
     device: "{{ item }}"
     number: "1"
@@ -15,7 +15,7 @@
   shell: fdisk -l -o Device "{{ item }}" | grep '^{{ item }}'
   register: partition
 
-- name: Create ext4 filesystem for merged partition
+- name: Create ext4 filesystem on partition
   filesystem:
     fstype: ext4
     dev: "{{ partition.stdout }}"

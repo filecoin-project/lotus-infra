@@ -21,7 +21,21 @@
       loop_control:
         index_var: index
       register: realdevices
+    - name: Find real swap device name from id
+      shell: |
+        if [ -b "{{ swap_name }}" ]; then
+          ls "{{ swap_name }}"
+        else
+          volid=$(sed -r 's/-//g' <<< {{ swap_id }})
+          readlink -f /dev/disk/by-id/*${volid}
+        fi
+      args:
+        executable: /usr/bin/bash
+      register: realswap
     - include_tasks: includes/aws_volume.yml
       loop: "{{ realdevices.results | map(attribute='stdout') | list }}"
       loop_control:
         index_var: index
+    - include_tasks: includes/aws_swap.yml
+      vars:
+        item: "{{ realswap.stdout }}"
