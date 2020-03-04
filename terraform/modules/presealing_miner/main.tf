@@ -8,12 +8,21 @@ variable "subnet_id" {}
 
 locals {
   devices = [
+              "/dev/xvdba", "/dev/xvdbb", "/dev/xvdbc", "/dev/xvdbd",
+              "/dev/xvdbe", "/dev/xvdbf", "/dev/xvdbg", "/dev/xvdbh",
+              "/dev/xvdbi", "/dev/xvdbj", "/dev/xvdbk", "/dev/xvdbl",
+              "/dev/xvdbm", "/dev/xvdbn", "/dev/xvdbo", "/dev/xvdbp",
+              "/dev/xvdbq", "/dev/xvdbr", "/dev/xvdbs", "/dev/xvdbt",
+              "/dev/xvdbu", "/dev/xvdbv", "/dev/xvdbw", "/dev/xvdbx",
+              "/dev/xvdby", "/dev/xvdbz",
+
               "/dev/xvdca", "/dev/xvdcb", "/dev/xvdcc", "/dev/xvdcd",
               "/dev/xvdce", "/dev/xvdcf", "/dev/xvdcg", "/dev/xvdch",
               "/dev/xvdci", "/dev/xvdcj", "/dev/xvdck", "/dev/xvdcl",
               "/dev/xvdcm", "/dev/xvdcn", "/dev/xvdco", "/dev/xvdcp",
               "/dev/xvdcq", "/dev/xvdcr", "/dev/xvdcs", "/dev/xvdct",
               "/dev/xvdcu", "/dev/xvdcv", "/dev/xvdcw", "/dev/xvdcx",
+              "/dev/xvdcy", "/dev/xvdcz",
             ]
   name    = "${var.miner_addr}"
   count   = length(var.ebs_volume_ids) > 0 ? 1 : 0

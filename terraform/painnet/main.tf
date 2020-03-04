@@ -22,8 +22,8 @@ variable "miners_enabled" {
 
 locals {
   vault_password_file = "${path.module}/.vault_password"
-  worker_count = 5
-  worker_thread_count = 2
+  worker_count = 6
+  worker_thread_count = 6
 }
 
 data "aws_availability_zones" "available" {}
@@ -74,6 +74,7 @@ module "t0201sg" {
   worker2_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled)
   worker3_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled)
   worker4_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled)
+  worker5_ebs_volume_ids      = slice(aws_ebs_volume.t0201, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled)
 }
 
 module "t0201pm" {
