@@ -17,3 +17,6 @@ all:
     presealed_miners:
       children:
         vagrant0:
+    faucet:
+      children:
+        vagrant0:
