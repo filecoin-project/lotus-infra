@@ -1,6 +1,8 @@
 ---
 dependencies:
   - role: nginx
+    vars:
+      nginx_support_https: lotus_fountain_enable_https is defined
   - role: certbot
     when: lotus_fountain_enable_https is defined
   - role: lotus_fullnode
