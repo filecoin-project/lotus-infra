@@ -38,9 +38,9 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 pushd "$SCRIPTDIR/../docker"
 
 if [ "$DEBUG_BUILD" = true ]; then
-  buildlist=(debug lotus-shed)
+  buildlist=(debug lotus-shed fountain)
 else
-  buildlist=(lotus lotus-storage-miner lotus-seal-worker lotus-seed lotus-shed)
+  buildlist=(lotus lotus-storage-miner lotus-seal-worker lotus-seed lotus-shed fountain)
 fi
 
 sha=$(git describe --always --match=NeVeRmAtCh --dirty 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
