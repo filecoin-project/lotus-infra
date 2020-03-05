@@ -1,5 +1,5 @@
 ---
-- hosts: vagrant0
+- hosts: faucet
   become: true
   vars:
     lotus_fountain_address: "{{ lotus_wallet_address }}"
