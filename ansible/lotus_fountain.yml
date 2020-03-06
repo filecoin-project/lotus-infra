@@ -11,3 +11,9 @@
     - include_role: name=common
     - include_role: name=ntp
     - include_role: name=lotus_fountain
+    - include_role: name=ufw
+      vars:
+        ufw_profiles:
+          - "{{ lotus_fountain_ufw_profile }}"
+      when:
+        - lotus_fountain_ufw_profile is defined
