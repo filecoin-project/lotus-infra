@@ -48,7 +48,7 @@
 
 - name: Ensure maintenance site enabled
   file:
-    src: /etc/nginx/sites-available/faucet-maint.conf
+    src: /etc/nginx/sites-available/maintenance.conf
     dest: /etc/nginx/sites-enabled/99-maintenance.conf
     state: link
   notify: reload nginx
