@@ -5,13 +5,14 @@ After=lotus-daemon.service
 PartOf=lotus-daemon.service
 
 [Service]
-User=lotus
-Group=lotus
-ExecStart=/usr/local/bin/stats -repo=/var/lib/lotus -database={{ stats_influxdb_database }}
+User={{ lotus_user }}
+Group={{ lotus_user }}
+ExecStart=/usr/local/bin/stats -repo={{ lotus_path }} -database={{ stats_influxdb_database }} -nosync={{ stats_nosync | lower }}
 Environment=INFLUX_ADDR="{{ stats_influxdb_url }}"
 Environment=INFLUX_USER="{{ stats_influxdb_username }}"
 Environment=INFLUX_PASS="{{ stats_influxdb_password }}"
 Environment=GOLOG_FILE="{{ stats_golog_file }}"
+Environment=GOLOG_LOG_LEVEL="{{ stats_golog_log_level }}"
 Environment=GOLOG_LOG_FMT="{{ stats_golog_log_fmt }}"
 Restart=always
 RestartSec=30

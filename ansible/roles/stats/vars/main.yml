@@ -1,3 +1,7 @@
 undefined:
 required_vars:
   - stats_binary_src
+  - stats_influxdb_url
+  - stats_influxdb_database
+  - stats_influxdb_username
+  - stats_influxdb_password
