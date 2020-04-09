@@ -1,8 +1,8 @@
 - name: Ensure wallet is imported
   block:
-    - name: Verify lotus_miner_keyinfo is defined
+    - name: Verify lotus_miner_wallet_keyinfo is defined
       fail: msg="lotus_miner_keyinfo is not defined"
-      when: lotus_miner_keyinfo is not defined
+      when: lotus_miner_wallet_keyinfo is not defined
     - name: Ensure keystore path created
       file:
         path: "{{ lotus_path }}/keystore/"
@@ -11,10 +11,10 @@
         group: "{{ lotus_user }}"
         mode: "0700"
     - name: Register lotus_miner_raw
-      shell: lotus-shed base16 -decode "{{ lotus_miner_keyinfo }}"
+      shell: lotus-shed base16 -decode "{{ lotus_miner_wallet_keyinfo }}"
       register: lotus_miner_raw
     - name: Register base32_encoded_wallet_addr
-      shell: lotus-shed base32 "wallet-{{ lotus_miner_address }}"
+      shell: lotus-shed base32 "wallet-{{ lotus_miner_wallet_address }}"
       register: lotus_miner_base32_encoded_addr
     - name: Ensure wallet exists
       copy:
