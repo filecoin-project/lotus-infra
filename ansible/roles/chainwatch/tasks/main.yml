@@ -1,0 +1,63 @@
+- include_tasks: ../../../includes/required_vars.yml
+
+- name: Ensure ansible postgresql deps
+  package:
+    name:
+      - python3-psycopg2
+    state: present
+
+- name: Copy binary
+  copy:
+    src: "{{ chainwatch_binary_src }}"
+    dest: /usr/local/bin/chainwatch
+    owner: root
+    group: root
+    mode: "0755"
+  when: chainwatch_binary_src is defined
+
+- name: Reset system
+  block:
+    - name: Ensure chainwatch stopped
+      service:
+        name: chainwatch
+        state: stopped
+    - name: Truncate log file
+      shell:
+        cmd: truncate -s 0 "{{ chainwatch_golog_file }}"
+    - name: Ensure database dropped
+      postgresql_db:
+        name: "{{ chainwatch_db | urlsplit('path') | basename }}"
+        port: "{{ chainwatch_db | urlsplit('port') }}"
+        login_host: "{{ chainwatch_db | urlsplit('hostname') }}"
+        login_user: "{{ chainwatch_db | urlsplit('username') }}"
+        login_password: "{{ chainwatch_db | urlsplit('password') }}"
+        state: absent
+  when: chainwatch_reset == "yes"
+
+- name: Ensure log file exists
+  file:
+    state: touch
+    path: "{{ chainwatch_golog_file }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"
+
+- name: Ensure chainwatch database is created
+  postgresql_db:
+    name: "{{ chainwatch_db | urlsplit('path') | basename }}"
+    port: "{{ chainwatch_db | urlsplit('port') }}"
+    login_host: "{{ chainwatch_db | urlsplit('hostname') }}"
+    login_user: "{{ chainwatch_db | urlsplit('username') }}"
+    login_password: "{{ chainwatch_db | urlsplit('password') }}"
+    state: present
+
+- name: Ensure service file
+  template:
+    src: ../templates/chainwatch.service.j2
+    dest: /etc/systemd/system/chainwatch.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload-lotus
+
