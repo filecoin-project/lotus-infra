@@ -42,6 +42,7 @@
           username: "{{ stats_influxdb_username }}"
           password: "{{ stats_influxdb_password }}"
           database_name: "{{ stats_influxdb_database }}"
+          state: absent
     - name: Truncate log file
       shell:
         cmd: truncate -s 0 "{{ stats_golog_file }}"
@@ -55,6 +56,7 @@
       username: "{{ stats_influxdb_username }}"
       password: "{{ stats_influxdb_password }}"
       database_name: "{{ stats_influxdb_database }}"
+      state: present
 
 - name: Ensure service file
   template:
@@ -66,7 +68,7 @@
   notify:
     - reload-stats
 
-- name: Ensure stats stopped
+- name: Ensure stats started
   service:
     name: stats
     state: started
