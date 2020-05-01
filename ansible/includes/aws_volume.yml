@@ -15,6 +15,21 @@
   shell: fdisk -l -o Device "{{ item }}" | grep '^{{ item }}'
   register: partition
 
+- name:
+  pause:
+    seconds: 5
+
+- name:
+  shell: lsblk --noheading --list -o uuid "{{ partition.stdout }}"
+
+- name:
+  pause:
+    seconds: 5
+
+- name:
+  shell: lsblk --noheading --list -o uuid "{{ partition.stdout }}"
+  register: uuid
+
 - name: Create ext4 filesystem on partition
   filesystem:
     fstype: ext4
@@ -22,7 +37,7 @@
 
 - name: Ensure merged mounted
   mount:
-    src: "{{ partition.stdout }}"
+    src: "UUID={{ uuid.stdout }}"
     path: "/mnt/disk{{ index }}"
     state: mounted
     fstype: ext4

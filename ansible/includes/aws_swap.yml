@@ -18,6 +18,10 @@
   shell: fdisk -l -o Device "{{ item }}" | grep '^{{ item }}'
   register: partition
 
+- name:
+  shell: lsblk --noheading --list -o uuid "{{ partition.stdout }}"
+  register: uuid
+
 - name: Create ext4 filesystem for swap partition
   filesystem:
     fstype: ext4
@@ -31,7 +35,7 @@
 
 - name: Ensure swap is mounted
   mount:
-    src: "{{ partition.stdout }}"
+    src: "UUID={{ uuid.stdout }}"
     name: "/mnt/swap"
     state: mounted
     fstype: ext4
