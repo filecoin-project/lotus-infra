@@ -1,12 +1,25 @@
-- name: Apt via https
-  apt: name=apt-transport-https state=present
-- name: Install nginx
-  apt: pkg=nginx state=present
-- name: remove default nginx default
-  file: path=/etc/nginx/sites-enabled/default state=absent
-# https://weakdh.org/
-- name: Generate dhparams file
-  shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
-  args:
-    creates: /etc/ssl/certs/dhparam.pem
-  when: nginx_support_https == true
+- name: Ensure dependencies are installed
+  package:
+    name:
+      - nginx
+
+- name: Ensure default is is not enabled
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Ensure cron exists to reload server configuration
+  cron:
+    name: "nginx server reload"
+    minute: "35"
+    hour: "2"
+    weekday: "1"
+    job: "/etc/init.d/nginx reload"
+
+- name: Ensure nginx.conf
+  copy:
+    content: "{{ nginx_conf }}"
+    owner: root
+    group: root
+    mode: "0644"
+    dest: /etc/nginx/nginx.conf
