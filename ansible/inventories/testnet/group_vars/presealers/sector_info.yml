@@ -1,0 +1,29 @@
+lotus_seed_sector_count: 10
+lotus_seed_env:
+  RUST_LOG: trace
+  FIL_PROOFS_MAXIMIZE_CACHING: 1
+lotus_seed_workers:
+  - path: "/mnt/disk0/data"
+    index: 0
+    log_file: "/var/log/lotus-seed-0.log"
+    numanode: 0
+  - path: "/mnt/disk1/data"
+    index: 1
+    log_file: "/var/log/lotus-seed-1.log"
+    numanode: 1
+  - path: "/mnt/disk2/data"
+    index: 2
+    log_file: "/var/log/lotus-seed-2.log"
+    numanode: 2
+  - path: "/mnt/disk3/data"
+    index: 3
+    log_file: "/var/log/lotus-seed-3.log"
+    numanode: 3
+  - path: "/mnt/disk4/data"
+    index: 4
+    log_file: "/var/log/lotus-seed-4.log"
+    numanode: 4
+  - path: "/mnt/disk5/data"
+    index: 5
+    log_file: "/var/log/lotus-seed-5.log"
+    numanode: 5

@@ -1,0 +1,10 @@
+drand_id_private: |
+  Key = "{{ drand_private_key }}"
+drand_id_public: |
+  Address = "{{ drand_public_address }}"
+  Key = "{{ drand_public_key }}"
+  TLS = {{ (not (drand_tls_disable | bool )) | lower }}
+drand_public_address: 10.10.100.101:{{ drand_port }}
+drand_tls_disable: false
+drand_private_key: 73a128219e74b9e6552889e1df31d899a41026c50ae7efb1b3b1064e59c6e79d
+drand_public_key: 9490c510cb88b675b94b0d4f6722326e7e3fa002a8bb93d4cc1cd00ac3279e8fa50907d4224aa6c0061228812eff5220

@@ -1,0 +1,4 @@
+lotus_miner_addr: t01002
+lotus_miner_sector_size: "{{ sector_size }}"
+lotus_miner_wallet_keyinfo: "{{ vault_lotus_miner_wallet_keyinfo }}"
+lotus_miner_wallet_address: "{{ vault_lotus_miner_wallet_address }}"

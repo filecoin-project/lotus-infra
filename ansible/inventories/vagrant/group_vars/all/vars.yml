@@ -1,0 +1,9 @@
+---
+logz_io_shared_token: foobar
+lotus_ipfs_gateway: "http://10.10.100.1:8080/ipfs/"
+telegraf_global_tags: {}
+telegraf_outputs_influxdb_enabled: true
+telegraf_outputs_influxdb_username: ""
+telegraf_outputs_influxdb_password: ""
+telegraf_outputs_influxdb_database: lotus
+telegraf_outputs_influxdb_url: "http://10.10.100.1:18086"

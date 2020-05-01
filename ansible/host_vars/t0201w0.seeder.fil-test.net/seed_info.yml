@@ -1,2 +1,0 @@
-lotus_seed_sector_offset: "{{ 0 * lotus_seed_sector_count * (lotus_seed_workers | length) }}"
-lotus_seed_miner_addr: "t0201"
