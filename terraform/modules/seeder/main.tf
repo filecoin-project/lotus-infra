@@ -1,4 +1,5 @@
 variable "instance_type" {}
+variable "ami" {}
 variable "vault_password_file" {}
 variable "vpc_security_group_ids" {}
 variable "subnet_id" {}
@@ -7,6 +8,7 @@ variable "zone_id" {}
 variable "ebs_volume_ids" {}
 variable "index" {}
 variable "swap_enabled" {}
+variable "availability_zone" {}
 
 locals {
   devices = ["/dev/xvdca", "/dev/xvdcb", "/dev/xvdcc", "/dev/xvdcd", "/dev/xvdce", "/dev/xvdcf"]
@@ -17,13 +19,13 @@ locals {
 
 resource "aws_instance" "this" {
   count                       = local.count
-  ami                         = "ami-0e2e3e63c545211e2"
+  ami                         = var.ami
   instance_type               = var.instance_type
   key_name                    = "filecoin"
   vpc_security_group_ids      = var.vpc_security_group_ids
   subnet_id                   = var.subnet_id
   associate_public_ip_address = "true"
-  availability_zone           = var.ebs_volume_ids[0].availability_zone
+  availability_zone           = var.availability_zone
 
   root_block_device {
     volume_type = "gp2"
@@ -46,7 +48,7 @@ resource "aws_volume_attachment" "this" {
 
 resource "aws_ebs_volume" "swap" {
   count             = local.swap
-  availability_zone = var.ebs_volume_ids[0].availability_zone
+  availability_zone = var.availability_zone
   size              = 4 * length(var.ebs_volume_ids) + 4
   iops              = (4 * length(var.ebs_volume_ids) + 4) * 50
   type              = "io1"

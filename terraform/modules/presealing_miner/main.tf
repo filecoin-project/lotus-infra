@@ -1,4 +1,6 @@
 variable "instance_type" {}
+variable "availability_zone" {}
+variable "ami" {}
 variable "miner_addr" {}
 variable "ebs_volume_ids" {}
 variable "zone_id" {}
@@ -30,11 +32,12 @@ locals {
 
 resource "aws_instance" "this" {
   count                       = local.count
-  ami                         = "ami-0e2e3e63c545211e2"
+  ami                         = var.ami
   instance_type               = var.instance_type
   key_name                    = "filecoin"
   vpc_security_group_ids      = var.vpc_security_group_ids
   subnet_id                   = var.subnet_id
+  availability_zone           = var.availability_zone
   associate_public_ip_address = "true"
 
   root_block_device {
