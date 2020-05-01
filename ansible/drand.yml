@@ -1,0 +1,24 @@
+---
+- hosts: drand
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  vars:
+    drand_user: drand
+    drand_user_uid: 763
+    drand_path: /opt/drand
+
+  tasks:
+    - import_tasks: includes/drand_user.yml
+    - include_role: name=common
+    - include_role: name=ntp
+    - include_role: name=drand
+    - include_role: name=telegraf
+      vars:
+        telegraf_global_tag_groups:
+          - component: drand
+          - "{{ drand_telegraf_tags }}"
+        telegraf_inputs_procstat: "{{ drand_telegraf_inputs_procstat }}"
+      when:
+        - drand_telegraf_tags is defined
