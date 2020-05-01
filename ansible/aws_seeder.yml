@@ -16,7 +16,7 @@
           readlink -f /dev/disk/by-id/*${volid}
         fi
       args:
-        executable: /usr/bin/bash
+        executable: /bin/bash
       loop: "{{ devices_id.split(';') }}"
       loop_control:
         index_var: index
@@ -30,8 +30,9 @@
           readlink -f /dev/disk/by-id/*${volid}
         fi
       args:
-        executable: /usr/bin/bash
+        executable: /bin/bash
       register: realswap
+      when: swap_name is defined
     - include_tasks: includes/aws_volume.yml
       loop: "{{ realdevices.results | map(attribute='stdout') | list }}"
       loop_control:
@@ -39,3 +40,4 @@
     - include_tasks: includes/aws_swap.yml
       vars:
         item: "{{ realswap.stdout }}"
+      when: swap_name is defined

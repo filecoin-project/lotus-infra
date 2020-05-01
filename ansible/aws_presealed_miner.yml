@@ -2,6 +2,7 @@
 - hosts: presealed_miner
   vars:
     devices: "{{ devices_name.split(';') }}"
+    nvidia_drivers_url: "https://us.download.nvidia.com/tesla/440.33.01/NVIDIA-Linux-x86_64-440.33.01.run"
   tasks:
     - hostname:
         name: "{{ hostname }}"
@@ -16,7 +17,7 @@
           readlink -f /dev/disk/by-id/*${volid}
         fi
       args:
-        executable: /usr/bin/bash
+        executable: /bin/bash
       loop: "{{ devices_id.split(';') }}"
       loop_control:
         index_var: index
@@ -25,3 +26,7 @@
       loop: "{{ realdevices.results | map(attribute='stdout') | list }}"
       loop_control:
         index_var: index
+    - include_tasks: includes/gpu_drivers.yml
+      when: nvidia_drivers_url is defined
+    - name: reboot-system
+      reboot:
