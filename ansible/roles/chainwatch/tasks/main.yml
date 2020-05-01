@@ -61,3 +61,8 @@
   notify:
     - reload-lotus
 
+- name: Ensure chainwatch started
+  service:
+    name: chainwatch
+    state: started
+
