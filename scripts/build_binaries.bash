@@ -17,8 +17,13 @@ while [ "$1" != "" ]; do
                                 ;;
         -d | --debug )          debug=true
                                 ;;
+        -f | --build-ffi )      ffi=true
+                                ;;
         -h | --help )           usage
                                 exit
+                                ;;
+        -- )                    shift
+                                break
                                 ;;
         * )                     usage
                                 exit 1
@@ -28,6 +33,7 @@ done
 
 LOTUS_SRC="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 DEBUG_BUILD="${debug:-""}"
+BUILD_FFI="${ffi:-""}"
 
 if ! docker info 2>&1 > /dev/null ; then
   echo "Docker is not running, or you do not have permission to execute commands"
@@ -37,10 +43,15 @@ fi
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 pushd "$SCRIPTDIR/../docker"
 
+goflags=()
+
 if [ "$DEBUG_BUILD" = true ]; then
-  buildlist=(debug lotus-shed fountain stats chainwatch)
-else
-  buildlist=(lotus lotus-storage-miner lotus-seal-worker lotus-seed lotus-shed fountain stats chainwatch)
+  goflags+=(-e GOFLAGS="-tags=2k,debug")
+fi
+
+ffiargs=()
+if [ "$BUILD_FFI" = true ]; then
+  ffiargs=(-e RUSTFLAGS="-C target-cpu=native -g" -e FFI_BUILD_FROM_SOURCE=1)
 fi
 
 sha=$(git describe --always --match=NeVeRmAtCh --dirty 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
@@ -55,11 +66,20 @@ if [ -z "$GOPATH" ]; then
   fi
 fi
 
-# if GOPATH is not set, we'll skip mounting
-if [ -z "$GOPATH" ]; then
-  docker run --rm -v "$LOTUS_SRC:/opt/lotus" "lotus-binary-builder:$sha" make "${buildlist[@]}"
-else
-  docker run --rm -v "$LOTUS_SRC:/opt/lotus" -v "$GOPATH/pkg/mod:/go/pkg/mod" "lotus-binary-builder:$sha" make "${buildlist[@]}"
+volumes=(-v "$LOTUS_SRC:/opt/lotus")
+
+# if GOPATH is set, we'll mount it
+if [ ! -z "$GOPATH" ]; then
+  volumes+=(-v "$GOPATH/pkg/mod:/go/pkg/mod")
+  volumes+=(-v "$GOPATH/pkg/sumdb:/go/pkg/sumdb")
 fi
+
+if [ $# -eq 0 ]; then
+  buildlist=(lotus lotus-storage-miner lotus-seal-worker lotus-seed lotus-shed fountain stats chainwatch)
+else
+  buildlist="$@"
+fi
+
+docker run --rm "${ffiargs[@]}" "${volumes[@]}" "${goflags[@]}" "lotus-binary-builder:$sha" make clean deps ${buildlist[@]}
 
 popd
