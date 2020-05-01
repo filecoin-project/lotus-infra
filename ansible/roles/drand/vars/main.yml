@@ -1,0 +1,6 @@
+required_vars:
+  - drand_path
+  - drand_service_state
+  - drand_public_host
+  - drand_public_port
+  - drand_public_tls_disable

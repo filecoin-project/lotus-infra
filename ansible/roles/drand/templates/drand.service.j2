@@ -1,0 +1,21 @@
+[Unit]
+Description=drand
+After=network.target
+
+[Service]
+User={{ drand_user }}
+Group={{ drand_user }}
+ExecStart=/usr/local/bin/drand start --folder "{{ drand_path }}" --tls-disable={{ drand_tls_disable | lower }} --listen {{ drand_host }}:{{ drand_port }}
+{% for item in drand_env | dict2items -%}
+Environment={{ item.key }}="{{ item.value }}"
+{% endfor -%}
+
+{% for item in drand_systemd_extras | dict2items -%}
+{{ item.key }}={{ item.value }}
+{% endfor -%}
+
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
