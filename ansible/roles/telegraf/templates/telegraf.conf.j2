@@ -225,23 +225,10 @@
 #                            INPUT PLUGINS                                    #
 ###############################################################################
 
+{% for procstat in telegraf_inputs_procstat %}
 [[inputs.procstat]]
-  systemd_unit = "lotus-daemon.service"
-
-[[inputs.procstat]]
-  systemd_unit = "lotus-miner.service"
-
-[[inputs.procstat]]
-  systemd_unit = "lotus-miner-init.service"
-
-[[inputs.procstat]]
-  systemd_unit = "lotus-fountain.service"
-
-[[inputs.procstat]]
-systemd_unit = "stats.service"
-
-[[inputs.procstat]]
-systemd_unit = "lotus-health.service"
+  systemd_unit = "{{ procstat }}.service"
+{% endfor %}
 
 # Read metrics about cpu usage
 [[inputs.cpu]]
@@ -316,21 +303,27 @@ systemd_unit = "lotus-health.service"
   # fielddrop = ["uptime_format"]
 
 # Read metrics about network interface usage
- [[inputs.net]]
-   ## By default, telegraf gathers stats from any up interface (excluding loopback)
-   ## Setting interfaces will tell it to gather these explicit interfaces,
-   ## regardless of status.
-   ##
-   # interfaces = ["eth0"]
-   ##
-   ## On linux systems telegraf also collects protocol stats.
-   ## Setting ignore_protocol_stats to true will skip reporting of protocol metrics.
-   ##
-   # ignore_protocol_stats = false
-   ##
+[[inputs.net]]
+  ## By default, telegraf gathers stats from any up interface (excluding loopback)
+  ## Setting interfaces will tell it to gather these explicit interfaces,
+  ## regardless of status.
+  ##
+  # interfaces = ["eth0"]
+  ##
+  ## On linux systems telegraf also collects protocol stats.
+  ## Setting ignore_protocol_stats to true will skip reporting of protocol metrics.
+  ##
+  # ignore_protocol_stats = false
+  ##
 
 # Read TCP metrics such as established, time wait and sockets counts.
 [[inputs.netstat]]
+  # no configuration
+
+[[inputs.interrupts]]
+  # no configuration
+
+[[inputs.linux_sysctl_fs]]
   # no configuration
 
 {{ telegraf_additional_inputs }}
