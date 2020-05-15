@@ -66,3 +66,6 @@
     name: chainwatch
     state: started
 
+- set_fact:
+    lotus_chainwatch_telegraf_inputs_procstat:
+      - "lotus-chainwatch"

@@ -5,3 +5,5 @@ lotus_proof_params_path: "/var/tmp/filecoin-proof-parameters"
 lotus_systemd_extras:
   MemoryHigh: 12G
   MemoryMax: 16G
+  LimitNOFILE: 32768
+  LimitNOFILESoft: 24576

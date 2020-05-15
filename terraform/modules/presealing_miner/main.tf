@@ -42,7 +42,7 @@ resource "aws_instance" "this" {
 
   root_block_device {
     volume_type = "gp2"
-    volume_size = 128
+    volume_size = 256
   }
 
   tags = {

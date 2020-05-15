@@ -8,7 +8,6 @@
     - import_tasks: includes/lotus_user.yml
     - include_role: name=common
     - include_role: name=ntp
-    - include_role: name=lotus_fullnode
     - include_role: name=lotus_miner
     - include_role: name=filebeat_logz_io
       vars:
@@ -30,6 +29,9 @@
           - component: presealed_miner
           - "{{ lotus_fullnode_telegraf_tags }}"
           - "{{ lotus_miner_telegraf_tags }}"
+        telegraf_inputs_procstat:
+          - "{{ lotus_fullnode_telegraf_inputs_procstat }}"
+          - "{{ lotus_miner_telegraf_inputs_procstat }}"
       when:
         - lotus_fullnode_telegraf_tags is defined
         - lotus_miner_telegraf_tags is defined

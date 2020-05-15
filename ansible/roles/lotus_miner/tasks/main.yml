@@ -1,24 +1,6 @@
 - include_tasks: ../../../includes/required_vars.yml
 - include_tasks: ../../../includes/lotus_general_runtime_deps.yml
 
-- name: Copy binary
-  copy:
-    src: "{{ lotus_miner_binary_src }}"
-    dest: /usr/local/bin/lotus-storage-miner
-    owner: root
-    group: root
-    mode: "0755"
-  when: lotus_miner_binary_src is defined
-
-- name: Copy lotus-seed binary
-  copy:
-    src: "{{ lotus_seed_binary_src }}"
-    dest: /usr/local/bin/lotus-seed
-    owner: root
-    group: root
-    mode: "0755"
-  when: lotus_seed_binary_src is defined
-
 - name: Reset system
   block:
     - name: Ensure miner stopped
@@ -37,6 +19,24 @@
       shell:
         cmd: truncate -s 0 "{{ lotus_miner_golog_file }}"
   when: lotus_miner_reset == "yes"
+
+- name: Copy binary
+  copy:
+    src: "{{ lotus_miner_binary_src }}"
+    dest: /usr/local/bin/lotus-storage-miner
+    owner: root
+    group: root
+    mode: "0755"
+  when: lotus_miner_binary_src is defined
+
+- name: Copy lotus-seed binary
+  copy:
+    src: "{{ lotus_seed_binary_src }}"
+    dest: /usr/local/bin/lotus-seed
+    owner: root
+    group: root
+    mode: "0755"
+  when: lotus_seed_binary_src is defined
 
 - name: Ensure miner repository exists
   file:
@@ -80,6 +80,7 @@
 
 - name: Ensure parameters are download
   shell: /usr/local/bin/lotus-storage-miner fetch-params --proving-params "{{ lotus_miner_sector_size }}"
+  when: lotus_miner_ensure_params | bool
 
 - name: Merge presealed sector metadata
   become_user: "{{ lotus_user }}"
@@ -109,3 +110,7 @@
 - set_fact:
     lotus_miner_telegraf_tags:
       miner: "{{ lotus_miner_addr }}"
+
+- set_fact:
+    lotus_miner_telegraf_inputs_procstat:
+      - "lotus-miner"

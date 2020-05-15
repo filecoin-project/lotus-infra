@@ -78,3 +78,8 @@
 - set_fact:
     drand_telegraf_inputs_procstat:
       - "drand"
+
+- set_fact:
+    drand_telegraf_additional_inputs: |
+      [[inputs.prometheus]]
+        urls = ["http://localhost:9100/metrics"]

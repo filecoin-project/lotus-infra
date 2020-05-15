@@ -1,6 +1,4 @@
 ---
-lotus_user: "fc"
-lotus_user_uid: "532"
 lotus_path: "/var/lib/lotus"
 lotus_golog_file: "/var/log/lotus.log"
 lotus_proof_params_path: "/var/tmp/filecoin-proof-parameters"

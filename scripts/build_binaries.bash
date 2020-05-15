@@ -15,7 +15,7 @@ while [ "$1" != "" ]; do
         -s | --src )         shift
                                 src="$1"
                                 ;;
-        -d | --debug )          debug=true
+        --2k )                  smallsectors=true
                                 ;;
         -f | --build-ffi )      ffi=true
                                 ;;
@@ -32,7 +32,7 @@ while [ "$1" != "" ]; do
 done
 
 LOTUS_SRC="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
-DEBUG_BUILD="${debug:-""}"
+SMALL_SECTORS="${smallsectors:-""}"
 BUILD_FFI="${ffi:-""}"
 
 if ! docker info 2>&1 > /dev/null ; then
@@ -45,8 +45,8 @@ pushd "$SCRIPTDIR/../docker"
 
 goflags=()
 
-if [ "$DEBUG_BUILD" = true ]; then
-  goflags+=(-e GOFLAGS="-tags=2k,debug")
+if [ "$SMALL_SECTORS" = true ]; then
+  goflags+=(-e GOFLAGS="-tags=2k")
 fi
 
 ffiargs=()
@@ -66,7 +66,7 @@ if [ -z "$GOPATH" ]; then
   fi
 fi
 
-volumes=(-v "$LOTUS_SRC:/opt/lotus")
+volumes=(-v "$LOTUS_SRC:/opt/filecoin")
 
 # if GOPATH is set, we'll mount it
 if [ ! -z "$GOPATH" ]; then

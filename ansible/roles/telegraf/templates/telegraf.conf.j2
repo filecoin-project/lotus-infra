@@ -225,9 +225,11 @@
 #                            INPUT PLUGINS                                    #
 ###############################################################################
 
-{% for procstat in telegraf_inputs_procstat %}
+{% for procstats in telegraf_inputs_procstat %}
+{% for procstat in procstats %}
 [[inputs.procstat]]
   systemd_unit = "{{ procstat }}.service"
+{% endfor %}
 {% endfor %}
 
 # Read metrics about cpu usage

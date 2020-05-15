@@ -9,3 +9,13 @@
     - include_role: name=common
     - include_role: name=ntp
     - include_role: name=stats
+    - include_role: name=chainwatch
+    - include_role: name=telegraf
+      vars:
+        telegraf_global_tag_groups:
+          - component: stats
+          - "{{ lotus_fullnode_telegraf_tags }}"
+        telegraf_inputs_procstat:
+          - "{{ lotus_fullnode_telegraf_inputs_procstat }}"
+          - "{{ stats_telegraf_inputs_procstat }}"
+          - "{{ lotus_chainwatch_telegraf_inputs_procstat }}"

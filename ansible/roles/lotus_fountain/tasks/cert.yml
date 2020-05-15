@@ -36,7 +36,7 @@
     dest: /etc/nginx/conf.d/lotus-fountain-https.conf
     mode: 0644
   notify:
-    - reload nginx
+    - reload_nginx
 
 - set_fact:
     lotus_fountain_ufw_profile:

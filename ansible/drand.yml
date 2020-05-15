@@ -19,6 +19,9 @@
         telegraf_global_tag_groups:
           - component: drand
           - "{{ drand_telegraf_tags }}"
-        telegraf_inputs_procstat: "{{ drand_telegraf_inputs_procstat }}"
+        telegraf_inputs_procstat:
+          - "{{ drand_telegraf_inputs_procstat }}"
+        telegraf_additional_inputs: |
+          {{ drand_telegraf_additional_inputs }}
       when:
         - drand_telegraf_tags is defined

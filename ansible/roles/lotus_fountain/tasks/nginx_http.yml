@@ -8,12 +8,12 @@
     src: /etc/nginx/sites-available/faucet.conf
     dest: /etc/nginx/sites-enabled/01-faucet.conf
     state: link
-  notify: reload nginx
+  notify: reload_nginx
   when: lotus_fountain_enabled | bool == true
 
 - name: Ensure faucet http site disabled
   file:
     path: /etc/nginx/sites-enabled/01-faucet.conf
     state: absent
-  notify: reload nginx
+  notify: reload_nginx
   when: lotus_fountain_enabled | bool == false

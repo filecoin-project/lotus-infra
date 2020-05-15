@@ -1,15 +1,6 @@
 - include_tasks: ../../../includes/required_vars.yml
 - include_tasks: ../../../includes/lotus_general_runtime_deps.yml
 
-- name: Copy binary
-  copy:
-    src: "{{ lotus_binary_src }}"
-    dest: /usr/local/bin/lotus
-    owner: root
-    group: root
-    mode: "0755"
-  when: lotus_binary_src is defined
-
 - name: Reset system
   block:
     - name: Ensure lotus stopped
@@ -24,6 +15,15 @@
       shell:
         cmd: truncate -s 0 "{{ lotus_golog_file }}"
   when: lotus_reset == "yes"
+
+- name: Copy binary
+  copy:
+    src: "{{ lotus_binary_src }}"
+    dest: /usr/local/bin/lotus
+    owner: root
+    group: root
+    mode: "0755"
+  when: lotus_binary_src is defined
 
 - name: Ensure lotus repository exists
   file:
@@ -88,7 +88,7 @@
   include_tasks: import_wallet.yml
   when: lotus_import_wallet | bool
 
-- name: Ensure lotus service enabled and in correct state ({{ lotus_systemd_state}})
+- name: Ensure lotus service enabled and in correct state ({{ lotus_service_state}})
   service:
     name: "lotus-daemon"
     enabled: yes
@@ -108,3 +108,7 @@
 
 - set_fact:
     lotus_fullnode_telegraf_tags: {}
+
+- set_fact:
+    lotus_fullnode_telegraf_inputs_procstat:
+      - "lotus-daemon"

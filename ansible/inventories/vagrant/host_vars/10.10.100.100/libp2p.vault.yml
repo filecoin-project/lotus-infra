@@ -1,2 +1,2 @@
-  lotus_libp2p_keyinfo: {"Type":"libp2p-host","PrivateKey":"CAESQPQkqNW4ydOkX98lEVGWv9r6M172ZjRGgGrtcWf5b+6AMlMcOIBAwLguyGtZVJvuVGOUGCqvc99nW5+WUHdY6oA="}
-  lotus_libp2p_address: 12D3KooWDCp4FNeH8j7WZbF2rssKupJoseRHi6df5B9k9T6ij8Ws
+libp2p_keyinfo: {"Type":"libp2p-host","PrivateKey":"CAESQLzzMSM9YC9a5eS2BlVMWs9frjsaBT0wWRuk0VG4jUZOft2moJk3ho1Tk/r3zYOdP4E86HzUi1Gapiv/sggaofA="}
+libp2p_address: 12D3KooWJMbZtfENXoCmGsP7M7Dka5dGYv9Vt9n9wiGRM6vKYz7y

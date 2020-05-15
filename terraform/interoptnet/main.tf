@@ -92,6 +92,13 @@ resource "aws_security_group" "this" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port = 0
     to_port   = 0
@@ -104,7 +111,7 @@ resource "aws_security_group" "this" {
 
 resource "aws_instance" "miner" {
   ami                         = "ami-003634241a8fcdec0"
-  instance_type               = "m5.2xlarge"
+  instance_type               = "m5a.2xlarge"
   #instance_type               = "p3.2xlarge"
   key_name                    = "filecoin"
   vpc_security_group_ids      = [aws_security_group.this.id]
@@ -122,8 +129,9 @@ resource "aws_instance" "miner" {
 }
 
 resource "aws_instance" "peer" {
+  count                       = 2
   ami                         = "ami-003634241a8fcdec0"
-  instance_type               = "m5.2xlarge"
+  instance_type               = "m5a.2xlarge"
   #instance_type               = "p3.2xlarge"
   key_name                    = "filecoin"
   vpc_security_group_ids      = [aws_security_group.this.id]
@@ -136,7 +144,7 @@ resource "aws_instance" "peer" {
   }
 
   tags = {
-    Name = "interopnet.peer"
+    Name = "interopnet.peer${count.index}"
   }
 }
 
@@ -243,10 +251,11 @@ resource "aws_route53_record" "miner" {
 }
 
 resource "aws_route53_record" "peer" {
-  name    = "peer.interopnet"
+  count   = length(aws_instance.peer)
+  name    = "peer${count.index}.interopnet"
   zone_id = var.zone_id
   type    = "A"
-  records = ["${aws_instance.peer.public_ip}"]
+  records = ["${aws_instance.peer[count.index].public_ip}"]
   ttl     = 30
 }
 
@@ -255,5 +264,5 @@ output "dns" {
 }
 
 output "peer" {
-  value = aws_route53_record.peer.fqdn
+  value = aws_route53_record.peer.*.fqdn
 }

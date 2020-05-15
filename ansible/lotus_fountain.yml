@@ -17,3 +17,10 @@
           - "{{ lotus_fountain_ufw_profile }}"
       when:
         - lotus_fountain_ufw_profile is defined
+    - include_role: name=telegraf
+      vars:
+        telegraf_global_tag_groups:
+          - component: fountain
+        telegraf_inputs_procstat:
+          - "{{ lotus_fullnode_telegraf_inputs_procstat }}"
+          - "{{ lotus_fountain_telegraf_inputs_procstat }}"

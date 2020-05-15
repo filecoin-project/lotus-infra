@@ -1,0 +1,32 @@
+---
+- hosts: gfc_bootstrap
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+    - import_tasks: includes/lotus_user.yml
+    - include_role: name=common
+    - include_role: name=ntp
+    - include_role: name=gfc_fullnode
+    - include_role: name=filebeat_logz_io
+      vars:
+        logz_inputs:
+          - "{{ gfc_fullnode_filebeat_input }}"
+      when:
+        - gfc_fullnode_filebeat_input is defined
+    - include_role: name=ufw
+      vars:
+        ufw_profiles:
+          - "{{ gfc_fullnode_ufw_profile }}"
+      when:
+        - gfc_fullnode_ufw_profile is defined
+    - include_role: name=telegraf
+      vars:
+        telegraf_global_tag_groups:
+          - component: fullnode
+          - "{{ gfc_fullnode_telegraf_tags }}"
+        telegraf_inputs_procstat:
+          - "{{ gfc_fullnode_telegraf_inputs_procstat }}"
+      when:
+        - gfc_fullnode_telegraf_tags is defined

@@ -6,7 +6,7 @@ set -xe
 # See the lotus keystore implemenation for details
 # base32 encoded string "libp2p-host" with zero padding
 LIBP2P_KEYNAME="NRUWE4BSOAWWQ33TOQ"
-GENESISTIMESTAMP="2020-01-14T01:00:00Z"
+GENESISTIMESTAMP="2020-05-14T22:00:00Z"
 
 log() {
   echo -e "\e[33m$1\e[39m"

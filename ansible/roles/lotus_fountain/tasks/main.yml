@@ -51,7 +51,7 @@
     src: /etc/nginx/sites-available/maintenance.conf
     dest: /etc/nginx/sites-enabled/99-maintenance.conf
     state: link
-  notify: reload nginx
+  notify: reload_nginx
 
 - name: Ensure http faucet
   include_tasks: nginx_http.yml
@@ -71,3 +71,7 @@
     lotus_fountain_ufw_profile:
       name: Lotus Fountain
       value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"
+
+- set_fact:
+    lotus_fountain_telegraf_inputs_procstat:
+      - "lotus-fountain"

@@ -37,6 +37,7 @@ processors:
         fields:
           - from: 'json.msg'
             to: 'message'
+{{ filebeat_additional_processors }}
 
 
 ############################# Output ##########################################
