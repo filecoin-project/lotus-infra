@@ -7,6 +7,7 @@ variable "zone_id" {}
 variable "vpc_security_group_ids" {}
 variable "vault_password_file" {}
 variable "subnet_id" {}
+variable "availability_zone" {}
 
 locals {
   devices = [
@@ -62,6 +63,7 @@ resource "aws_volume_attachment" "this" {
 resource "null_resource" "this" {
   count      = local.count
   depends_on = [aws_instance.this, aws_volume_attachment.this, aws_route53_record.this]
+
 
   connection {
     host = aws_instance.this[0].public_ip
