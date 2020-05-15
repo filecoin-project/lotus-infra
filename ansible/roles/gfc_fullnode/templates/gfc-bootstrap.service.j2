@@ -1,0 +1,13 @@
+[Unit]
+Description=GFC Bootstrap
+After=network.target gfc-daemon.service
+
+[Service]
+Type=oneshot
+User={{ lotus_user }}
+Group={{ lotus_user }}
+ExecStart={{ gfc_path }}/bootstrap.bash --peerlist "{{ gfc_path }}/bootstrappers.pi"
+Environment=FIL_PATH="{{ gfc_path }}/filecoin"
+
+[Install]
+WantedBy=multi-user.target

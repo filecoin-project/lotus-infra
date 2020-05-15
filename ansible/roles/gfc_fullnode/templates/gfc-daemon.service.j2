@@ -1,0 +1,27 @@
+[Unit]
+Description=GFC Daemon
+After=network.target
+Wants=gfc-bootstrap.service
+
+[Service]
+User={{ lotus_user }}
+Group={{ lotus_user }}
+ExecStart=/usr/local/bin/gfc daemon --block-time="{{ gfc_block_time }}"
+Environment=FIL_PATH="{{ gfc_path }}/filecoin"
+Environment=GOLOG_FILE="{{ gfc_golog_file }}"
+Environment=GOLOG_LOG_FMT="{{ gfc_golog_log_fmt }}"
+Environment=FIL_PROOFS_PARAMETER_CACHE="{{ gfc_proof_params_path }}"
+Environment=IPFS_GATEWAY="{{ gfc_ipfs_gateway }}"
+{% for item in gfc_env | dict2items -%}
+Environment={{ item.key }}="{{ item.value }}"
+{% endfor -%}
+
+{% for item in gfc_systemd_extras | dict2items -%}
+{{ item.key }}={{ item.value }}
+{% endfor -%}
+
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -1,80 +1,105 @@
 variable "instance_type" {}
+variable "ami" {}
 variable "vault_password_file" {}
 variable "vpc_security_group_ids" {}
 variable "subnet_id" {}
-variable "lotus_seed_sector_size" {}
-variable "lotus_seed_num_sectors" {}
-variable "lotus_seed_sector_offset_0" {}
-variable "lotus_seed_sector_offset_1" {}
-variable "lotus_seed_reset_repo" {}
-variable "lotus_seed_copy_binary" {}
-variable "lotus_seed_binary_src" {}
-variable "lotus_seed_miner_addr" {}
+variable "miner_addr" {}
 variable "zone_id" {}
-variable "instance_count" {}
-variable "ebs_volume_id" {}
+variable "ebs_volume_ids" {}
+variable "index" {}
+variable "swap_enabled" {}
+variable "availability_zone" {}
 
-resource "aws_instance" "lotus_seed" {
-  count                       = var.instance_count
-  ami                         = "ami-01caa26d7860f2195"
+locals {
+  devices = ["/dev/xvdca", "/dev/xvdcb", "/dev/xvdcc", "/dev/xvdcd", "/dev/xvdce", "/dev/xvdcf"]
+  name    = "${var.miner_addr}w${var.index}"
+  count   = length(var.ebs_volume_ids) > 0 ? 1 : 0
+  swap    = (length(var.ebs_volume_ids) > 0 && var.swap_enabled == true) ? 1 : 0
+}
+
+resource "aws_instance" "this" {
+  count                       = local.count
+  ami                         = var.ami
   instance_type               = var.instance_type
   key_name                    = "filecoin"
   vpc_security_group_ids      = var.vpc_security_group_ids
   subnet_id                   = var.subnet_id
   associate_public_ip_address = "true"
+  availability_zone           = var.availability_zone
 
   root_block_device {
     volume_type = "gp2"
-    volume_size = 512
+    volume_size = 128
   }
 
   tags = {
-    Name = "Lotus Seed"
+    Name  = local.name
+    Miner = var.miner_addr
   }
 }
 
 resource "aws_volume_attachment" "this" {
-  count        = var.instance_count
-  device_name  = "/dev/sdx"
-  volume_id    = var.ebs_volume_id[count.index].id
-  instance_id  = aws_instance.lotus_seed[count.index].id
+  count        = length(var.ebs_volume_ids)
+  device_name  = local.devices[count.index]
+  volume_id    = var.ebs_volume_ids[count.index].id
+  instance_id  = aws_instance.this[0].id
   force_detach = false
 }
 
-resource "null_resource" "lotus_seed" {
-  count      = var.instance_count
-  depends_on = [aws_instance.lotus_seed, aws_volume_attachment.this, aws_route53_record.dns]
+resource "aws_ebs_volume" "swap" {
+  count             = local.swap
+  availability_zone = var.availability_zone
+  size              = 4 * length(var.ebs_volume_ids) + 4
+  iops              = (4 * length(var.ebs_volume_ids) + 4) * 50
+  type              = "io1"
+
+  tags = {
+    Name = "${local.name}swap"
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_volume_attachment" "swap" {
+  count        = local.swap
+  device_name  = "/dev/xvds"
+  volume_id    = aws_ebs_volume.swap[count.index].id
+  instance_id  = aws_instance.this[0].id
+  force_detach = false
+}
+
+resource "null_resource" "this" {
+  count      = local.count
+  depends_on = [aws_instance.this, aws_volume_attachment.this, aws_route53_record.this]
 
   connection {
-    host = aws_instance.lotus_seed[count.index].public_ip
+    host = aws_instance.this[0].public_ip
     user = "ubuntu"
   }
 
   triggers = {
-    script_sha1 = "${sha1(file("${path.module}/../../../ansible/lotus_seed.yml"))}"
+    script_sha1 = "${sha1(file("${path.module}/../../../ansible/aws_seeder.yml"))}"
   }
 
   provisioner "ansible" {
     plays {
       hosts = [
-        "${aws_route53_record.dns[count.index].fqdn}",
+        "${aws_route53_record.this[0].fqdn}",
       ]
 
       playbook {
-        file_path = "${path.module}/../../../ansible/lotus_seed.yml"
+        file_path = "${path.module}/../../../ansible/aws_seeder.yml"
       }
 
       extra_vars = {
-        ansible_ssh_user           = "ubuntu"
-        name                       = "${var.lotus_seed_miner_addr}s${count.index}.seal"
-        lotus_seed_copy_binary     = var.lotus_seed_copy_binary
-        lotus_seed_binary_src      = var.lotus_seed_binary_src
-        lotus_seed_sector_size     = var.lotus_seed_sector_size
-        lotus_seed_sector_offset_0 = var.lotus_seed_sector_offset_0[count.index]
-        lotus_seed_sector_offset_1 = var.lotus_seed_sector_offset_1[count.index]
-        lotus_seed_num_sectors     = var.lotus_seed_num_sectors
-        lotus_seed_reset_repo      = var.lotus_seed_reset_repo
-        lotus_seed_miner_addr      = var.lotus_seed_miner_addr
+        ansible_user = "ubuntu"
+        hostname     = aws_route53_record.this[0].fqdn
+        devices_id   = join(";", aws_volume_attachment.this.*.volume_id)
+        devices_name = join(";", aws_volume_attachment.this.*.device_name)
+        swap_id      = local.swap > 0 ? join("", aws_volume_attachment.swap.*.volume_id): ""
+        swap_name    = local.swap > 0 ? join("", aws_volume_attachment.swap.*.device_name): ""
       }
 
       # shared attributes
@@ -82,20 +107,31 @@ resource "null_resource" "lotus_seed" {
       become_method = "sudo"
       enabled       = true
       vault_id      = [var.vault_password_file]
-      groups        = ["seeds"]
+      groups        = ["seeder"]
     }
+  }
+
+  provisioner "remote-exec" {
+      inline     = ["sudo shutdown -h now"]
+      when       = destroy
+      on_failure = continue
+  }
+
+  provisioner "local-exec" {
+    command = "sleep 30"
+    when    = destroy
   }
 }
 
-resource "aws_route53_record" "dns" {
-  count   = var.instance_count
-  name    = "${var.lotus_seed_miner_addr}s${count.index}.seal"
+resource "aws_route53_record" "this" {
+  count   = local.count
+  name    = "${local.name}.seeder"
   zone_id = var.zone_id
   type    = "A"
-  records = ["${aws_instance.lotus_seed[count.index].public_ip}"]
+  records = ["${aws_instance.this[0].public_ip}"]
   ttl     = 30
 }
 
-output "dns_names" {
-  value = aws_route53_record.dns.*.fqdn
+output "fqdn" {
+  value = aws_route53_record.this.*.fqdn
 }

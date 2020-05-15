@@ -1,0 +1,19 @@
+- name: Ensure faucet http site available
+  template:
+    src: ../templates/faucet-http-only.conf.j2
+    dest: /etc/nginx/sites-available/faucet.conf
+
+- name: Ensure faucet http site enabled
+  file:
+    src: /etc/nginx/sites-available/faucet.conf
+    dest: /etc/nginx/sites-enabled/01-faucet.conf
+    state: link
+  notify: reload_nginx
+  when: lotus_fountain_enabled | bool == true
+
+- name: Ensure faucet http site disabled
+  file:
+    path: /etc/nginx/sites-enabled/01-faucet.conf
+    state: absent
+  notify: reload_nginx
+  when: lotus_fountain_enabled | bool == false

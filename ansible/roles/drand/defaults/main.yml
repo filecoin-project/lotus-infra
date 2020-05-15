@@ -1,0 +1,9 @@
+drand_reset: no
+drand_env: {}
+drand_systemd_extras: {}
+drand_port: 37263
+drand_host: 127.0.0.1
+drand_import_keypair: false
+drand_generate_keypair: false
+drand_tls_disable: false
+drand_run_certbot: false

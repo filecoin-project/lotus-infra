@@ -1,0 +1,46 @@
+---
+- name: Ensure mount point exists
+  file:
+    name: "/mnt/disk{{ index }}"
+    state: directory
+
+- name: Create partition
+  parted:
+    device: "{{ item }}"
+    number: "1"
+    label: gpt
+    state: present
+
+- name:
+  shell: fdisk -l -o Device "{{ item }}" | grep '^{{ item }}'
+  register: partition
+
+- name:
+  pause:
+    seconds: 5
+
+- name:
+  shell: lsblk --noheading --list -o uuid "{{ partition.stdout }}"
+
+- name:
+  pause:
+    seconds: 5
+
+- name:
+  shell: lsblk --noheading --list -o uuid "{{ partition.stdout }}"
+  register: uuid
+
+- name: Create ext4 filesystem on partition
+  filesystem:
+    fstype: ext4
+    dev: "{{ partition.stdout }}"
+
+- name: Ensure merged mounted
+  mount:
+    src: "UUID={{ uuid.stdout }}"
+    path: "/mnt/disk{{ index }}"
+    state: mounted
+    fstype: ext4
+
+- name: Write Hostname
+  shell: "echo '{{ hostname }}' >> /mnt/disk{{ index }}/hostnames"

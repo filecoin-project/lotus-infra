@@ -1,0 +1,45 @@
+lotus_miner_path: /var/lib/lotus-miner
+lotus_miner_golog_file: /var/log/lotus-miner.log
+lotus_miner_env:
+  BELLMAN_CUSTOM_GPU: "Tesla V100-SXM2-16GB:5120"
+  RUST_LOG: "trace"
+  TRUST_PARAMS: 1
+  LimitNOFILE: 32768
+  LimitNOFILESoft: 24576
+lotus_miner_presealed_sectors:
+  - /mnt/disk0/data
+  - /mnt/disk1/data
+  - /mnt/disk2/data
+  - /mnt/disk3/data
+  - /mnt/disk4/data
+  - /mnt/disk5/data
+  - /mnt/disk6/data
+  - /mnt/disk7/data
+  - /mnt/disk8/data
+  - /mnt/disk9/data
+  - /mnt/disk10/data
+  - /mnt/disk11/data
+  - /mnt/disk12/data
+  - /mnt/disk13/data
+  - /mnt/disk14/data
+  - /mnt/disk15/data
+  - /mnt/disk16/data
+  - /mnt/disk17/data
+  - /mnt/disk18/data
+  - /mnt/disk19/data
+  - /mnt/disk20/data
+  - /mnt/disk21/data
+  - /mnt/disk22/data
+  - /mnt/disk23/data
+  - /mnt/disk24/data
+  - /mnt/disk25/data
+  - /mnt/disk26/data
+  - /mnt/disk27/data
+  - /mnt/disk28/data
+  - /mnt/disk29/data
+  - /mnt/disk30/data
+  - /mnt/disk31/data
+  - /mnt/disk32/data
+  - /mnt/disk33/data
+  - /mnt/disk34/data
+  - /mnt/disk35/data

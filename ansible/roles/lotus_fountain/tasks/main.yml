@@ -1,4 +1,15 @@
-- name: lotus golog file
+- name: Copy binary
+  copy:
+      src: "{{ lotus_fountain_binary_src }}"
+      dest: /usr/local/bin/lotus-fountain
+      owner: root
+      group: root
+      mode: "0755"
+  when: lotus_fountain_binary_src is defined
+  notify:
+      - restart-fountain
+
+- name: Ensure log file exists
   file:
       state: touch
       path: "{{ lotus_fountain_golog_file }}"
@@ -6,7 +17,7 @@
       group: "{{ lotus_user }}"
       mode: "0644"
 
-- name: lotus systemd service file
+- name: Ensure serivce file
   template:
       src: ../templates/lotus-fountain.service.j2
       dest: /etc/systemd/system/lotus-fountain.service
@@ -15,66 +26,52 @@
       mode: "0644"
   notify:
       - reload-fountain
-  when: lotus_wallet_address is defined
+  when: lotus_fountain_address is defined
 
-- name: lotus binary
-  copy:
-      src: "{{ lotus_fountain_binary_src }}"
-      dest: /usr/local/bin/lotus-fountain
-      owner: root
-      group: root
-      mode: "0755"
-  when: lotus_fountain_copy_binary | bool
-  notify:
-      - restart-fountain
-
-- name: lotus service started
-  systemd:
-    name: "lotus-fountain"
-    enabled: yes
-    state: started
-
-- name: create let's encrypt webroot
+- name: Ensure web folder exists
   file:
-    path: /var/www/{{ lotus_fountain_server_name }}/.well-known
+    path: /var/www/{{ lotus_fountain_server_name }}/
     state: directory
     owner: www-data
     mode: 0755
 
-- name: copy nginx maintance file
+- name: Ensure maintenance page exists
   template:
     src: ../templates/maintance.html.j2
     dest: /var/www/{{ lotus_fountain_server_name }}/index.html
     mode: 0644
 
-- name: copy nginx http config
+- name: Ensure maintenance site available
   template:
-    src: ../templates/nginx-http.conf.j2
-    dest: /etc/nginx/conf.d/lotus-fountain-http.conf
-    mode: 0644
+    src: ../templates/faucet-http-maint.conf.j2
+    dest: /etc/nginx/sites-available/maintenance.conf
 
-- name: ensure nginx started
+- name: Ensure maintenance site enabled
+  file:
+    src: /etc/nginx/sites-available/maintenance.conf
+    dest: /etc/nginx/sites-enabled/99-maintenance.conf
+    state: link
+  notify: reload_nginx
+
+- name: Ensure http faucet
+  include_tasks: nginx_http.yml
+  when: lotus_fountain_enable_https is not defined
+
+- name: Ensure fountain is enabled and started
   systemd:
-    name: nginx
+    name: "lotus-fountain"
+    enabled: yes
     state: started
 
-- name: reload nginx
-  command: "/etc/init.d/nginx reload"
-
-- name: create let's encrypt certificate
-  command: "certbot certonly --webroot -w /var/www/{{ lotus_fountain_server_name }} -d {{ lotus_fountain_server_name }} --non-interactive --agree-tos -m infra-accounts@protocol.ai"
-  run_once: true
-  when: certbot_create_certificate | bool
-
-- name: copy nginx https config
-  template:
-    src: ../templates/nginx-https.conf.j2
-    dest: /etc/nginx/conf.d/lotus-fountain-https.conf
-    mode: 0644
-  notify:
-    - reload nginx
+- name: Certbot
+  include_tasks: cert.yml
+  when: lotus_fountain_enable_https is defined
 
 - set_fact:
     lotus_fountain_ufw_profile:
       name: Lotus Fountain
       value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"
+
+- set_fact:
+    lotus_fountain_telegraf_inputs_procstat:
+      - "lotus-fountain"

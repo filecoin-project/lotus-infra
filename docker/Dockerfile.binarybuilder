@@ -1,0 +1,40 @@
+FROM golang:1.13.3-stretch AS builder
+MAINTAINER Filecoin Development Team
+
+RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1
+
+ARG UID=1000
+ARG GID=1000
+ARG RUST_VERSION=nightly
+
+ENV XDG_CACHE_HOME="/tmp"
+ENV RUSTFLAGS=""
+ENV FFI_BUILD_FROM_SOURCE=""
+ENV GOFLAGS=""
+ENV GFC_DEPS_SKIP_PARAMETERS="true"
+ENV IPFS_GATEWAY="http://172.17.0.1:8080/ipfs/"
+
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+
+RUN addgroup -gid $GID filecoin && \
+    adduser --no-create-home --disabled-password -uid $UID --ingroup filecoin --gecos "" filecoin && \
+    mkdir -p "/go/pkg/mod" && \
+    chown -R filecoin:filecoin "/go/pkg/mod"
+
+RUN wget "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
+    chmod +x rustup-init; \
+    ./rustup-init -y --no-modify-path --profile minimal --default-toolchain $RUST_VERSION; \
+    rm rustup-init; \
+    chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+    rustup --version; \
+    cargo --version; \
+    rustc --version;
+
+VOLUME /go/pkg/mod
+
+USER filecoin
+WORKDIR /opt/filecoin
+
+CMD ["make"]

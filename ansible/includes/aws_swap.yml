@@ -1,0 +1,74 @@
+---
+- name: Ensure mount point exists
+  file:
+    name: "/mnt/swap"
+    owner: root
+    group: root
+    mode: 0700
+    state: directory
+
+- name: Create partition
+  parted:
+    device: "{{ item }}"
+    number: "1"
+    label: gpt
+    state: present
+
+- name: Register partition
+  shell: fdisk -l -o Device "{{ item }}" | grep '^{{ item }}'
+  register: partition
+
+- name:
+  shell: lsblk --noheading --list -o uuid "{{ partition.stdout }}"
+  register: uuid
+
+- name: Create ext4 filesystem for swap partition
+  filesystem:
+    fstype: ext4
+    dev: "{{ partition.stdout }}"
+
+- name: Set swappiness
+  sysctl:
+    name: vm.swappiness
+    value: '1'
+    state: present
+
+- name: Ensure swap is mounted
+  mount:
+    src: "UUID={{ uuid.stdout }}"
+    name: "/mnt/swap"
+    state: mounted
+    fstype: ext4
+
+- name: Create swap file
+  shell: "dd if=/dev/zero of=/mnt/swap/swapfile bs=1M count=$(df -B 1MB /mnt/swap/ | tail -n +2 | awk '{print $4}')"
+  args:
+    creates: /mnt/swap/swapfile
+
+- name: Ensure proper permissions for swap file
+  file:
+    name: "/mnt/swap/swapfile"
+    owner: root
+    group: root
+    mode: 0600
+    state: file
+
+- name: Register swapfile
+  shell: cat /proc/swaps | grep /mnt/swap/swapfile
+  ignore_errors: yes
+  register: swapfile
+
+- name: Make swap
+  shell: "mkswap /mnt/swap/swapfile"
+  when: swapfile.rc == 1
+
+- name: Swapon
+  shell: "swapon /mnt/swap/swapfile"
+  when: swapfile.rc == 1
+
+- name: Ensure swap is mounted
+  mount:
+    src: "/mnt/swap/swapfile"
+    path: swap
+    state: present
+    fstype: swap

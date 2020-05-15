@@ -1,10 +1,62 @@
+- include_tasks: ../../../includes/required_vars.yml
+- include_tasks: ../../../includes/lotus_general_runtime_deps.yml
+
+- name: Ensure ansible influxdb deps
+  package:
+    name:
+      - python3-influxdb
+      - python3-requests
+    state: present
+
+- name: Copy binary
+  copy:
+    src: "{{ stats_binary_src }}"
+    dest: /usr/local/bin/stats
+    owner: root
+    group: root
+    mode: "0755"
+  when: stats_binary_src is defined
+  notify:
+    - restart-stats
+
 - name: Ensure log file exists
   file:
     state: touch
     path: "{{ stats_golog_file }}"
-    owner: "{{ stats_user }}"
-    group: "{{ stats_user }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
     mode: "0644"
+
+- name: Reset system
+  block:
+    - name: Ensure stats stopped
+      service:
+        name: stats
+        state: stopped
+      ignore_errors: yes
+    - name: Drop influxdb database
+      influxdb_database:
+          hostname: "{{ stats_influxdb_url | urlsplit('hostname') }}"
+          port: "{{ stats_influxdb_url | urlsplit('port') }}"
+          ssl: "{{ (stats_influxdb_url | urlsplit('scheme')) == 'https' }}"
+          username: "{{ stats_influxdb_username }}"
+          password: "{{ stats_influxdb_password }}"
+          database_name: "{{ stats_influxdb_database }}"
+          state: absent
+    - name: Truncate log file
+      shell:
+        cmd: truncate -s 0 "{{ stats_golog_file }}"
+  when: stats_reset == "yes"
+
+- name: Ensure influx database created
+  influxdb_database:
+      hostname: "{{ stats_influxdb_url | urlsplit('hostname') }}"
+      port: "{{ stats_influxdb_url | urlsplit('port') }}"
+      ssl: "{{ (stats_influxdb_url | urlsplit('scheme')) == 'https' }}"
+      username: "{{ stats_influxdb_username }}"
+      password: "{{ stats_influxdb_password }}"
+      database_name: "{{ stats_influxdb_database }}"
+      state: present
 
 - name: Ensure service file
   template:
@@ -16,13 +68,11 @@
   notify:
     - reload-stats
 
-- name: Copy binary
-  copy:
-    src: "{{ stats_binary_src }}"
-    dest: /usr/local/bin/stats
-    owner: root
-    group: root
-    mode: "0755"
-  when: stats_copy_binary | bool
-  notify:
-    - restart-stats
+- name: Ensure stats started
+  service:
+    name: stats
+    state: started
+
+- set_fact:
+    stats_telegraf_inputs_procstat:
+      - "stats"

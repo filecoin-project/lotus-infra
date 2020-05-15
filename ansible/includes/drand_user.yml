@@ -1,0 +1,6 @@
+- name: Ensure drand user exists
+  user:
+    name: "{{ drand_user }}"
+    state: present
+    uid: "{{ drand_user_uid }}"
+    system: yes

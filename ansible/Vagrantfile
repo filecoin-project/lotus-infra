@@ -2,7 +2,8 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/disco64"
+  config.vm.box = "ubuntu/bionic64"
+  config.disksize.size = "16GB"
 
   # VBox is crazy slow to boot this vm for the first time
   config.vm.boot_timeout = 900
@@ -10,20 +11,20 @@ Vagrant.configure("2") do |config|
     vb.memory = "4096"
   end
 
-  config.vm.define "general", primary: true do |general|
-    general.vm.hostname = "vagrant"
-    general.vm.network "private_network", ip: "10.10.100.100"
-    general.vm.provision "ansible" do |ansible|
-      ansible.compatibility_mode = "2.0"
-      ansible.inventory_path = "hosts-vagrant"
-      ansible.playbook = "vagrant.yml"
-      ansible.limit = "all"
-      ansible.ask_vault_pass = false
-      ansible.raw_arguments = ["--vault-password-file", "$HOME/.ansible_vault_pass.txt"]
-      ansible.extra_vars = {
-        ansible_ssh_user: "vagrant",
-      }
-      ansible.verbose = ""
-    end
+  config.vm.define "vagrant0", primary: true do |node|
+    node.vm.hostname = "vagrant0"
+    node.vm.network "private_network", ip: "10.10.100.100"
+  end
+
+  config.vm.define "vagrant1", primary: true do |node|
+    node.vm.hostname = "vagrant1"
+    node.vm.network "private_network", ip: "10.10.100.101"
+  end
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.compatibility_mode = "2.0"
+    ansible.inventory_path = "inventories/vagrant/hosts.yml"
+    ansible.playbook = "vagrant.yml"
+    ansible.ask_vault_pass = false
   end
 end

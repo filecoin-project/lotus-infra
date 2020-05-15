@@ -1,0 +1,180 @@
+- include_tasks: ../../../includes/required_vars.yml
+- include_tasks: ../../../includes/lotus_general_runtime_deps.yml
+
+- name: Reset system
+  block:
+    - name: Ensure gfc stopped
+      service:
+        name: gfc-daemon
+        state: stopped
+    - name: Remove gfc link
+      file:
+        path: "{{ gfc_path }}"
+        state: absent
+    - name: Truncate log file
+      shell:
+        cmd: truncate -s 0 "{{ gfc_golog_file }}"
+  when: gfc_reset == "yes"
+
+- name: Copy binary
+  copy:
+    src: "{{ gfc_binary_src }}"
+    dest: /usr/local/bin/gfc
+    owner: root
+    group: root
+    mode: "0755"
+  when: gfc_binary_src is defined
+
+- name: Copy binary - lotus
+  copy:
+    src: "{{ gfc_lotus_shed_binary_src }}"
+    dest: /usr/local/bin/lotus-shed
+    owner: root
+    group: root
+    mode: "0755"
+  when: gfc_lotus_shed_binary_src is defined
+
+- name: Ensure gfc repository exists
+  file:
+    path: "{{ gfc_path }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+
+- name: Ensure FIL_PATH global env is set
+  lineinfile:
+    path: /etc/environment
+    regex: "^FIL_PATH"
+    line: FIL_PATH="{{ gfc_path }}/filecoin"
+
+- name: Ensure IPFS_GATEWAY global env is set
+  lineinfile:
+    path: /etc/environment
+    regex: "^IPFS_GATEWAY"
+    line: IPFS_GATEWAY="{{ gfc_ipfs_gateway }}"
+  when: gfc_ipfs_gateway is defined
+
+- name: Ensure proof parameters directory exists
+  file:
+    path: "{{ gfc_proof_params_path }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+
+- name: Ensure log file exists
+  file:
+    state: touch
+    path: "{{ gfc_golog_file }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"
+
+- name: Copy bootstrap list
+  copy:
+    src: "{{ gfc_bootstrap_list_src }}"
+    dest: "{{ gfc_path }}/bootstrappers.pi"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"
+  when: gfc_bootstrap_list_src is defined
+
+- name: Copy bootstrap script
+  template:
+    src: ../templates/bootstrap.bash.j2
+    dest: "{{ gfc_path }}/bootstrap.bash"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0744"
+
+- name: Ensure peer key on disk
+  become: yes
+  become_user: "{{ lotus_user }}"
+  shell:
+    cmd: base64 --decode > "{{ gfc_path }}/peer.key"
+    stdin: "{{ gfc_libp2p_keyinfo.PrivateKey }}"
+    creates: "{{ gfc_path }}/peer.key"
+
+- name: Copy genesis
+  copy:
+    src: "{{ gfc_genesis_src }}"
+    dest: "{{ gfc_path }}/genesis.car"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0755"
+  when: gfc_genesis_src is defined
+
+- name: Ensure gfc initialized
+  become: yes
+  become_user: "{{ lotus_user }}"
+  shell:
+    cmd: /usr/local/bin/gfc --repodir="{{ gfc_path }}/filecoin" init --genesisfile="{{ gfc_path }}/genesis.car" --peerkeyfile="{{ gfc_path }}/peer.key"
+    creates: "{{ gfc_path }}/filecoin/config.json"
+
+- name: Ensure parameters are download
+  shell: /usr/local/bin/lotus-shed fetch-params --proving-params 0
+
+- name: Ensure service file
+  template:
+    src: ../templates/gfc-daemon.service.j2
+    dest: /etc/systemd/system/gfc-daemon.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload-gfc
+
+- name: Ensure bootstrap service file
+  template:
+    src: ../templates/gfc-bootstrap.service.j2
+    dest: /etc/systemd/system/gfc-bootstrap.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload-gfc
+
+- name: Ensure gfc config updated
+  become: yes
+  become_user: "{{ lotus_user }}"
+  shell: |
+    #!/usr/bin/env bash
+    CONFIGTMP=$(mktemp)}
+
+    jq --arg SwarmAddr "/ip4/0.0.0.0/tcp/1347" ' .swarm.address = $SwarmAddr ' < "{{ gfc_path }}/filecoin/config.json" > ${CONFIGTMP}
+    mv ${CONFIGTMP} "{{ gfc_path }}/filecoin/config.json"
+
+    jq ' .drand = {{ drand }} ' < "{{ gfc_path }}/filecoin/config.json" > ${CONFIGTMP}
+    mv ${CONFIGTMP} "{{ gfc_path }}/filecoin/config.json"
+
+    jq ' .parameters = {{ parameters }} ' < "{{ gfc_path }}/filecoin/config.json" > ${CONFIGTMP}
+    mv ${CONFIGTMP} "{{ gfc_path }}/filecoin/config.json"
+  vars:
+    drand: '{"addresses":["gabbi.drand.fil-test.net:443","linus.drand.fil-test.net:443","nicolas.drand.fil-test.net:443","mathilde.drand.fil-test.net:443","jeff.drand.fil-test.net:443","philipp.drand.fil-test.net:443","ludovic.drand.fil-test.net:443"],"secure":true,"distKey":["gsJ5zOdERQ5o3pjuCPlpigHdOPjjvjxT8rhA+50JrWKgtrh5geF54bFLyaLShMmF","gtUTCK00bGhvgbgJRVFZfXuWMpXL8xNAGpPfm69S1a6YqHdFvucIOaTW5lw0K9Fb","lO6/1T9LpqO4MEI2QAoS5ziF5aeBUJpcjUHS6LR2kj2OpgUmSbPBcoL1liF/lsXe","jcQjHkK07fOehu8VeUAWkkgGR5GCddp2fT5VjFINY3WtlTUwYQ/Sfa8RAYeHemXQ"],"startTimeUnix":1588221360,"roundSeconds":30}'
+    parameters: '{"ConsensusMinerMinPower": {{ gfc_consensus_miner_min_power }}, "ReplaceProofsTypes": [1, 17]}'
+
+- name: Ensure gfc service enabled and in correct state ({{ gfc_service_state}})
+  service:
+    name: "gfc-daemon"
+    enabled: yes
+    state: "{{ gfc_service_state }}"
+
+- set_fact:
+    gfc_fullnode_ufw_profile:
+      name: GFC Daemon
+      value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"
+
+- set_fact:
+    gfc_fullnode_filebeat_input:
+      paths:
+        - "{{ gfc_golog_file }}"
+      fields:
+        type: "gfc-daemon"
+
+- set_fact:
+    gfc_fullnode_telegraf_tags: {}
+
+- set_fact:
+    gfc_fullnode_telegraf_inputs_procstat:
+      - "gfc-daemon"

@@ -1,0 +1,12 @@
+---
+logz_io_shared_token: "{{ vault_logz_io_shared_token }}"
+telegraf_global_tags: {}
+telegraf_outputs_influxdb_enabled: true
+telegraf_outputs_influxdb_username: lotus
+telegraf_outputs_influxdb_password: "{{ vault_influxdb_lotus_password }}"
+telegraf_outputs_influxdb_database: lotus-nodes
+telegraf_outputs_influxdb_url: https://eightyeight-1b1e0a69.influxcloud.net:8086
+lotus_ipfs_gateway: https://proofs.filecoin.io/ipfs/
+lotus_user: "fc"
+lotus_user_uid: "532"
+sector_size: 34359738368

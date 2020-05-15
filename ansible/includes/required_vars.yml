@@ -1,0 +1,4 @@
+- name: Checking required variables
+  fail: msg="Variable '{{ item }}' is not defined"
+  when: vars[item] is not defined
+  with_items: "{{ required_vars }}"

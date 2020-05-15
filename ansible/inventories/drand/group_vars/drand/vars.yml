@@ -1,0 +1,16 @@
+drand_tls_disable: true
+drand_public_tls_disable: false
+drand_import_keypair: true
+drand_path: "/opt/drand"
+drand_systemd_extras:
+  MemoryHigh: 4G
+  MemoryMax: 6G
+  LimitNOFILE: 32768
+  LimitNOFILESoft: 24576
+
+drand_id_private: |
+  Key = "{{ drand_private_key }}"
+drand_id_public: |
+  Address = "{{ drand_public_host }}:{{ drand_public_port }}"
+  Key = "{{ drand_public_key }}"
+  TLS = {{ (not (drand_public_tls_disable | bool )) | lower }}

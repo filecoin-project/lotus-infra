@@ -1,0 +1,2 @@
+chainwatch_golog_file: "/var/log/chainwatch.log"
+chainwatch_db: "postgres://postgres:protocol@10.10.100.1:15432/chainwatch?sslmode=disable"

@@ -5,13 +5,20 @@ After=network.target
 [Service]
 User={{ lotus_user }}
 Group={{ lotus_user }}
-ExecStart=/usr/local/bin/lotus daemon --bootstrap="{{ lotus_daemon_bootstrap }}"
+ExecStart=/usr/local/bin/lotus daemon --bootstrap="{{ lotus_daemon_bootstrap | lower }}"
 Environment=LOTUS_PATH="{{ lotus_path }}"
 Environment=GOLOG_FILE="{{ lotus_golog_file }}"
 Environment=GOLOG_LOG_FMT="{{ lotus_golog_log_fmt }}"
+Environment=FIL_PROOFS_PARAMETER_CACHE="{{ lotus_proof_params_path }}"
+Environment=IPFS_GATEWAY="{{ lotus_ipfs_gateway }}"
 {% for item in lotus_env | dict2items -%}
 Environment={{ item.key }}="{{ item.value }}"
-{% endfor %}
+{% endfor -%}
+
+{% for item in lotus_systemd_extras | dict2items -%}
+{{ item.key }}={{ item.value }}
+{% endfor -%}
+
 Restart=always
 RestartSec=30
 

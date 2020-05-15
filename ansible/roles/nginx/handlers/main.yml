@@ -1,2 +1,2 @@
-- name: reload nginx
+- name: reload_nginx
   command: "/etc/init.d/nginx reload"

@@ -1,0 +1,30 @@
+---
+- name: Register release_name
+  shell: uname -r
+  register: release_name
+
+- name: Install packages
+  apt:
+    pkg:
+      - gcc
+      - make
+      - "linux-headers-{{ release_name.stdout }}"
+    update_cache: yes
+  when: release_name is defined
+
+- name: Register modinfo_nvidia
+  shell: modinfo nvidia
+  ignore_errors: yes
+  register: modinfo_nvidia
+
+- name: Nvidia drivers
+  block:
+    - name: Download drivers
+      get_url:
+        url: "{{ nvidia_drivers_url }}"
+        dest: /tmp/nvidia-drivers
+        mode: "0755"
+
+    - name: Install drivers
+      shell: /tmp/nvidia-drivers --ui=none --no-questions
+  when: modinfo_nvidia is defined and modinfo_nvidia.rc == 1

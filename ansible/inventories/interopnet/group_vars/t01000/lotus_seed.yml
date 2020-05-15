@@ -1,0 +1,3 @@
+lotus_seed_miner_addr: "{{ lotus_miner_addr }}"
+lotus_seed_miner_wallet_keyinfo: "{{ lotus_miner_wallet_keyinfo }}"
+lotus_seed_sector_offset: 0

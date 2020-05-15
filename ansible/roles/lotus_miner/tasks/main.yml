@@ -1,46 +1,42 @@
-- name: Register release_name
-  shell: uname -r
-  register: release_name
+- include_tasks: ../../../includes/required_vars.yml
+- include_tasks: ../../../includes/lotus_general_runtime_deps.yml
 
-- name: Install packages
-  apt:
-    pkg:
-      - gcc
-      - make
-      - jq
-      - "linux-headers-{{ release_name.stdout }}"
-    update_cache: yes
-  when: release_name is defined
-
-- name: Register modinfo_nvidia
-  shell: modinfo nvidia
-  ignore_errors: yes
-  register: modinfo_nvidia
-
-- name: Nvidia drivers
-  block:
-    - name: Download drivers
-      get_url:
-        url: "{{ lotus_miner_nvidia_drivers_url }}"
-        dest: /tmp/nvidia-drivers
-        mode: "0755"
-
-    - name: Install drivers
-      shell: /tmp/nvidia-drivers --ui=none --no-questions
-      notify: reboot-system
-  when: modinfo_nvidia is defined and modinfo_nvidia.rc == 1
-
-- name: Reset miner
+- name: Reset system
   block:
     - name: Ensure miner stopped
-      systemd:
+      service:
         name: lotus-miner
         state: stopped
     - name: Remove miner repository
       file:
         path: "{{ lotus_miner_path }}"
         state: absent
+    - name: Remove presealed metadata
+      file:
+        path: "{{ lotus_miner_presealed_metadata }}"
+        state: absent
+    - name: Truncate log file
+      shell:
+        cmd: truncate -s 0 "{{ lotus_miner_golog_file }}"
   when: lotus_miner_reset == "yes"
+
+- name: Copy binary
+  copy:
+    src: "{{ lotus_miner_binary_src }}"
+    dest: /usr/local/bin/lotus-storage-miner
+    owner: root
+    group: root
+    mode: "0755"
+  when: lotus_miner_binary_src is defined
+
+- name: Copy lotus-seed binary
+  copy:
+    src: "{{ lotus_seed_binary_src }}"
+    dest: /usr/local/bin/lotus-seed
+    owner: root
+    group: root
+    mode: "0755"
+  when: lotus_seed_binary_src is defined
 
 - name: Ensure miner repository exists
   file:
@@ -53,6 +49,7 @@
 - name: Ensure LOTUS_STORAGE_PATH global env is set
   lineinfile:
     path: /etc/environment
+    regex: "^LOTUS_STORAGE_PATH"
     line: LOTUS_STORAGE_PATH="{{ lotus_miner_path }}"
 
 - name: Ensure log file exists
@@ -81,91 +78,39 @@
     group: root
     mode: "0644"
 
-- name: Copy binary
-  copy:
-    src: "{{ lotus_miner_binary_src }}"
-    dest: /usr/local/bin/lotus-storage-miner
-    owner: root
-    group: root
-    mode: "0755"
-  when: lotus_miner_copy_binary | bool
-
-- name: Copy binary - lotus shed
-  copy:
-    src: "{{ lotus_shed_binary_src }}"
-    dest: /usr/local/bin/lotus-shed
-    owner: root
-    group: root
-    mode: "0755"
-
 - name: Ensure parameters are download
   shell: /usr/local/bin/lotus-storage-miner fetch-params --proving-params "{{ lotus_miner_sector_size }}"
+  when: lotus_miner_ensure_params | bool
 
+- name: Merge presealed sector metadata
+  become_user: "{{ lotus_user }}"
+  shell:
+    cmd: /usr/local/bin/lotus-seed aggregate-manifests {{ lotus_miner_presealed_sectors | product([metadatafile]) | map('join', '/') | join(' ') }} > "{{ lotus_miner_presealed_metadata }}"
+    creates: "{{ lotus_miner_presealed_metadata }}"
+  vars:
+    metadatafile: "pre-seal-{{ lotus_miner_addr }}.json"
 
-#- name: remove / create presealed directory
-#  file:
-#    path: "{{ lotus_miner_presealed_sectors_path }}"
-#    state: "{{ item }}"
-#    owner: "{{ lotus_user }}"
-#    group: "{{ lotus_user }}"
-#    mode: "0700"
-#  with_items:
-#    - absent
-#    - directory
-#- name: move presealed sectors
-#  unarchive:
-#    src: "{{ lotus_miner_presealed_sector_src }}"
-#    dest: "{{ lotus_miner_presealed_sectors_path }}"
-#    owner: "{{ lotus_user }}"
-#    group: "{{ lotus_user }}"
-#    mode: "0700"
-
-- name: Register miner_raw_wallet
-  shell: jq -rc ".{{ lotus_miner_addr }}.Key" < "{{ lotus_miner_presealed_sectors_path }}/pre-seal-{{ lotus_miner_addr }}.json"
-  register: miner_raw_wallet
-
-- debug:
-    msg: "miner_raw_wallet {{ miner_raw_wallet.stdout }}"
-  when: miner_raw_wallet is defined
-
-- name: Register base16_encoded_wallet
-  shell: lotus-shed base16 '{{ miner_raw_wallet.stdout }}'
-  register: miner_base16_encoded_wallet
-  when: miner_raw_wallet is defined
-
-- debug:
-    msg: "miner_base16_encoded_wallet {{ miner_base16_encoded_wallet.stdout }}"
-  when: miner_base16_encoded_wallet is defined
-
-- name: Register miner_wallet_addr
-  shell: lotus-shed keyinfo --format {%raw%}"{{.Address}}"{%endraw%} "{{ miner_base16_encoded_wallet.stdout }}"
-  register: miner_wallet_addr
-  when: miner_base16_encoded_wallet is defined
-
-- debug:
-    msg: "miner_wallet_addr {{ miner_wallet_addr.stdout }}"
-  when: miner_wallet_addr is defined
-
-- name: Register base32_encoded_wallet_addr
-  shell: lotus-shed base32 "wallet-{{ miner_wallet_addr.stdout }}" 
-  register: miner_base32_encoded_wallet_addr
-  when: miner_wallet_addr is defined
-
-- debug:
-    msg: "miner_base32_encoded_wallet_addr {{ miner_base32_encoded_wallet_addr.stdout }}"
-  when: miner_base32_encoded_wallet_addr is defined
-
-- name: Ensure miner wallet exists
-  copy:
-    content: "{{ miner_raw_wallet.stdout }}"
-    owner: "{{ lotus_user }}"
-    group: "{{ lotus_user }}"
-    mode: "0600"
-    dest: "{{ lotus_path }}/keystore/{{ miner_base32_encoded_wallet_addr.stdout }}"
-  when: miner_raw_wallet is defined and miner_base32_encoded_wallet_addr is defined
+- name:
+  include_tasks: import_wallet.yml
+  when: lotus_miner_import_wallet | bool
 
 - name: Ensure service enabled
   systemd:
     name: "lotus-miner"
     enabled: yes
     state: stopped
+
+- set_fact:
+    lotus_miner_filebeat_input:
+      paths:
+        - "{{ lotus_miner_golog_file }}"
+      fields:
+        type: "lotus-miner"
+
+- set_fact:
+    lotus_miner_telegraf_tags:
+      miner: "{{ lotus_miner_addr }}"
+
+- set_fact:
+    lotus_miner_telegraf_inputs_procstat:
+      - "lotus-miner"

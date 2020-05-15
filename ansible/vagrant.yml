@@ -1,7 +1,22 @@
 ---
-- import_playbook: access-control.yml
-- hosts: all
+- hosts: vagrant
   become: yes
+  module_defaults:
+    package:
+      force_apt_get: yes
   tasks:
-    - name: Open firewall ports
-      shell: ufw allow out 53/udp
+    - name: Open dns to enable dns
+      ufw:
+        rule: allow
+        proto: udp
+        port: "53"
+
+    - name: SSH key
+      authorized_key:
+        state: present
+        user: "{{ ansible_user }}"
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+    - name: Update package cache
+      apt:
+        update_cache: true

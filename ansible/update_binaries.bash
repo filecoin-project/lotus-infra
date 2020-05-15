@@ -14,17 +14,23 @@ usage() {
 
 while [ "$1" != "" ]; do
     case $1 in
+        -s | --src )            shift
+                                src="$1"
+                                ;;
         -b | --branch )         shift
                                 branch="$1"
                                 ;;
-        -c | --copy )           copy="True"
+        -c | --copy )           copy=true
                                 ;;
-        -r | --restart )        restart="True"
+        --state )               shift
+                                state="$1"
                                 ;;
         -k | --check )          check="--check"
                                 ;;
         -h | --help )           usage
                                 exit
+                                ;;
+        -- )                    shift; break
                                 ;;
         * )                     usage
                                 exit 1
@@ -33,46 +39,26 @@ while [ "$1" != "" ]; do
 done
 
 UPDATE_BRANCH="${branch:-"master"}"
-COPY_BINARY="${copy:-"False"}"
-RESTART_LOTUS="${restart:-"False"}"
-ANSIBLE_CHECK_MODE="${check:- ""}"
-LOTUS_SRC=$(mktemp -d)
+LOTUS_SERVICE_STATE="${state:-"started"}"
+ANSIBLE_CHECK_MODE="${check:-""}"
+LOTUS_SRC="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
+hostfile="inventories/interopnet/hosts.yml"
 
-if [ "$COPY_BINARY" = "True" ]; then
-  git clone --branch "$UPDATE_BRANCH" https://github.com/filecoin-project/lotus.git "$LOTUS_SRC"
+../scripts/build_binaries.bash -f --src $LOTUS_SRC
 
-  pushd "$LOTUS_SRC"
-
-  make clean deps lotus lotus-storage-miner
-
-  popd
-fi
-
-HOSTS1=(
-  t0222.miner.fil-test.net
-  t0333.miner.fil-test.net
-  t0444.miner.fil-test.net
+HOSTS_MINERS=(
+  "t01000.miner.interopnet.kittyhawk.wtf"
 )
 
-
-HOSTS2=(
-  lotus-fountain.yyz.fil-test.net
-  stats.fil-test.net
-  lotus-bootstrap-0.dfw.fil-test.net
-  lotus-bootstrap-1.dfw.fil-test.net
-  lotus-bootstrap-0.fra.fil-test.net
-  lotus-bootstrap-1.fra.fil-test.net
-  lotus-bootstrap-0.sin.fil-test.net
-  lotus-bootstrap-1.sin.fil-test.net
+HOSTS_BOOTSTRAPPERS=(
+  "peer0.interopnet.kittyhawk.wtf"
 )
 
-for HOST in "${HOSTS1[@]}"; do
-    ansible-playbook lotus_bootstrap_miner_update_binaries.yml        \
+for HOST in "${HOSTS_MINERS[@]}"; do
+    ansible-playbook -i $hostfile lotus_presealed_miner.yml           \
     -e lotus_binary_src="${LOTUS_SRC}/lotus"                          \
     -e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
-    -e lotus_copy_binary=$COPY_BINARY                                 \
-    -e lotus_miner_copy_binary=$COPY_BINARY                           \
-    -e lotus_daemon_restart=$RESTART_LOTUS                            \
+    -e lotus_service_state=$LOTUS_SERVICE_STATE                       \
     --limit "$HOST"                                                   \
     $ANSIBLE_CHECK_MODE                                               \
     "$@"
@@ -80,27 +66,14 @@ for HOST in "${HOSTS1[@]}"; do
     read  -n 1 -p "Press any key to continue"
 done
 
-for HOST in "${HOSTS2[@]}"; do
-    ansible-playbook lotus_bootstrap_miner_update_binaries.yml        \
+for HOST in "${HOSTS_BOOTSTRAPPERS[@]}"; do
+    ansible-playbook -i $hostfile lotus_bootstrap.yml                 \
     -e lotus_binary_src="${LOTUS_SRC}/lotus"                          \
     -e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
-    -e lotus_copy_binary=$COPY_BINARY                                 \
-    -e lotus_daemon_restart=$RESTART_LOTUS                            \
+    -e lotus_service_state=$LOTUS_SERVICE_STATE                       \
     --limit "$HOST"                                                   \
     $ANSIBLE_CHECK_MODE                                               \
     "$@"
 
     read  -n 1 -p "Press any key to continue"
 done
-
-read -n 1 -p "Press any key to enable lotus health agent"
-
-ansible-playbook lotus_bootstrap_miner_update_binaries.yml        \
--e lotus_binary_src="${LOTUS_SRC}/lotus"                          \
--e lotus_miner_binary_src="${LOTUS_SRC}/lotus-storage-miner"      \
--e lotus_copy_binary=False                                        \
--e lotus_miner_copy_binary=False                                  \
--e lotus_daemon_restart=False                                     \
--e lotus_health_status="started"                                  \
-$ANSIBLE_CHECK_MODE                                               \
-"$@"

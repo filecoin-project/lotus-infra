@@ -1,0 +1,10 @@
+- name: Ensure NTP package is installed
+  package:
+    name: ntp
+    state: present
+
+- name: Ensure NTP is running
+  service:
+    name: ntp
+    state: started
+    enabled: true

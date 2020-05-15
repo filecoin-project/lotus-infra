@@ -1,0 +1,5 @@
+lotus_miner_genesis_miner: true
+lotus_miner_env: {}
+lotus_miner_presealed_sectors:
+  - /mnt/disk0/data
+  - /mnt/disk1/data

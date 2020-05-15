@@ -1,0 +1,12 @@
+---
+lotus_user: "fc"
+lotus_user_uid: "532"
+gfc_path: "/var/lib/gfc"
+gfc_golog_file: "/var/log/gfc.log"
+gfc_proof_params_path: "/var/tmp/filecoin-proof-parameters"
+gfc_consensus_miner_min_power: 1099511627776
+gfc_systemd_extras:
+  MemoryHigh: 12G
+  MemoryMax: 16G
+  LimitNOFILE: 32768
+  LimitNOFILESoft: 24576

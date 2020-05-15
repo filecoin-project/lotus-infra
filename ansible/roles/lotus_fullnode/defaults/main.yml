@@ -1,13 +1,9 @@
-lotus_binary_src:
 lotus_reset: no
-lotus_user: lotus
-lotus_daemon_bootstrap: "false"
-lotus_path: /var/lib/lotus
-lotus_proof_params_path: /var/tmp/filecoin-proof-parameters
-lotus_golog_file: /var/log/lotus.log
+lotus_daemon_bootstrap: true
 lotus_golog_log_fmt: json
 lotus_env: {}
+lotus_systemd_extras: {}
 lotus_p2p_port: 1347
-lotus_copy_binary: false
-lotus_shed_copy_binary: false
-lotus_shed_binary_src: /tmp/lotus-shed
+lotus_ipfs_gateway: "https://proofs.filecoin.io/ipfs/"
+lotus_import_peerkey: false
+lotus_import_wallet: false

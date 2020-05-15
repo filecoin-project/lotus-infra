@@ -1,7 +1,7 @@
 ############################# Filebeat #####################################
 
 filebeat.inputs:
-{{ logz_inputs | to_yaml }}
+{{ logz_inputs | map('combine', base, recursive=True) | list | to_yaml }}
 
 #For version 7 and higher
 filebeat.registry.path: /var/lib/filebeat
@@ -37,6 +37,7 @@ processors:
         fields:
           - from: 'json.msg'
             to: 'message'
+{{ filebeat_additional_processors }}
 
 
 ############################# Output ##########################################
