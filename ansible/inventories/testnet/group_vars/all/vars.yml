@@ -10,3 +10,8 @@ lotus_ipfs_gateway: https://proofs.filecoin.io/ipfs/
 lotus_user: "fc"
 lotus_user_uid: "532"
 sector_size: 34359738368
+filebeat_additional_processors: |
+  - drop_event:
+      when:
+        regexp:
+          message: "^received message from router graylisted peer"
