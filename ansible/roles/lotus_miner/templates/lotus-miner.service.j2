@@ -15,6 +15,11 @@ Environment=GOLOG_LOG_FMT="{{ lotus_miner_golog_log_fmt }}"
 {% for item in lotus_miner_env | dict2items -%}
 Environment={{ item.key }}="{{ item.value }}"
 {% endfor %}
+
+{% for item in lotus_miner_systemd_extras | dict2items -%}
+{{ item.key }}={{ item.value }}
+{% endfor -%}
+
 Restart=always
 RestartSec=30
 

@@ -4,3 +4,4 @@ lotus_miner_golog_log_fmt: json
 lotus_miner_env: {}
 lotus_miner_import_wallet: false
 lotus_miner_ensure_params: true
+lotus_miner_systemd_extras: {}
