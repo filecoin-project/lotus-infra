@@ -8,3 +8,5 @@ lotus_ipfs_gateway: "https://proofs.filecoin.io/ipfs/"
 lotus_import_peerkey: false
 lotus_import_wallet: false
 lotus_daemon_profile: ""
+lotus_daemon_conn_mgr_low: 1024
+lotus_daemon_conn_mgr_high: 2048
