@@ -57,6 +57,17 @@ resource "packet_device" "stats" {
   project_ssh_key_ids = values(local.ssh_keys)
 }
 
+resource "packet_device" "sentinel" {
+  hostname            = "sentinel"
+  plan                = "x1.small.x86"
+  facilities          = ["sea1"]
+  operating_system    = "ubuntu_18_04"
+  billing_cycle       = "hourly"
+  project_id          = var.project_id
+  project_ssh_key_ids = values(local.ssh_keys)
+}
+
+
 locals {
   ssh_keys = {
     ognots       = "e0eb55a6-b2e7-48f8-9bd9-a7c5987332dc"
@@ -124,6 +135,15 @@ resource "aws_route53_record" "stats" {
   records = ["${packet_device.stats.access_public_ipv4}"]
   ttl     = 300
 }
+
+resource "aws_route53_record" "sentinel" {
+  name    = "sentinel"
+  zone_id = data.aws_route53_zone.default.zone_id
+  type    = "A"
+  records = ["${packet_device.sentinel.access_public_ipv4}"]
+  ttl     = 300
+}
+
 
 resource "dnsimple_record" "faucet" {
   domain = var.testnet_domain
