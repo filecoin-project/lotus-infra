@@ -26,8 +26,8 @@
 
 - name: fetch logz.io certificate
   get_url:
-    url: "https://raw.githubusercontent.com/logzio/public-certificates/master/COMODORSADomainValidationSecureServerCA.crt"
-    dest: /etc/pki/tls/certs
+    url: "https://raw.githubusercontent.com/logzio/public-certificates/master/TrustExternalCARoot_and_USERTrustRSAAAACA.crt"
+    dest: /etc/pki/tls/certs/COMODORSADomainValidationSecureServerCA.crt
     mode: "0600"
 
 - name: Copy filebeat configuration template to hosts
