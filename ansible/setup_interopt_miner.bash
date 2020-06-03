@@ -62,7 +62,6 @@ EOF
 done
 
 ../scripts/build_binaries.bash -f --src "$LOTUS_SRC"
-../scripts/build_binaries.gfc.bash -f
 
 if [ "$PRESEAL" = true ]; then
   ansible-playbook -i $hostfile lotus_presealing.yml                                                   \
@@ -176,16 +175,6 @@ read  -n 1 -p "Press any key to continue"
 
 ansible -i $hostfile -b -m shell -a 'lotus chain list'                          $genesis
 
-ansible-playbook -i $hostfile gfc_bootstrap.yml                                                                \
-                 -e gfc_lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-shed"       \
-                 -e gfc_bootstrap_list_src="$GOPATH/src/github.com/filecoin-project/lotus/build/bootstrap/bootstrappers.pi" \
-                 -e gfc_binary_src="$GOPATH/src/github.com/filecoin-project/go-filecoin/go-filecoin"           \
-                 -e gfc_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/devnet.car"   \
-                 -e gfc_service_state=started                                                                  \
-                 -e gfc_block_time=25s                                                                         \
-                 -e gfc_reset=${RESET}                                                                         \
-                 "$@"
-
 ansible-playbook -i $hostfile lotus_bootstrap.yml                                                              \
                  -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                     \
                  -e lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-shed"           \
@@ -196,8 +185,6 @@ ansible-playbook -i $hostfile lotus_bootstrap.yml                               
                  "$@"
 
 sleep 5
-
-ansible -i $hostfile -b -m shell -a 'gfc chain ls' gfc_daemon
 
 ansible-playbook -i $hostfile lotus_stats.yml                                                                  \
                  -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/stats"                     \
