@@ -66,7 +66,6 @@ done
 
 if [ -z "$SKIP_FIRST_BUILD" ]; then
   ../scripts/build_binaries.bash --2k
-  ../scripts/build_binaries.gfc.bash
 fi
 
 if [ "$PRESEAL" = true ]; then
@@ -181,16 +180,6 @@ ansible -i $hostfile -b -m shell -a 'lotus chain list'                          
 read  -n 1 -p "Press any key to continue"
 
 ansible -i $hostfile -b -m shell -a 'lotus chain list'                          $genesis
-
-ansible-playbook -i $hostfile gfc_bootstrap.yml                                                                \
-                 -e gfc_lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-shed"       \
-                 -e gfc_bootstrap_list_src="$GOPATH/src/github.com/filecoin-project/lotus/build/bootstrap/bootstrappers.pi" \
-                 -e gfc_binary_src="$GOPATH/src/github.com/filecoin-project/go-filecoin/go-filecoin"           \
-                 -e gfc_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/devnet.car"   \
-                 -e gfc_service_state=started                                                                  \
-                 -e gfc_block_time=2s                                                                          \
-                 -e gfc_reset=${RESET}                                                                         \
-                 "$@"
 
 ansible-playbook -i $hostfile lotus_stats.yml                                                                  \
                  -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/stats"                     \
