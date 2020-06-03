@@ -1,0 +1,10 @@
+[Unit]
+Description=Lotus Drand Bootstrap
+After=network.target lotus-daemon.service
+
+[Service]
+Type=oneshot
+User={{ lotus_user }}
+Group={{ lotus_user }}
+ExecStart={{ lotus_path }}/bootstrap.bash --peerlist "{{ lotus_path }}/drand.pi"
+Environment=LOTUS_PATH="{{ lotus_path }}"

@@ -1,0 +1,43 @@
+- name: Ensure service file
+  template:
+    src: ../templates/lotus-bootstrap.service.j2
+    dest: /etc/systemd/system/lotus-bootstrap.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload-lotus
+
+- name: Ensure service file
+  template:
+    src: ../templates/lotus-bootstrap.timer.j2
+    dest: /etc/systemd/system/lotus-bootstrap.timer
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload-lotus
+
+- name: Ensure service file
+  template:
+    src: ../templates/bootstrap.bash.j2
+    dest: "{{ lotus_path }}/bootstrap.bash"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0744"
+  notify:
+    - reload-lotus
+
+- name: Ensure wallet exists
+  copy:
+    content: "{{ lotus_drand_peers }}"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"
+    dest: "{{ lotus_path }}/drand.pi"
+
+- name: Ensure lotus service enabled and in correct state
+  service:
+    name: "lotus-bootstrap.timer"
+    enabled: yes
+    state: started

@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+usage() {
+  set +x
+  echo "usage: bootstrap.bash
+    --repodir  <repodir>
+    --peerlist <peerlist>
+    [-h | --help]"
+}
+
+while [ "$1" != "" ]; do
+    case $1 in
+        --repodir )             shift
+                                repodir="$1"
+                                ;;
+        --peerlist )            shift
+                                peerlist="$1"
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+        -- )                    shift
+                                break
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+
+REPODIR="${repodir:-"$LOTUS_PATH"}"
+PEERLIST="${peerlist:-""}"
+
+localpeerid=""
+
+while [ -z "$localpeerid" ]; do
+  sleep 5
+  localpeerid=$(/usr/local/bin/lotus --repo="${REPODIR}" net id)
+done
+
+for peer in $(cat ${PEERLIST}); do
+  if [[ "$peer" =~ "$localpeerid" ]]; then
+    continue
+  fi
+
+  /usr/local/bin/lotus --repo="${REPODIR}" net connect "$peer"
+done
