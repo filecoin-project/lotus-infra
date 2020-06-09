@@ -205,4 +205,5 @@ ansible-playbook -i $hostfile lotus_fountain.yml                                
                  -e lotus_service_state=started                                                                \
                  -e lotus_daemon_bootstrap=false                                                               \
                  -e lotus_import_wallet=true                                                                   \
+                 -e lotus_fountain_enabled=true                                                                \
                  "$@"
