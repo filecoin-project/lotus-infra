@@ -7,3 +7,7 @@ lotus_proof_params_path: "/var/tmp/filecoin-proof-parameters"
 lotus_systemd_extras:
   MemoryHigh: 12G
   MemoryMax: 16G
+lotus_drand_peers: |
+  /dnsaddr/pl-us.testnet.drand.sh/
+  /dnsaddr/pl-eu.testnet.drand.sh/
+lotus_drand_bootstrap: true

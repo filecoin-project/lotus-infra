@@ -94,6 +94,10 @@
     enabled: yes
     state: "{{ lotus_service_state }}"
 
+- name:
+  include_tasks: drand_bootstrap.yml
+  when: lotus_drand_bootstrap | bool
+
 - set_fact:
     lotus_fullnode_ufw_profile:
       name: Lotus Daemon
