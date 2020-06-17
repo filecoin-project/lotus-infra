@@ -1,0 +1,11 @@
+[Unit]
+Description=Lotus Sector Migrate {{ item.index }}
+After=network.target
+
+[Service]
+User={{ lotus_user }}
+Group={{ lotus_user }}
+ExecStart=/usr/bin/rsync -a -v -c {{ item.from }} {{ item.to }}
+
+[Install]
+WantedBy=multi-user.target
