@@ -1,5 +1,4 @@
 required_vars:
-  - lotus_seed_binary_src
   - lotus_seed_sector_size
   - lotus_seed_sector_count
   - lotus_seed_sector_offset
