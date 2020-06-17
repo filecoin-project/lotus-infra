@@ -15,12 +15,17 @@
   shell: fdisk -l -o Device "{{ item }}" | grep '^{{ item }}'
   register: partition
 
+- name: Create ext4 filesystem on partition
+  filesystem:
+    fstype: ext4
+    dev: "{{ partition.stdout }}"
+
 - name:
   pause:
     seconds: 5
 
 - name:
-  shell: lsblk --noheading --list -o uuid "{{ partition.stdout }}"
+  shell: partprobe "{{ partition.stdout }}"
 
 - name:
   pause:
@@ -30,17 +35,18 @@
   shell: lsblk --noheading --list -o uuid "{{ partition.stdout }}"
   register: uuid
 
-- name: Create ext4 filesystem on partition
-  filesystem:
-    fstype: ext4
-    dev: "{{ partition.stdout }}"
-
 - name: Ensure merged mounted
   mount:
     src: "UUID={{ uuid.stdout }}"
     path: "/mnt/disk{{ index }}"
     state: mounted
     fstype: ext4
+
+- name: Remove lost+found
+  file:
+    name: "/mnt/disk{{ index }}/lost+found"
+    state: absent
+
 
 - name: Write Hostname
   shell: "echo '{{ hostname }}' >> /mnt/disk{{ index }}/hostnames"

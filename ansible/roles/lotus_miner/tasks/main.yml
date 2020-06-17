@@ -79,7 +79,7 @@
     mode: "0644"
 
 - name: Ensure parameters are download
-  shell: /usr/local/bin/lotus-storage-miner fetch-params --proving-params "{{ lotus_miner_sector_size }}"
+  shell: /usr/local/bin/lotus-storage-miner fetch-params "{{ lotus_miner_sector_size }}"
   when: lotus_miner_ensure_params | bool
 
 - name: Merge presealed sector metadata

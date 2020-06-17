@@ -18,14 +18,25 @@
   shell: fdisk -l -o Device "{{ item }}" | grep '^{{ item }}'
   register: partition
 
-- name:
-  shell: lsblk --noheading --list -o uuid "{{ partition.stdout }}"
-  register: uuid
-
 - name: Create ext4 filesystem for swap partition
   filesystem:
     fstype: ext4
     dev: "{{ partition.stdout }}"
+
+- name:
+  pause:
+    seconds: 5
+
+- name:
+  shell: partprobe "{{ partition.stdout }}"
+
+- name:
+  pause:
+    seconds: 5
+
+- name:
+  shell: lsblk --noheading --list -o uuid "{{ partition.stdout }}"
+  register: uuid
 
 - name: Set swappiness
   sysctl:
@@ -39,6 +50,11 @@
     name: "/mnt/swap"
     state: mounted
     fstype: ext4
+
+- name: Remove lost+found
+  file:
+    name: "/mnt/swap/lost+found"
+    state: absent
 
 - name: Create swap file
   shell: "dd if=/dev/zero of=/mnt/swap/swapfile bs=1M count=$(df -B 1MB /mnt/swap/ | tail -n +2 | awk '{print $4}')"

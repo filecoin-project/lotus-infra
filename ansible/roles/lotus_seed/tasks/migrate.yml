@@ -1,0 +1,15 @@
+- name: Create sectorbuilder directory
+  file:
+    path: "{{ item.to }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0700"
+
+- name: Make service file
+  template:
+    src: ../templates/lotus-migrate-sectors.service.j2
+    dest: "/etc/systemd/system/lotus-migrate-sectors-{{ item.index }}.service"
+    owner: root
+    group: root
+    mode: "0644"

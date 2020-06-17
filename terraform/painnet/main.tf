@@ -83,12 +83,12 @@ module "t01000sg" {
   vpc_security_group_ids      = [aws_security_group.this.id]
   subnet_id                   = module.vpc.public_subnets[0]
   availability_zone           = local.azs[0]
-  worker0_ebs_volume_ids      = slice(aws_ebs_volume.t01000, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled)
-  worker1_ebs_volume_ids      = slice(aws_ebs_volume.t01000, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled)
-  worker2_ebs_volume_ids      = slice(aws_ebs_volume.t01000, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled)
-  worker3_ebs_volume_ids      = slice(aws_ebs_volume.t01000, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled)
-  worker4_ebs_volume_ids      = slice(aws_ebs_volume.t01000, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled)
-  worker5_ebs_volume_ids      = slice(aws_ebs_volume.t01000, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled)
+  worker0_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01000tmp, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01000, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled))
+  worker1_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01000tmp, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01000, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled))
+  worker2_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01000tmp, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01000, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled))
+  worker3_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01000tmp, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01000, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled))
+  worker4_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01000tmp, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01000, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled))
+  worker5_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01000tmp, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01000, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled))
 }
 
 module "t01000pm" {
@@ -108,11 +108,26 @@ module "t01000pm" {
 resource "aws_ebs_volume" "t01000" {
   count             = local.worker_count * local.worker_thread_count
   availability_zone = local.azs[0]
-  size              = 2048
+  size              = 128
   type              = "gp2"
 
   tags = {
     Name = "t01000v${count.index}"
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_ebs_volume" "t01000tmp" {
+  count             = local.worker_count * local.worker_thread_count * var.seeders_enabled
+  availability_zone = local.azs[0]
+  size              = 600
+  type              = "gp2"
+
+  tags = {
+    Name = "t01000v${count.index}tmp"
   }
 
   lifecycle {
@@ -131,12 +146,12 @@ module "t01001sg" {
   vpc_security_group_ids      = [aws_security_group.this.id]
   subnet_id                   = module.vpc.public_subnets[2]
   availability_zone           = local.azs[2]
-  worker0_ebs_volume_ids      = slice(aws_ebs_volume.t01001, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled)
-  worker1_ebs_volume_ids      = slice(aws_ebs_volume.t01001, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled)
-  worker2_ebs_volume_ids      = slice(aws_ebs_volume.t01001, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled)
-  worker3_ebs_volume_ids      = slice(aws_ebs_volume.t01001, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled)
-  worker4_ebs_volume_ids      = slice(aws_ebs_volume.t01001, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled)
-  worker5_ebs_volume_ids      = slice(aws_ebs_volume.t01001, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled)
+  worker0_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01001tmp, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01001, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled))
+  worker1_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01001tmp, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01001, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled))
+  worker2_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01001tmp, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01001, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled))
+  worker3_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01001tmp, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01001, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled))
+  worker4_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01001tmp, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01001, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled))
+  worker5_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01001tmp, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01001, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled))
 }
 
 module "t01001pm" {
@@ -150,17 +165,32 @@ module "t01001pm" {
   vpc_security_group_ids      = [aws_security_group.this.id]
   subnet_id                   = module.vpc.public_subnets[2]
   availability_zone           = local.azs[2]
-  ebs_volume_ids              = slice(aws_ebs_volume.t01001, 0, length(aws_ebs_volume.t01000) * var.miners_enabled)
+  ebs_volume_ids              = slice(aws_ebs_volume.t01001, 0, length(aws_ebs_volume.t01001) * var.miners_enabled)
 }
 
 resource "aws_ebs_volume" "t01001" {
   count             = local.worker_count * local.worker_thread_count
   availability_zone = local.azs[2]
-  size              = 2048
+  size              = 128
   type              = "gp2"
 
   tags = {
     Name = "t01001v${count.index}"
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_ebs_volume" "t01001tmp" {
+  count             = local.worker_count * local.worker_thread_count * var.seeders_enabled
+  availability_zone = local.azs[2]
+  size              = 600
+  type              = "gp2"
+
+  tags = {
+    Name = "t01001v${count.index}tmp"
   }
 
   lifecycle {
@@ -179,12 +209,12 @@ module "t01002sg" {
   vpc_security_group_ids      = [aws_security_group.this.id]
   subnet_id                   = module.vpc.public_subnets[2]
   availability_zone           = local.azs[2]
-  worker0_ebs_volume_ids      = slice(aws_ebs_volume.t01002, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled)
-  worker1_ebs_volume_ids      = slice(aws_ebs_volume.t01002, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled)
-  worker2_ebs_volume_ids      = slice(aws_ebs_volume.t01002, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled)
-  worker3_ebs_volume_ids      = slice(aws_ebs_volume.t01002, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled)
-  worker4_ebs_volume_ids      = slice(aws_ebs_volume.t01002, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled)
-  worker5_ebs_volume_ids      = slice(aws_ebs_volume.t01002, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled)
+  worker0_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01002tmp, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01002, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled))
+  worker1_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01002tmp, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01002, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled))
+  worker2_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01002tmp, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01002, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled))
+  worker3_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01002tmp, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01002, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled))
+  worker4_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01002tmp, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01002, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled))
+  worker5_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01002tmp, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01002, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled))
 }
 
 module "t01002pm" {
@@ -198,13 +228,13 @@ module "t01002pm" {
   vpc_security_group_ids      = [aws_security_group.this.id]
   subnet_id                   = module.vpc.public_subnets[2]
   availability_zone           = local.azs[2]
-  ebs_volume_ids              = slice(aws_ebs_volume.t01002, 0, length(aws_ebs_volume.t01000) * var.miners_enabled)
+  ebs_volume_ids              = slice(aws_ebs_volume.t01002, 0, length(aws_ebs_volume.t01002) * var.miners_enabled)
 }
 
 resource "aws_ebs_volume" "t01002" {
   count             = local.worker_count * local.worker_thread_count
   availability_zone = local.azs[2]
-  size              = 2048
+  size              = 128
   type              = "gp2"
 
   tags = {
@@ -216,6 +246,21 @@ resource "aws_ebs_volume" "t01002" {
   }
 }
 
+resource "aws_ebs_volume" "t01002tmp" {
+  count             = local.worker_count * local.worker_thread_count * var.seeders_enabled
+  availability_zone = local.azs[2]
+  size              = 600
+  type              = "gp2"
+
+  tags = {
+    Name = "t01002v${count.index}tmp"
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+/*
 module "t01003sg" {
   source = "../modules/seeder_group"
 
@@ -227,12 +272,12 @@ module "t01003sg" {
   vpc_security_group_ids      = [aws_security_group.this.id]
   subnet_id                   = module.vpc.public_subnets[3]
   availability_zone           = local.azs[3]
-  worker0_ebs_volume_ids      = slice(aws_ebs_volume.t01003, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled)
-  worker1_ebs_volume_ids      = slice(aws_ebs_volume.t01003, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled)
-  worker2_ebs_volume_ids      = slice(aws_ebs_volume.t01003, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled)
-  worker3_ebs_volume_ids      = slice(aws_ebs_volume.t01003, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled)
-  worker4_ebs_volume_ids      = slice(aws_ebs_volume.t01003, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled)
-  worker5_ebs_volume_ids      = slice(aws_ebs_volume.t01003, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled)
+  worker0_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01003tmp, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01003, 0 * local.worker_thread_count * var.seeders_enabled, 1 * local.worker_thread_count * var.seeders_enabled))
+  worker1_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01003tmp, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01003, 1 * local.worker_thread_count * var.seeders_enabled, 2 * local.worker_thread_count * var.seeders_enabled))
+  worker2_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01003tmp, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01003, 2 * local.worker_thread_count * var.seeders_enabled, 3 * local.worker_thread_count * var.seeders_enabled))
+  worker3_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01003tmp, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01003, 3 * local.worker_thread_count * var.seeders_enabled, 4 * local.worker_thread_count * var.seeders_enabled))
+  worker4_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01003tmp, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01003, 4 * local.worker_thread_count * var.seeders_enabled, 5 * local.worker_thread_count * var.seeders_enabled))
+  worker5_ebs_volume_ids      = concat(slice(aws_ebs_volume.t01003tmp, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled), slice(aws_ebs_volume.t01003, 5 * local.worker_thread_count * var.seeders_enabled, 6 * local.worker_thread_count * var.seeders_enabled))
 }
 
 module "t01003pm" {
@@ -246,13 +291,13 @@ module "t01003pm" {
   vpc_security_group_ids      = [aws_security_group.this.id]
   subnet_id                   = module.vpc.public_subnets[3]
   availability_zone           = local.azs[3]
-  ebs_volume_ids              = slice(aws_ebs_volume.t01003, 0, length(aws_ebs_volume.t01000) * var.miners_enabled)
+  ebs_volume_ids              = slice(aws_ebs_volume.t01003, 0, length(aws_ebs_volume.t01003) * var.miners_enabled)
 }
 
 resource "aws_ebs_volume" "t01003" {
   count             = local.worker_count * local.worker_thread_count
   availability_zone = local.azs[3]
-  size              = 2048
+  size              = 128
   type              = "gp2"
 
   tags = {
@@ -263,3 +308,19 @@ resource "aws_ebs_volume" "t01003" {
     prevent_destroy = false
   }
 }
+
+resource "aws_ebs_volume" "t01003tmp" {
+  count             = local.worker_count * local.worker_thread_count * var.seeders_enabled
+  availability_zone = local.azs[3]
+  size              = 600
+  type              = "gp2"
+
+  tags = {
+    Name = "t01003v${count.index}tmp"
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+*/
