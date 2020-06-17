@@ -130,11 +130,11 @@ while true; do
   fi
 done
 
+sleep 30
+
 kill "$GDPID"
 
 wait
-
-sleep 30
 
 cp "${GENPATH}/testnet.car" build/genesis/devnet.car
 
