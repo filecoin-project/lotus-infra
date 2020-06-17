@@ -14,3 +14,4 @@ telegraf_processor: ""
 telegraf_aggregators: ""
 telegraf_additional_inputs: ""
 telegraf_inputs_procstat: []
+telegraf_prometheus_urls: []

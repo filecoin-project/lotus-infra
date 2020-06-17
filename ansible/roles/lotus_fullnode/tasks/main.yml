@@ -116,3 +116,7 @@
 - set_fact:
     lotus_fullnode_telegraf_inputs_procstat:
       - "lotus-daemon"
+
+- set_fact:
+    lotus_fullnode_telegraf_prometheus_urls:
+      - "http://localhost:1234/debug/metrics"

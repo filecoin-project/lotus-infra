@@ -28,5 +28,7 @@
           - "{{ lotus_fullnode_telegraf_tags }}"
         telegraf_inputs_procstat:
           - "{{ lotus_fullnode_telegraf_inputs_procstat }}"
+        telegraf_prometheus_urls:
+          - "{{ lotus_fullnode_telegraf_prometheus_urls }}"
       when:
         - lotus_fullnode_telegraf_tags is defined
