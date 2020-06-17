@@ -11,7 +11,8 @@ variable "swap_enabled" {}
 variable "availability_zone" {}
 
 locals {
-  devices = ["/dev/xvdca", "/dev/xvdcb", "/dev/xvdcc", "/dev/xvdcd", "/dev/xvdce", "/dev/xvdcf"]
+  devices = ["/dev/xvdca", "/dev/xvdcb", "/dev/xvdcc", "/dev/xvdcd", "/dev/xvdce", "/dev/xvdcf",
+             "/dev/xvdcg", "/dev/xvdch", "/dev/xvdci", "/dev/xvdcj", "/dev/xvdck", "/dev/xvdcl"]
   name    = "${var.miner_addr}w${var.index}"
   count   = length(var.ebs_volume_ids) > 0 ? 1 : 0
   swap    = (length(var.ebs_volume_ids) > 0 && var.swap_enabled == true) ? 1 : 0
@@ -101,6 +102,8 @@ resource "null_resource" "this" {
         swap_id      = local.swap > 0 ? join("", aws_volume_attachment.swap.*.volume_id): ""
         swap_name    = local.swap > 0 ? join("", aws_volume_attachment.swap.*.device_name): ""
       }
+
+      diff = true
 
       # shared attributes
       become        = true

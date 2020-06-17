@@ -51,17 +51,33 @@ module "worker0" {
 
   miner_addr                  = var.miner_addr
   instance_type               = var.instance_type
-  ami                         = ""
+  ami                         = "ami-06ffade19910cbfc0"
   zone_id                     = var.zone_id
+  availability_zone           = data.aws_availability_zones.available.names[0]
   vpc_security_group_ids      = [aws_security_group.this.id]
   subnet_id                   = aws_subnet.main.id
-  ebs_volume_ids              = [] #aws_ebs_volume.worker0
+  ebs_volume_ids              = concat(aws_ebs_volume.worker0, aws_ebs_volume.worker0final)
   vault_password_file         = local.vault_password_file
   index                       = 0
   swap_enabled                = true
 }
 
 data "aws_availability_zones" "available" {}
+
+resource "aws_ebs_volume" "worker0final" {
+  count             = 6
+  availability_zone = data.aws_availability_zones.available.names[0]
+  size              = 144
+  type              = "gp2"
+
+  tags = {
+    Name = "${var.miner_addr}v${count.index}"
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
 
 resource "aws_ebs_volume" "worker0" {
   count             = 6
@@ -70,7 +86,7 @@ resource "aws_ebs_volume" "worker0" {
   type              = "gp2"
 
   tags = {
-    Name = "${var.miner_addr}v${count.index}"
+    Name = "${var.miner_addr}v${count.index}-temp"
   }
 
   lifecycle {
