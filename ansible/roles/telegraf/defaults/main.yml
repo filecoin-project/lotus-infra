@@ -1,5 +1,5 @@
 ---
-telegraf_global_tags: []
+telegraf_global_tags: {}
 telegraf_outputs_influxdb_enabled: false
 telegraf_outputs_influxdb_username: ""
 telegraf_outputs_influxdb_password: ""

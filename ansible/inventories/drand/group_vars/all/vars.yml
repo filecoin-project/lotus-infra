@@ -1,4 +1,5 @@
-telegraf_global_tags: {}
+telegraf_global_tags:
+  filecoin_network: "drand"
 telegraf_outputs_influxdb_enabled: true
 telegraf_outputs_influxdb_username: lotus
 telegraf_outputs_influxdb_password: "{{ vault_influxdb_lotus_password }}"
