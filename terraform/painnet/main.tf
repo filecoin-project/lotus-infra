@@ -216,6 +216,7 @@ resource "aws_ebs_volume" "t01002" {
   }
 }
 
+/*
 module "t01003sg" {
   source = "../modules/seeder_group"
 
@@ -263,3 +264,4 @@ resource "aws_ebs_volume" "t01003" {
     prevent_destroy = false
   }
 }
+*/
