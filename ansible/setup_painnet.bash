@@ -150,12 +150,13 @@ ansible-playbook -i $hostfile lotus_bootstrap.yml                               
                  "$@"
 
 #to update the daemon
-#../scripts/build_binaries -f -- lotus
+#../scripts/build_binaries -f -- lotus lotus-storage-miner
 #ansible-playbook -i $hostfile lotus_bootstrap.yml                                                              \
 #                 -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                     \
 #                 -e lotus_daemon_bootstrap=true                                                                \
-#                 -e lotus_service_state=restarted                                                              \
+#                 -e lotus_service_state=started                                                                \
 #                 "$@"
+#ansible -i $hostfile -b -m shell -a 'systemctl restart lotus-daemon' lotus_bootstrap
 
 sleep 30
 
@@ -187,10 +188,20 @@ ansible-playbook -i $hostfile lotus_presealed_miner.yml                         
                  -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-storage-miner" \
                  -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                     \
                  -e lotus_service_state=started                                                                \
-                 -e lotus_miner_ensure_params=false                                                            \
+                 -e lotus_miner_ensure_params=true                                                             \
                  -e lotus_daemon_bootstrap=true                                                                \
                  "$@"
 
+#../scripts/build_binaries -f -- lotus lotus-storage-miner
+#ansible-playbook -i $hostfile lotus_presealed_miner.yml                                                        \
+#                 -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-storage-miner" \
+#                 -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                     \
+#                 -e lotus_service_state=started                                                                \
+#                 -e lotus_daemon_bootstrap=true                                                                \
+#                 "$@"
+#ansible -i $hostfile -b -m shell -a 'systemctl restart lotus-daemon' presealed_miners
+# double check that the lotus-miner process restarted, if it didn't
+#ansible -i $hostfile -b -m shell -a 'systemctl restart lotus-miner' presealed_miners
 sleep 30
 
 ansible -i $hostfile -b -m shell -a 'lotus chain list'                          presealed_miners
