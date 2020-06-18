@@ -8,7 +8,7 @@ bootstrappers=("bootstrap-0-sin.fil-test.net" "bootstrap-0-dfw.fil-test.net" "bo
 hostfile="inventories/testnet/hosts.yml"
 faucetaddr="t1hw4amnow4gsgk2ottjdpdverfwhaznyrslsmoni"
 faucetbalance="256000000000000000000000000"
-#GENESISTIMESTAMP="2020-05-14T22:00:00Z"
+GENESISTIMESTAMP="2020-06-19T00:00:00Z"
 prooftype=3
 
 while [ "$1" != "" ]; do
@@ -16,7 +16,7 @@ while [ "$1" != "" ]; do
         -s | --src )            shift
                                 src="$1"
                                 ;;
-        -p | --preseal )        preseal=true
+        -k | --keys )           generate_keys=true
                                 ;;
         -r | --reset )          reset="yes"
                                 ;;
@@ -33,8 +33,8 @@ while [ "$1" != "" ]; do
 done
 
 LOTUS_SRC="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
-GENESISDELAY="${genesisdelay:-"1200"}"
-PRESEAL="${preseal:-""}"
+GENESISDELAY="${genesisdelay:-"0"}"
+GENERATE_KEYS="${generate_keys-""}"
 RESET="${reset:-"no"}"
 NETWORKNAME="testnet"
 
@@ -42,29 +42,31 @@ pushd "$LOTUS_SRC"
 truncate -s 0 build/bootstrap/bootstrappers.pi
 popd
 
-#for host in ${bootstrappers[@]}; do
-#  pushd "$LOTUS_SRC"
-#  P2P_ADDRESS=$(./lotus-shed peerkey)
-#  set +x
-#  P2P_KEYINFO=$(cat ${P2P_ADDRESS}.peerkey)
-#  set -x
-#  rm ${P2P_ADDRESS}.peerkey
+if [ "$GENERATE_KEYS" = true ]; then
+  for host in ${bootstrappers[@]}; do
+    pushd "$LOTUS_SRC"
+    P2P_ADDRESS=$(./lotus-shed peerkey)
+    set +x
+    P2P_KEYINFO=$(cat ${P2P_ADDRESS}.peerkey)
+    set -x
+    rm ${P2P_ADDRESS}.peerkey
 
-  # sed -i "/$host/c /dns4/$host/tcp/1347/p2p/$P2P_ADDRESS" build/bootstrap/bootstrappers.pi
-#  if ! grep "$host" build/bootstrap/bootstrappers.pi ; then
-#    echo "/dns4/$host/tcp/1347/p2p/$P2P_ADDRESS" >> build/bootstrap/bootstrappers.pi
-#    echo "/ip4/$(dig +short $host)/tcp/1347/p2p/$P2P_ADDRESS" >> build/bootstrap/bootstrappers.pi
-#  fi
-#  popd
+    # sed -i "/$host/c /dns4/$host/tcp/1347/p2p/$P2P_ADDRESS" build/bootstrap/bootstrappers.pi
+    if ! grep "$host" build/bootstrap/bootstrappers.pi ; then
+      echo "/dns4/$host/tcp/1347/p2p/$P2P_ADDRESS" >> build/bootstrap/bootstrappers.pi
+      echo "/ip4/$(dig +short $host)/tcp/1347/p2p/$P2P_ADDRESS" >> build/bootstrap/bootstrappers.pi
+    fi
+    popd
 
-#  mkdir -p "$(dirname $hostfile)/host_vars/$host/"
+    mkdir -p "$(dirname $hostfile)/host_vars/$host/"
 
-#  cat > "$(dirname $hostfile)/host_vars/$host/libp2p.vault.yml" <<EOF
-#libp2p_keyinfo: $P2P_KEYINFO
-#libp2p_address: $P2P_ADDRESS
-#EOF
+    cat > "$(dirname $hostfile)/host_vars/$host/libp2p.vault.yml" <<EOF
+  libp2p_keyinfo: $P2P_KEYINFO
+  libp2p_address: $P2P_ADDRESS
+EOF
 
-#done
+  done
+fi
 
 ../scripts/build_binaries.bash -f --src "$LOTUS_SRC"
 
@@ -96,7 +98,9 @@ for m in "${miners[@]}"; do
   ./lotus-seed genesis add-miner "${GENPATH}/genesis.json" "${PRESEALPATH}/${m}/tmp/presealed-metadata.json"
 done
 
-GENESISTMP=$(mktemp)
+if [ "GENESISDELAY" != "0" ]; then
+  GENESISTMP=$(mktemp)
+fi
 
 GENESISTIMESTAMP=$(date --utc +%FT%H:%M:00Z)
 TIMESTAMP=$(echo $(date -d ${GENESISTIMESTAMP} +%s) + ${GENESISDELAY} | bc)
@@ -188,6 +192,8 @@ date -d @${TIMESTAMP} --utc +%FT%H:%M:%SZ
 
 DELAY=$(echo "${TIMESTAMP} - $(date +%s) " | bc)
 
+# IMPORTANT You can put an exit here if you want to manually run the systemctl start lotus-miner and fountain ansible below
+
 sleep $DELAY
 
 ansible -i $hostfile -b -m shell -a 'systemctl status lotus-miner-init || true' $genesis
@@ -210,4 +216,4 @@ ansible -i $hostfile -b -m shell -a 'lotus chain list'                          
 
 sleep 30
 
-ansible-playbook -i $hostfile lotus_fountain.yml -e lotus_fountain_enabled=false -e lotus_service_state=started
+ansible-playbook -i $hostfile lotus_fountain.yml -e lotus_fountain_enabled=true -e lotus_service_state=started
