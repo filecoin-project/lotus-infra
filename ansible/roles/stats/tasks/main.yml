@@ -71,6 +71,7 @@
 - name: Ensure stats started
   service:
     name: stats
+    enabled: true
     state: started
 
 - set_fact:

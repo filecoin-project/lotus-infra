@@ -2,7 +2,8 @@
 lotus_user: "fc"
 lotus_user_uid: "532"
 logz_io_shared_token: "{{ vault_logz_io_shared_token }}"
-telegraf_global_tags: {}
+telegraf_global_tags:
+  network: interop
 telegraf_outputs_influxdb_enabled: true
 telegraf_outputs_influxdb_username: lotus
 telegraf_outputs_influxdb_password: "{{ vault_influxdb_lotus_password }}"

@@ -232,6 +232,10 @@
 {% endfor %}
 {% endfor %}
 
+[[inputs.prometheus]]
+  ## An array of urls to scrape metrics from.
+  urls = ["http://localhost:1234/debug/metrics"]
+
 # Read metrics about cpu usage
 [[inputs.cpu]]
   ## Whether to report per-cpu stats or not
