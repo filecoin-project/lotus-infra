@@ -149,6 +149,14 @@ ansible-playbook -i $hostfile lotus_bootstrap.yml                               
                  -e lotus_reset="${RESET}"                                                                     \
                  "$@"
 
+#to update the daemon
+#../scripts/build_binaries -f -- lotus
+#ansible-playbook -i $hostfile lotus_bootstrap.yml                                                              \
+#                 -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                     \
+#                 -e lotus_daemon_bootstrap=true                                                                \
+#                 -e lotus_service_state=restarted                                                              \
+#                 "$@"
+
 sleep 30
 
 ansible-playbook -i $hostfile lotus_stats.yml                                                                  \
@@ -198,7 +206,14 @@ sleep $DELAY
 
 ansible -i $hostfile -b -m shell -a 'systemctl status lotus-miner-init || true' $genesis
 
-sleep 75
+# it take 7 blocks for init to finish
+# it use to show these logs in the status command, you now have to check them manually
+# the last line should say something about 'lotus-sotrage-miner run'
+# the init script will also exit, so the below checks should say something about it being dead / inactive
+# when it shows up you can see the run ansible command below
+# ansible -i $hostfile -b -m shell -a 'tail -n 10 /var/log/lotus-miner.log'       presealed_miners
+
+sleep 175
 
 ansible -i $hostfile -b -m shell -a 'systemctl status lotus-miner-init || true' $genesis
 
@@ -215,5 +230,7 @@ sleep 75
 ansible -i $hostfile -b -m shell -a 'lotus chain list'                          presealed_miners
 
 sleep 30
+
+# this enables the fountain
 
 ansible-playbook -i $hostfile lotus_fountain.yml -e lotus_fountain_enabled=true -e lotus_service_state=started
