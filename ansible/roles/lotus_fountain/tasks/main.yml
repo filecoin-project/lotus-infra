@@ -67,6 +67,29 @@
   include_tasks: cert.yml
   when: lotus_fountain_enable_https is defined
 
+- name: Ensure noonce fixer service
+  template:
+    src: ../templates/lotus-nooncefix.service.j2
+    dest: /etc/systemd/system/lotus-nooncefix.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Ensure noonce fixer timer
+  template:
+    src: ../templates/lotus-noonce.timer.j2
+    dest: /etc/systemd/system/lotus-nooncefix.timer
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: enable noonce fixer
+  systemd:
+    name: lotus-nooncefix.timer
+    state: restarted
+    daemon_reload: yes
+    enabled: true
+
 - set_fact:
     lotus_fountain_ufw_profile:
       name: Lotus Fountain
