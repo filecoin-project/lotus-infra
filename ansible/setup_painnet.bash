@@ -38,11 +38,10 @@ GENERATE_KEYS="${generate_keys-""}"
 RESET="${reset:-"no"}"
 NETWORKNAME="testnet"
 
-pushd "$LOTUS_SRC"
-popd
-
 if [ "$GENERATE_KEYS" = true ]; then
+  pushd "$LOTUS_SRC"
   truncate -s 0 build/bootstrap/bootstrappers.pi
+  popd
   for host in ${bootstrappers[@]}; do
     pushd "$LOTUS_SRC"
     P2P_ADDRESS=$(./lotus-shed peerkey)
@@ -98,12 +97,12 @@ for m in "${miners[@]}"; do
   ./lotus-seed genesis add-miner "${GENPATH}/genesis.json" "${PRESEALPATH}/${m}/tmp/presealed-metadata.json"
 done
 
+GENESISTMP=$(mktemp)
+
 if [ "GENESISDELAY" != "0" ]; then
-  GENESISTMP=$(mktemp)
+  GENESISTIMESTAMP=$(date --utc +%FT%H:%M:00Z)
 fi
 
-# NOTE: uncomment this to test with a genesis time closer to deploy. must be commented out for final deploy
-# GENESISTIMESTAMP=$(date --utc +%FT%H:%M:00Z)
 TIMESTAMP=$(echo $(date -d ${GENESISTIMESTAMP} +%s) + ${GENESISDELAY} | bc)
 
 jq --arg Timestamp ${TIMESTAMP} ' . + { Timestamp: $Timestamp|tonumber } ' < "${GENPATH}/genesis.json" > ${GENESISTMP}
