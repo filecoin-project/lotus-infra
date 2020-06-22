@@ -1,13 +1,12 @@
 [Unit]
-Description=Lotus Seed {{ item.index }}
+Description=Lotus Seed 1
 After=network.target
 
 [Service]
-User={{ lotus_user }}
-Group={{ lotus_user }}
-ExecStart=/usr/local/bin/lotus-seed --sector-dir="{{ item.path }}" pre-seal --sector-size="{{ lotus_seed_sector_size }}" --num-sectors="{{ lotus_seed_sector_count }}" --miner-addr="{{ lotus_seed_miner_addr }}" --sector-offset="{{ (item.index|int) * (lotus_seed_sector_count|int) + (lotus_seed_sector_offset|int) }}" --key="/tmp/{{ lotus_seed_miner_addr }}.key"
-Environment=GOLOG_FILE="{{ item.log_file}}"
-Environment=TMPDIR="{{ item.path }}"
+User={{ lotus_seed_user }}
+Group={{ lotus_seed_user }}
+ExecStart=/usr/bin/numactl --cpunodebind=1 --membind=1 /usr/local/bin/lotus-seed --sectorbuilder-dir="{{ lotus_seed_path }}/1" pre-seal --sector-size="{{ lotus_seed_sector_size }}" --num-sectors="{{ lotus_seed_num_sectors }}" --miner-addr="{{ lotus_seed_miner_addr }}" --sector-offset="{{ lotus_seed_sector_offset_1 }}"
+Environment=GOLOG_FILE="{{ lotus_seed_golog_file_1 }}"
 Environment=GOLOG_LOG_FMT="{{ lotus_seed_golog_log_fmt }}"
 {% for item in lotus_seed_env | dict2items -%}
 Environment={{ item.key }}="{{ item.value }}"
