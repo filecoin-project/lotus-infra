@@ -6,6 +6,5 @@ After=network.target lotus-fountain.service
 Type=oneshot
 User={{ lotus_user }}
 Group={{ lotus_user }}
-# when field 7 of lotus mpool stat (future) is > 0, fix it with lotus-shed noncefix.
-ExecStart=/usr/local/bin/lotus mpool stat | awk '{if ($7 > 0) print substr($1, 0, length($1))}' | xargs lotus-shed noncefix --auto --addr
+ExecStart=/usr/local/bin/lotus-shed noncefix --auto --addr{{ lotus_fountain_address }}
 Environment=LOTUS_PATH="{{ lotus_path }}"
