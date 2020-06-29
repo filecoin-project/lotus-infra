@@ -7,6 +7,7 @@
       service:
         name: lotus-miner
         state: stopped
+      ignore_errors: yes
     - name: Remove miner repository
       file:
         path: "{{ lotus_miner_path }}"
