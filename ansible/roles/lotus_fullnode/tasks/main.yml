@@ -32,7 +32,7 @@
     state: directory
     owner: "{{ lotus_user }}"
     group: "{{ lotus_user }}"
-    mode: "0700"
+    mode: "0750"
 
 - name: Ensure LOTUS_PATH global env is set
   lineinfile:
@@ -53,7 +53,7 @@
     state: directory
     owner: "{{ lotus_user }}"
     group: "{{ lotus_user }}"
-    mode: "0700"
+    mode: "0754"
 
 - name: Ensure log file exists
   file:
