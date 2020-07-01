@@ -1,1 +1,6 @@
 lotus_daemon_profile: "bootstrapper"
+lotus_drand_peers: |
+  /dnsaddr/pl-us.testnet.drand.sh/
+  /dnsaddr/pl-eu.testnet.drand.sh/
+  /dnsaddr/pl-sin.testnet.drand.sh/
+lotus_drand_bootstrap: true

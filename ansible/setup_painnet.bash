@@ -3,19 +3,20 @@
 set -xe
 
 genesis="t01000.miner.fil-test.net"
-miners=("$genesis" "t01001.miner.fil-test.net" "t01002.miner.fil-test.net" "t01003.miner.fil-test.net")
+miners=("$genesis" "t01001.miner.fil-test.net" "t01002.miner.fil-test.net")
 bootstrappers=("bootstrap-0-sin.fil-test.net" "bootstrap-0-dfw.fil-test.net" "bootstrap-0-fra.fil-test.net" "bootstrap-1-sin.fil-test.net" "bootstrap-1-dfw.fil-test.net" "bootstrap-1-fra.fil-test.net")
 hostfile="inventories/testnet/hosts.yml"
 faucetaddr="t1hw4amnow4gsgk2ottjdpdverfwhaznyrslsmoni"
 faucetbalance="256000000000000000000000000"
-GENESISTIMESTAMP="2020-05-14T22:00:00Z"
+GENESISTIMESTAMP="2020-06-19T00:00:00Z"
+prooftype=3
 
 while [ "$1" != "" ]; do
     case $1 in
         -s | --src )            shift
                                 src="$1"
                                 ;;
-        -p | --preseal )        preseal=true
+        -k | --keys )           generate_keys=true
                                 ;;
         -r | --reset )          reset="yes"
                                 ;;
@@ -32,41 +33,41 @@ while [ "$1" != "" ]; do
 done
 
 LOTUS_SRC="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
-GENESISDELAY="${genesisdelay:-"600"}"
-PRESEAL="${preseal:-""}"
+GENESISDELAY="${genesisdelay:-"0"}"
+GENERATE_KEYS="${generate_keys-""}"
 RESET="${reset:-"no"}"
 NETWORKNAME="testnet"
 
-pushd "$LOTUS_SRC"
-truncate -s 0 build/bootstrap/bootstrappers.pi
-popd
-
-for host in ${bootstrappers[@]}; do
+if [ "$GENERATE_KEYS" = true ]; then
   pushd "$LOTUS_SRC"
-  P2P_ADDRESS=$(./lotus-shed peerkey)
-  set +x
-  P2P_KEYINFO=$(cat ${P2P_ADDRESS}.peerkey)
-  set -x
-  rm ${P2P_ADDRESS}.peerkey
-
-  # sed -i "/$host/c /dns4/$host/tcp/1347/p2p/$P2P_ADDRESS" build/bootstrap/bootstrappers.pi
-  if ! grep "$host" build/bootstrap/bootstrappers.pi ; then
-    echo "/dns4/$host/tcp/1347/p2p/$P2P_ADDRESS" >> build/bootstrap/bootstrappers.pi
-    echo "/ip4/$(dig +short $host)/tcp/1347/p2p/$P2P_ADDRESS" >> build/bootstrap/bootstrappers.pi
-  fi
+  truncate -s 0 build/bootstrap/bootstrappers.pi
   popd
+  for host in ${bootstrappers[@]}; do
+    pushd "$LOTUS_SRC"
+    P2P_ADDRESS=$(./lotus-shed peerkey)
+    set +x
+    P2P_KEYINFO=$(cat ${P2P_ADDRESS}.peerkey)
+    set -x
+    rm ${P2P_ADDRESS}.peerkey
 
-  mkdir -p "$(dirname $hostfile)/host_vars/$host/"
+    # sed -i "/$host/c /dns4/$host/tcp/1347/p2p/$P2P_ADDRESS" build/bootstrap/bootstrappers.pi
+    if ! grep "$host" build/bootstrap/bootstrappers.pi ; then
+      echo "/dns4/$host/tcp/1347/p2p/$P2P_ADDRESS" >> build/bootstrap/bootstrappers.pi
+      echo "/ip4/$(dig +short $host)/tcp/1347/p2p/$P2P_ADDRESS" >> build/bootstrap/bootstrappers.pi
+    fi
+    popd
 
-  cat > "$(dirname $hostfile)/host_vars/$host/libp2p.vault.yml" <<EOF
-libp2p_keyinfo: $P2P_KEYINFO
-libp2p_address: $P2P_ADDRESS
+    mkdir -p "$(dirname $hostfile)/host_vars/$host/"
+
+    cat > "$(dirname $hostfile)/host_vars/$host/libp2p.vault.yml" <<EOF
+  libp2p_keyinfo: $P2P_KEYINFO
+  libp2p_address: $P2P_ADDRESS
 EOF
 
-done
+  done
+fi
 
 ../scripts/build_binaries.bash -f --src "$LOTUS_SRC"
-../scripts/build_binaries.gfc.bash -f
 
 ansible-playbook -i $hostfile lotus_presealed_miner.yml                                                        \
                  -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-storage-miner" \
@@ -98,7 +99,10 @@ done
 
 GENESISTMP=$(mktemp)
 
-#GENESISTIMESTAMP=$(date --utc +%FT%H:%M:00Z)
+if [ "GENESISDELAY" != "0" ]; then
+  GENESISTIMESTAMP=$(date --utc +%FT%H:%M:00Z)
+fi
+
 TIMESTAMP=$(echo $(date -d ${GENESISTIMESTAMP} +%s) + ${GENESISDELAY} | bc)
 
 jq --arg Timestamp ${TIMESTAMP} ' . + { Timestamp: $Timestamp|tonumber } ' < "${GENPATH}/genesis.json" > ${GENESISTMP}
@@ -108,6 +112,9 @@ jq --arg NetworkName ${NETWORKNAME} ' .NetworkName = $NetworkName ' < "${GENPATH
 mv ${GENESISTMP} "${GENPATH}/genesis.json"
 
 jq --arg Owner ${faucetaddr} --arg Balance ${faucetbalance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${GENPATH}/genesis.json" > ${GENESISTMP}
+mv ${GENESISTMP} "${GENPATH}/genesis.json"
+
+jq --arg ProofType ${prooftype} '.Miners[].Sectors[].ProofType = ($ProofType|tonumber)' < "${GENPATH}/genesis.json" > ${GENESISTMP}
 mv ${GENESISTMP} "${GENPATH}/genesis.json"
 
 ./lotus --repo="${GENPATH}" daemon --api 0 --lotus-make-genesis="${GENPATH}/testnet.car" --genesis-template="${GENPATH}/genesis.json" --bootstrap=false &
@@ -142,15 +149,14 @@ ansible-playbook -i $hostfile lotus_bootstrap.yml                               
                  -e lotus_reset="${RESET}"                                                                     \
                  "$@"
 
-ansible-playbook -i $hostfile gfc_bootstrap.yml                                                                \
-                 -e gfc_lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-shed"       \
-                 -e gfc_bootstrap_list_src="$GOPATH/src/github.com/filecoin-project/lotus/build/bootstrap/bootstrappers.pi" \
-                 -e gfc_binary_src="$GOPATH/src/github.com/filecoin-project/go-filecoin/go-filecoin"           \
-                 -e gfc_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/devnet.car"   \
-                 -e gfc_service_state=started                                                                  \
-                 -e gfc_block_time=25s                                                                         \
-                 -e gfc_reset=${RESET}                                                                         \
-                 "$@"
+#to update the daemon
+#../scripts/build_binaries -f -- lotus lotus-storage-miner
+#ansible-playbook -i $hostfile lotus_bootstrap.yml                                                              \
+#                 -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                     \
+#                 -e lotus_daemon_bootstrap=true                                                                \
+#                 -e lotus_service_state=started                                                                \
+#                 "$@"
+#ansible -i $hostfile -b -m shell -a 'systemctl restart lotus-daemon' lotus_bootstrap
 
 sleep 30
 
@@ -182,10 +188,20 @@ ansible-playbook -i $hostfile lotus_presealed_miner.yml                         
                  -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-storage-miner" \
                  -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                     \
                  -e lotus_service_state=started                                                                \
-                 -e lotus_miner_ensure_params=false                                                            \
+                 -e lotus_miner_ensure_params=true                                                             \
                  -e lotus_daemon_bootstrap=true                                                                \
                  "$@"
 
+#../scripts/build_binaries -f -- lotus lotus-storage-miner
+#ansible-playbook -i $hostfile lotus_presealed_miner.yml                                                        \
+#                 -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-storage-miner" \
+#                 -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                     \
+#                 -e lotus_service_state=started                                                                \
+#                 -e lotus_daemon_bootstrap=true                                                                \
+#                 "$@"
+#ansible -i $hostfile -b -m shell -a 'systemctl restart lotus-daemon' presealed_miners
+# double check that the lotus-miner process restarted, if it didn't
+#ansible -i $hostfile -b -m shell -a 'systemctl restart lotus-miner' presealed_miners
 sleep 30
 
 ansible -i $hostfile -b -m shell -a 'lotus chain list'                          presealed_miners
@@ -193,15 +209,22 @@ ansible -i $hostfile -b -m shell -a 'systemctl start lotus-miner-init'          
 
 date -d @${TIMESTAMP} --utc +%FT%H:%M:%SZ
 
-exit 0
-
 DELAY=$(echo "${TIMESTAMP} - $(date +%s) " | bc)
+
+# IMPORTANT You can put an exit here if you want to manually run the systemctl start lotus-miner and fountain ansible below
 
 sleep $DELAY
 
 ansible -i $hostfile -b -m shell -a 'systemctl status lotus-miner-init || true' $genesis
 
-sleep 75
+# it take 7 blocks for init to finish
+# it use to show these logs in the status command, you now have to check them manually
+# the last line should say something about 'lotus-sotrage-miner run'
+# the init script will also exit, so the below checks should say something about it being dead / inactive
+# when it shows up you can see the run ansible command below
+# ansible -i $hostfile -b -m shell -a 'tail -n 10 /var/log/lotus-miner.log'       presealed_miners
+
+sleep 175
 
 ansible -i $hostfile -b -m shell -a 'systemctl status lotus-miner-init || true' $genesis
 
@@ -218,5 +241,7 @@ sleep 75
 ansible -i $hostfile -b -m shell -a 'lotus chain list'                          presealed_miners
 
 sleep 30
+
+# this enables the fountain
 
 ansible-playbook -i $hostfile lotus_fountain.yml -e lotus_fountain_enabled=true -e lotus_service_state=started

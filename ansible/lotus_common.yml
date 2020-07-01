@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+    - include_role: name=common
