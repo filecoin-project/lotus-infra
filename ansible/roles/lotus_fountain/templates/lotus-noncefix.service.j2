@@ -6,5 +6,5 @@ After=network.target lotus-fountain.service
 Type=oneshot
 User={{ lotus_user }}
 Group={{ lotus_user }}
-ExecStart=/usr/local/bin/lotus-shed noncefix --auto --addr{{ lotus_fountain_address }}
+ExecStart=/usr/local/bin/lotus-shed noncefix --auto --addr {{ lotus_fountain_address }}
 Environment=LOTUS_PATH="{{ lotus_path }}"
