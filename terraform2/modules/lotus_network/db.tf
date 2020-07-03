@@ -19,6 +19,6 @@ resource "aws_db_instance" "chainwatch_db" {
 
 resource "aws_db_subnet_group" "chainwatch" {
   name_prefix = var.name
-  subnet_ids = [aws_subnet.private0.id, aws_subnet.private1.id]
+  subnet_ids = [var.private_subnet_id]
 }
 

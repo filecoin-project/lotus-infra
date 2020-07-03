@@ -10,9 +10,10 @@ module "testnet" {
   bootstrapper_count = 5
   miner_count        = 10
   miner_volumes      = 10
-  public_subnets = module.lotus_vpc.public_subnets
-  private0_cidr       = "10.0.10.0/24"
-  private1_cidr       = "10.0.11.0/24"
+  public_subnet_id = module.lotus_vpc.public_subnets[0]
+  public_subnet_cidr = module.lotus_vpc.public_subnets_cidr_blocks[0]
+  private_subnet_id = module.lotus_vpc.private_subnets[0]
+  private_subnet_cidr = module.lotus_vpc.private_subnets_cidr_blocks[0]
 
 }
 

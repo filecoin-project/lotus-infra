@@ -13,11 +13,10 @@ variable "domain_name" {}
 variable "vpc_id" {}
 variable "environment" {}
 
-variable "public_subnets" {
-  type = list(string)
-}
-variable "private0_cidr" {}
-variable "private1_cidr" {}
+variable "private_subnet_id" {}
+variable "public_subnet_id" {}
+variable "private_subnet_cidr" {}
+variable "public_subnet_cidr" {}
 
 
 # Variables for tools

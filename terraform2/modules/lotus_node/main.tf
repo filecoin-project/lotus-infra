@@ -12,6 +12,7 @@ resource "aws_instance" "node" {
   availability_zone = var.availability_zone
   ami               = var.ami
   key_name          = var.key_name
+  subnet_id = var.public_subnet_id
   tags = {
     Name        = "${var.name}-${count.index}"
     Environment = var.environment
@@ -47,15 +48,15 @@ resource "aws_volume_attachment" "attachments" {
   volume_id   = aws_ebs_volume.volumes[count.index].id
 }
 
-resource "aws_network_interface" "public" {
-  count = var.scale
-  subnet_id = var.public_subnet_id
-  security_groups = var.public_security_group_ids
-  attachment {
-    instance = aws_instance.node[count.index].id
-    device_index = 0
-  }
-}
+/* resource "aws_network_interface" "public" { */
+/*   count = var.scale */
+/*   subnet_id = var.public_subnet_id */
+/*   security_groups = var.public_security_group_ids */
+/*   attachment { */
+/*     instance = aws_instance.node[count.index].id */
+/*     device_index = 1 */
+/*   } */
+/* } */
 
 resource "aws_network_interface" "private" {
   count = var.scale
@@ -63,8 +64,6 @@ resource "aws_network_interface" "private" {
   security_groups = var.private_security_group_ids
   attachment {
     instance = aws_instance.node[count.index].id
-    device_index = 1
+    device_index = 2
   }
 }
-
-
