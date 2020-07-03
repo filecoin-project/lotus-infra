@@ -20,14 +20,6 @@ resource "aws_instance" "node" {
     Environment = var.environment
     Network     = var.lotus_network
   }
-  network_interface {
-    network_interface_id = aws_network_interface.ethprivate.id
-    device_index = 0
-  }
-}
-
-resource "aws_network_interface" "ethprivate" {
-  subnet_id = var.private_subnet_id
 }
 
 resource "aws_route53_record" "node" {

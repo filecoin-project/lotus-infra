@@ -1,8 +1,8 @@
-A filecoin network.
+A whole lotus network in one module network.
 
-n miners
 n bootstrappers
-1 faucet
-1 stats
-1 chainwatch
-1 chainwatch database
+n miners (with extra disks)
+1 toolshed node
+
+DNS records
+chainwatch database
