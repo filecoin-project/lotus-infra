@@ -18,7 +18,7 @@ variable "zone_id" {
   type = string
 }
 
-variable "id" {
+variable "name" {
   type = string
 }
 

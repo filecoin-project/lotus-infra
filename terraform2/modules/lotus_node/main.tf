@@ -14,7 +14,7 @@ resource "aws_instance" "node" {
   ami = var.ami
   key_name = var.key_name
   tags = {
-    Name = "${var.id}-${count.index}"
+    Name = "${var.name}-${count.index}"
     Environment = var.environment
     Network = var.lotus_network
   }
@@ -22,7 +22,7 @@ resource "aws_instance" "node" {
 
 resource "aws_route53_record" "node" {
   count = var.scale
-  name = "${var.id}-${count.index}"
+  name = "${var.name}-${count.index}"
   zone_id = var.zone_id
   type = "A"
   records = [aws_instance.node[count.index].public_ip]
