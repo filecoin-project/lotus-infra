@@ -64,6 +64,6 @@ resource "aws_network_interface" "private" {
   security_groups = var.private_security_group_ids
   attachment {
     instance = aws_instance.node[count.index].id
-    device_index = 2
+    device_index = 1
   }
 }
