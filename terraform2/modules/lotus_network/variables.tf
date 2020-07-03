@@ -13,6 +13,9 @@ variable "domain_name" {}
 variable "vpc_id" {}
 variable "environment" {}
 
+variable "public_subnets" {
+  type = list(string)
+}
 variable "private0_cidr" {}
 variable "private1_cidr" {}
 

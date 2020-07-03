@@ -41,10 +41,18 @@ variable "volumes" {
   default = 0
 }
 
-variable "vpc_security_group_ids" {
+variable "private_security_group_ids" {
+  type = list(string)
+}
+
+variable "public_security_group_ids" {
   type = list(string)
 }
 
 variable "private_subnet_id" {
+  type = string
+}
+
+variable "public_subnet_id" {
   type = string
 }

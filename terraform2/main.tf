@@ -10,8 +10,9 @@ module "testnet" {
   bootstrapper_count = 5
   miner_count        = 10
   miner_volumes      = 10
-  private0_cidr       = "10.0.2.0/24"
-  private1_cidr       = "10.0.3.0/24"
+  public_subnets = module.lotus_vpc.public_subnets
+  private0_cidr       = "10.0.10.0/24"
+  private1_cidr       = "10.0.11.0/24"
 
 }
 
@@ -24,6 +25,6 @@ module "testnet" {
 /*   vpc_id            = module.lotus_vpc.vpc_id */
 /*   azs = module.lotus_vpc.azs */
 /*   environment       = "dev" */
-/*   private0_cidr       = "10.0.4.0/24" */
-/*   private1_cidr       = "10.0.5.0/24" */
+/*   private0_cidr       = "10.0.5.0/24" */
+/*   private1_cidr       = "10.0.6.0/24" */
 /* } */

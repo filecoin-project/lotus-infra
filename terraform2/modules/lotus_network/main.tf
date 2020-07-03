@@ -10,8 +10,10 @@ module "toolshed" {
   key_name          = var.key_name
   environment       = var.environment
   lotus_network     = var.name
-  vpc_security_group_ids = [aws_security_group.lotus.id, aws_security_group.chainwatch.id]
+  public_security_group_ids = [aws_security_group.lotus_public.id]
+  private_security_group_ids = [aws_security_group.lotus_private.id]
   private_subnet_id = aws_subnet.private0.id
+  public_subnet_id = var.public_subnets[0]
 }
 
 # Nodes running in bootstrapper mode
@@ -26,8 +28,10 @@ module "bootstrappers" {
   key_name          = var.key_name
   environment       = var.environment
   lotus_network     = var.name
-  vpc_security_group_ids = [aws_security_group.lotus.id]
+  public_security_group_ids = [aws_security_group.lotus_public.id]
+  private_security_group_ids = [aws_security_group.lotus_private.id]
   private_subnet_id = aws_subnet.private0.id
+  public_subnet_id = var.public_subnets[0]
 }
 
 # nodes with additional volumes
@@ -43,8 +47,10 @@ module "miners" {
   key_name          = var.key_name
   environment       = var.environment
   lotus_network     = var.name
-  vpc_security_group_ids = [aws_security_group.lotus.id]
+  public_security_group_ids = [aws_security_group.lotus_public.id]
+  private_security_group_ids = [aws_security_group.lotus_private.id]
   private_subnet_id = aws_subnet.private0.id
+  public_subnet_id = var.public_subnets[0]
 }
 
 # Nodes to mess around with
@@ -60,6 +66,8 @@ module "scratch" {
   key_name          = var.key_name
   environment       = var.environment
   lotus_network     = var.name
-  vpc_security_group_ids = [aws_security_group.lotus.id]
+  public_security_group_ids = [aws_security_group.lotus_public.id]
+  private_security_group_ids = [aws_security_group.lotus_private.id]
   private_subnet_id = aws_subnet.private0.id
+  public_subnet_id = var.public_subnets[0]
 }
