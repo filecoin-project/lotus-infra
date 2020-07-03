@@ -24,6 +24,10 @@
     - name: Truncate log file
       shell:
         cmd: truncate -s 0 "{{ chainwatch_golog_file }}"
+  when: chainwatch_reset == "yes"
+
+- name: Reset database
+  block:
     - name: Terminate database connections
       postgresql_query:
         port: "{{ chainwatch_db | urlsplit('port') }}"
@@ -41,7 +45,7 @@
         login_user: "{{ chainwatch_db | urlsplit('username') }}"
         login_password: "{{ chainwatch_db | urlsplit('password') }}"
         state: absent
-  when: chainwatch_reset == "yes"
+  when: chainwatch_db_reset == "yes"
 
 - name: Ensure log file exists
   file:

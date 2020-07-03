@@ -186,13 +186,8 @@ ansible-playbook -i $hostfile lotus_stats.yml                                   
                  -e lotus_service_state=started                                                                \
                  -e lotus_daemon_bootstrap=false                                                               \
                  -e stats_reset=${RESET}                                                                       \
-                 "$@"
-
-ansible-playbook -i $hostfile lotus_chainwatch.yml                                                             \
-                 -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/chainwatch"           \
-                 -e lotus_service_state=started                                                                \
-                 -e lotus_daemon_bootstrap=false                                                               \
                  -e chainwatch_reset=${RESET}                                                                  \
+                 -e chainwatch_db_reset=yes                                                                    \
                  "$@"
 
 ansible-playbook -i $hostfile lotus_fountain.yml                                                               \
