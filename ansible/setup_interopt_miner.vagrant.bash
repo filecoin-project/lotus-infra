@@ -39,6 +39,7 @@ SKIP_FIRST_BUILD="${skip:-""}"
 NETWORKNAME="interop"
 
 pushd "$LOTUS_SRC"
+rm -f build/genesis/devnet.car
 make lotus-shed
 truncate -s 0 build/bootstrap/bootstrappers.pi
 popd
@@ -148,11 +149,8 @@ cp "${GENPATH}/testnet.car" build/genesis/devnet.car
 
 popd
 
-../scripts/build_binaries.bash --src "$LOTUS_SRC" --2k
-
 ansible-playbook -i $hostfile lotus_presealed_miner.yml                                                        \
-                 -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-storage-miner" \
-                 -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                     \
+                 -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/devnet.car" \
                  -e lotus_service_state=started                                                                \
                  -e lotus_daemon_bootstrap=false                                                               \
                  "$@"
@@ -180,6 +178,16 @@ ansible -i $hostfile -b -m shell -a 'lotus chain list'                          
 read  -n 1 -p "Press any key to continue"
 
 ansible -i $hostfile -b -m shell -a 'lotus chain list'                          $genesis
+
+ansible-playbook -i $hostfile lotus_bootstrap.yml                                                              \
+                 -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                     \
+                 -e lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-shed"           \
+                 -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/devnet.car" \
+                 -e lotus_daemon_bootstrap=true                                                                \
+                 -e lotus_import_peerkey=true                                                                  \
+                 -e lotus_service_state=stopped                                                                \
+                 -e lotus_reset="${RESET}"                                                                     \
+                 "$@"
 
 ansible-playbook -i $hostfile lotus_stats.yml                                                                  \
                  -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/stats"                     \
