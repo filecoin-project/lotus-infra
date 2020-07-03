@@ -24,6 +24,7 @@ resource "aws_db_subnet_group" "chainwatch" {
 
 resource "aws_security_group" "chainwatch" {
   name_prefix = var.name
+  vpc_id = var.vpc_id
 
   ingress {
     from_port   = var.chainwatch_port
