@@ -13,6 +13,7 @@ resource "aws_instance" "node" {
   availability_zone = var.availability_zone
   ami               = var.ami
   key_name          = var.key_name
+  subnet_id = var.private_subnet_id
   vpc_security_group_ids = var.vpc_security_group_ids
   associate_public_ip_address = true
   tags = {
