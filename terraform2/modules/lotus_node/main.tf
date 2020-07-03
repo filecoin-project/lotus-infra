@@ -13,11 +13,21 @@ resource "aws_instance" "node" {
   availability_zone = var.availability_zone
   ami               = var.ami
   key_name          = var.key_name
+  vpc_security_group_ids = var.vpc_security_group_ids
+  associate_public_ip_address = true
   tags = {
     Name        = "${var.name}-${count.index}"
     Environment = var.environment
     Network     = var.lotus_network
   }
+  network_interface {
+    network_interface_id = aws_network_interface.ethprivate.id
+    device_index = 0
+  }
+}
+
+resource "aws_network_interface" "ethprivate" {
+  subnet_id = var.private_subnet_id
 }
 
 resource "aws_route53_record" "node" {
