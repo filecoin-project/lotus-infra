@@ -56,7 +56,7 @@ module "scratch" {
   name              = "scratch"
   scale             = var.scratch_count
   volumes           = var.scratch_volumes
-  instance_type     = var.miner_instance_type
+  instance_type     = var.scratch_instance_type
   availability_zone = var.azs[0]
   ami               = var.ami
   zone_id           = aws_route53_zone.subdomain.id
