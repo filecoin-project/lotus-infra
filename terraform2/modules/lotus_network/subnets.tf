@@ -12,7 +12,7 @@ resource "aws_subnet" "private1" {
 
 
 resource "aws_security_group" "lotus" {
-  name   = "interopnet"
+  name   = var.name
   vpc_id = var.vpc_id
 
   ingress {
