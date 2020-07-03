@@ -1,5 +1,13 @@
-resource "aws_vpc" "lotus_vpc" {
-  cidr_block = "10.0.0.0/16"
+data "aws_availability_zones" "available" {}
+
+module "lotus_vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "2.21.0"
+
+  name                 = "lotus_vpc"
+  azs                  = data.aws_availability_zones.available.names
+  cidr                 = local.cidr
+  public_subnets       = local.public_subnets
   enable_dns_support = true
   enable_dns_hostnames = true
 }

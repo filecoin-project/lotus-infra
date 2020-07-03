@@ -27,16 +27,16 @@ variable "lotus_network" {
 }
 
 variable "environment" {
-  type = string
+  type    = string
   default = "dev"
 }
 
 variable "scale" {
-  type = number
+  type    = number
   default = 1
 }
 
 variable "volumes" {
-  type = number
+  type    = number
   default = 0
 }
