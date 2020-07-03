@@ -6,7 +6,10 @@ module "testnet" {
   key_name = "lotus1"
   availability_zone = "us-west-2a"
   environment = "dev"
-  bootstrapper_count = 10
+  bootstrapper_count = 5
+  miner_count = 10
+  miner_volumes = 10
+  
 }
 
 module "testnet2" {

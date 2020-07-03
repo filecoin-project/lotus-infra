@@ -3,6 +3,12 @@
 # The name of the network, i.e. "testnet"
 variable "name" {}
 
+# preseal data
+variable "preseal_mode" {
+  type = bool
+  default = false
+}
+
 # common aws variables.
 variable "ami" {}
 variable "key_name" {}
