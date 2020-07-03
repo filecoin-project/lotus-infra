@@ -46,9 +46,9 @@ popd
 
 for host in ${hosts[@]}; do
   pushd "$LOTUS_SRC"
-  P2P_ADDRESS=$(./lotus-shed peerkey)
-  P2P_KEYINFO=$(cat ${P2P_ADDRESS}.peerkey)
-  rm ${P2P_ADDRESS}.peerkey
+  P2P_ADDRESS=$(./lotus-shed keyinfo new libp2p-host)
+  P2P_KEYINFO=$(cat libp2p-host-${P2P_ADDRESS}.keyinfo)
+  rm libp2p-host-${P2P_ADDRESS}.keyinfo
 
   sed -i "/$host/c /ip4/$host/tcp/1347/p2p/$P2P_ADDRESS" build/bootstrap/bootstrappers.pi
   if ! grep "$host" build/bootstrap/bootstrappers.pi ; then
@@ -191,8 +191,8 @@ ansible-playbook -i $hostfile lotus_bootstrap.yml                               
 
 ansible-playbook -i $hostfile lotus_stats.yml                                                                  \
                  -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/stats"                     \
-                 -e lotus_service_state=started                                                                \
-                 -e lotus_daemon_bootstrap=false                                                               \
+                 -e lotus_service_state=stopped                                                                \
+                 -e lotus_daemon_bootstrap=true                                                                \
                  -e stats_reset=${RESET}                                                                       \
                  -e chainwatch_reset=${RESET}                                                                  \
                  -e chainwatch_db_reset=yes                                                                    \
@@ -201,7 +201,7 @@ ansible-playbook -i $hostfile lotus_stats.yml                                   
 ansible-playbook -i $hostfile lotus_fountain.yml                                                               \
                  -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/fountain"         \
                  -e lotus_service_state=started                                                                \
-                 -e lotus_daemon_bootstrap=false                                                               \
                  -e lotus_import_wallet=true                                                                   \
+                 -e lotus_daemon_bootstrap=true                                                                \
                  -e lotus_fountain_enabled=true                                                                \
                  "$@"
