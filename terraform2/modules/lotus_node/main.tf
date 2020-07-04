@@ -3,7 +3,7 @@ locals {
     "xvdcf", "xvdcg", "xvdch", "xvdci", "xvdcj", "xvdck",
     "xvdcl", "xvdcm", "xvdcn", "xvdco", "xvdcp", "xvdcq",
     "xvdcr", "xvdcs", "xvdct", "xvdcu", "xvdcv", "xvdcw",
-    "xvdcx", "xvdcy", "xvdcz"]
+  "xvdcx", "xvdcy", "xvdcz"]
 }
 
 resource "aws_instance" "node" {
@@ -12,7 +12,7 @@ resource "aws_instance" "node" {
   availability_zone = var.availability_zone
   ami               = var.ami
   key_name          = var.key_name
-  subnet_id = var.public_subnet_id
+  subnet_id         = var.public_subnet_id
   tags = {
     Name        = "${var.name}-${count.index}"
     Environment = var.environment
@@ -59,11 +59,11 @@ resource "aws_volume_attachment" "attachments" {
 /* } */
 
 resource "aws_network_interface" "private" {
-  count = var.scale
-  subnet_id = var.private_subnet_id
+  count           = var.scale
+  subnet_id       = var.private_subnet_id
   security_groups = var.private_security_group_ids
   attachment {
-    instance = aws_instance.node[count.index].id
+    instance     = aws_instance.node[count.index].id
     device_index = 1
   }
 }

@@ -6,9 +6,6 @@ variable "name" {}
 # common aws variables.
 variable "ami" {}
 variable "key_name" {}
-variable "azs" {
-  type = list(string)
-}
 variable "domain_name" {}
 variable "vpc_id" {}
 variable "environment" {}
@@ -17,6 +14,7 @@ variable "private_subnet_id" {}
 variable "public_subnet_id" {}
 variable "private_subnet_cidr" {}
 variable "public_subnet_cidr" {}
+variable "database_subnet_group" {}
 
 
 # Variables for tools

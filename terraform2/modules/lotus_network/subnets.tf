@@ -31,16 +31,16 @@ resource "aws_security_group" "lotus_public" {
   }
 
   egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = [var.public_subnet_cidr]
   }
 }
 
 resource "aws_security_group" "lotus_private" {
   name_prefix = "${var.name}-private"
-  vpc_id = var.vpc_id
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port   = var.chainwatch_port
@@ -53,6 +53,6 @@ resource "aws_security_group" "lotus_private" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.private_subnet_cidr]
   }
 }
