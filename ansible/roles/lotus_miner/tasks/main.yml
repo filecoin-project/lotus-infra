@@ -106,6 +106,7 @@
       paths:
         - "{{ lotus_miner_golog_file }}"
       fields:
+        logzio_codec: json
         type: "lotus-miner"
 
 - set_fact:

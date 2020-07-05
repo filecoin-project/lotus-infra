@@ -15,6 +15,9 @@
       vars:
         logz_inputs:
           - "{{ lotus_fullnode_filebeat_input }}"
+          - "{{ lotus_fountain_nginx_access_filebeat_input }}"
+          - "{{ lotus_fountain_filebeat_input }}"
+          - "{{ lotus_fountain_nginx_error_filebeat_input }}"
       when:
         - lotus_fullnode_filebeat_input is defined
     - include_role: name=ufw

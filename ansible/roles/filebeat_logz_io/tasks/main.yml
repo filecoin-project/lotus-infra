@@ -39,7 +39,6 @@
     base:
       type: log
       fields:
-        logzio_codec: json
         token: "{{ logz_io_shared_token }}"
       fields_under_root: true
       json.keys_under_root: false

@@ -96,5 +96,30 @@
       value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"
 
 - set_fact:
+    lotus_fountain_nginx_access_filebeat_input:
+      paths:
+        - "/var/log/nginx/access.log"
+      fields:
+        logzio_codec: plain
+        type: "nginx-access"
+
+- set_fact:
+    lotus_fountain_filebeat_input:
+      paths:
+        - "/var/log/lotus-fountain.log"
+      fields:
+        logzio_codec: json
+        type: "lotus-fountain"
+
+
+- set_fact:
+    lotus_fountain_nginx_error_filebeat_input:
+      paths:
+        - "/var/log/nginx/error.log"
+      fields:
+        logzio_codec: plain
+        type: "nginx-error"
+
+- set_fact:
     lotus_fountain_telegraf_inputs_procstat:
       - "lotus-fountain"
