@@ -1,3 +1,2 @@
 lotus_miner_path: "/var/lib/lotus-miner"
 lotus_miner_golog_file: "/var/log/lotus-miner.log"
-lotus_miner_presealed: "yes"

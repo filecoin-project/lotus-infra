@@ -71,6 +71,24 @@
   notify:
     - reload-miner
 
+- name: Ensure lotus configuration
+  template:
+    src: ../templates/config.toml.j2
+    dest: "{{ lotus_miner_path }}/config.toml"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0644"
+
+
+- name: Ensure init service file
+  template:
+    src: ../templates/lotus-miner-init-presealed.service.j2
+    dest: /etc/systemd/system/lotus-miner-init.service
+    owner: root
+    group: root
+    mode: "0644"
+  when: lotus_miner_presealed == "yes"
+
 - name: Ensure init service file
   template:
     src: ../templates/lotus-miner-init.service.j2
@@ -78,6 +96,7 @@
     owner: root
     group: root
     mode: "0644"
+  when: lotus_miner_presealed == "no"
 
 - name: Ensure parameters are download
   shell: /usr/local/bin/lotus-storage-miner fetch-params "{{ lotus_miner_sector_size }}"
@@ -90,6 +109,7 @@
     creates: "{{ lotus_miner_presealed_metadata }}"
   vars:
     metadatafile: "pre-seal-{{ lotus_miner_addr }}.json"
+  when: lotus_miner_presealed == "yes"
 
 - name:
   include_tasks: import_wallet.yml
@@ -100,6 +120,11 @@
     name: "lotus-miner"
     enabled: yes
     state: stopped
+
+- set_fact:
+    lotus_miner_ufw_profile:
+      name: Lotus Miner
+      value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"
 
 - set_fact:
     lotus_miner_filebeat_input:
