@@ -1,22 +1,23 @@
-locals {
-  devices = ["xvdca", "xvdcb", "xvdcc", "xvdcd", "xvdce",
-    "xvdcf", "xvdcg", "xvdch", "xvdci", "xvdcj", "xvdck",
-    "xvdcl", "xvdcm", "xvdcn", "xvdco", "xvdcp", "xvdcq",
-    "xvdcr", "xvdcs", "xvdct", "xvdcu", "xvdcv", "xvdcw",
-  "xvdcx", "xvdcy", "xvdcz"]
-}
-
 resource "aws_instance" "node" {
-  count             = var.scale
-  instance_type     = var.instance_type
-  availability_zone = var.availability_zone
-  ami               = var.ami
-  key_name          = var.key_name
-  subnet_id         = var.public_subnet_id
+  count                       = var.scale
+  instance_type               = var.instance_type
+  availability_zone           = var.availability_zone
+  ami                         = var.ami
+  key_name                    = var.key_name
+  subnet_id                   = var.public_subnet_id
+  iam_instance_profile        = var.iam_instance_profile
+  vpc_security_group_ids      = var.public_security_group_ids
+  associate_public_ip_address = true
+
+  root_block_device {
+    volume_type = "gp2"
+    volume_size = 128
+  }
+
   tags = {
     Name        = "${var.name}-${count.index}"
     Environment = var.environment
-    Network     = var.lotus_network
+    Network     = var.network_name
   }
 }
 
@@ -29,39 +30,11 @@ resource "aws_route53_record" "node" {
   ttl     = 30
 }
 
-resource "aws_ebs_volume" "volumes" {
-  count             = var.volumes * var.scale
-  availability_zone = var.availability_zone
-  size              = 32
-  type              = "gp2"
-  tags = {
-    Name        = "${var.lotus_network}.disk-${count.index}"
-    Environment = var.environment
-    Network     = var.lotus_network
-  }
-}
-
-resource "aws_volume_attachment" "attachments" {
-  count       = var.volumes * var.scale
-  device_name = "/dev/${local.devices[floor(count.index / var.scale)]}"
-  instance_id = aws_instance.node[count.index % var.scale].id
-  volume_id   = aws_ebs_volume.volumes[count.index].id
-}
-
-/* resource "aws_network_interface" "public" { */
-/*   count = var.scale */
-/*   subnet_id = var.public_subnet_id */
-/*   security_groups = var.public_security_group_ids */
-/*   attachment { */
-/*     instance = aws_instance.node[count.index].id */
-/*     device_index = 1 */
-/*   } */
-/* } */
-
 resource "aws_network_interface" "private" {
   count           = var.scale
   subnet_id       = var.private_subnet_id
   security_groups = var.private_security_group_ids
+
   attachment {
     instance     = aws_instance.node[count.index].id
     device_index = 1

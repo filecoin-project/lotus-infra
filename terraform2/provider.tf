@@ -1,2 +1,5 @@
 # use default aws credentials.
-provider "aws" {}
+provider "aws" {
+  region  = "us-west-2"
+  profile = "filecoin"
+}

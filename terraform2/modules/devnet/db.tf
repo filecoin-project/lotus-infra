@@ -11,7 +11,7 @@ resource "aws_db_instance" "chainwatch_db" {
   password               = var.chainwatch_password
   publicly_accessible    = true
   port                   = var.chainwatch_port
-  vpc_security_group_ids = [aws_security_group.lotus_private.id]
+  vpc_security_group_ids = [aws_security_group.devnet_private.id]
   db_subnet_group_name   = var.database_subnet_group
   skip_final_snapshot    = true
   identifier_prefix      = var.name

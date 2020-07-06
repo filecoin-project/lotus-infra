@@ -7,6 +7,7 @@ variable "name" {}
 variable "ami" {}
 variable "key_name" {}
 variable "domain_name" {}
+variable "domain_name_zone_id" {}
 variable "vpc_id" {}
 variable "environment" {}
 
@@ -16,6 +17,7 @@ variable "private_subnet_cidr" {}
 variable "public_subnet_cidr" {}
 variable "database_subnet_group" {}
 
+variable "preminer_iam_profile" {}
 
 # Variables for tools
 variable "toolshed_instance_type" {
@@ -41,19 +43,14 @@ variable "chainwatch_port" {
 
 
 
-variable "miner_instance_type" {
+variable "preminer_instance_type" {
   type    = string
   default = "t2.micro"
 }
-variable "miner_count" {
+variable "preminer_count" {
   type    = number
   default = 1
 }
-variable "miner_volumes" {
-  type    = number
-  default = 1
-}
-
 
 variable "bootstrapper_instance_type" {
   type    = string
@@ -70,10 +67,6 @@ variable "scratch_instance_type" {
   default = "t2.micro"
 }
 variable "scratch_count" {
-  type    = number
-  default = 0
-}
-variable "scratch_volumes" {
   type    = number
   default = 0
 }

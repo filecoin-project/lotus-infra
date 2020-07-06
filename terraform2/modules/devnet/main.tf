@@ -13,9 +13,9 @@ module "toolshed" {
   zone_id                    = aws_route53_zone.subdomain.id
   key_name                   = var.key_name
   environment                = var.environment
-  lotus_network              = var.name
-  public_security_group_ids  = [aws_security_group.lotus_public.id]
-  private_security_group_ids = [aws_security_group.lotus_private.id]
+  network_name               = var.name
+  public_security_group_ids  = [aws_security_group.devnet_public.id]
+  private_security_group_ids = [aws_security_group.devnet_private.id]
   private_subnet_id          = var.private_subnet_id
   public_subnet_id           = var.public_subnet_id
 }
@@ -23,7 +23,7 @@ module "toolshed" {
 # Nodes running in bootstrapper mode
 module "bootstrappers" {
   source                     = "../lotus_node"
-  name                       = "bootstrapper"
+  name                       = "bootstrap"
   scale                      = var.bootstrapper_count
   instance_type              = var.bootstrapper_instance_type
   availability_zone          = data.aws_subnet.selected.availability_zone
@@ -31,28 +31,28 @@ module "bootstrappers" {
   zone_id                    = aws_route53_zone.subdomain.id
   key_name                   = var.key_name
   environment                = var.environment
-  lotus_network              = var.name
-  public_security_group_ids  = [aws_security_group.lotus_public.id]
-  private_security_group_ids = [aws_security_group.lotus_private.id]
+  network_name               = var.name
+  public_security_group_ids  = [aws_security_group.devnet_public.id]
+  private_security_group_ids = [aws_security_group.devnet_private.id]
   private_subnet_id          = var.private_subnet_id
   public_subnet_id           = var.public_subnet_id
 }
 
-# nodes with additional volumes
-module "miners" {
+# Nodes running as pre-sealed miners
+module "preminers" {
   source                     = "../lotus_node"
-  name                       = "miner"
-  scale                      = var.miner_count
-  volumes                    = var.miner_volumes
-  instance_type              = var.miner_instance_type
+  name                       = "preminer"
+  scale                      = var.preminer_count
+  instance_type              = var.preminer_instance_type
   availability_zone          = data.aws_subnet.selected.availability_zone
   ami                        = var.ami
+  iam_instance_profile       = var.preminer_iam_profile
   zone_id                    = aws_route53_zone.subdomain.id
   key_name                   = var.key_name
   environment                = var.environment
-  lotus_network              = var.name
-  public_security_group_ids  = [aws_security_group.lotus_public.id]
-  private_security_group_ids = [aws_security_group.lotus_private.id]
+  network_name               = var.name
+  public_security_group_ids  = [aws_security_group.devnet_public.id]
+  private_security_group_ids = [aws_security_group.devnet_private.id]
   private_subnet_id          = var.private_subnet_id
   public_subnet_id           = var.public_subnet_id
 }
@@ -62,16 +62,15 @@ module "scratch" {
   source                     = "../lotus_node"
   name                       = "scratch"
   scale                      = var.scratch_count
-  volumes                    = var.scratch_volumes
   instance_type              = var.scratch_instance_type
   availability_zone          = data.aws_subnet.selected.availability_zone
   ami                        = var.ami
   zone_id                    = aws_route53_zone.subdomain.id
   key_name                   = var.key_name
   environment                = var.environment
-  lotus_network              = var.name
-  public_security_group_ids  = [aws_security_group.lotus_public.id]
-  private_security_group_ids = [aws_security_group.lotus_private.id]
+  network_name               = var.name
+  public_security_group_ids  = [aws_security_group.devnet_public.id]
+  private_security_group_ids = [aws_security_group.devnet_private.id]
   private_subnet_id          = var.private_subnet_id
   public_subnet_id           = var.public_subnet_id
 }

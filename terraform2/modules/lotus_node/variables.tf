@@ -6,6 +6,11 @@ variable "ami" {
   type = string
 }
 
+variable "iam_instance_profile" {
+  type = string
+  default = ""
+}
+
 variable "key_name" {
   type = string
 }
@@ -22,7 +27,7 @@ variable "name" {
   type = string
 }
 
-variable "lotus_network" {
+variable "network_name" {
   type = string
 }
 
@@ -34,11 +39,6 @@ variable "environment" {
 variable "scale" {
   type    = number
   default = 1
-}
-
-variable "volumes" {
-  type    = number
-  default = 0
 }
 
 variable "private_security_group_ids" {
