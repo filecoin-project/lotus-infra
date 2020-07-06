@@ -6,8 +6,7 @@ variable "name" {}
 # common aws variables.
 variable "ami" {}
 variable "key_name" {}
-variable "domain_name" {}
-variable "domain_name_zone_id" {}
+variable "zone_id" {}
 variable "vpc_id" {}
 variable "environment" {}
 

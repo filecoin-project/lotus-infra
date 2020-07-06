@@ -1,4 +1,4 @@
-variable "fishnet_chainwatch_password" {
+variable "nerpanet_chainwatch_password" {
   type    = string
   default = "insecure"
 }

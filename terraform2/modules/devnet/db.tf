@@ -1,5 +1,5 @@
 # Chainwatch database
-
+/*
 resource "aws_db_instance" "chainwatch_db" {
   allocated_storage      = 32
   storage_type           = "gp2"
@@ -17,3 +17,4 @@ resource "aws_db_instance" "chainwatch_db" {
   identifier_prefix      = var.name
   multi_az               = false
 }
+*/
