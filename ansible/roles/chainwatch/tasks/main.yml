@@ -1,4 +1,5 @@
 - include_tasks: ../../../includes/required_vars.yml
+- include_tasks: ../../../includes/lotus_general_runtime_deps.yml
 
 - name: Ensure ansible postgresql deps
   package:
