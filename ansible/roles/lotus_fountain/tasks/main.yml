@@ -63,6 +63,12 @@
     enabled: yes
     state: started
 
+# Have to enable firewall rules so certbot can work
+- name: Ensure ufw allow
+  ufw:
+    rule: allow
+    name: "Nginx Full"
+
 - name: Certbot
   include_tasks: cert.yml
   when: lotus_fountain_enable_https is defined
@@ -89,9 +95,3 @@
     state: restarted
     daemon_reload: yes
     enabled: true
-
-- set_fact:
-    lotus_fountain_ufw_profile:
-      name: Lotus Fountain
-      value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"
-

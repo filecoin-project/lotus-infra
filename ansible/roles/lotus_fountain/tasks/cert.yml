@@ -37,8 +37,3 @@
     mode: 0644
   notify:
     - reload_nginx
-
-- set_fact:
-    lotus_fountain_ufw_profile:
-      name: Lotus Fountain
-      value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"

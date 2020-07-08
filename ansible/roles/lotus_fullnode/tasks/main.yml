@@ -108,10 +108,17 @@
   include_tasks: drand_bootstrap.yml
   when: lotus_drand_bootstrap | bool
 
-- set_fact:
-    lotus_fullnode_ufw_profile:
-      name: Lotus Daemon
-      value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"
+- name: Ensure ufw application rules
+  template:
+    src: ../templates/ufw.profile.j2
+    dest: /etc/ufw/applications.d/lotus-daemon
+    owner: root
+    group: root
+    mode: 0644
 
+- name: Ensure ufw allow
+  ufw:
+    rule: allow
+    name: "Lotus Daemon"
 
 
