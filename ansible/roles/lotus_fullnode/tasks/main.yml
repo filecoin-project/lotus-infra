@@ -34,15 +34,6 @@
     group: "{{ lotus_user }}"
     mode: "0750"
 
-- name: Copy genesis
-  copy:
-    src: "{{ lotus_genesis_src }}"
-    dest: "{{ lotus_path }}/genesis.car"
-    owner: "{{ lotus_user }}"
-    group: "{{ lotus_user }}"
-    mode: "0644"
-  when: lotus_genesis_src is defined
-
 - name: Ensure LOTUS_PATH global env is set
   lineinfile:
     path: /etc/environment
