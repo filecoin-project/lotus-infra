@@ -1,4 +1,3 @@
-stats_golog_file: "/var/log/lotus-stats.log"
 stats_golog_log_fmt: json
 stats_golog_log_level: info
 stats_nosync: false
