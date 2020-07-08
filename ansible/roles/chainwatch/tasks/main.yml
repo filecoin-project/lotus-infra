@@ -5,16 +5,6 @@
     name:
       - python3-psycopg2
     state: present
-
-- name: Copy binary
-  copy:
-    src: "{{ chainwatch_binary_src }}"
-    dest: /usr/local/bin/chainwatch
-    owner: root
-    group: root
-    mode: "0755"
-  when: chainwatch_binary_src is defined
-
 - name: Reset system
   block:
     - name: Ensure chainwatch stopped
@@ -25,6 +15,15 @@
       shell:
         cmd: truncate -s 0 "{{ chainwatch_golog_file }}"
   when: chainwatch_reset == "yes"
+
+- name: Copy binary
+  copy:
+    src: "{{ chainwatch_binary_src }}"
+    dest: /usr/local/bin/chainwatch
+    owner: root
+    group: root
+    mode: "0755"
+  when: chainwatch_binary_src is defined
 
 - name: Reset database
   block:
