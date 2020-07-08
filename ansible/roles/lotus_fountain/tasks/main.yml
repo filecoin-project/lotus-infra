@@ -25,7 +25,7 @@
       group: root
       mode: "0644"
   notify:
-      - reload-fountain
+    - systemd-daemon-reload
 
 - name: Ensure web folder exists
   file:
@@ -93,6 +93,8 @@
     owner: root
     group: root
     mode: "0644"
+  notify:
+    - systemd-daemon-reload
 
 - name: Ensure nonce fixer timer
   template:

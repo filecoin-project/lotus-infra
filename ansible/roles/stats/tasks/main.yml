@@ -67,7 +67,7 @@
     group: root
     mode: "0644"
   notify:
-    - reload-stats
+    - systemd-daemon-reload
 
 - name: Ensure stats started
   service:

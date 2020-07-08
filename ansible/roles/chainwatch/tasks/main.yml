@@ -73,7 +73,7 @@
     group: root
     mode: "0644"
   notify:
-    - reload-lotus
+    - systemd-daemon-reload
 
 - name: Ensure chainwatch started
   service:

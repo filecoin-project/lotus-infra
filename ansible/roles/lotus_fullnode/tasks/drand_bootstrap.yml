@@ -6,7 +6,7 @@
     group: root
     mode: "0644"
   notify:
-    - reload-lotus
+    - systemd-daemon-reload
 
 - name: Ensure service file
   template:
@@ -16,7 +16,7 @@
     group: root
     mode: "0644"
   notify:
-    - reload-lotus
+    - systemd-daemon-reload
 
 - name: Ensure service file
   template:
@@ -26,7 +26,8 @@
     group: "{{ lotus_user }}"
     mode: "0744"
   notify:
-    - reload-lotus
+    - systemd-daemon-reload
+
 
 - name: Ensure wallet exists
   copy:

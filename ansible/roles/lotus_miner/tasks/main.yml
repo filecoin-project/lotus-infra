@@ -69,7 +69,7 @@
     group: root
     mode: "0644"
   notify:
-    - reload-miner
+    - systemd-daemon-reload
 
 - name: Ensure lotus configuration
   template:
@@ -86,6 +86,8 @@
     owner: root
     group: root
     mode: "0644"
+  notify:
+    - systemd-daemon-reload
   when: lotus_miner_presealed == "yes"
 
 - name: Ensure init service file
@@ -95,6 +97,8 @@
     owner: root
     group: root
     mode: "0644"
+  notify:
+    - systemd-daemon-reload
   when: lotus_miner_presealed == "no"
 
 - name: Ensure parameters are download
