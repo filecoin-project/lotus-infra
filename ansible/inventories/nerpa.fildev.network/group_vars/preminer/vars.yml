@@ -1,0 +1,38 @@
+lotus_miner_presealed: "yes"
+lotus_miner_systemd_extras:
+  LimitNOFILE: 32768
+  LimitNOFILESoft: 24576
+
+lotus_miner_presealed_sectors:
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/000
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/032
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/064
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/096
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/128
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/160
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/192
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/224
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/256
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/288
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/320
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/352
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/384
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/416
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/448
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/480
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/512
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/544
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/576
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/608
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/640
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/672
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/704
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/736
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/768
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/800
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/832
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/864
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/896
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/928
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/960
+  - /fildev-network/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/992
