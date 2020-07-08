@@ -1,6 +1,0 @@
----
-- hosts: all
-  tasks:
-    - include_role:
-        name: telegraf
-        public: "yes"
