@@ -8,8 +8,6 @@
       group: root
       mode: "0755"
   when: lotus_fountain_binary_src is defined
-  notify:
-      - restart-fountain
 
 - name: Ensure log file exists
   file:
@@ -54,11 +52,10 @@
     state: link
   notify: reload_nginx
 
-- name: Ensure fountain is enabled and started
+- name: Ensure fountain is enabled
   systemd:
     name: "lotus-fountain"
     enabled: yes
-    state: started
 
 # Have to enable firewall rules so certbot can work
 - name: Ensure ufw allow
@@ -105,9 +102,8 @@
     group: root
     mode: "0644"
 
-- name: enable nonce fixer
+- name: Enable nonce fixer
   systemd:
     name: lotus-noncefix.timer
-    state: restarted
     daemon_reload: yes
     enabled: true

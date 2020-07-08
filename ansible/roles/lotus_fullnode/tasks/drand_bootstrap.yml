@@ -36,8 +36,7 @@
     mode: "0644"
     dest: "{{ lotus_path }}/drand.pi"
 
-- name: Ensure lotus service enabled and in correct state
+- name: Ensure lotus service enabled
   service:
     name: "lotus-bootstrap.timer"
     enabled: yes
-    state: started

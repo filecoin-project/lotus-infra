@@ -89,11 +89,10 @@
   include_tasks: import_wallet.yml
   when: lotus_import_wallet | bool
 
-- name: Ensure lotus service enabled and in correct state ({{ lotus_service_state}})
+- name: Ensure lotus service enabled
   service:
     name: "lotus-daemon"
     enabled: yes
-    state: "{{ lotus_service_state }}"
 
 - name:
   include_tasks: drand_bootstrap.yml

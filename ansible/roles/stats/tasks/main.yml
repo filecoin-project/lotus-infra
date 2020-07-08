@@ -73,5 +73,3 @@
   service:
     name: stats
     enabled: true
-    state: started
-

@@ -106,11 +106,10 @@
   include_tasks: import_wallet.yml
   when: lotus_miner_import_wallet | bool
 
-- name: Ensure service enabled
+- name: Ensure lotus miner service enabled
   systemd:
     name: "lotus-miner"
     enabled: yes
-    state: stopped
 
 - name: Ensure ufw application rules
   template:
