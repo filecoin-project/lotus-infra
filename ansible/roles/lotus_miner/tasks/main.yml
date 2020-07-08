@@ -126,12 +126,5 @@
       name: Lotus Miner
       value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"
 
-- set_fact:
-    lotus_miner_filebeat_input:
-      paths:
-        - "{{ lotus_miner_golog_file }}"
-      fields:
-        logzio_codec: json
-        type: "lotus-miner"
 
 
