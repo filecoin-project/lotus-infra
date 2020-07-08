@@ -74,6 +74,3 @@
     enabled: true
     state: started
 
-- set_fact:
-    stats_telegraf_inputs_procstat:
-      - "stats"

@@ -119,7 +119,3 @@
       fields:
         logzio_codec: plain
         type: "nginx-error"
-
-- set_fact:
-    lotus_fountain_telegraf_inputs_procstat:
-      - "lotus-fountain"

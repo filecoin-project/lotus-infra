@@ -121,9 +121,4 @@
         logzio_codec: json
         type: "lotus-daemon"
 
-- set_fact:
-    lotus_fullnode_telegraf_tags: {}
 
-- set_fact:
-    lotus_fullnode_telegraf_inputs_procstat:
-      - "lotus-daemon"
