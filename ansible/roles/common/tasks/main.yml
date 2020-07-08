@@ -1,4 +1,37 @@
+- include_tasks: ../../../includes/lotus_user.yml
+
+- name: Update apt cache
+  apt:
+    update_cache: true
+
 - name: Install tools
   package:
     name:
       - jq
+      - unzip
+
+- name: Ensure hostname
+  hostname:
+    name: "{{ ansible_host }}"
+
+- name: Register aws
+  shell: which aws
+  ignore_errors: yes
+  register: aws
+  when: "'aws' in group_names"
+
+- name: Debug
+  debug:
+    msg: "{{ aws }}"
+  when: aws is defined
+
+- name: Ensure awscli installed
+  block:
+    - name: Download awscliv2
+      unarchive:
+        src: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+        dest: "/home/{{ ansible_user }}"
+        remote_src: yes
+    - name: Install awscliv2
+      shell: "/home/{{ ansible_user }}/aws/install"
+  when: aws is defined and aws.rc is defined and aws.rc == 1
