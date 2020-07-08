@@ -11,6 +11,7 @@
       service:
         name: chainwatch
         state: stopped
+      ignore_errors: yes
     - name: Truncate log file
       shell:
         cmd: truncate -s 0 "{{ chainwatch_golog_file }}"
