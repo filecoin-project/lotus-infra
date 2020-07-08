@@ -75,10 +75,10 @@
   notify:
     - systemd-daemon-reload
 
-- name: Ensure chainwatch started
+- name: Ensure chainwatch enabled
   service:
     name: chainwatch
-    state: started
+    enabled: true
 
 - set_fact:
     lotus_chainwatch_telegraf_inputs_procstat:
