@@ -102,15 +102,6 @@
   shell: /usr/local/bin/lotus-storage-miner fetch-params "{{ lotus_miner_sector_size }}"
   when: lotus_miner_ensure_params | bool
 
-- name: Merge presealed sector metadata
-  become_user: "{{ lotus_user }}"
-  shell:
-    cmd: /usr/local/bin/lotus-seed aggregate-manifests {{ lotus_miner_presealed_sectors | product([metadatafile]) | map('join', '/') | join(' ') }} > "{{ lotus_miner_presealed_metadata }}"
-    creates: "{{ lotus_miner_presealed_metadata }}"
-  vars:
-    metadatafile: "pre-seal-{{ lotus_miner_addr }}.json"
-  when: lotus_miner_presealed == "yes"
-
 - name:
   include_tasks: import_wallet.yml
   when: lotus_miner_import_wallet | bool
