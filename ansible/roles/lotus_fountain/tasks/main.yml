@@ -1,3 +1,5 @@
+- include_tasks: ../../../includes/required_vars.yml
+
 - name: Copy binary
   copy:
       src: "{{ lotus_fountain_binary_src }}"
@@ -26,7 +28,6 @@
       mode: "0644"
   notify:
       - reload-fountain
-  when: lotus_fountain_address is defined
 
 - name: Ensure web folder exists
   file:

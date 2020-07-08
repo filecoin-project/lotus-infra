@@ -1,3 +1,2 @@
-undefined:
 required_vars:
-  - lotus_fountain_binary_src
+  - lotus_fountain_address
