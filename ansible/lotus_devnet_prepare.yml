@@ -1,0 +1,41 @@
+---
+- hosts: preminer
+  become: true
+  vars:
+    lotus_miner_presealed_metadata: "/tmp/presealed-metadata.json"
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+    - name: Ensure data root
+      file:
+        path: "/fildev-network"
+        state: directory
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0750"
+    - name: Fetch sectors
+      become_user: "{{ lotus_user }}"
+      shell: "aws s3 cp s3:/{{ item }} {{ item }} --recursive"
+      loop: "{{ lotus_miner_presealed_sectors }}"
+    - name: Hygrade sectors
+      block:
+        - name: Register sectors
+          shell: find /fildev-network -type f  -name 's-{{ lotus_miner_addr }}-*'
+          register: sectors
+        - name:
+          shell: "truncate -s {{ sector_size }} {{ item }}"
+          loop: "{{ sectors.stdout_lines }}"
+    - name: Merge preminer metadata
+      become_user: "{{ lotus_user }}"
+      shell:
+        cmd: |
+          /usr/local/bin/lotus-seed aggregate-manifests {{ lotus_miner_presealed_sectors | product([metadatafile]) | map('join', '/') | join(' ') }} \
+          | jq --arg Addr "{{ lotus_miner_wallet_address }}" '.{{ lotus_miner_addr }}.Owner = $Addr | .{{ lotus_miner_addr }}.Worker = $Addr | .{{ lotus_miner_addr }}.Sectors[].Deal.Client = $Addr' > "{{ lotus_miner_presealed_metadata }}"
+        creates: "{{ lotus_miner_presealed_metadata }}"
+      vars:
+        metadatafile: "pre-seal-{{ lotus_miner_addr }}.json"
+    - name: Fetch preminer metadata 
+      fetch:
+        src: "{{ lotus_miner_presealed_metadata }}"
+        dest: "{{ local_preminer_metadata }}"

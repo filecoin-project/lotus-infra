@@ -1,0 +1,59 @@
+---
+- hosts: all
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+    - include_role: name=common
+    - include_role: name=ntp
+    - include_role: name=filebeat_logz_io
+    - include_role: name=telegraf
+    - include_role: name=ufw
+
+- hosts: preminer
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+    - include_role: name=lotus_fullnode
+      vars:
+        lotus_import_peerkey: true
+    - include_role: name=lotus_miner
+      vars:
+        lotus_miner_import_wallet: true
+
+- hosts: bootstrap
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+    - include_role: name=lotus_fullnode
+      vars:
+        lotus_import_peerkey: true
+
+- hosts: toolbox
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+    - include_role: name=lotus_fullnode
+      vars:
+        lotus_import_peerkey: true
+        lotus_import_wallet: true
+    - include_role: name=lotus_fountain
+    - include_role: name=stats
+    - include_role: name=chainwatch
+
+- hosts: scratch
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+    - include_role: name=lotus_fullnode
+      vars:
+        lotus_import_peerkey: true
