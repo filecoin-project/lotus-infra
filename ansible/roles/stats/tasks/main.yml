@@ -38,8 +38,6 @@
     group: root
     mode: "0755"
   when: stats_binary_src is defined
-  notify:
-    - restart-stats
 
 - name: Ensure log file exists
   file:
