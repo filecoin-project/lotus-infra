@@ -11,12 +11,6 @@
     dest: /var/www/{{ lotus_fountain_server_name }}/index.html
     mode: 0644
 
-- name: copy nginx http config
-  template:
-    src: ../templates/nginx-http.conf.j2
-    dest: /etc/nginx/conf.d/lotus-fountain-http.conf
-    mode: 0644
-
 - name: ensure nginx started
   systemd:
     name: nginx
@@ -33,7 +27,7 @@
 - name: copy nginx https config
   template:
     src: ../templates/nginx-https.conf.j2
-    dest: /etc/nginx/conf.d/lotus-fountain-https.conf
+    dest: /etc/nginx/sites-available/faucet.conf
     mode: 0644
   notify:
     - reload_nginx

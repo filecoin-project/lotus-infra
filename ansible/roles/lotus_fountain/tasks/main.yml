@@ -37,13 +37,13 @@
 
 - name: Ensure maintenance page exists
   template:
-    src: ../templates/maintance.html.j2
+    src: ../templates/maintenance.html.j2
     dest: /var/www/{{ lotus_fountain_server_name }}/index.html
     mode: 0644
 
 - name: Ensure maintenance site available
   template:
-    src: ../templates/faucet-http-maint.conf.j2
+    src: ../templates/nginx-maintenance.conf.j2
     dest: /etc/nginx/sites-available/maintenance.conf
 
 - name: Ensure maintenance site enabled
@@ -52,10 +52,6 @@
     dest: /etc/nginx/sites-enabled/99-maintenance.conf
     state: link
   notify: reload_nginx
-
-- name: Ensure http faucet
-  include_tasks: nginx_http.yml
-  when: lotus_fountain_enable_https is not defined
 
 - name: Ensure fountain is enabled and started
   systemd:
@@ -69,9 +65,28 @@
     rule: allow
     name: "Nginx Full"
 
-- name: Certbot
+- name: Ensure https faucet
   include_tasks: cert.yml
-  when: lotus_fountain_enable_https is defined
+  when: lotus_fountain_enable_https | bool == false
+
+- name: Ensure http faucet
+  include_tasks: nginx_http.yml
+  when: lotus_fountain_enable_https | bool == true
+
+- name: Ensure faucet is enabled
+  file:
+    src: /etc/nginx/sites-available/faucet.conf
+    dest: /etc/nginx/sites-enabled/50-faucet.conf
+    state: link
+  notify: reload_nginx
+  when: lotus_fountain_enabled | bool == true
+
+- name: Ensure faucet http site disabled
+  file:
+    path: /etc/nginx/sites-enabled/50-faucet.conf
+    state: absent
+  notify: reload_nginx
+  when: lotus_fountain_enabled | bool == false
 
 - name: Ensure nonce fixer service
   template:
