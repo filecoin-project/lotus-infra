@@ -79,7 +79,6 @@
     group: "{{ lotus_user }}"
     mode: "0644"
 
-
 - name: Ensure init service file
   template:
     src: ../templates/lotus-miner-init-presealed.service.j2
@@ -99,6 +98,7 @@
   when: lotus_miner_presealed == "no"
 
 - name: Ensure parameters are download
+  become_user: "{{ lotus_user }}"
   shell: /usr/local/bin/lotus-storage-miner fetch-params "{{ lotus_miner_sector_size }}"
   when: lotus_miner_ensure_params | bool
 
