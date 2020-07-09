@@ -36,3 +36,28 @@ module "nerpanet" {
   private_subnet_id           = module.fildev_network_vpc.database_subnets[0]
   private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[0]
 }
+
+module "butterflynet" {
+  source                      = "../../modules/devnet"
+  name                        = "butterfly"
+  zone_id                     = aws_route53_zone.fildev_domain.id
+  ami                         = "ami-053bc2e89490c5ab7"
+  key_name                    = "filecoin"
+  vpc_id                      = module.fildev_network_vpc.vpc_id
+  environment                 = "prod"
+  bootstrapper_count          = 2
+  preminer_count              = 2
+  scratch_count               = 2
+  toolshed_instance_type      = "m5a.large"
+  chainwatch_db_instance_type = "db.m5.large"
+  chainwatch_password         = var.nerpanet_chainwatch_password
+  preminer_instance_type      = "m5a.2xlarge"
+  bootstrapper_instance_type  = "m5a.large"
+  scratch_instance_type       = "m5a.large"
+  preminer_iam_profile        = aws_iam_instance_profile.sectors.id
+  database_subnet_group       = module.fildev_network_vpc.database_subnet_group
+  public_subnet_id            = module.fildev_network_vpc.public_subnets[1]
+  public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[1]
+  private_subnet_id           = module.fildev_network_vpc.database_subnets[1]
+  private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[1]
+}
