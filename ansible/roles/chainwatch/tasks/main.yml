@@ -31,6 +31,7 @@
   block:
     - name: Terminate database connections
       postgresql_query:
+        db: "postgres"
         port: "{{ chainwatch_db | urlsplit('port') }}"
         login_host: "{{ chainwatch_db | urlsplit('hostname') }}"
         login_user: "{{ chainwatch_db | urlsplit('username') }}"
