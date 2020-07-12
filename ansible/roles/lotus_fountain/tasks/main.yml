@@ -64,12 +64,12 @@
     name: "Nginx Full"
 
 - name: Ensure https faucet
-  include_tasks: cert.yml
-  when: lotus_fountain_enable_https | bool == false
+  include_tasks: nginx_https.yml
+  when: lotus_fountain_enable_https | bool == true
 
 - name: Ensure http faucet
   include_tasks: nginx_http.yml
-  when: lotus_fountain_enable_https | bool == true
+  when: lotus_fountain_enable_https | bool == false
 
 - name: Ensure faucet is enabled
   file:
