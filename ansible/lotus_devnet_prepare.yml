@@ -31,7 +31,12 @@
       shell:
         cmd: |
           /usr/local/bin/lotus-seed aggregate-manifests {{ lotus_miner_presealed_sectors | product([metadatafile]) | map('join', '/') | join(' ') }} \
-          | jq --arg Addr "{{ lotus_miner_wallet_address }}" '.{{ lotus_miner_addr }}.Owner = $Addr | .{{ lotus_miner_addr }}.Worker = $Addr | .{{ lotus_miner_addr }}.Sectors[].Deal.Client = $Addr' > "{{ lotus_miner_presealed_metadata }}"
+          | jq --arg Addr "{{ lotus_miner_wallet_address }}" --arg MinerId {{ lotus_miner_addr }}" '
+              .[$MinerId].Owner = $Addr
+            | .[$MinerId].Worker = $Addr
+            | .[$MinerId].Sectors[].Deal.Client = $Addr
+            | .[$MinerId].Sectors[] |= (.Deal.Label = .CommR."/")
+          ' > "{{ lotus_miner_presealed_metadata }}"
         creates: "{{ lotus_miner_presealed_metadata }}"
       vars:
         metadatafile: "pre-seal-{{ lotus_miner_addr }}.json"
