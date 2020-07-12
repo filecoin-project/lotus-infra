@@ -26,7 +26,7 @@ while [ "$1" != "" ]; do
     shift
 done
 
-hostfile="inventories/$1/hosts.yml"
+hostfile="inventories/${network}/hosts.yml"
 generate_new_keys="${reset:-"false"}"
 network_name="${network%%.*}net"
 faucet_balance="256000000000000000000000000"
@@ -49,7 +49,7 @@ if [ "$generate_new_keys" = true ]; then
     p2p_keyinfo=$(cat libp2p-host-${p2p_address}.keyinfo)
     rm "libp2p-host-${p2p_address}.keyinfo"
 
-    cat > "$(dirname $hostfile)/host_vars/$host/libp2p.vault.yml" <<EOF
+    cat > "$(dirname $hostfile)/host_vars/$bootstrapper/libp2p.vault.yml" <<EOF
 libp2p_keyinfo: $p2p_keyinfo
 libp2p_address: $p2p_address
 EOF
@@ -80,6 +80,8 @@ EOF
       echo $multiaddr >> ./build/bootstrap/bootstrappers.pi
     done
   popd
+
+  read -p "Press enter to continue"
 
 fi
 
