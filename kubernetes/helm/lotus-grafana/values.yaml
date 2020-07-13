@@ -13,6 +13,8 @@ grafana:
   sidecar:
     datasources:
       enabled: true
+    dashboards:
+      enabled: true
   persistence:
     type: pvc
     enabled: true
