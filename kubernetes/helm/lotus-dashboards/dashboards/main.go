@@ -156,7 +156,7 @@ func BackupDatasources(c *sdk.Client) {
 	}
 }
 
-// BackupDashboards searches a grafana endpoint for dashboards with the "testground" tag
+// BackupDashboards searches a grafana endpoint for dashboards with the "lotus" tag
 // and saves them into ./dashboards
 // Credit:
 // https://raw.githubusercontent.com/grafana-tools/sdk/master/cmd/backup-dashboards/main.go
@@ -167,7 +167,7 @@ func BackupDashboards(c *sdk.Client) {
 		meta       sdk.BoardProperties
 		err        error
 	)
-	if boardLinks, err = c.SearchDashboards("", false, "testground"); err != nil {
+	if boardLinks, err = c.SearchDashboards("", false, "lotus"); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
