@@ -9,19 +9,20 @@
   tasks:
     - name: Ensure data root
       file:
-        path: "/fildev-network"
+        path: "{{ lotus_miner_data_root }}"
         state: directory
         owner: "{{ lotus_user }}"
         group: "{{ lotus_user }}"
-        mode: "0750"
+        mode: "0755"
     - name: Fetch sectors
       become_user: "{{ lotus_user }}"
       shell: "aws s3 cp s3:/{{ item }} {{ item }} --recursive"
       loop: "{{ lotus_miner_presealed_sectors }}"
+      when: "'aws' in group_names"
     - name: Hygrade sectors
       block:
         - name: Register sectors
-          shell: find /fildev-network -type f  -name 's-{{ lotus_miner_addr }}-*'
+          shell: find "{{ lotus_miner_data_root }}" -type f  -name 's-{{ lotus_miner_addr }}-*'
           register: sectors
         - name:
           shell: "truncate -s {{ sector_size }} {{ item }}"
@@ -31,13 +32,12 @@
       shell:
         cmd: |
           /usr/local/bin/lotus-seed aggregate-manifests {{ lotus_miner_presealed_sectors | product([metadatafile]) | map('join', '/') | join(' ') }} \
-          | jq --arg Addr "{{ lotus_miner_wallet_address }}" --arg MinerId {{ lotus_miner_addr }}" '
+          | jq --arg Addr "{{ lotus_miner_wallet_address }}" --arg MinerId "{{ lotus_miner_addr }}" '
               .[$MinerId].Owner = $Addr
             | .[$MinerId].Worker = $Addr
             | .[$MinerId].Sectors[].Deal.Client = $Addr
             | .[$MinerId].Sectors[] |= (.Deal.Label = .CommR."/")
           ' > "{{ lotus_miner_presealed_metadata }}"
-        creates: "{{ lotus_miner_presealed_metadata }}"
       vars:
         metadatafile: "pre-seal-{{ lotus_miner_addr }}.json"
     - name: Fetch preminer metadata 
