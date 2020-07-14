@@ -1,33 +1,39 @@
-- name: create let's encrypt webroot
+- name: Ensure well-know directory exists
   file:
     path: /var/www/{{ lotus_fountain_server_name }}/.well-known
     state: directory
     owner: www-data
     mode: 0755
 
-- name: copy nginx maintance file
+- name: Ensure maintenance site available
   template:
-    src: ../templates/maintance.html.j2
-    dest: /var/www/{{ lotus_fountain_server_name }}/index.html
-    mode: 0644
+    src: ../templates/nginx-cerbot.conf.j2
+    dest: /etc/nginx/sites-available/cerbot.conf
 
-- name: ensure nginx started
+- name: Ensure maintenance site enabled
+  file:
+    src: /etc/nginx/sites-available/certbot.conf
+    dest: /etc/nginx/sites-enabled/01-cerbot.conf
+    state: link
+
+- name: Ensure nginx started
   systemd:
     name: nginx
     state: started
 
-- name: reload nginx
-  command: "/etc/init.d/nginx reload"
+# nginx may already be running before the playbook, so ensure we reload
+- name: Ensure nginx reloaded
+  systemd:
+    name: nginx
+    state: reloaded
 
-- name: create let's encrypt certificate
+- name: Create let's encrypt certificate
   command: "certbot certonly --webroot -w /var/www/{{ lotus_fountain_server_name }} -d {{ lotus_fountain_server_name }} --non-interactive --agree-tos -m infra-accounts@protocol.ai"
   run_once: true
-  when: certbot_create_certificate | bool
 
-- name: copy nginx https config
-  template:
-    src: ../templates/nginx-https.conf.j2
-    dest: /etc/nginx/sites-available/faucet.conf
-    mode: 0644
-  notify:
-    - reload_nginx
+# We remove this because all other configurations support the `.well-known` path
+- name: Ensure certbot site is disabled
+  file:
+    path: /etc/nginx/sites-enabled/01-certbot.conf
+    state: absent
+  notify: reload_nginx

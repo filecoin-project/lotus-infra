@@ -34,6 +34,16 @@
     owner: www-data
     mode: 0755
 
+# Have to enable firewall rules so certbot can work
+- name: Ensure ufw allow
+  ufw:
+    rule: allow
+    name: "{{ (lotus_fountain_enable_https | bool == true) | ternary('Nginx Full', 'Nginx HTTP') }}"
+
+- name: Ensure certbot configured
+  include_tasks: nignx_certbot.yml
+  when: (lotus_fountain_enable_https | bool) and (certbot_create_certificate | bool)
+
 - name: Ensure maintenance page exists
   template:
     src: ../templates/maintenance.html.j2
@@ -56,20 +66,6 @@
   systemd:
     name: "lotus-fountain"
     enabled: yes
-
-# Have to enable firewall rules so certbot can work
-- name: Ensure ufw allow
-  ufw:
-    rule: allow
-    name: "Nginx Full"
-
-- name: Ensure https faucet
-  include_tasks: nginx_https.yml
-  when: lotus_fountain_enable_https | bool == true
-
-- name: Ensure http faucet
-  include_tasks: nginx_http.yml
-  when: lotus_fountain_enable_https | bool == false
 
 - name: Ensure faucet is enabled
   file:

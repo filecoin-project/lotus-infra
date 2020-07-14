@@ -1,0 +1,9 @@
+server {
+    listen 80;
+
+    server_name = {{ lotus_fountain_server_name }};
+
+    location ^~ /.well-known {
+        root /var/www/{{ lotus_fountain_server_name }};
+    }
+}

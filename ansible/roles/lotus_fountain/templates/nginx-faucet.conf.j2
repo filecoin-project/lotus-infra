@@ -1,4 +1,5 @@
 server {
+{% if lotus_fountain_enable_https | bool == true %}
     listen 443 ssl;
 
     ssl_certificate /etc/letsencrypt/live/{{ lotus_fountain_server_name }}/fullchain.pem;
@@ -12,6 +13,9 @@ server {
 
     ssl_stapling on;
     ssl_stapling_verify on;
+{% else %}
+    listen 80;
+{% endif %}
 
     server_name {{ lotus_fountain_server_name }};
     location / {
@@ -24,6 +28,7 @@ server {
     }
 }
 
+{% if lotus_fountain_enable_https | bool == true %}
 server {
     listen 80;
 
@@ -37,3 +42,4 @@ server {
         return 301 https://$host$request_uri;
     }
 }
+{% endif %}
