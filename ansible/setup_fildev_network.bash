@@ -12,7 +12,10 @@ while [ "$1" != "" ]; do
                                 ;;
         -p | --preseal )        preseal=true
                                 ;;
-        -c | --create-cert)     cert=true
+        -c | --create-cert )    cert=true
+                                ;;
+        -b | --build-flags )    shift
+                                buildflags="$1"
                                 ;;
         -r | --reset )          reset=true
                                 ;;
@@ -32,6 +35,7 @@ hostfile="inventories/${network}/hosts.yml"
 generate_new_keys="${reset:-"false"}"
 network_name="${network%%.*}net"
 create_certificate="${cert:-"false"}"
+build_flags="${buildflags:-"-f"}"
 faucet_balance="256000000000000000000000000"
 genesis_delay="${delay:-"600"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
@@ -88,7 +92,7 @@ EOF
 
 fi
 
-../scripts/build_binaries.bash -f
+../scripts/build_binaries.bash ${build_flags}
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
@@ -158,11 +162,16 @@ popd
 ansible-playbook -i $hostfile lotus_devnet_start.yml                                            \
     -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/devnet.car"
 
+set +x
+
 echo "Monitor the initialization process on all miners"
 echo ""
-echo "    ansible -i $hostfile -b -m shell -a 'systemctl status lotus-miner-init'"
+echo "    ansible -i $hostfile -b -m shell -a 'systemctl start lotus-miner-init' preminer"
 echo ""
 echo "When all have finished the process will exit with a message about 'run lotus-storage-miner run'"
+echo ""
+echo "    ansible -i $hostfile -b -m shell -a 'systemctl status lotus-miner-init' preminer"
+echo ""
 echo "Start the 'lotus-miner' serivce on all preminers"
 echo ""
-echo "    ansible -i $hostfile -b -m shell -a 'systemctl start lotus-miner'"
+echo "    ansible -i $hostfile -b -m shell -a 'systemctl start lotus-miner' preminer"
