@@ -69,3 +69,7 @@ variable "scratch_count" {
   type    = number
   default = 0
 }
+
+variable "timescale_ami" {
+  type = string
+}

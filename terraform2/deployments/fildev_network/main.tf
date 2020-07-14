@@ -10,6 +10,18 @@ locals {
   cidr            = "10.0.0.0/16"
   public_subnets  = ["10.0.2.0/24", "10.0.3.0/24"]
   private_subnets = ["10.0.128.0/24", "10.0.129.0/24"]
+  # https://docs.timescale.com/latest/getting-started/installation/ami/installation-ubuntu-ami
+  timescale_amis = {
+    "us-east-1"    = "ami-0952246bc3c8d007c",
+    "us-east-2"    = "ami-024ec0ff068daa3e2",
+    "us-west-1"    = "ami-01971bba46b1c3c2e",
+    "us-west-2"    = "ami-086173e369b9bde27",
+    "eu-central-1" = "ami-01f2afc3887ce7ebd",
+    "eu-north-1"   = "ami-07efd0f3f150d06cd",
+    "eu-west-1"    = "ami-093e1bd4ca398346c",
+    "eu-west-2"    = "ami-0fbf217a02a1cfb9a",
+    "eu-west-3"    = "ami-043becf8d949ba2b0"
+  }
 }
 
 module "nerpanet" {
@@ -35,6 +47,7 @@ module "nerpanet" {
   public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[0]
   private_subnet_id           = module.fildev_network_vpc.database_subnets[0]
   private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[0]
+  timescale_ami               = local.timescale_amis[providers.aw.region]
 }
 
 module "butterflynet" {
@@ -60,4 +73,5 @@ module "butterflynet" {
   public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[1]
   private_subnet_id           = module.fildev_network_vpc.database_subnets[1]
   private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[1]
+  timescale_ami               = local.timescale_amis[providers.aw.region]
 }
