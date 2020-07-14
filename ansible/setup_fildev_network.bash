@@ -12,6 +12,8 @@ while [ "$1" != "" ]; do
                                 ;;
         -p | --preseal )        preseal=true
                                 ;;
+        -c | --create-cert)     cert=true
+                                ;;
         -r | --reset )          reset=true
                                 ;;
         --delay )               shift
@@ -29,6 +31,7 @@ done
 hostfile="inventories/${network}/hosts.yml"
 generate_new_keys="${reset:-"false"}"
 network_name="${network%%.*}net"
+create_certificate="${cert:-"false"}"
 faucet_balance="256000000000000000000000000"
 genesis_delay="${delay:-"600"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
@@ -98,6 +101,7 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/chainwatch"            \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes                                 \
     -e chainwatch_db_reset=yes -e chainwatch_reset=yes                                             \
+    -e certbot_create_certificate=${create_certificate}                                            \
     --diff
 
 preseal_metadata=$(mktemp -d)
