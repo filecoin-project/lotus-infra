@@ -73,3 +73,7 @@ variable "scratch_count" {
 variable "timescale_ami" {
   type = string
 }
+variable "timescale_instance_type" {
+  type    = string
+  default = "t2.micro"
+}

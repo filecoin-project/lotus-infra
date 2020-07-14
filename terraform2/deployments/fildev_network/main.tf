@@ -48,6 +48,7 @@ module "nerpanet" {
   private_subnet_id           = module.fildev_network_vpc.database_subnets[0]
   private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[0]
   timescale_ami               = local.timescale_amis[providers.aw.region]
+  timescale_instance_type     = "db.m5.large"
 }
 
 module "butterflynet" {
@@ -74,4 +75,5 @@ module "butterflynet" {
   private_subnet_id           = module.fildev_network_vpc.database_subnets[1]
   private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[1]
   timescale_ami               = local.timescale_amis[providers.aw.region]
+  timescale_instance_type     = "db.m5.large"
 }

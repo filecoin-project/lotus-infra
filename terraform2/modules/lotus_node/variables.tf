@@ -7,7 +7,7 @@ variable "ami" {
 }
 
 variable "iam_instance_profile" {
-  type = string
+  type    = string
   default = ""
 }
 

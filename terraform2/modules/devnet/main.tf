@@ -22,9 +22,9 @@ module "toolshed" {
 
 module "timescale" {
   source                     = "../lotus_node"
-  name                       = "toolshed"
+  name                       = "timescale"
   scale                      = 1
-  instance_type              = var.toolshed_instance_type
+  instance_type              = var.timescale_instance_type
   availability_zone          = data.aws_subnet.selected.availability_zone
   ami                        = var.ami
   zone_id                    = aws_route53_zone.subdomain.id
