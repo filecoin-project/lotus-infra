@@ -3,6 +3,7 @@ lotus_miner_systemd_extras:
   LimitNOFILE: 32768
   LimitNOFILESoft: 24576
 
+lotus_miner_verified_deals: true
 lotus_miner_data_root: "/fildev-network"
 
 lotus_miner_presealed_sectors:
