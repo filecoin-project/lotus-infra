@@ -118,7 +118,7 @@ ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadat
 pushd "$lotus_src"
 
   genpath=$(mktemp -d)
-  ./lotus-seed genesis new "${genpath}/genesis.json"
+  ./lotus-seed genesis new --network-name ${netowrk_name} "${genpath}/genesis.json"
 
   for m in "${miners[@]}"; do
     ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/tmp/presealed-metadata.json"
@@ -129,9 +129,6 @@ pushd "$lotus_src"
   genesistmp=$(mktemp)
 
   jq --arg Timestamp ${timestamp} ' . + { Timestamp: $Timestamp|tonumber } ' < "${genpath}/genesis.json" > ${genesistmp}
-  mv ${genesistmp} "${genpath}/genesis.json"
-
-  jq --arg NetworkName ${network_name} ' .NetworkName = $NetworkName ' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
 
   jq --arg Owner ${faucet_addr} --arg Balance ${faucet_balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
