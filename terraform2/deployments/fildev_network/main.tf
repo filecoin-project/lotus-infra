@@ -8,7 +8,7 @@
 locals {
   domain_name     = "fildev.network"
   cidr            = "10.0.0.0/16"
-  public_subnets  = ["10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets  = ["10.0.2.0/24", "10.0.3.0/24", "10.0.255.0/24"]
   private_subnets = ["10.0.128.0/24", "10.0.129.0/24"]
 }
 
@@ -60,4 +60,19 @@ module "butterflynet" {
   public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[1]
   private_subnet_id           = module.fildev_network_vpc.database_subnets[1]
   private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[1]
+}
+
+module "seeding" {
+  source                      = "../../modules/seeding"
+  name                        = "seeding"
+  zone_id                     = aws_route53_zone.fildev_domain.id
+  ami                         = "ami-053bc2e89490c5ab7"
+  key_name                    = "filecoin"
+  vpc_id                      = module.fildev_network_vpc.vpc_id
+  environment                 = "prod"
+  presealer_count             = 6
+  presealer_instance_type     = "c5.24xlarge"
+  presealer_iam_profile       = aws_iam_instance_profile.presealer.id
+  public_subnet_id            = module.fildev_network_vpc.public_subnets[2]
+  public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[2]
 }
