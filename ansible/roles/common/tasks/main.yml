@@ -13,6 +13,7 @@
 - name: Ensure hostname
   hostname:
     name: "{{ ansible_host }}"
+  when: "'vagrant' not in group_names"
 
 - name: Register aws
   shell: which aws

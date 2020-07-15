@@ -1,9 +1,0 @@
-lotus_miner_genesis_miner: false
-lotus_miner_env: {}
-lotus_miner_presealed_sectors:
-  - /mnt/disk0/data
-  - /mnt/disk1/data
-lotus_miner_addr: t01002
-lotus_miner_sector_size: 2048
-lotus_miner_wallet_keyinfo: 7b2254797065223a22626c73222c22507269766174654b6579223a225338386954385676366941443034636431485858616869343438783947414e5a6a36384d337641706b7a593d227d
-lotus_miner_wallet_address: t3v2jvx22v4kn6vtn3svvgnnvoe6q3ktfenniamdowphgv6ijufh3kbpklephybsuegl7c34opdtg65ohfyogq
