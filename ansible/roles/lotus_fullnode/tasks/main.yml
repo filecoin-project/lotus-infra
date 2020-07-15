@@ -32,7 +32,7 @@
     state: directory
     owner: "{{ lotus_user }}"
     group: "{{ lotus_user }}"
-    mode: "0700"
+    mode: "0750"
 
 - name: Ensure LOTUS_PATH global env is set
   lineinfile:
@@ -53,7 +53,7 @@
     state: directory
     owner: "{{ lotus_user }}"
     group: "{{ lotus_user }}"
-    mode: "0700"
+    mode: "0754"
 
 - name: Ensure log file exists
   file:
@@ -71,7 +71,7 @@
     group: root
     mode: "0644"
   notify:
-    - reload-lotus
+    - systemd-daemon-reload
 
 - name: Ensure lotus configuration
   template:
@@ -89,31 +89,26 @@
   include_tasks: import_wallet.yml
   when: lotus_import_wallet | bool
 
-- name: Ensure lotus service enabled and in correct state ({{ lotus_service_state}})
+- name: Ensure lotus service enabled
   service:
     name: "lotus-daemon"
     enabled: yes
-    state: "{{ lotus_service_state }}"
 
 - name:
   include_tasks: drand_bootstrap.yml
   when: lotus_drand_bootstrap | bool
 
-- set_fact:
-    lotus_fullnode_ufw_profile:
-      name: Lotus Daemon
-      value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"
+- name: Ensure ufw application rules
+  template:
+    src: ../templates/ufw.profile.j2
+    dest: /etc/ufw/applications.d/lotus-daemon
+    owner: root
+    group: root
+    mode: 0644
 
-- set_fact:
-    lotus_fullnode_filebeat_input:
-      paths:
-        - "{{ lotus_golog_file }}"
-      fields:
-        type: "lotus-daemon"
+- name: Ensure ufw allow
+  ufw:
+    rule: allow
+    name: "Lotus Daemon"
 
-- set_fact:
-    lotus_fullnode_telegraf_tags: {}
 
-- set_fact:
-    lotus_fullnode_telegraf_inputs_procstat:
-      - "lotus-daemon"

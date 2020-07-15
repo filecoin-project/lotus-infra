@@ -4,3 +4,9 @@
     state: present
     uid: "{{ lotus_user_uid }}"
     system: yes
+
+- name: Ensure login user is added group
+  user:
+    name: "{{ ansible_user }}"
+    append: yes
+    groups: "{{ lotus_user }}"

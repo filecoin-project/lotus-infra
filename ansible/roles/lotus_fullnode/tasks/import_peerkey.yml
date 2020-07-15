@@ -11,9 +11,10 @@
         group: "{{ lotus_user }}"
         mode: "0700"
     - name: Ensure peerkey exists
-      copy:
-        content: "{{ lotus_libp2p_keyinfo }}"
-        owner: "{{ lotus_user }}"
-        group: "{{ lotus_user }}"
-        mode: "0600"
-        dest: "{{ lotus_path }}/keystore/{{ lotus_libp2p_keyname }}"
+      become_user: "{{ lotus_user }}"
+      shell:
+        cmd: /usr/local/bin/lotus-shed keyinfo import
+        stdin: "{{ lotus_libp2p_keyinfo }}"
+      ignore_errors: true
+      environment:
+        LOTUS_PATH: "{{ lotus_path }}"

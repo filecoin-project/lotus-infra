@@ -6,7 +6,7 @@
     group: root
     mode: "0644"
   notify:
-    - reload-lotus
+    - systemd-daemon-reload
 
 - name: Ensure service file
   template:
@@ -16,7 +16,7 @@
     group: root
     mode: "0644"
   notify:
-    - reload-lotus
+    - systemd-daemon-reload
 
 - name: Ensure service file
   template:
@@ -26,7 +26,8 @@
     group: "{{ lotus_user }}"
     mode: "0744"
   notify:
-    - reload-lotus
+    - systemd-daemon-reload
+
 
 - name: Ensure wallet exists
   copy:
@@ -36,8 +37,7 @@
     mode: "0644"
     dest: "{{ lotus_path }}/drand.pi"
 
-- name: Ensure lotus service enabled and in correct state
+- name: Ensure lotus service enabled
   service:
     name: "lotus-bootstrap.timer"
     enabled: yes
-    state: started

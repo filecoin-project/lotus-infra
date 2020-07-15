@@ -1,11 +1,6 @@
-- name: reload-miner
+- name: systemd-daemon-reload
   systemd:
     daemon_reload: yes
-
-- name: restart-miner
-  systemd:
-    name: 'lotus-miner'
-    state: restarted
 
 - name: reboot-system
   reboot:

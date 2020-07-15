@@ -1,5 +1,0 @@
----
-- hosts: all
-  tasks:
-    - import_role:
-        name: filebeat_logz_io

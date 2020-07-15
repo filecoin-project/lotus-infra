@@ -10,7 +10,7 @@
     state: directory
     owner: "{{ lotus_user }}"
     group: "{{ lotus_user }}"
-    mode: "0700"
+    mode: "0750"
 - name: Create worker log file
   file:
     state: touch
@@ -25,3 +25,5 @@
     owner: root
     group: root
     mode: "0644"
+  notify:
+    - systemd-daemon-reload

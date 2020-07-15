@@ -1,9 +1,22 @@
 ---
-logz_io_shared_token: foobar
-lotus_ipfs_gateway: "http://10.10.100.1:8080/ipfs/"
-telegraf_global_tags: {}
+logz_io_shared_token: "foobar"
+network_name: vagrantnet
+faucet_initial_balance: "256000000000000000000000000"
+telegraf_global_tags:
+  network: "{{ network_name }}"
 telegraf_outputs_influxdb_enabled: true
-telegraf_outputs_influxdb_username: ""
+telegraf_outputs_influxdb_username: lotus
 telegraf_outputs_influxdb_password: ""
 telegraf_outputs_influxdb_database: lotus
-telegraf_outputs_influxdb_url: "http://10.10.100.1:18086"
+telegraf_outputs_influxdb_url: https //10.10.100.1:18086
+lotus_ipfs_gateway: http://10.10.100.1:8080/ipfs/
+lotus_user: "fc"
+lotus_user_uid: "532"
+proof_version: v27
+proof_type: fake
+sector_size: 2KiB
+filebeat_additional_processors: |
+  - drop_event:
+      when:
+        regexp:
+          message: "^received message from router graylisted peer"

@@ -1,3 +1,0 @@
-lotus_seed_miner_addr: "{{ lotus_miner_addr }}"
-lotus_seed_sector_size: "{{ lotus_miner_sector_size }}"
-lotus_seed_miner_wallet_keyinfo: "{{ lotus_miner_wallet_keyinfo }}"
