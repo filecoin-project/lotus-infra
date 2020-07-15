@@ -1,2 +1,0 @@
-lotus_libp2p_keyinfo: "{{ libp2p_keyinfo }}"
-lotus_libp2p_address: "{{ libp2p_address }}"
