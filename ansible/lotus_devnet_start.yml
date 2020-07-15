@@ -46,8 +46,3 @@
       service:
         name: "lotus-fountain"
         state: started
-    - name: Ensure faucet http site enabled
-      file:
-        src: /etc/nginx/sites-available/faucet.conf
-        dest: /etc/nginx/sites-enabled/50-faucet.conf
-        state: link
