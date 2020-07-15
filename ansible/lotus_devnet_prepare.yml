@@ -30,6 +30,10 @@
     - name: Merge preminer metadata
       become_user: "{{ lotus_user }}"
       shell:
+        # We do not have a guarantee that the sectors were generated with the miner key for this host. We therefore need to replace
+        # all of the owner / worker / client addresses in the metadata file. Also for fake sectors, the CommD and PieceCID are the
+        # same which results in erros around duplicate deals. To resolve this we need to set a unique label on the deal. The CommR
+        # value is a unqiue field, so we copy it into the label.
         cmd: |
           /usr/local/bin/lotus-seed aggregate-manifests {{ lotus_miner_presealed_sectors | product([metadatafile]) | map('join', '/') | join(' ') }} \
           | jq --arg Addr "{{ lotus_miner_wallet_address }}" --arg MinerId "{{ lotus_miner_addr }}" --arg VerifiedDeal "{{ lotus_miner_verified_deals | lower }}" '
