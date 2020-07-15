@@ -55,6 +55,11 @@
     src: ../templates/nginx-maintenance.conf.j2
     dest: /etc/nginx/sites-available/maintenance.conf
 
+- name: Ensure faucet site available
+  template:
+    src: ../templates/nginx-faucet.conf.j2
+    dest: /etc/nginx/sites-available/faucet.conf
+
 - name: Ensure maintenance site enabled
   file:
     src: /etc/nginx/sites-available/maintenance.conf
