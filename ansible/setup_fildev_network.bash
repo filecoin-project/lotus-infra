@@ -36,7 +36,6 @@ generate_new_keys="${reset:-"false"}"
 network_name="${network%%.*}net"
 create_certificate="${cert:-"false"}"
 build_flags="${buildflags:-"-f"}"
-faucet_balance="256000000000000000000000000"
 genesis_delay="${delay:-"600"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 
@@ -46,6 +45,7 @@ miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] a
 # gets the wallet address for the fountain
 faucet_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_fountain_address }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
 
+faucet_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ faucet_initial_balance }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
 
 if [ "$generate_new_keys" = true ]; then
   # get a list of all hosts which have a lotus_libp2p_address defined somewhere in their group / hosts vars.
