@@ -26,7 +26,7 @@ module "timescale" {
   scale                      = 1
   instance_type              = var.timescale_instance_type
   availability_zone          = data.aws_subnet.selected.availability_zone
-  ami                        = var.ami
+  ami                        = var.timescale_ami
   zone_id                    = aws_route53_zone.subdomain.id
   key_name                   = var.key_name
   environment                = var.environment
