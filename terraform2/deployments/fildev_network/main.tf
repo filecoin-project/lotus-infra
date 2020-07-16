@@ -24,6 +24,8 @@ locals {
   }
 }
 
+data "aws_region" "current" {}
+
 module "nerpanet" {
   source                      = "../../modules/devnet"
   name                        = "nerpa"
@@ -47,8 +49,8 @@ module "nerpanet" {
   public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[0]
   private_subnet_id           = module.fildev_network_vpc.database_subnets[0]
   private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[0]
-  timescale_ami               = local.timescale_amis[providers.aw.region]
-  timescale_instance_type     = "db.m5.large"
+  timescale_ami               = local.timescale_amis[data.aws_region.current.name]
+  timescale_instance_type     = "m5.large"
 }
 
 module "butterflynet" {
@@ -74,8 +76,8 @@ module "butterflynet" {
   public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[1]
   private_subnet_id           = module.fildev_network_vpc.database_subnets[1]
   private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[1]
-  timescale_ami               = local.timescale_amis[providers.aw.region]
-  timescale_instance_type     = "db.m5.large"
+  timescale_ami               = local.timescale_amis[data.aws_region.current.name]
+  timescale_instance_type     = "m5.large"
 }
 
 module "seeding" {
