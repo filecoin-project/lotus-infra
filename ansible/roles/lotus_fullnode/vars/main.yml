@@ -2,6 +2,5 @@ required_vars:
   - lotus_path
   - lotus_golog_file
   - lotus_proof_params_path
-  - lotus_service_state
-lotus_ufw_name: "Lotus Daemon"
+  - lotus_libp2p_port
 lotus_libp2p_keyname: "NRUWE4BSOAWWQ33TOQ"

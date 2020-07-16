@@ -6,12 +6,6 @@
     name:
       - numactl
 
-- name: Ensure ntp is started
-  service:
-    name: ntp
-    enabled: yes
-    state: started
-
 - name: Copy lotus-seed binary
   copy:
     src: "{{ lotus_seed_binary_src }}"

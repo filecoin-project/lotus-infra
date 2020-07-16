@@ -1,0 +1,48 @@
+---
+- hosts: lotus_daemon
+  become: true
+  tasks:
+    - name: Copy genesis
+      copy:
+        src: "{{ lotus_genesis_src }}"
+        dest: "{{ lotus_path }}/genesis.car"
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0644"
+      when: lotus_genesis_src is defined
+    - name: Ensure lotus daemon started
+      service:
+        name: "lotus-daemon"
+        state: started
+
+- hosts: preminer
+  become: true
+  tasks:
+    - name: Ensure miner initialization started
+      service:
+        name: "lotus-miner-init"
+        state: started
+
+- hosts: stats
+  become: true
+  tasks:
+    - name: Ensure stats started
+      service:
+        name: "stats"
+        state: started
+
+- hosts: chainwatch
+  become: true
+  tasks:
+    - name: Ensure chainwatch started
+      service:
+        name: "chainwatch"
+        state: started
+
+- hosts: faucet
+  become: true
+  tasks:
+    - name: Ensure fountain started
+      service:
+        name: "lotus-fountain"
+        state: started

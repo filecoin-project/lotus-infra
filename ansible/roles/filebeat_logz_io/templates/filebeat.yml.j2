@@ -1,7 +1,82 @@
 ############################# Filebeat #####################################
 
 filebeat.inputs:
-{{ logz_inputs | map('combine', base, recursive=True) | list | to_yaml }}
+{% if 'lotus_daemon' in group_names %}
+- encoding: utf-8
+  type: log
+  fields:
+    logzio_codec: json
+    token: "{{ logz_io_shared_token }}"
+    type: lotus-daemon
+  paths:
+    - "{{ lotus_golog_file }}"
+  fields_under_root: true
+  json.keys_under_root: false
+  json.message_key: msg
+  ignore_older: 3h
+{% endif %}
+{% if 'lotus_miner' in group_names %}
+- encoding: utf-8
+  type: log
+  fields:
+    logzio_codec: json
+    token: "{{ logz_io_shared_token }}"
+    type: lotus-miner
+  paths:
+    - "{{ lotus_miner_golog_file }}"
+  fields_under_root: true
+  json.keys_under_root: false
+  json.message_key: msg
+  ignore_older: 3h
+{% endif %}
+{% if 'lotus_fountain' in group_names %}
+- encoding: utf-8
+  type: log
+  fields:
+    logzio_codec: json
+    token: "{{ logz_io_shared_token }}"
+    type: lotus-miner
+  paths:
+    - "{{ lotus_fountain_golog_file }}"
+  fields_under_root: true
+  json.keys_under_root: false
+  json.message_key: msg
+  ignore_older: 3h
+- encoding: utf-8
+  type: log
+  fields:
+    logzio_codec: plain
+    token: "{{ logz_io_shared_token }}"
+    type: nginx-access
+  paths:
+    - "/var/log/nginx/access.log"
+  fields_under_root: true
+  ignore_older: 3h
+- encoding: utf-8
+  type: log
+  fields:
+    logzio_codec: plain
+    token: "{{ logz_io_shared_token }}"
+    type: nginx-error
+  paths:
+    - "/var/log/nginx/error.log"
+  fields_under_root: true
+  ignore_older: 3h
+{% endif %}
+{% if 'stats' in group_names %}
+- encoding: utf-8
+  type: log
+  fields:
+    logzio_codec: json
+    token: "{{ logz_io_shared_token }}"
+    type: lotus-daemon
+  paths:
+    - "{{ stats_golog_file }}"
+  fields_under_root: true
+  json.keys_under_root: false
+  json.message_key: msg
+  ignore_older: 3h
+{% endif %}
 
 #For version 7 and higher
 filebeat.registry.path: /var/lib/filebeat
@@ -39,7 +114,6 @@ processors:
             to: 'message'
 {{ filebeat_additional_processors }}
 
-
 ############################# Output ##########################################
 
 output:
@@ -47,4 +121,3 @@ output:
     hosts: ["listener.logz.io:5015"]
     ssl:
       certificate_authorities: ['/etc/pki/tls/certs/COMODORSADomainValidationSecureServerCA.crt']
-

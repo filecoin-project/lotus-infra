@@ -1,3 +1,5 @@
+- include_tasks: ../../../includes/required_vars.yml
+
 - name: Copy binary
   copy:
       src: "{{ lotus_fountain_binary_src }}"
@@ -6,8 +8,6 @@
       group: root
       mode: "0755"
   when: lotus_fountain_binary_src is defined
-  notify:
-      - restart-fountain
 
 - name: Ensure log file exists
   file:
@@ -25,8 +25,7 @@
       group: root
       mode: "0644"
   notify:
-      - reload-fountain
-  when: lotus_fountain_address is defined
+    - systemd-daemon-reload
 
 - name: Ensure web folder exists
   file:
@@ -35,16 +34,31 @@
     owner: www-data
     mode: 0755
 
+# Have to enable firewall rules so certbot can work
+- name: Ensure ufw allow
+  ufw:
+    rule: allow
+    name: "{{ (lotus_fountain_enable_https | bool == true) | ternary('Nginx Full', 'Nginx HTTP') }}"
+
+- name: Ensure certbot configured
+  include_tasks: nignx_certbot.yml
+  when: (lotus_fountain_enable_https | bool) and (certbot_create_certificate | bool)
+
 - name: Ensure maintenance page exists
   template:
-    src: ../templates/maintance.html.j2
+    src: ../templates/maintenance.html.j2
     dest: /var/www/{{ lotus_fountain_server_name }}/index.html
     mode: 0644
 
 - name: Ensure maintenance site available
   template:
-    src: ../templates/faucet-http-maint.conf.j2
+    src: ../templates/nginx-maintenance.conf.j2
     dest: /etc/nginx/sites-available/maintenance.conf
+
+- name: Ensure faucet site available
+  template:
+    src: ../templates/nginx-faucet.conf.j2
+    dest: /etc/nginx/sites-available/faucet.conf
 
 - name: Ensure maintenance site enabled
   file:
@@ -53,48 +67,46 @@
     state: link
   notify: reload_nginx
 
-- name: Ensure http faucet
-  include_tasks: nginx_http.yml
-  when: lotus_fountain_enable_https is not defined
-
-- name: Ensure fountain is enabled and started
+- name: Ensure fountain is enabled
   systemd:
     name: "lotus-fountain"
     enabled: yes
-    state: started
 
-- name: Certbot
-  include_tasks: cert.yml
-  when: lotus_fountain_enable_https is defined
+- name: Ensure faucet is enabled
+  file:
+    src: /etc/nginx/sites-available/faucet.conf
+    dest: /etc/nginx/sites-enabled/50-faucet.conf
+    state: link
+  notify: reload_nginx
+  when: lotus_fountain_enabled | bool == true
 
-- name: Ensure noonce fixer service
+- name: Ensure faucet http site disabled
+  file:
+    path: /etc/nginx/sites-enabled/50-faucet.conf
+    state: absent
+  notify: reload_nginx
+  when: lotus_fountain_enabled | bool == false
+
+- name: Ensure nonce fixer service
   template:
-    src: ../templates/lotus-nooncefix.service.j2
-    dest: /etc/systemd/system/lotus-nooncefix.service
+    src: ../templates/lotus-noncefix.service.j2
+    dest: /etc/systemd/system/lotus-noncefix.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - systemd-daemon-reload
+
+- name: Ensure nonce fixer timer
+  template:
+    src: ../templates/lotus-noncefix.timer.j2
+    dest: /etc/systemd/system/lotus-noncefix.timer
     owner: root
     group: root
     mode: "0644"
 
-- name: Ensure noonce fixer timer
-  template:
-    src: ../templates/lotus-noonce.timer.j2
-    dest: /etc/systemd/system/lotus-nooncefix.timer
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: enable noonce fixer
+- name: Enable nonce fixer
   systemd:
-    name: lotus-nooncefix.timer
-    state: restarted
+    name: lotus-noncefix.timer
     daemon_reload: yes
     enabled: true
-
-- set_fact:
-    lotus_fountain_ufw_profile:
-      name: Lotus Fountain
-      value: "{{ lookup('template', '../templates/ufw.profile.j2')}}"
-
-- set_fact:
-    lotus_fountain_telegraf_inputs_procstat:
-      - "lotus-fountain"

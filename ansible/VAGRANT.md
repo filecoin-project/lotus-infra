@@ -1,7 +1,7 @@
 Vagrant
 =======
 
-Install [vagrant `2.2.6`](https://releases.hashicorp.com/vagrant/2.2.6/)
+Install [vagrant `2.2.9`](https://releases.hashicorp.com/vagrant/2.2.9/)
 Image: ubuntu/bionic64
  - https://ipfs.io/ipfs/QmQvvzXTUydatqHaFs15rSyowocsfTWZUWszE4nNEBqFBv/ubuntu-18.04-server-cloudimg-amd64-vagrant.box
  - http://cloud-images.ubuntu.com/releases/bionic/release-20200129.1/ubuntu-18.04-server-cloudimg-amd64-vagrant.box
@@ -22,13 +22,13 @@ vagrant up --provision
 To make working from a clean start easier take a snapshot of the machine after provisioning is complete.
 
 ```
-vagrant snapshot save vagrant0 provisioned
+for i in $(seq 0 3); do vagrant snapshot save "vagrant$i" provisioned; done
 ```
 
 Whenever you want to reset the machine, instead of destroying the machine, just restore it.
 
 ```
-vagrant snapshot restore vagrant0 provisioned --no-provision
+for in in $(seq 0 3); do vagrant snapshot restore "vagrant$i" provisioned --no-provision; done
 ```
 
 Building Binaries

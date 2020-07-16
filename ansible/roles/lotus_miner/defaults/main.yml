@@ -1,7 +1,10 @@
 lotus_miner_genesis_miner: "false"
+lotus_miner_verified_deals: false
+lotus_miner_presealed: "no"
 lotus_miner_reset: no
 lotus_miner_golog_log_fmt: json
 lotus_miner_env: {}
 lotus_miner_import_wallet: false
 lotus_miner_ensure_params: true
 lotus_miner_systemd_extras: {}
+lotus_miner_p2p_port: 3452
