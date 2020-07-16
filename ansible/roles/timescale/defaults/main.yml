@@ -1,0 +1,7 @@
+---
+
+timescale_db: timescaledb
+timescale_host: 0.0.0.0
+timescale_port: 5432
+timescale_user: tsdbadmin
+timescale_pass: insecure

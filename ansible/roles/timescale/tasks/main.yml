@@ -1,0 +1,51 @@
+---
+
+- name: ansible requries psycopg2
+  apt:
+    name: python3-psycopg2
+
+- name: tune postgresql
+  # This command is included in the timescaledb AMI
+  command: /usr/bin/timescaledb-tune -yes
+
+- name: configure remote connections
+  become: true
+  become_user: postgres
+  postgresql_set:
+    name: "listen_addresses"
+    value: "0.0.0.0"
+
+- name: configure remote port
+  become: true
+  become_user: postgres
+  postgresql_set:
+    name: "port"
+    value: "{{ timescale_port }}"
+
+- name: (re)start postgresql
+  systemd:
+    name: "postgresql.service"
+    state: "restarted"
+
+# https://docs.timescale.com/latest/getting-started/setup
+- name: create timescale database
+  become: true
+  become_user: postgres
+  postgresql_db:
+    name: "{{ timescale_db }}"
+
+- name: create tiemscale user
+  become: true
+  become_user: postgres
+  postgresql_user:
+    name: "{{ timescale_user }}"
+    db: "{{ timescale_db }}"
+    password: "{{ timescale_pass }}"
+    priv: ALL
+
+- name: timescale extension
+  become: true
+  become_user: postgres
+  postgresql_ext:
+    name: timescaledb
+    db: "{{ timescale_db }}"
