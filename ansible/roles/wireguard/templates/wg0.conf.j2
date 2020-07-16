@@ -1,0 +1,13 @@
+[Interface]
+Address = {{ wg_ip }}/24
+ListenPort = {{ wg_port }}
+PrivateKey = {{ wg_privatekey.stdout }}
+{% for hostname in groups['all'] %}
+    {% if hostname != inventory_hostname %}
+[Peer]
+PublicKey = {{ hostvars[hostname].wg_publickey.stdout }}
+AllowedIPs = {{ hostvars[hostname].wg_ip }}/32
+Endpoint = {{ hostname }}:{{ hostvars[hostname].wg_port }}
+PersistentKeepalive = 25
+    {% endif %}
+{% endfor %}
