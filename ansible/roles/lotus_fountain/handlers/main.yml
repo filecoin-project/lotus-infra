@@ -1,4 +1,4 @@
-- name: reload-fountain
+- name: systemd-daemon-reload
   systemd:
     daemon_reload: yes
 

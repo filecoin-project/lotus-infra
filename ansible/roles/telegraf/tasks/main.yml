@@ -19,10 +19,6 @@
     state: started
     enabled: yes
 
-- set_fact:
-    telegraf_global_tags: "{{ telegraf_global_tags | combine(item) }}"
-  loop: "{{ telegraf_global_tag_groups }}"
-
 - name: Copy telegraf configuration template to hosts
   template:
     src: templates/telegraf.conf.j2

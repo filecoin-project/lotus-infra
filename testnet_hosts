@@ -1,8 +1,0 @@
-[genesis]
-lotus-genesis.fil-test.net
-
-[bootstrap]
-lotus-bootstrap-0.yyz.fil-test.net
-lotus-bootstrap-1.yyz.fil-test.net
-lotus-bootstrap-0.hkg.fil-test.net
-lotus-bootstrap-1.hkg.fil-test.net

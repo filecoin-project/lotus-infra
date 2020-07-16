@@ -19,6 +19,18 @@
 {% for tag in telegraf_global_tags | dict2items %}
   {{ tag.key}} = "{{ tag.value }}"
 {% endfor %}
+{% if 'lotus_daemon' in group_names %}
+  lotus_daemon = "true"
+{% endif %}
+{% if 'lotus_miner' in group_names %}
+  lotus_miner = "true"
+{% endif %}
+{% if 'lotus_fountain' in group_names %}
+  lotus_fountain = "true"
+{% endif %}
+{% if 'stats' in group_names %}
+  stats = "true"
+{% endif %}
 
 # Configuration for telegraf agent
 [agent]
@@ -225,12 +237,18 @@
 #                            INPUT PLUGINS                                    #
 ###############################################################################
 
-{% for procstats in telegraf_inputs_procstat %}
-{% for procstat in procstats %}
+{% if 'lotus_daemon' in group_names %}
 [[inputs.procstat]]
-  systemd_unit = "{{ procstat }}.service"
-{% endfor %}
-{% endfor %}
+  systemd_unit = "lotus-daemon.service"
+{% endif %}
+{% if 'lotus_miner' in group_names %}
+[[inputs.procstat]]
+  systemd_unit = "lotus-miner.service"
+{% endif %}
+{% if 'lotus_fountain' in group_names %}
+[[inputs.procstat]]
+  systemd_unit = "lotus-fountain.service"
+{% endif %}
 
 # Read metrics about cpu usage
 [[inputs.cpu]]
