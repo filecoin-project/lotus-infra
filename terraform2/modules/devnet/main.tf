@@ -51,6 +51,7 @@ module "preminers" {
   key_name                   = var.key_name
   environment                = var.environment
   network_name               = var.name
+  volume_size                = var.preminer_volume_size
   public_security_group_ids  = [aws_security_group.devnet_public.id]
   private_security_group_ids = [aws_security_group.devnet_private.id]
   private_subnet_id          = var.private_subnet_id
