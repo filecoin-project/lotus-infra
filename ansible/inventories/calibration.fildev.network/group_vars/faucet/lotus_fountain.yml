@@ -1,0 +1,3 @@
+lotus_fountain_server_name: faucet.calibration.fildev.network
+lotus_fountain_enable_https: false
+lotus_fountain_address: "{{ lotus_wallet_address }}"
