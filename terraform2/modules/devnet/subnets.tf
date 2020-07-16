@@ -30,6 +30,13 @@ resource "aws_security_group" "devnet_public" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = var.chainwatch_port
+    to_port     = var.chainwatch_port
+    protocol    = "tcp"
+    cidr_blocks = [var.public_subnet_cidr]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
