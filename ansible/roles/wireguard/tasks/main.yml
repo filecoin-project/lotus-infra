@@ -1,0 +1,35 @@
+---
+- name: add wireguard apt repo
+  apt_repository:
+    repo: ppa:wireguard/wireguard
+
+- name: install wireguard
+  apt:
+    name: wireguard
+    state: present
+
+- name: generate keys
+  shell: umask 077; wg genkey | tee privatekey | wg pubkey > publickey
+  args:
+    chdir: /etc/wireguard
+  when: wg_generate_keys is defined
+
+- name: register wireguard publickey
+  shell: cat /etc/wireguard/publickey
+  register: wg_publickey
+
+- name: register wireguard privatekey
+  shell: cat /etc/wireguard/privatekey
+  register: wg_privatekey
+
+- name: copy wg template
+  template:
+    src: ../templates/wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    mode: 660
+  notify: restart wg0
+
+- name: enable wg-quick systemd service
+  systemd:
+    state: started
+    name: wg-quick@wg0
