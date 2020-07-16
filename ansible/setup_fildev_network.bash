@@ -10,6 +10,9 @@ while [ "$1" != "" ]; do
         -s | --src )            shift
                                 src="$1"
                                 ;;
+        -ss | --sentinal-src )   shift
+                                ssrc="$1"
+                                ;;
         -p | --preseal )        preseal=true
                                 ;;
         -c | --create-cert )    cert=true
@@ -38,6 +41,7 @@ create_certificate="${cert:-"false"}"
 build_flags="${buildflags:-"-f"}"
 genesis_delay="${delay:-"600"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
+sentinal_src="${ssrc:-"$GOPATH/src/github.com/filecoin-project/sentinal"}"
 
 # gets a list of all the hostnames for the preminers
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
@@ -92,7 +96,8 @@ EOF
 
 fi
 
-../scripts/build_binaries.bash ${build_flags}
+../scripts/build_binaries.bash -s "$lotus_src" ${build_flags}
+../scripts/build_binaries.bash -s "$sentinal_src" ${build_flags}
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
