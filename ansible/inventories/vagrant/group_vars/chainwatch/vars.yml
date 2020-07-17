@@ -1,3 +1,21 @@
 chainwatch_golog_file: "/var/log/chainwatch.log"
 chainwatch_db: "postgres://postgres:protocol@10.10.100.1:15432/chainwatch?sslmode=disable"
 
+# wherever the chainwatch runs can also report into sentinel database
+
+# Output into the postgresql on timescale cloud
+telegraf_outputs_postgresql_enabled: true
+telegraf_outputs_postgresql_conn: "host=cory-testing-cory-fcae.a.timescaledb.io user=tsdbadmin password=cslys461y89hzflc sslmode=require port=19947"
+
+# Lotus input
+telegraf_inputs_lotus_enabled: true
+lotus_api_multiaddr: "/ip4/0.0.0.0/tcp/1234"
+lotus_api_token: ""
+lotus_datapath: "${HOME}/.lotus"
+
+# prometheus-style /metrics inputs
+telegraf_inputs_prometheus_enabled: true
+inputs_prometheus_urls:
+  - "http://127.0.0.1:1234/debug/metrics"
+
+ 
