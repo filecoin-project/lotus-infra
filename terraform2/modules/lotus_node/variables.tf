@@ -56,3 +56,8 @@ variable "private_subnet_id" {
 variable "public_subnet_id" {
   type = string
 }
+
+variable "volume_size" {
+  type    = number
+  default = 128
+}

@@ -17,6 +17,10 @@ variable "public_subnet_cidr" {}
 variable "database_subnet_group" {}
 
 variable "preminer_iam_profile" {}
+variable "preminer_volume_size" {
+  type    = number
+  default = 128
+}
 
 # Variables for tools
 variable "toolshed_instance_type" {
