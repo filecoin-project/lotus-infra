@@ -96,8 +96,8 @@ EOF
 
 fi
 
-#../scripts/build_binaries.bash -s "$lotus_src" ${build_flags}
-#../scripts/build_binaries.bash -s "$sentinel_src" ${build_flags} -- telegraf
+../scripts/build_binaries.bash -s "$lotus_src" ${build_flags}
+../scripts/build_binaries.bash -s "$sentinel_src" -- telegraf
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
