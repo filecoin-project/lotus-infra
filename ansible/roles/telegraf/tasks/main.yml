@@ -22,6 +22,14 @@
   notify:
     - restart_telegraf
 
+- name: Create telegraf configuration directory
+  file:
+    name: /etc/telegraf
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
 - name: Copy telegraf configuration template to hosts
   template:
     src: templates/telegraf.conf.j2
@@ -36,7 +44,7 @@
     dest: /etc/logrotate.d/telegraf
     mode: '0644'
 
-- name: Create log directory
+- name: Create telegraf log directory
   file:
     name: /var/log/telegraf
     state: directory
