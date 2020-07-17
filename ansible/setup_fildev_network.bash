@@ -96,8 +96,8 @@ EOF
 
 fi
 
-../scripts/build_binaries.bash -s "$lotus_src" ${build_flags}
-../scripts/build_binaries.bash -s "$sentinel_src" ${build_flags}
+#../scripts/build_binaries.bash -s "$lotus_src" ${build_flags}
+#../scripts/build_binaries.bash -s "$sentinel_src" ${build_flags} -- telegraf
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
@@ -108,6 +108,7 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/fountain"          \
     -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/stats"                      \
     -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/chainwatch"            \
+    -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"       \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes                                 \
     -e chainwatch_db_reset=yes -e chainwatch_reset=yes                                             \
     -e certbot_create_certificate=${create_certificate}                                            \
