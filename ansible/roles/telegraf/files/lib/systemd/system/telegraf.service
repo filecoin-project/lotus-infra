@@ -1,6 +1,6 @@
 [Unit]
 Description=Customized telegraf binary for filecoin lotus
-Documentation=https://github.com/filecoin-project/sentinal
+Documentation=https://github.com/filecoin-project/sentinel
 After=network.target
 
 [Service]
