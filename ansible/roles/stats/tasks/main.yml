@@ -24,6 +24,7 @@
           password: "{{ stats_influxdb_password }}"
           database_name: "{{ stats_influxdb_database }}"
           state: absent
+      ignore_errors: yes
     - name: Truncate log file
       shell:
         cmd: truncate -s 0 "{{ stats_golog_file }}"
@@ -47,15 +48,6 @@
     group: "{{ lotus_user }}"
     mode: "0644"
 
-- name: Ensure influx database created
-  influxdb_database:
-      hostname: "{{ stats_influxdb_url | urlsplit('hostname') }}"
-      port: "{{ stats_influxdb_url | urlsplit('port') }}"
-      ssl: "{{ (stats_influxdb_url | urlsplit('scheme')) == 'https' }}"
-      username: "{{ stats_influxdb_username }}"
-      password: "{{ stats_influxdb_password }}"
-      database_name: "{{ stats_influxdb_database }}"
-      state: present
 
 - name: Ensure service file
   template:
@@ -71,3 +63,14 @@
   service:
     name: stats
     enabled: true
+    state: started
+
+- name: Ensure influx database created
+  influxdb_database:
+      hostname: "{{ stats_influxdb_url | urlsplit('hostname') }}"
+      port: "{{ stats_influxdb_url | urlsplit('port') }}"
+      ssl: "{{ (stats_influxdb_url | urlsplit('scheme')) == 'https' }}"
+      username: "{{ stats_influxdb_username }}"
+      password: "{{ stats_influxdb_password }}"
+      database_name: "{{ stats_influxdb_database }}"
+      state: present
