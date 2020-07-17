@@ -268,7 +268,7 @@
 [[inputs.prometheus]]
 urls = [
   {% for promurl in inputs_prometheus_urls %}
-    {{ promurl }}
+    "{{ promurl }}",
   {% endfor %}
 ]
 {% endif %}
