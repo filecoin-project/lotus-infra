@@ -118,7 +118,7 @@ ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadat
 pushd "$lotus_src"
 
   genpath=$(mktemp -d)
-  ./lotus-seed genesis new --network-name ${netowrk_name} "${genpath}/genesis.json"
+  ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
 
   for m in "${miners[@]}"; do
     ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/tmp/presealed-metadata.json"
