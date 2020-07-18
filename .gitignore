@@ -12,3 +12,5 @@
 # .tfplan files
 *.tfplan
 
+ansible/.vagrant/
+ansible/pre-seal/
