@@ -260,8 +260,7 @@
 {% if telegraf_inputs_lotus_enabled %}
 [[inputs.lotus]]
   lotus_api_multiaddr = "{{ lotus_api_multiaddr }}"
-  lotus_api_token = "{{ lotus_api_token }}"
-  lotus_datapath = "{{ lotus_datapath }}"
+  lotus_datapath = "{{ lotus_path }}"
 {% endif %}
 
 {% if telegraf_inputs_prometheus_enabled %}

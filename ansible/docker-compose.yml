@@ -16,6 +16,7 @@ services:
       - "13000:3000"
     links:
       - influxdb
+      - timescale
 
   postgres:
     image: postgres:11

@@ -10,9 +10,7 @@ telegraf_outputs_postgresql_conn: "host=10.10.100.1 user=tdbadmin password=proto
 
 # Lotus input
 telegraf_inputs_lotus_enabled: true
-lotus_api_multiaddr: "/ip4/0.0.0.0/tcp/1234"
-lotus_api_token: ""
-lotus_datapath: "${HOME}/.lotus"
+lotus_api_multiaddr: "/ip4/127.0.0.1/tcp/1234"
 
 # prometheus-style /metrics inputs
 telegraf_inputs_prometheus_enabled: true
