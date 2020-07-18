@@ -24,3 +24,13 @@ services:
       POSTGRES_PASSWORD: protocol
     ports:
       - "15432:5432"
+
+  timescale:
+    image: timescale/timescaledb:latest-pg12
+    container_name: vagrant-timescale
+    environment:
+      TIMESCALEDB_TELEMETRY: "off"
+      POSTGRES_USER: tdbadmin
+      POSTGRES_PASSWORD: protocol
+    ports:
+      - "25432:5432"
