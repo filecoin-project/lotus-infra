@@ -170,10 +170,7 @@ ansible-playbook -i $hostfile lotus_devnet_start.yml                            
 
 set +x
 
-echo "Monitor the initialization process on all miners"
-echo ""
-echo "    ansible -i $hostfile -b -m shell -a 'systemctl start lotus-miner-init' preminer"
-echo ""
+echo "Monitor the initialization process on all miners (until a bug is fixed you will need to watch the /var/log/lotus-miner.log)"
 echo "When all have finished the process will exit with a message about 'run lotus-storage-miner run'"
 echo ""
 echo "    ansible -i $hostfile -b -m shell -a 'systemctl status lotus-miner-init' preminer"
