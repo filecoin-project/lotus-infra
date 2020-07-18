@@ -41,7 +41,7 @@
     name: "{{ (lotus_fountain_enable_https | bool == true) | ternary('Nginx Full', 'Nginx HTTP') }}"
 
 - name: Ensure certbot configured
-  include_tasks: nignx_certbot.yml
+  include_tasks: nginx_certbot.yml
   when: (lotus_fountain_enable_https | bool) and (certbot_create_certificate | bool)
 
 - name: Ensure maintenance page exists
