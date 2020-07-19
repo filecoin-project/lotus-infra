@@ -6,9 +6,9 @@ ConditionPathExists=!{{ lotus_miner_path }}/datastore
 [Service]
 User={{ lotus_user }}
 Group={{ lotus_user }}
-ExecStart=/usr/local/bin/lotus-storage-miner init --genesis-miner="{{ lotus_miner_genesis_miner | lower }}" --actor="{{ lotus_miner_addr }}" --pre-sealed-metadata="{{ lotus_miner_presealed_metadata }}" --nosync="true" --sector-size="{{ lotus_miner_sector_size }}" {{ lotus_miner_presealed_sectors | product(['--pre-sealed-sectors']) | map('reverse') | map('join', '=') | list | join(' ') }}
+ExecStart=/usr/local/bin/lotus-miner init --genesis-miner="{{ lotus_miner_genesis_miner | lower }}" --actor="{{ lotus_miner_addr }}" --pre-sealed-metadata="{{ lotus_miner_presealed_metadata }}" --nosync="true" --sector-size="{{ lotus_miner_sector_size }}" {{ lotus_miner_presealed_sectors | product(['--pre-sealed-sectors']) | map('reverse') | map('join', '=') | list | join(' ') }}
 Environment=LOTUS_PATH="{{ lotus_path }}"
-Environment=LOTUS_STORAGE_PATH="{{ lotus_miner_path }}"
+Environment=LOTUS_MINER_PATH="{{ lotus_miner_path }}"
 Environment=GOLOG_FILE="{{ lotus_miner_golog_file }}"
 Environment=GOLOG_LOG_FMT="{{ lotus_miner_golog_log_fmt }}"
 {% for item in lotus_miner_env | dict2items -%}

@@ -7,9 +7,9 @@ PartOf=lotus-daemon.service
 [Service]
 User={{ lotus_user }}
 Group={{ lotus_user }}
-ExecStart=/usr/local/bin/lotus-storage-miner run --nosync
+ExecStart=/usr/local/bin/lotus-miner run --nosync
 Environment=LOTUS_PATH="{{ lotus_path }}"
-Environment=LOTUS_STORAGE_PATH="{{ lotus_miner_path }}"
+Environment=LOTUS_MINER_PATH="{{ lotus_miner_path }}"
 Environment=GOLOG_FILE="{{ lotus_miner_golog_file }}"
 Environment=GOLOG_LOG_FMT="{{ lotus_miner_golog_log_fmt }}"
 {% for item in lotus_miner_env | dict2items -%}
