@@ -42,9 +42,6 @@ lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 # gets a list of all the hostnames for the preminers
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
 
-# gets the wallet address for the fountain
-faucet_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_fountain_address }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
-
 faucet_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ faucet_initial_balance }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
 
 if [ "$generate_new_keys" = true ]; then
@@ -75,6 +72,15 @@ vault_lotus_miner_wallet_address: $bls_address
 EOF
   done
 
+    secp256k1_address=$(lotus-shed keyinfo new secp256k1)
+    secp256k1_keyinfo=$(cat secp256k1-${secp256k1_address}.keyinfo)
+    rm "secp256k1-${secp256k1_address}.keyinfo"
+
+    cat > "$(dirname $hostfile)/group_vars/faucet/lotus_daemon.vault.yml" <<EOF
+vault_lotus_wallet_keyinfo: $secp256k1_keyinfo
+vault_lotus_wallet_address: $secp256k1_address
+EOF
+
 
   # generate multiaddrs for the bootstrap peers
   bootstrap_multiaddrs=( $(ansible -o -i $hostfile -b -m debug -a 'msg="/dns4/{{ ansible_host }}/tcp/{{ lotus_libp2p_port }}/p2p/{{ lotus_libp2p_address }}"' bootstrap | sed 's/.* =>//' | jq -r '.msg') )
@@ -91,6 +97,9 @@ EOF
   read -p "Press enter to continue"
 
 fi
+
+# gets the wallet address for the fountain
+faucet_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_fountain_address }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
 
 ../scripts/build_binaries.bash ${build_flags}
 
@@ -118,7 +127,7 @@ ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadat
 pushd "$lotus_src"
 
   genpath=$(mktemp -d)
-  ./lotus-seed genesis new --network-name ${netowrk_name} "${genpath}/genesis.json"
+  ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
 
   for m in "${miners[@]}"; do
     ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/tmp/presealed-metadata.json"
@@ -161,10 +170,7 @@ ansible-playbook -i $hostfile lotus_devnet_start.yml                            
 
 set +x
 
-echo "Monitor the initialization process on all miners"
-echo ""
-echo "    ansible -i $hostfile -b -m shell -a 'systemctl start lotus-miner-init' preminer"
-echo ""
+echo "Monitor the initialization process on all miners (until a bug is fixed you will need to watch the /var/log/lotus-miner.log)"
 echo "When all have finished the process will exit with a message about 'run lotus-storage-miner run'"
 echo ""
 echo "    ansible -i $hostfile -b -m shell -a 'systemctl status lotus-miner-init' preminer"
