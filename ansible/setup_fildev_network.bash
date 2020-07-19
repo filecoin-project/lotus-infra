@@ -113,12 +113,12 @@ faucet_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_fountain_add
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
     -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                      \
-    -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-storage-miner"  \
+    -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-miner"          \
     -e lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-shed"            \
     -e lotus_seed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-seed"            \
-    -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/fountain"          \
-    -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/stats"                      \
-    -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/chainwatch"            \
+    -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-fountain"    \
+    -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-stats"                \
+    -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-chainwatch"      \
     -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"       \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes                                 \
     -e chainwatch_db_reset=yes -e chainwatch_reset=yes                                             \
