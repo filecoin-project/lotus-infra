@@ -10,6 +10,9 @@ while [ "$1" != "" ]; do
         -s | --src )            shift
                                 src="$1"
                                 ;;
+        -ss | --sentinel-src )   shift
+                                ssrc="$1"
+                                ;;
         -p | --preseal )        preseal=true
                                 ;;
         -c | --create-cert )    cert=true
@@ -38,6 +41,7 @@ create_certificate="${cert:-"false"}"
 build_flags="${buildflags:-"-f"}"
 genesis_delay="${delay:-"600"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
+sentinel_src="${ssrc:-"$GOPATH/src/github.com/filecoin-project/sentinel"}"
 
 # gets a list of all the hostnames for the preminers
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
@@ -101,7 +105,10 @@ fi
 # gets the wallet address for the fountain
 faucet_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_fountain_address }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
 
-../scripts/build_binaries.bash ${build_flags}
+../scripts/build_binaries.bash -s "$lotus_src" ${build_flags}
+../scripts/build_binaries.bash -s "$sentinel_src" -- telegraf
+
+
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
@@ -112,6 +119,7 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/fountain"          \
     -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/stats"                      \
     -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/chainwatch"            \
+    -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"       \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes                                 \
     -e chainwatch_db_reset=yes -e chainwatch_reset=yes                                             \
     -e certbot_create_certificate=${create_certificate}                                            \

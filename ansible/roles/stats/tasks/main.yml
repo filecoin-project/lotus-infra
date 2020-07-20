@@ -24,6 +24,7 @@
           password: "{{ stats_influxdb_password }}"
           database_name: "{{ stats_influxdb_database }}"
           state: absent
+      ignore_errors: yes
     - name: Truncate log file
       shell:
         cmd: truncate -s 0 "{{ stats_golog_file }}"

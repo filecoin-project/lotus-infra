@@ -9,6 +9,9 @@ telegraf_outputs_influxdb_username: lotus
 telegraf_outputs_influxdb_password: ""
 telegraf_outputs_influxdb_database: lotus
 telegraf_outputs_influxdb_url: https //10.10.100.1:18086
+telegraf_outputs_postgresql_enabled: false
+telegraf_inputs_lotus_enabled: false
+telegraf_inputs_prometheus_enabled: false
 lotus_ipfs_gateway: http://10.10.100.1:8080/ipfs/
 lotus_user: "fc"
 lotus_user_uid: "532"

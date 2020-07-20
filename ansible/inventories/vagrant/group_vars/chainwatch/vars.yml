@@ -1,3 +1,20 @@
 chainwatch_golog_file: "/var/log/chainwatch.log"
 chainwatch_db: "postgres://postgres:protocol@10.10.100.1:15432/chainwatch?sslmode=disable"
 
+# wherever the chainwatch runs can also report into sentinel database
+
+# Output into the postgresql on timescale cloud
+# Although, for vagrant we output to local timescale server (see docker-compose.yml)
+telegraf_outputs_postgresql_enabled: true
+telegraf_outputs_postgresql_conn: "host=10.10.100.1 user=tdbadmin password=protocol sslmode=disable port=15432"
+
+# Lotus input
+telegraf_inputs_lotus_enabled: true
+lotus_api_multiaddr: "/ip4/127.0.0.1/tcp/1234"
+
+# prometheus-style /metrics inputs
+telegraf_inputs_prometheus_enabled: true
+inputs_prometheus_urls:
+  - "http://127.0.0.1:1234/debug/metrics"
+
+ 

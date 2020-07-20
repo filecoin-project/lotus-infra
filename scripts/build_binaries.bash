@@ -31,7 +31,7 @@ while [ "$1" != "" ]; do
     shift
 done
 
-LOTUS_SRC="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
+BUILD_SRC="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 SMALL_SECTORS="${smallsectors:-""}"
 BUILD_FFI="${ffi:-""}"
 
@@ -56,7 +56,7 @@ fi
 
 sha=$(git describe --always --match=NeVeRmAtCh --dirty 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
 
-docker build -t "lotus-binary-builder:$sha" -f Dockerfile.binarybuilder --build-arg UID="$(id -u)" --build-arg GID="$(id -g)" .
+docker build -t "lotus-binary-builder:$sha" -f Dockerfile.binarybuilder --build-arg UID="$(id -u)" .
 
 # if GOPATH is set we will mount it for pkg/mod cache
 # if GOPATH is not set, we'll check to see if the default exists, and set it
@@ -66,7 +66,7 @@ if [ -z "$GOPATH" ]; then
   fi
 fi
 
-volumes=(-v "$LOTUS_SRC:/opt/filecoin")
+volumes=(-v "$BUILD_SRC":/opt/build)
 
 # if GOPATH is set, we'll mount it
 if [ ! -z "$GOPATH" ]; then
@@ -75,11 +75,11 @@ if [ ! -z "$GOPATH" ]; then
 fi
 
 if [ $# -eq 0 ]; then
-  buildlist=(lotus lotus-storage-miner lotus-seal-worker lotus-seed lotus-shed fountain stats chainwatch)
+  buildlist=(clean lotus lotus-storage-miner lotus-seal-worker lotus-seed lotus-shed fountain stats chainwatch)
 else
   buildlist="$@"
 fi
 
-docker run --rm "${ffiargs[@]}" "${volumes[@]}" "${goflags[@]}" "lotus-binary-builder:$sha" make clean deps ${buildlist[@]}
+docker run --rm "${ffiargs[@]}" "${volumes[@]}" "${goflags[@]}" "lotus-binary-builder:$sha" ${buildlist[@]}
 
 popd
