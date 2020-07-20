@@ -75,7 +75,7 @@ if [ ! -z "$GOPATH" ]; then
 fi
 
 if [ $# -eq 0 ]; then
-  buildlist=(lotus lotus-storage-miner lotus-seal-worker lotus-seed lotus-shed fountain stats chainwatch)
+  buildlist=(buildall)
 else
   buildlist="$@"
 fi
