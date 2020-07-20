@@ -1,7 +1,7 @@
 FROM golang:1.14.3-buster AS builder
 MAINTAINER Filecoin Development Team
 
-RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1 nodejs
+RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1 nodejs npm
 
 ARG UID=1000
 ARG GID=1000
