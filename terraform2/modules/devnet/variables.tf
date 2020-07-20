@@ -27,6 +27,10 @@ variable "toolshed_instance_type" {
   type    = string
   default = "t2.micro"
 }
+variable "toolshed_count" {
+  type = number
+  default = 1
+}
 variable "chainwatch_db_instance_type" {
   type    = string
   default = "db.t2.micro"

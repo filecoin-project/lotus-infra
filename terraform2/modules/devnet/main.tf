@@ -6,7 +6,7 @@ data "aws_subnet" "selected" {
 module "toolshed" {
   source                     = "../lotus_node"
   name                       = "toolshed"
-  scale                      = 1
+  scale                      = var.toolshed_count
   instance_type              = var.toolshed_instance_type
   availability_zone          = data.aws_subnet.selected.availability_zone
   ami                        = var.ami
