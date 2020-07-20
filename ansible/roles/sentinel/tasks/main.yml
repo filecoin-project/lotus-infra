@@ -1,0 +1,67 @@
+---
+
+- name: create telegraf group
+  group:
+    name: telegraf
+    system: yes
+
+- name: Create telegraf user
+  user:
+    name: telegraf
+    group: telegraf
+    system: yes
+
+- name: Copy telegraf binary
+  copy:
+    src: "{{ telegraf_binary_src }}"
+    dest: /usr/local/bin/telegraf
+    owner: root
+    group: root
+    mode: "0755"
+  when: telegraf_binary_src is defined
+  notify:
+    - restart_telegraf
+
+- name: Create telegraf configuration directory
+  file:
+    name: /etc/telegraf
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Copy telegraf configuration template to hosts
+  template:
+    src: templates/telegraf.conf.j2
+    dest: /etc/telegraf/telegraf.conf
+    mode: '0644'
+  notify:
+    - restart_telegraf
+
+- name: Copy telegraf logrotate configuration
+  copy:
+    src: files/etc/logrotate.d/telegraf
+    dest: /etc/logrotate.d/telegraf
+    mode: '0644'
+
+- name: Create telegraf log directory
+  file:
+    name: /var/log/telegraf
+    state: directory
+    owner: telegraf
+    group: telegraf
+    mode: '0755'
+
+- name: Copy systemd file
+  copy:
+    src: files/lib/systemd/system/telegraf.service
+    dest: /lib/systemd/system/telegraf.service
+    mode: '0644'
+
+
+- name: Ensure telegraf started and enabled
+  systemd:
+    name: telegraf
+    daemon_reload: yes
+    state: started
+    enabled: yes
