@@ -51,7 +51,7 @@ module "butterflynet" {
   toolshed_instance_type      = "m5a.large"
   chainwatch_db_instance_type = "db.m5.large"
   chainwatch_password         = var.nerpanet_chainwatch_password
-  preminer_instance_type      = "m5a.2xlarge"
+  preminer_instance_type      = "m5a.4xlarge"
   bootstrapper_instance_type  = "m5a.large"
   scratch_instance_type       = "m5a.large"
   preminer_iam_profile        = aws_iam_instance_profile.sectors.id
