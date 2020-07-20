@@ -1,34 +1,23 @@
 ---
+- name: Add telegraf apt key
+  apt_key:
+    url: "https://repos.influxdata.com/influxdb.key"
 
-- name: create telegraf group
-  group:
+- name: Add telegraf apt repository
+  apt_repository:
+    repo: "deb https://repos.influxdata.com/ubuntu disco stable"
+    state: present
+
+- name: Update repositories cache and install "telegraf" package
+  apt:
     name: telegraf
-    system: yes
+    update_cache: yes
 
-- name: Create telegraf user
-  user:
+- name: Ensure telegraf started and enabled
+  systemd:
     name: telegraf
-    group: telegraf
-    system: yes
-
-- name: Copy telegraf binary
-  copy:
-    src: "{{ telegraf_binary_src }}"
-    dest: /usr/local/bin/telegraf
-    owner: root
-    group: root
-    mode: "0755"
-  when: telegraf_binary_src is defined
-  notify:
-    - restart_telegraf
-
-- name: Create telegraf configuration directory
-  file:
-    name: /etc/telegraf
-    state: directory
-    owner: root
-    group: root
-    mode: '0755'
+    state: started
+    enabled: yes
 
 - name: Copy telegraf configuration template to hosts
   template:
@@ -37,31 +26,3 @@
     mode: '0644'
   notify:
     - restart_telegraf
-
-- name: Copy telegraf logrotate configuration
-  copy:
-    src: files/etc/logrotate.d/telegraf
-    dest: /etc/logrotate.d/telegraf
-    mode: '0644'
-
-- name: Create telegraf log directory
-  file:
-    name: /var/log/telegraf
-    state: directory
-    owner: telegraf
-    group: telegraf
-    mode: '0755'
-
-- name: Copy systemd file
-  copy:
-    src: files/lib/systemd/system/telegraf.service
-    dest: /lib/systemd/system/telegraf.service
-    mode: '0644'
-
-
-- name: Ensure telegraf started and enabled
-  systemd:
-    name: telegraf
-    daemon_reload: yes
-    state: started
-    enabled: yes
