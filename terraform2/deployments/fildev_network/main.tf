@@ -45,6 +45,7 @@ module "butterflynet" {
   key_name                    = "filecoin"
   vpc_id                      = module.fildev_network_vpc.vpc_id
   environment                 = "prod"
+  toolshed_count              = 2
   bootstrapper_count          = 2
   preminer_count              = 2
   scratch_count               = 2
