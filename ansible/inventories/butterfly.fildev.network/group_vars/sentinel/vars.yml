@@ -1,0 +1,17 @@
+
+# telegraf output to timescale cloud
+telegraf_outputs_postgresql_enabled: true
+# TODO: move to secret:
+telegraf_outputs_postgresql_conn: "host= cory-testing-cory-fcae.a.timescaledb.io user=tsdbadmin password=cslys461y89hzflc sslmode=require port=19947"
+
+# Don't output to influxdb
+telegraf_outputs_influxdb_enabled: false
+
+# Lotus input
+telegraf_inputs_lotus_enabled: true
+lotus_api_multiaddr: "/ip4/127.0.0.1/tcp/1234"
+
+# prometheus-style /metrics inputs
+telegraf_inputs_prometheus_enabled: true
+inputs_prometheus_urls:
+  - "http://127.0.0.1:1234/debug/metrics"
