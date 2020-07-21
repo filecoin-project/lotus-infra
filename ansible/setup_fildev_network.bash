@@ -131,15 +131,24 @@ preseal_metadata=$(mktemp -d)
 # and then downloads the final sector metadata for each preminer
 ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata}
 
+
+genpath=$(mktemp -d)
+
+if [ -f "multisig.csv" ]; then
+  cp multisig.csv "${genpath}/multisig.csv"
+fi
+
 # build the genesis
 pushd "$lotus_src"
-
-  genpath=$(mktemp -d)
   ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
 
   for m in "${miners[@]}"; do
     ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/tmp/presealed-metadata.json"
   done
+
+  if [ -f "${genpath}/multisig.csv" ]; then
+    ./lotus-seed genesis add-msigs "${genpath}/genesis.json" "${genpath}/multisig.csv"
+  fi
 
   timestamp=$(echo $(date -d $(date --utc +%FT%H:%M:00Z) +%s) + ${genesis_delay} | bc)
 
