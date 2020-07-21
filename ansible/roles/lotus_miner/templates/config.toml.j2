@@ -1,2 +1,9 @@
 [Libp2p]
-ListenAddresses = ["/ip4/0.0.0.0/tcp/{{ lotus_miner_p2p_port }}"]
+   ListenAddresses = ["/ip4/0.0.0.0/tcp/{{ lotus_miner_p2p_port }}"]
+{% if lotus_miner_presealed == "yes" %}
+[Dealmaking]
+   ConsiderOnlineStorageDeals = false
+   ConsiderOfflineStorageDeals = false
+   ConsiderOnlineRetrievalDeals = false
+   ConsiderOfflineRetrievalDeals = false
+{% endif %}
