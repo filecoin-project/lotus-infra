@@ -113,12 +113,12 @@ faucet_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_fountain_add
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
     -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                      \
-    -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-storage-miner"  \
+    -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-miner"          \
     -e lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-shed"            \
     -e lotus_seed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-seed"            \
-    -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/fountain"          \
-    -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/stats"                      \
-    -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/chainwatch"            \
+    -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-fountain"    \
+    -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-stats"                \
+    -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-chainwatch"      \
     -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"       \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes                                 \
     -e chainwatch_db_reset=yes -e chainwatch_reset=yes                                             \
@@ -131,15 +131,24 @@ preseal_metadata=$(mktemp -d)
 # and then downloads the final sector metadata for each preminer
 ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata}
 
+
+genpath=$(mktemp -d)
+
+if [ -f "multisig.csv" ]; then
+  cp multisig.csv "${genpath}/multisig.csv"
+fi
+
 # build the genesis
 pushd "$lotus_src"
-
-  genpath=$(mktemp -d)
   ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
 
   for m in "${miners[@]}"; do
     ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/tmp/presealed-metadata.json"
   done
+
+  if [ -f "${genpath}/multisig.csv" ]; then
+    ./lotus-seed genesis add-msigs "${genpath}/genesis.json" "${genpath}/multisig.csv"
+  fi
 
   timestamp=$(echo $(date -d $(date --utc +%FT%H:%M:00Z) +%s) + ${genesis_delay} | bc)
 

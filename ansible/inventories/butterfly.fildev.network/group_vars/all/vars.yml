@@ -1,7 +1,7 @@
 ---
 logz_io_shared_token: "{{ vault_logz_io_shared_token }}"
 network_name: butterflynet
-faucet_initial_balance: "256000000000000000000000000"
+faucet_initial_balance: "512000000000000000000000000"
 telegraf_global_tags:
   network: "{{ network_name }}"
 telegraf_outputs_influxdb_enabled: true
@@ -15,7 +15,7 @@ telegraf_inputs_prometheus_enabled: false
 lotus_ipfs_gateway: https://proofs.filecoin.io/ipfs/
 lotus_user: "fc"
 lotus_user_uid: "532"
-proof_version: v27
+proof_version: v27.1
 proof_type: fake
 sector_size: 512MiB
 filebeat_additional_processors: |

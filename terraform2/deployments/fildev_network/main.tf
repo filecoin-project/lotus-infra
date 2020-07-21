@@ -8,8 +8,8 @@
 locals {
   domain_name     = "fildev.network"
   cidr            = "10.0.0.0/16"
-  public_subnets  = ["10.0.2.0/24", "10.0.3.0/24", "10.0.255.0/24"]
-  private_subnets = ["10.0.128.0/24", "10.0.129.0/24"]
+  public_subnets  = ["10.0.2.0/24", "10.0.3.0/24", "10.0.255.0/24", "10.0.4.0/24"]
+  private_subnets = ["10.0.128.0/24", "10.0.129.0/24", "10.0.130.0/24", "10.0.131.0/24"]
 }
 
 module "nerpanet" {
@@ -51,7 +51,7 @@ module "butterflynet" {
   toolshed_instance_type      = "m5a.large"
   chainwatch_db_instance_type = "db.m5.large"
   chainwatch_password         = var.nerpanet_chainwatch_password
-  preminer_instance_type      = "m5a.2xlarge"
+  preminer_instance_type      = "m5a.4xlarge"
   bootstrapper_instance_type  = "m5a.large"
   scratch_instance_type       = "m5a.large"
   preminer_iam_profile        = aws_iam_instance_profile.sectors.id
@@ -75,4 +75,30 @@ module "seeding" {
   presealer_iam_profile       = aws_iam_instance_profile.presealer.id
   public_subnet_id            = module.fildev_network_vpc.public_subnets[2]
   public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[2]
+}
+
+module "calibrationnet" {
+  source                      = "../../modules/devnet"
+  name                        = "calibration"
+  zone_id                     = aws_route53_zone.fildev_domain.id
+  ami                         = "ami-053bc2e89490c5ab7"
+  key_name                    = "filecoin"
+  vpc_id                      = module.fildev_network_vpc.vpc_id
+  environment                 = "prod"
+  bootstrapper_count          = 4
+  preminer_count              = 3
+  scratch_count               = 2
+  toolshed_instance_type      = "m5a.large"
+  chainwatch_db_instance_type = "db.m5.large"
+  chainwatch_password         = var.nerpanet_chainwatch_password
+  preminer_instance_type      = "p3.2xlarge"
+  preminer_volume_size        = 384
+  bootstrapper_instance_type  = "m5a.large"
+  scratch_instance_type       = "m5a.large"
+  preminer_iam_profile        = aws_iam_instance_profile.sectors.id
+  database_subnet_group       = module.fildev_network_vpc.database_subnet_group
+  public_subnet_id            = module.fildev_network_vpc.public_subnets[3]
+  public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[3]
+  private_subnet_id           = module.fildev_network_vpc.database_subnets[3]
+  private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[3]
 }

@@ -1,0 +1,22 @@
+---
+logz_io_shared_token: "{{ vault_logz_io_shared_token }}"
+network_name: calibrationnet
+faucet_initial_balance: "512000000000000000000000000"
+telegraf_global_tags:
+  network: "{{ network_name }}"
+telegraf_outputs_influxdb_enabled: true
+telegraf_outputs_influxdb_username: lotus
+telegraf_outputs_influxdb_password: "{{ vault_influxdb_lotus_password }}"
+telegraf_outputs_influxdb_database: lotus-nodes
+telegraf_outputs_influxdb_url: https://eightyeight-1b1e0a69.influxcloud.net:8086
+lotus_ipfs_gateway: https://proofs.filecoin.io/ipfs/
+lotus_user: "fc"
+lotus_user_uid: "532"
+proof_version: v27.1
+proof_type: fake
+sector_size: 32GiB
+filebeat_additional_processors: |
+  - drop_event:
+      when:
+        regexp:
+          message: "^received message from router graylisted peer"

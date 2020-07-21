@@ -1,11 +1,13 @@
-data "aws_availability_zones" "available" {}
+locals {
+  azs = ["us-west-2a", "us-west-2b", "us-west-2c"]
+}
 
 module "fildev_network_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "2.21.0"
 
   name                         = "fildev-network-vpc"
-  azs                          = data.aws_availability_zones.available.names
+  azs                          = local.azs
   cidr                         = local.cidr
   public_subnets               = local.public_subnets
   database_subnets             = local.private_subnets

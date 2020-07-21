@@ -10,7 +10,7 @@ resource "aws_instance" "node" {
   associate_public_ip_address = true
 
   root_block_device {
-    volume_type = "gp2"
+    volume_type = "io1"
     volume_size = var.volume_size
   }
 

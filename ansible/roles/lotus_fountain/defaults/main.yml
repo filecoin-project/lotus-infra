@@ -1,5 +1,6 @@
 lotus_fountain_enabled: false
 lotus_fountain_golog_file: /var/log/lotus-fountain.log
 lotus_fountain_golog_log_fmt: json
+lotus_fountain_amount: 50
 lotus_fountain_env: {}
 certbot_create_certificate: false
