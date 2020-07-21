@@ -14,6 +14,3 @@
     - include_role: name=filebeat_logz_io
     - include_role: name=sentinel
     - include_role: name=ufw
-    - include_role: name=lotus_fountain
-    - include_role: name=stats
-    - include_role: name=chainwatch
