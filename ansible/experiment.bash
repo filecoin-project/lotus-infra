@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-hostfile="inventories/butterfly.fildev.network/hosts.yml"
+hostfile="inventories/calibration.fildev.network/hosts.yml"
 
 build_flags="${buildflags:-"-f"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
