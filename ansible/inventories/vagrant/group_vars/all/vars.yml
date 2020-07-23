@@ -8,8 +8,8 @@ telegraf_global_tags:
 # influx monitoring options
 telegraf_outputs_influxdb_enabled: false
 telegraf_outputs_influxdb_username: lotus
-telegraf_outputs_influxdb_password: "{{ vault_influxdb_lotus_password }}"
-telegraf_outputs_influxdb_database: lotus-nodes
+telegraf_outputs_influxdb_password: ""
+telegraf_outputs_influxdb_database: lotus
 telegraf_outputs_influxdb_url: http://10.10.100.1:18086
 
 # Sentinel monitoring options
