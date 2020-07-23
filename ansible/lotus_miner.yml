@@ -24,7 +24,7 @@
           - "{{ lotus_miner_ufw_profile }}"
       when:
         - lotus_fullnode_ufw_profile is defined
-    - include_role: name=telegraf
+    - include_role: name=sentinel
       vars:
         telegraf_global_tag_groups:
           - component: presealed_miner
