@@ -6,14 +6,13 @@ telegraf_global_tags:
   network: "{{ network_name }}"
 
 # influx monitoring options
-telegraf_outputs_influxdb_enabled: true
+telegraf_outputs_influxdb_enabled: false
 telegraf_outputs_influxdb_username: lotus
 telegraf_outputs_influxdb_password: "{{ vault_influxdb_lotus_password }}"
 telegraf_outputs_influxdb_database: lotus-nodes
 telegraf_outputs_influxdb_url: http://10.10.100.1:18086
 
 # Sentinel monitoring options
-telegraf_outputs_postgresql_conn: 
 telegraf_outputs_postgresql_enabled: true
 telegraf_outputs_postgresql_conn: "host=10.10.100.1 user=tsdbadmin password=protocol sslmode=disable port=25432"
 telegraf_inputs_lotus_enabled: true
