@@ -70,7 +70,7 @@ module "seeding" {
   key_name                    = "filecoin"
   vpc_id                      = module.fildev_network_vpc.vpc_id
   environment                 = "prod"
-  presealer_count             = 6
+  presealer_count             = 0
   presealer_instance_type     = "c5.24xlarge"
   presealer_iam_profile       = aws_iam_instance_profile.presealer.id
   public_subnet_id            = module.fildev_network_vpc.public_subnets[2]
