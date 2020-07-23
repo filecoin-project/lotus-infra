@@ -10,7 +10,10 @@ telegraf_outputs_prometheus_enabled: false
 telegraf_outputs_prometheus_listen: ":9273"
 telegraf_outputs_prometheus_http_auth_username: ""
 telegraf_outputs_prometheus_http_auth_password: ""
+telegraf_outputs_postgresql_enabled: false
 telegraf_processor: ""
 telegraf_aggregators: ""
 telegraf_additional_inputs: ""
 telegraf_inputs_procstat: []
+lotus_api_multiaddr: ""
+inputs_prometheus_urls: []

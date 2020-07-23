@@ -8,7 +8,7 @@
     - include_role: name=common
     - include_role: name=ntp
     - include_role: name=filebeat_logz_io
-    - include_role: name=telegraf
+    - include_role: name=sentinel
     - include_role: name=ufw
 
 - hosts: preminer
