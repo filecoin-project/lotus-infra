@@ -5,16 +5,20 @@ faucet_initial_balance: "512000000000000000000000000"
 telegraf_global_tags:
   network: "{{ network_name }}"
 # influx monitoring options
-telegraf_outputs_influxdb_enabled: true
+telegraf_outputs_influxdb_enabled: false
 telegraf_outputs_influxdb_username: lotus
 telegraf_outputs_influxdb_password: "{{ vault_influxdb_lotus_password }}"
 telegraf_outputs_influxdb_database: lotus-nodes
 telegraf_outputs_influxdb_url: https://eightyeight-1b1e0a69.influxcloud.net:8086
 
 # Sentinel monitoring options
-telegraf_outputs_postgresql_enabled: false
-telegraf_inputs_lotus_enabled: false
-telegraf_inputs_prometheus_enabled: false
+telegraf_outputs_postgresql_conn: "{{ vault_timescale_conn }}"
+telegraf_outputs_postgresql_enabled: true
+telegraf_inputs_lotus_enabled: true
+lotus_api_multiaddr: "/ip4/127.0.0.1/tcp/1234"
+telegraf_inputs_prometheus_enabled: true
+inputs_prometheus_urls:
+  - "http://127.0.0.1:1234/debug/metrics"
 
 lotus_ipfs_gateway: https://proofs.filecoin.io/ipfs/
 lotus_user: "fc"
