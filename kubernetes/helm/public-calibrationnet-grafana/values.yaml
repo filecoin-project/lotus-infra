@@ -2,17 +2,19 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 ---
-domain: stats.calibration.fildev.network
-domainInternal: stats-internal.calibration.fildev.network
+domain: reward.calibration.fildev.network
+domainInternal: reward-internal.calibration.fildev.network
 htpasswd: protocol:$apr1$IWwZ.TPe$esqo2KqTYQRagnQRk.xvx0
 metricsRange: 30m
 metricsRefresh: 25s
 grafana:
-  image:
-    repository: 657871693752.dkr.ecr.us-east-1.amazonaws.com/lotus-grafana
-    tag: v1.9
+  # image:
+  #   repository: 657871693752.dkr.ecr.us-east-1.amazonaws.com/lotus-grafana
+  #   tag: v1.9
   sidecar:
     datasources:
+      enabled: true
+    dashboards:
       enabled: true
   persistence:
     type: pvc
@@ -27,7 +29,7 @@ grafana:
     targetPort: 8000
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-1:657871693752:certificate/e943d874-f9db-4726-9112-78f55afc3e15"
-      external-dns.alpha.kubernetes.io/hostname: stats.calibration.fildev.network,stats-internal.calibration.fildev.network
+      external-dns.alpha.kubernetes.io/hostname: reward.calibration.fildev.network,reward-internal.calibration.fildev.network
       external-dns.alpha.kubernetes.io/alias: "true"
       external-dns.alpha.kubernetes.io/ttl: "60"
   tolerations:
