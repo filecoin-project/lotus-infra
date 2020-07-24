@@ -12,7 +12,7 @@ Environment=LOTUS_PATH="{{ lotus_path }}"
 Environment=LOTUS_DB="{{ chainwatch_db }}"
 Environment=GOLOG_FILE="{{ chainwatch_golog_file }}"
 Environment=GOLOG_LOG_FMT="{{ chainwatch_golog_log_fmt }}"
-Environment=GOLOG_LOG_LEVELT="{{ chainwatch_golog_log_level }}"
+Environment=GOLOG_LOG_LEVEL="{{ chainwatch_golog_log_level }}"
 {% for item in chainwatch_env | dict2items -%}
 Environment={{ item.key }}="{{ item.value }}"
 {% endfor %}
