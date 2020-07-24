@@ -84,7 +84,7 @@
 {% if telegraf_outputs_postgresql_enabled %}
 [[outputs.postgresql]]
   # Example: connection = "host=localhost user=postgres password=password sslmode=disable"
-  connection = "${{ telegraf_outputs_postgresql_conn }}"
+  connection = "{{ telegraf_outputs_postgresql_conn }}"
 
 {% endif %}
 
