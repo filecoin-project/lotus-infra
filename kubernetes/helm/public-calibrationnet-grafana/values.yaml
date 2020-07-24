@@ -52,7 +52,7 @@ grafana:
     GF_SMTP_HOST: "smtp.mailgun.org:587"
     GF_SMTP_FROM_ADDRESS: "no-reply@mg.kittyhawk.wtf"
     GF_SMTP_FROM_NAME: "Lotus Grafana Admin"
-  extraContainers:
+  extraContainers: |
     - name: nginx
       image: bitnami/nginx:1.16
       ports:
