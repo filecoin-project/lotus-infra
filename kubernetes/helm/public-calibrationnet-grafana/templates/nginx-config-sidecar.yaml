@@ -12,17 +12,17 @@ data:
         proxy_pass http://localhost:3000;
       }
       location  = / {
-        return 301 https://{{ .Values.domain }}/d/P_Q13JnMz/top-miners-by-block-reward?orgId=1&refresh={{ .Values.metricsRefresh }}&from=now-{{ .Values.metricsRange }}&to=now&kiosk;
+        return 301 https://{{ .Values.domain }}/d/{{ .Values.main_dashboard_id }}/top-miners-by-block-reward?orgId=1&refresh={{ .Values.metricsRefresh }}&from=now-{{ .Values.metricsRange }}&to=now&kiosk;
       }
       location ~ ^/(chain|login|user) {
-        return 301 https://{{ .Values.domain }}/d/P_Q13JnMz/top-miners-by-block-reward?orgId=1&refresh={{ .Values.metricsRefresh }}&from=now-{{ .Values.metricsRange }}&to=now&kiosk;
+        return 301 https://{{ .Values.domain }}/d/{{ .Values.main_dashboard_id }}/top-miners-by-block-reward?orgId=1&refresh={{ .Values.metricsRefresh }}&from=now-{{ .Values.metricsRange }}&to=now&kiosk;
       }
       location ~ ^/d/ {
         if ($args = "orgId=1&refresh={{ .Values.metricsRefresh }}&from=now-{{ .Values.metricsRange }}&to=now&kiosk") {
           proxy_pass http://localhost:3000/$uri$args;
         }
         if ($args != "orgId=1&refresh={{ .Values.metricsRefresh }}&from=now-{{ .Values.metricsRange }}&to=now&kiosk") {
-          return 301 https://{{ .Values.domain }}/d/P_Q13JnMz/top-miners-by-block-reward?orgId=1&refresh={{ .Values.metricsRefresh }}&from=now-{{ .Values.metricsRange }}&to=now&kiosk;
+          return 301 https://{{ .Values.domain }}/d/{{ .Values.main_dashboard_id }}/top-miners-by-block-reward?orgId=1&refresh={{ .Values.metricsRefresh }}&from=now-{{ .Values.metricsRange }}&to=now&kiosk;
         }
       }
     }
