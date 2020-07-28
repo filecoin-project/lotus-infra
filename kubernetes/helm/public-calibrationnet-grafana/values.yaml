@@ -67,11 +67,11 @@ grafana:
   extraConfigmapMounts:
     - name: config-volume
       mountPath: /opt/bitnami/nginx/conf/server_blocks
-      configMap: calibrationnet-grafana-nginx-sidecar
+      configMap: public-calibrationnet-grafana-nginx-sidecar
       readOnly: true
     - name: htpasswd
       mountPath: /opt/bitnami/nginx/htpasswd
-      configMap: calibrationnet-grafana-nginx-htpasswd
+      configMap: public-calibrationnet-grafana-nginx-htpasswd
       readOnly: true
   smtp:
     existingSecret: mailgun
