@@ -9,6 +9,7 @@ metricsRange: 30m
 metricsRefresh: 25s
 # Top Block Reward dashboard
 main_dashboard_id: P_Q13JnMz
+main_dashboard_slug: top-miners-by-block-reward
 grafana:
   # image:
   #   repository: 657871693752.dkr.ecr.us-east-1.amazonaws.com/lotus-grafana
