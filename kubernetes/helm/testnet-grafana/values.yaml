@@ -7,6 +7,9 @@ domainInternal: stats-internal.testnet.filecoin.io
 htpasswd: protocol:$apr1$IWwZ.TPe$esqo2KqTYQRagnQRk.xvx0
 metricsRange: 30m
 metricsRefresh: 45s
+# Stats dashboard
+main_dashboard_id: z6FtI92Zz
+main_dashboard_slug: chain
 grafana:
   image:
     repository: 657871693752.dkr.ecr.us-east-1.amazonaws.com/lotus-grafana
