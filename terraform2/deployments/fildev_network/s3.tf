@@ -47,7 +47,7 @@ resource "aws_iam_role_policy" "sector_ro" {
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": "s3:*",
+      "Action": ["s3:ListBucket", "s3:GetObject"],
       "Resource": [
         "arn:aws:s3:::${local.bucket_name}",
         "arn:aws:s3:::${local.bucket_name}/*"
