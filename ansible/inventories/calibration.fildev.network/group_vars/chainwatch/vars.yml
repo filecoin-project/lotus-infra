@@ -1,3 +1,1 @@
 chainwatch_golog_file: "/var/log/chainwatch.log"
-chainwatch_db: "postgres://postgres:{{ vault_chainwatch_db_password }}@fildev-network.chbzkiyxnqef.us-west-2.rds.amazonaws.com:5432/{{ network_name }}?sslmode=disable"
-
