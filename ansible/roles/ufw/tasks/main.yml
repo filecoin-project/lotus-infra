@@ -2,6 +2,8 @@
   apt:
     name: ufw
     force_apt_get: yes
+    update_cache: yes
+    state: present
 
 - include: default_rules.yml
 

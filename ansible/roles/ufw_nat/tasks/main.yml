@@ -1,0 +1,37 @@
+---
+- name: Install ufw if it is not installed
+  apt:
+    name: ufw
+    state: latest
+
+- name: Allow default outgoing
+  ufw:
+    direction: routed
+    policy: allow
+
+- name: set sysctl to forward
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: add NAT to ufw
+  blockinfile:
+    path: /etc/ufw/before.rules
+    block: |
+      # NAT table rules
+      *nat
+      :POSTROUTING ACCEPT [0:0]
+
+      # Forward traffic through eth0 - Change to match you out-interface
+      -A POSTROUTING -s {{ ufw_nat_subnet }} -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
+
+      # don't delete the 'COMMIT' line or these nat table rules won't
+      # be processed
+      COMMIT
+
+    insertbefore: "^# Don't delete these required lines"
+  notify:
+    - Restart ufw

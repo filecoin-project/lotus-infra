@@ -1,0 +1,47 @@
+---
+- hosts: k8s_master,k8s_worker
+  vars:
+    kubernetes_allow_pods_on_master: false
+    kubernetes_apiserver_advertise_address: '192.168.1.1'
+    kubernetes_kubelet_extra_args: "--fail-swap-on=false --cgroup-driver=cgroupfs --cpu-manager-policy=static --kube-reserved=cpu=200m,memory=500Mi,ephemeral-storage=1Gi"
+    kubernetes_pod_network:
+      cni: 'flannel'
+      cidr: '172.31.0.0/16'
+
+  tasks:
+      - include_role: name=ufw
+      - name: get eth1 interface name
+        shell: "ip link | awk '{print $2}' | grep enp | tr -d : | tail -1"
+        register: eth1
+      - name: allow incoming on vlan interface
+        ufw:
+          rule: allow
+          direction: in
+          interface: "{{ eth1.stdout }}"
+
+  roles:
+    - geerlingguy.docker
+    - geerlingguy.kubernetes
+
+- hosts: k8s_master
+  tasks:
+    - name: copy necessary files
+      copy:
+        src: files/k8s/
+        dest: /root/
+        mode: preserve
+    - name: add namespaces
+      shell: |
+        kubectl apply -f namespaces.yaml
+    - name: install helm repository key
+      apt_key:
+        url: https://helm.baltorepo.com/organization/signing.asc
+        state: present
+    - name: add helm apt repository
+      apt_repository:
+        repo: deb https://baltocdn.com/helm/stable/debian/ all main
+        state: present
+    - name: install helm
+      apt:
+        name: helm
+        state: present
