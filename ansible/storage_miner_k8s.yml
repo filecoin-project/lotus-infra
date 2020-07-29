@@ -3,9 +3,7 @@
   vars:
     kubernetes_allow_pods_on_master: false
     kubernetes_apiserver_advertise_address: '192.168.1.1'
-    kubernetes_kubelet_extra_args: "--fail-swap-on=false --cgroup-driver=cgroupfs --cpu-manager-policy=static --kube-reserved=cpu=200m,memory=500Mi,ephemeral-storage=1Gi"
-    kubernetes_pod_network:
-      cni: 'flannel'
+    kubernetes_kubelet_extra_args: "--node-ip {{ vlan1_ip }} --fail-swap-on=false --cgroup-driver=cgroupfs --cpu-manager-policy=static --kube-reserved=cpu=200m,memory=500Mi,ephemeral-storage=1Gi"
   tasks:
       - include_role: name=ufw
       - name: get eth1 interface name

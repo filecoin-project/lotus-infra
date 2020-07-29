@@ -106,8 +106,8 @@ resource "packet_device" "ceph_osd" {
   project_ssh_key_ids              = values(local.ssh_keys)
   hardware_reservation_id          = "next-available"
   wait_for_reservation_deprovision = true
-  #network_type                     = "hybrid"
-  network_type = "layer2-individual"
+  network_type                     = "hybrid"
+  #network_type = "layer2-individual"
 }
 
 output "ceph_osd_public_ips" {
@@ -131,8 +131,8 @@ resource "packet_device" "ceph_mon" {
   billing_cycle       = "hourly"
   project_id          = var.project_id
   project_ssh_key_ids = values(local.ssh_keys)
-  #network_type        = "hybrid"
-  network_type = "layer2-individual"
+  network_type        = "hybrid"
+  #network_type = "layer2-individual"
 }
 
 output "ceph_mon_public_ips" {
@@ -150,7 +150,7 @@ output "ceph_mon_ids" {
 resource "packet_device" "monitoring" {
   count               = 1
   hostname            = "storage-miner-monitoring-${count.index}"
-  plan                = "c2.medium.x86"
+  plan                = "c3.small.x86"
   facilities          = ["dfw2"]
   operating_system    = "ubuntu_18_04"
   billing_cycle       = "hourly"
@@ -261,7 +261,7 @@ resource "packet_port_vlan_attachment" "ceph_osd" {
   vlan_vnid = packet_vlan.k8s.vxlan
   port_name = "eth1"
 }
-
+/*
 resource "packet_port_vlan_attachment" "ceph_mon_2" {
   count     = length(packet_device.ceph_mon)
   device_id = packet_device.ceph_mon[count.index].id
@@ -275,7 +275,7 @@ resource "packet_port_vlan_attachment" "ceph_osd_2" {
   vlan_vnid = packet_vlan.ceph.vxlan
   port_name = "eth0"
 }
-
+*/
 resource "packet_port_vlan_attachment" "monitoring" {
   count     = length(packet_device.monitoring)
   device_id = packet_device.monitoring[count.index].id
