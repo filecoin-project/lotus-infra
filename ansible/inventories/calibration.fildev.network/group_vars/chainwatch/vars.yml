@@ -1,1 +1,2 @@
 chainwatch_golog_file: "/var/log/chainwatch.log"
+chainwatch_db: {{ vault_chainwatch_db }}
