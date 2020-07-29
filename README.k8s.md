@@ -13,7 +13,7 @@ Found in `terraform/storage-miner-k8s-dfw2`
 1. In `main.tf` also comment out `packet_port_vlan_attachment`s `ceph_mon_2` and `ceph_osd_2`
 1. Run `terraform plan` and `terraform apply`
 1. Change directories to `../ansible`
-1. Fill out public IPs in `inventories/storage-miner-k8s-dfw2/hosts.yaml` (@TODO automate this). Static VLAN IPs can remain the same. If you're adding more hosts, assign new IPs
+1. Fill out public IPs in `inventories/storage-miner-k8s-dfw2/hosts.yaml` (@TODO automate this or add DNS records in terraform). Static VLAN IPs can remain the same. If you're adding more hosts, assign new IPs
 1. To fill out `mdmadm_arrays` and `swap_device` variables, run `ansible -i inventories/storage-miner-k8s-dfw2/hosts.yml -m shell -a 'lsblk' seal_worker`. Device names are not deterministic, so you need to manually fill this out for now :(
 1. Run `ansible-playbook -i inventories/storage-miner-k8s-dfw2 storage_miner_k8s_vlan.yml` to configure vlan interfaces. Kubernetes will use this network for any internode communication.
 1. Run `ansible-playbook -i inventories/storage-miner-k8s-dfw2 storage_miner_k8s.yml` to install docker, kubernetes, and associated tooling

@@ -6,8 +6,6 @@
     kubernetes_kubelet_extra_args: "--fail-swap-on=false --cgroup-driver=cgroupfs --cpu-manager-policy=static --kube-reserved=cpu=200m,memory=500Mi,ephemeral-storage=1Gi"
     kubernetes_pod_network:
       cni: 'flannel'
-      cidr: '172.31.0.0/16'
-
   tasks:
       - include_role: name=ufw
       - name: get eth1 interface name
