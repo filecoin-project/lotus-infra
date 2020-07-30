@@ -1,7 +1,7 @@
 ---
 logz_io_shared_token: "{{ vault_logz_io_shared_token }}"
 network_name: calibrationnet
-faucet_initial_balance: "512000000000000000000000000"
+faucet_initial_balance: "745000000000000000000000000"
 telegraf_global_tags:
   network: "{{ network_name }}"
 # influx monitoring options
