@@ -4,27 +4,29 @@
     kubernetes_allow_pods_on_master: false
     kubernetes_apiserver_advertise_address: '192.168.1.1'
     kubernetes_kubelet_extra_args: "--node-ip {{ vlan1_ip }} --fail-swap-on=false --cgroup-driver=cgroupfs --cpu-manager-policy=static --kube-reserved=cpu=200m,memory=500Mi,ephemeral-storage=1Gi"
-    filecoin_miner_libp2p_port: '15432'
+    lotus_miner_libp2p_port: '15432'
+    # cni: 'calico'
+    # cidr: '192.168.0.0/16'
   tasks:
-      - include_role: name=ufw
-      - name: get eth0 interface name
-        shell: "ip link | awk '{print $2}' | grep enp | tr -d : | head -1"
-        register: eth0
-      - name: allow all incoming
-        ufw:
-          default: allow
-          direction: incoming
-      - name: block incoming on eth0 interface
-        ufw:
-          rule: deny
-          direction: in
-          interface: "{{ eth0.stdout }}"
-      - name: allow libp2p eth0 interface
-        ufw:
-          rule: allow
-          direction: in
-          port: '{{ lotus_miner_libp2p_port }}'
-          interface: "{{ eth0.stdout }}"
+#      - include_role: name=ufw
+#      - name: get eth0 interface name
+#        shell: "ip link | awk '{print $2}' | grep enp | tr -d : | head -1"
+#        register: eth0
+#      - name: allow all incoming
+#        ufw:
+#          default: allow
+#          direction: incoming
+#      - name: block incoming on eth0 interface
+#        ufw:
+#          rule: deny
+#          direction: in
+#          interface: "{{ eth0.stdout }}"
+#      - name: allow libp2p eth0 interface
+#        ufw:
+#          rule: allow
+#          direction: in
+#          port: '{{ lotus_miner_libp2p_port }}'
+#          interface: "{{ eth0.stdout }}"
   roles:
     - geerlingguy.docker
     - geerlingguy.kubernetes

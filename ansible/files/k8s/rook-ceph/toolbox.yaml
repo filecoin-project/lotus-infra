@@ -20,14 +20,15 @@ spec:
         - key: "ceph"
           operator: "Equal"
           value: "mon"
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: ceph
-              operator: In
-              values:
-              - mon
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ceph
+                operator: In
+                values:
+                - mon
       containers:
       - name: rook-ceph-tools
         image: rook/ceph:master

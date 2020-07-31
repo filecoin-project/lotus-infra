@@ -10,10 +10,6 @@
       shell: 'echo "-{{ eth0.stdout }}" > /sys/class/net/bond0/bonding/slaves'
       run_once: False
       ignore_errors: True
-    - name: bring down eth0
-      shell: 'ifdown {{ eth0.stdout }}'
-      run_once: False
-      ignore_errors: True
     - name: edit network interfaces config
       lineinfile:
         path: /etc/network/interfaces
@@ -31,7 +27,7 @@
         insertafter: '    address {{ vlan2_ip }}'
         line: '    netmask 255.255.255.0'
         firstmatch: yes
-    - name: bring up eth0
-      shell: 'ifup {{ eth0.stdout }}'
+    - name: restart eth0
+      shell: 'ifdown {{ eth0.stdout }} && sleep 5 && ifup {{ eth0.stdout }}'
       run_once: False
       ignore_errors: True

@@ -10,15 +10,12 @@
       shell: 'echo "-{{ eth1.stdout }}" > /sys/class/net/bond0/bonding/slaves'
       run_once: False
       ignore_errors: True
-    - name: bring down eth1
-      shell: 'ifdown {{ eth1.stdout }}'
-      run_once: False
-      ignore_errors: True
     - name: edit network interfaces config
       lineinfile:
         path: /etc/network/interfaces
         regexp: '{{ item.from }}'
         line: '{{ item.to }}'
+        insertafter: 'auto {{ eth1.stdout }}'
         state: present
       with_items:
         - { from: 'iface {{ eth1.stdout }} inet manual', to: 'iface {{ eth1.stdout }} inet static'}
@@ -26,11 +23,12 @@
         - { from: 'bond-master bond0', to: '    netmask 255.255.255.0'}
       run_once: False
       ignore_errors: True
-    - name: bring up eth1
-      shell: 'ifup {{ eth1.stdout }}'
+      when: inventory_hostname is not regex("^192")
+    - name: restart eth1
+      shell: 'ifdown {{ eth1.stdout }} && sleep 5 && ifup {{ eth1.stdout }}'
       run_once: False
       ignore_errors: True
-
+      when: inventory_hostname is not regex("^192")
 
 - hosts: all,!k8s_master
   tasks:
