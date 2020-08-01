@@ -31,7 +31,7 @@
   block:
     - name: Terminate database connections
       postgresql_query:
-        db: "postgres"
+        db: "{{ chainwatch_db | urlsplit('path') | basename }}"
         port: "{{ chainwatch_db | urlsplit('port') }}"
         login_host: "{{ chainwatch_db | urlsplit('hostname') }}"
         login_user: "{{ chainwatch_db | urlsplit('username') }}"
@@ -42,6 +42,7 @@
     - name: Ensure database dropped
       postgresql_db:
         name: "{{ chainwatch_db | urlsplit('path') | basename }}"
+        maintenance_db: "{{ chainwatch_db | urlsplit('path') | basename }}"
         port: "{{ chainwatch_db | urlsplit('port') }}"
         login_host: "{{ chainwatch_db | urlsplit('hostname') }}"
         login_user: "{{ chainwatch_db | urlsplit('username') }}"
@@ -60,6 +61,7 @@
 - name: Ensure chainwatch database is created
   postgresql_db:
     name: "{{ chainwatch_db | urlsplit('path') | basename }}"
+    maintenance_db: "{{ chainwatch_db | urlsplit('path') | basename }}"
     port: "{{ chainwatch_db | urlsplit('port') }}"
     login_host: "{{ chainwatch_db | urlsplit('hostname') }}"
     login_user: "{{ chainwatch_db | urlsplit('username') }}"

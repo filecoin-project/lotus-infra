@@ -14,6 +14,10 @@
       service:
         name: "lotus-daemon"
         state: started
+    - name: Ensure telegraf started
+      service:
+        name: "telegraf"
+        state: started
 
 - hosts: preminer
   become: true

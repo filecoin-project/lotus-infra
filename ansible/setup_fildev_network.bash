@@ -42,6 +42,7 @@ build_flags="${buildflags:-"-f"}"
 genesis_delay="${delay:-"600"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 sentinel_src="${ssrc:-"$GOPATH/src/github.com/filecoin-project/sentinel"}"
+verifreg_rootkey="t3qfoulel6fy6gn3hjmbhpdpf6fs5aqjb5fkurhtwvgssizq4jey5nw4ptq5up6h7jk7frdvvobv52qzmgjinq"
 
 # gets a list of all the hostnames for the preminers
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
@@ -121,7 +122,7 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-chainwatch"      \
     -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"       \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes                                 \
-    -e chainwatch_db_reset=yes -e chainwatch_reset=yes                                             \
+    -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
     -e certbot_create_certificate=${create_certificate}                                            \
     --diff
 
@@ -158,6 +159,9 @@ pushd "$lotus_src"
   mv ${genesistmp} "${genpath}/genesis.json"
 
   jq --arg Owner ${faucet_addr} --arg Balance ${faucet_balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
+  mv ${genesistmp} "${genpath}/genesis.json"
+
+  jq --arg VerifyKey ${verifreg_rootkey} '.VerifregRootKey = {Type: "account", Balance: "0", Meta: {Owner: $VerifyKey}} ' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
 
   ./lotus --repo="${genpath}" daemon --api 0 --lotus-make-genesis="${genpath}/testnet.car" --genesis-template="${genpath}/genesis.json" --bootstrap=false &
