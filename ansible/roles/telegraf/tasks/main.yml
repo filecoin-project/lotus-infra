@@ -16,7 +16,6 @@
 - name: Ensure telegraf started and enabled
   systemd:
     name: telegraf
-    state: started
     enabled: yes
 
 - name: Copy telegraf configuration template to hosts
@@ -24,5 +23,3 @@
     src: templates/telegraf.conf.j2
     dest: /etc/telegraf/telegraf.conf
     mode: '0644'
-  notify:
-    - restart_telegraf
