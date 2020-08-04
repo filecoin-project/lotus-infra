@@ -51,15 +51,16 @@ output "miner_private_ips" {
 }
 
 resource "packet_device" "seal_worker" {
-  count               = 2
-  hostname            = "storage-miner-precomm1-worker-${count.index}"
-  plan                = "c3.medium.x86"
-  facilities          = ["dfw2"]
-  operating_system    = "ubuntu_18_04"
-  billing_cycle       = "hourly"
-  project_id          = var.project_id
-  project_ssh_key_ids = values(local.ssh_keys)
-  network_type        = "hybrid"
+  count                   = 10
+  hostname                = "storage-miner-precomm1-worker-${count.index}"
+  plan                    = "c3.medium.x86"
+  facilities              = ["dfw2"]
+  operating_system        = "ubuntu_18_04"
+  billing_cycle           = "hourly"
+  project_id              = var.project_id
+  project_ssh_key_ids     = values(local.ssh_keys)
+  network_type            = "hybrid"
+  hardware_reservation_id = "next-available"
 }
 
 

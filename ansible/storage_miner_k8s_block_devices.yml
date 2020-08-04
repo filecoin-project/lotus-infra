@@ -3,25 +3,25 @@
   roles:
     - mrlesmithjr.mdadm
 
-- hosts: seal_worker
-  vars:
-    swap_file_size_mb: '32000'
-    swap_file_path: /mnt/swap/swapfile
-  tasks:
-    - name: Create a ext4 filesystem on /dev/sdb1
-      filesystem:
-        fstype: ext4
-        dev: "{{ swap_device }}"
-    - name: Create mount directory
-      file:
-        path: /mnt/swap
-        state: directory
-    - name: mount swap drive
-      mount:
-        path: /mnt/swap
-        src: "{{ swap_device }}"
-        fstype: ext4
-        state: mounted
-    - name: enable swap
-      include_role:
-        name: geerlingguy.swap
+#- hosts: seal_worker
+#  vars:
+#    swap_file_size_mb: '32000'
+#    swap_file_path: /mnt/swap/swapfile
+#  tasks:
+#    - name: Create a ext4 filesystem on /dev/sdb1
+#      filesystem:
+#        fstype: ext4
+#        dev: "{{ swap_device }}"
+#    - name: Create mount directory
+#      file:
+#        path: /mnt/swap
+#        state: directory
+#    - name: mount swap drive
+#      mount:
+#        path: /mnt/swap
+#        src: "{{ swap_device }}"
+#        fstype: ext4
+#        state: mounted
+#    - name: enable swap
+#      include_role:
+#        name: geerlingguy.swap
