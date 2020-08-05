@@ -7,7 +7,7 @@ filebeat.inputs:
   fields:
     logzio_codec: json
     token: "{{ logz_io_shared_token }}"
-    type: lotus-daemon
+    type: lotus-chainwatch
   paths:
     - "{{ chainwatch_golog_file }}"
   fields_under_root: true
