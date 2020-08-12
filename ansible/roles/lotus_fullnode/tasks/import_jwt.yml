@@ -1,0 +1,32 @@
+- name: Ensure wallet is imported
+  block:
+    - name: Verify lotus_jwt_keyinfo is defined
+      fail: msg="lotus_jwt_keyinfo is not defined"
+      when: lotus_jwt_keyinfo is not defined
+    - name: Verify lotus_jwt_token is defined
+      fail: msg="lotus_jwt_token is not defined"
+      when: lotus_jwt_token is not defined
+    - name: Ensure keystore path created
+      file:
+        path: "{{ lotus_path }}/keystore/"
+        state: directory
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0700"
+    - name: Reigster lotus_jwt_keyinfo_decoded
+      shell: lotus-shed base16 -decode "{{ lotus_jwt_keyinfo }}"
+      register: lotus_jwt_keyinfo_decoded
+    - name: Ensure jwt exists
+      copy:
+        content: "{{ lotus_jwt_keyinfo_decoded.stdout }}"
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0600"
+        dest: "{{ lotus_path }}/keystore/{{ lotus_jwt_keyname }}"
+    - name: Ensure token exists
+      copy:
+        content: "{{ lotus_jwt_token }}"
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0600"
+        dest: "{{ lotus_path }}/token"
