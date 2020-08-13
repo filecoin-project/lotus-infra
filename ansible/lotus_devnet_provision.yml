@@ -44,9 +44,22 @@
       vars:
         lotus_import_peerkey: true
         lotus_import_wallet: true
+        lotus_import_jwt: "{{ lotus_fountain_external }}"
     - include_role: name=lotus_fountain
     - include_role: name=stats
     - include_role: name=chainwatch
+
+- hosts: pcr
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+    - include_role: name=lotus_fullnode
+      vars:
+        lotus_import_peerkey: true
+        lotus_import_wallet: true
+    - include_role: name=lotus_pcr
 
 - hosts: scratch
   become: true

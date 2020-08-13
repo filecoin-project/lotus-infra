@@ -41,7 +41,7 @@ create_certificate="${cert:-"false"}"
 build_flags="${buildflags:-"-f"}"
 genesis_delay="${delay:-"600"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
-sentinel_src="${ssrc:-"$GOPATH/src/github.com/filecoin-project/sentinel"}"
+sentinel_src="${ssrc:-"$GOPATH/src/github.com/filecoin-shipyard/telegraf-lotus"}"
 verifreg_rootkey="t3qfoulel6fy6gn3hjmbhpdpf6fs5aqjb5fkurhtwvgssizq4jey5nw4ptq5up6h7jk7frdvvobv52qzmgjinq"
 
 # gets a list of all the hostnames for the preminers
@@ -86,6 +86,15 @@ vault_lotus_wallet_keyinfo: $secp256k1_keyinfo
 vault_lotus_wallet_address: $secp256k1_address
 EOF
 
+    secp256k1_address=$(lotus-shed keyinfo new secp256k1)
+    secp256k1_keyinfo=$(cat secp256k1-${secp256k1_address}.keyinfo)
+    rm "secp256k1-${secp256k1_address}.keyinfo"
+
+    cat > "$(dirname $hostfile)/group_vars/pcr/lotus_daemon.vault.yml" <<EOF
+vault_lotus_wallet_keyinfo: $secp256k1_keyinfo
+vault_lotus_wallet_address: $secp256k1_address
+EOF
+
 
   # generate multiaddrs for the bootstrap peers
   bootstrap_multiaddrs=( $(ansible -o -i $hostfile -b -m debug -a 'msg="/dns4/{{ ansible_host }}/tcp/{{ lotus_libp2p_port }}/p2p/{{ lotus_libp2p_address }}"' bootstrap | sed 's/.* =>//' | jq -r '.msg') )
@@ -109,18 +118,17 @@ faucet_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_fountain_add
 ../scripts/build_binaries.bash -s "$lotus_src" ${build_flags}
 ../scripts/build_binaries.bash -s "$sentinel_src" -- telegraf
 
-
-
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
     -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                      \
     -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-miner"          \
     -e lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-shed"            \
     -e lotus_seed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-seed"            \
+    -e lotus_pcr_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-pcr"              \
     -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-fountain"    \
     -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-stats"                \
     -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-chainwatch"      \
-    -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"       \
+    -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-shipyard/telegraf-lotus/telegraf"      \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes                                 \
     -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
     -e certbot_create_certificate=${create_certificate}                                            \

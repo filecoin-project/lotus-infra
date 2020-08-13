@@ -86,6 +86,10 @@
   when: lotus_import_peerkey | bool
 
 - name:
+  include_tasks: import_jwt.yml
+  when: lotus_import_jwt | bool
+
+- name:
   include_tasks: import_wallet.yml
   when: lotus_import_wallet | bool
 

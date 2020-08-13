@@ -1,0 +1,5 @@
+lotus_pcr_reset: no
+lotus_pcr_golog_log_fmt: json
+lotus_pcr_golog_log_level: info
+lotus_pcr_env: {}
+lotus_pcr_systemd_extras: {}
