@@ -1,0 +1,26 @@
+[Unit]
+Description=Lotus PCR
+After=network.target
+
+[Service]
+User={{ lotus_user }}
+Group={{ lotus_user }}
+ExecStart=/usr/local/bin/lotus-pcr run
+Environment=LOTUS_PATH="{{ lotus_path }}"
+Environment=LOTUS_PCR_PATH="{{ lotus_pcr_path }}"
+Environment=GOLOG_FILE="{{ lotus_pcr_golog_file }}"
+Environment=GOLOG_LOG_FMT="{{ lotus_pcr_golog_log_fmt }}"
+Environment=GOLOG_LOG_LEVEL="{{ lotus_pcr_golog_log_level }}"
+{% for item in lotus_pcr_env | dict2items -%}
+Environment={{ item.key }}="{{ item.value }}"
+{% endfor -%}
+
+{% for item in lotus_pcr_systemd_extras | dict2items -%}
+{{ item.key }}={{ item.value }}
+{% endfor -%}
+
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

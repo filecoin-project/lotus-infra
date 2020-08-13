@@ -1,0 +1,3 @@
+required_vars:
+  - lotus_pcr_path
+  - lotus_pcr_golog_file

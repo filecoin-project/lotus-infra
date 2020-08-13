@@ -1,0 +1,63 @@
+- include_tasks: ../../../includes/required_vars.yml
+
+- name: Reset system
+  block:
+    - name: Ensure lotus-pcr stopped
+      service:
+        name: lotus-pcr
+        state: stopped
+      ignore_errors: yes
+    - name: Remove lotus-pcr repository
+      file:
+        path: "{{ lotus_pcr_path }}"
+        state: absent
+    - name: Truncate log file
+      shell:
+        cmd: truncate -s 0 "{{ lotus_pcr_golog_file }}"
+  when: lotus_pcr_reset == "yes"
+
+- name: Copy binary
+  copy:
+      src: "{{ lotus_pcr_binary_src }}"
+      dest: /usr/local/bin/lotus-pcr
+      owner: root
+      group: root
+      mode: "0755"
+  when: lotus_pcr_binary_src is defined
+
+- name: Ensure lotus-pcr repository exists
+  file:
+    path: "{{ lotus_pcr_path }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: "0755"
+
+- name: Ensure LOTUS_PCR_PATH global env is set
+  lineinfile:
+    path: /etc/environment
+    regex: "^LOTUS_PCR_PATH"
+    line: LOTUS_PCR_PATH="{{ lotus_pcr_path }}"
+
+- name: Ensure log file exists
+  file:
+      state: touch
+      path: "{{ lotus_pcr_golog_file }}"
+      owner: "{{ lotus_user }}"
+      group: "{{ lotus_user }}"
+      mode: "0644"
+
+- name: Ensure serivce file
+  template:
+      src: ../templates/lotus-pcr.service.j2
+      dest: /etc/systemd/system/lotus-pcr.service
+      owner: root
+      group: root
+      mode: "0644"
+  notify:
+    - systemd-daemon-reload
+
+- name: Ensure lotus-pcr service enabled
+  service:
+    name: "lotus-pcr"
+    enabled: yes
