@@ -44,7 +44,6 @@
       vars:
         lotus_import_peerkey: true
         lotus_import_wallet: true
-        lotus_import_jwt: "{{ lotus_fountain_external }}"
     - include_role: name=lotus_fountain
     - include_role: name=stats
     - include_role: name=chainwatch
