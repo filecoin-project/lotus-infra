@@ -45,8 +45,9 @@ module "butterflynet" {
   key_name                    = "filecoin"
   vpc_id                      = module.fildev_network_vpc.vpc_id
   environment                 = "prod"
+  toolshed_count              = 2
   bootstrapper_count          = 2
-  preminer_count              = 2
+  preminer_count              = 6
   scratch_count               = 2
   toolshed_instance_type      = "m5a.large"
   chainwatch_db_instance_type = "db.m5.large"
@@ -85,6 +86,7 @@ module "calibrationnet" {
   key_name                    = "filecoin"
   vpc_id                      = module.fildev_network_vpc.vpc_id
   environment                 = "prod"
+  toolshed_count              = 2
   bootstrapper_count          = 4
   preminer_count              = 3
   scratch_count               = 2

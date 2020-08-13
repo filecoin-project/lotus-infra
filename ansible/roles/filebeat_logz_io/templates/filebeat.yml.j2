@@ -11,7 +11,7 @@ filebeat.inputs:
   paths:
     - "{{ chainwatch_golog_file }}"
   fields_under_root: true
-  json.keys_under_root: false
+  json.keys_under_root: true
   json.message_key: msg
   ignore_older: 3h
 {% endif %}
@@ -39,7 +39,7 @@ filebeat.inputs:
   paths:
     - "{{ lotus_golog_file }}"
   fields_under_root: true
-  json.keys_under_root: false
+  json.keys_under_root: true
   json.message_key: msg
   ignore_older: 3h
 {% endif %}
@@ -53,7 +53,7 @@ filebeat.inputs:
   paths:
     - "{{ lotus_miner_golog_file }}"
   fields_under_root: true
-  json.keys_under_root: false
+  json.keys_under_root: true
   json.message_key: msg
   ignore_older: 3h
 {% endif %}
@@ -67,7 +67,7 @@ filebeat.inputs:
   paths:
     - "{{ lotus_fountain_golog_file }}"
   fields_under_root: true
-  json.keys_under_root: false
+  json.keys_under_root: true
   json.message_key: msg
   ignore_older: 3h
 - encoding: utf-8
@@ -101,7 +101,7 @@ filebeat.inputs:
   paths:
     - "{{ stats_golog_file }}"
   fields_under_root: true
-  json.keys_under_root: false
+  json.keys_under_root: true
   json.message_key: msg
   ignore_older: 3h
 {% endif %}

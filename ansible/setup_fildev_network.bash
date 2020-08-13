@@ -41,7 +41,7 @@ create_certificate="${cert:-"false"}"
 build_flags="${buildflags:-"-f"}"
 genesis_delay="${delay:-"600"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
-sentinel_src="${ssrc:-"$GOPATH/src/github.com/filecoin-project/sentinel"}"
+sentinel_src="${ssrc:-"$GOPATH/src/github.com/filecoin-shipyard/telegraf-lotus"}"
 verifreg_rootkey="t3qfoulel6fy6gn3hjmbhpdpf6fs5aqjb5fkurhtwvgssizq4jey5nw4ptq5up6h7jk7frdvvobv52qzmgjinq"
 
 # gets a list of all the hostnames for the preminers
@@ -128,7 +128,7 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-fountain"    \
     -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-stats"                \
     -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-chainwatch"      \
-    -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"       \
+    -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-shipyard/telegraf-lotus/telegraf"      \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes                                 \
     -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
     -e certbot_create_certificate=${create_certificate}                                            \
