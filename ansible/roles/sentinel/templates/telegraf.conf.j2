@@ -31,6 +31,12 @@
 {% if 'stats' in group_names %}
   stats = "true"
 {% endif %}
+{% if 'chainwatch' in group_names %}
+  chainwatch = "true"
+{% endif %}
+{% if 'pcr' in group_names %}
+  pcr = "true"
+{% endif %}
 
 # Configuration for telegraf agent
 [agent]
@@ -85,7 +91,9 @@
 [[outputs.postgresql]]
   # Example: connection = "host=localhost user=postgres password=password sslmode=disable"
   connection = "{{ telegraf_outputs_postgresql_conn }}"
-
+  tagexclude = ["high_cardinality"]
+  [outputs.postgresql.tagdrop]
+    monitoring = ["true"]
 {% endif %}
 
 # Configuration for sending metrics to InfluxDB
@@ -159,6 +167,10 @@
   ## integer values.  Enabling this option will result in field type errors if
   ## existing data has been written.
   # influx_uint_support = false
+
+  tagexclude = ["monitoring"]
+  [outputs.influxdb.tagdrop]
+    high_cardinality = ["true"]
 {% endif %}
 
 {% if telegraf_outputs_file_enabled %}
@@ -235,6 +247,12 @@
 ###############################################################################
 {{ telegraf_processor }}
 
+{% if telegraf_inputs_lotus_enabled %}
+[[processors.lotus_peer_id]]
+  lotus_api_multiaddr = "{{ lotus_api_multiaddr }}"
+  lotus_datapath = "{{ lotus_path }}"
+{% endif %}
+
 ###############################################################################
 #                            AGGREGATOR PLUGINS                               #
 ###############################################################################
@@ -247,20 +265,34 @@
 {% if 'lotus_daemon' in group_names %}
 [[inputs.procstat]]
   systemd_unit = "lotus-daemon.service"
+  [inputs.procstat.tags]
+    monitoring = "true"
 {% endif %}
 {% if 'lotus_miner' in group_names %}
 [[inputs.procstat]]
   systemd_unit = "lotus-miner.service"
+  [inputs.procstat.tags]
+    monitoring = "true"
 {% endif %}
 {% if 'lotus_fountain' in group_names %}
 [[inputs.procstat]]
   systemd_unit = "lotus-fountain.service"
+  [inputs.procstat.tags]
+    monitoring = "true"
+{% endif %}
+{% if 'lotus_pcr' in group_names %}
+[[inputs.procstat]]
+  systemd_unit = "lotus-pcr.service"
+  [inputs.procstat.tags]
+    monitoring = "true"
 {% endif %}
 
 {% if telegraf_inputs_lotus_enabled %}
 [[inputs.lotus]]
   lotus_api_multiaddr = "{{ lotus_api_multiaddr }}"
   lotus_datapath = "{{ lotus_path }}"
+  [inputs.lotus.tags]
+    high_cardinality = "true"
 {% endif %}
 
 {% if telegraf_inputs_prometheus_enabled %}
@@ -269,6 +301,9 @@ urls = [
   {% for promurl in inputs_prometheus_urls %}
     "{{ promurl }}",
   {% endfor %}
+]
+namedrop = [
+  "lotus_info",
 ]
 {% endif %}
 
@@ -360,9 +395,6 @@ urls = [
 
 # Read TCP metrics such as established, time wait and sockets counts.
 [[inputs.netstat]]
-  # no configuration
-
-[[inputs.interrupts]]
   # no configuration
 
 [[inputs.linux_sysctl_fs]]

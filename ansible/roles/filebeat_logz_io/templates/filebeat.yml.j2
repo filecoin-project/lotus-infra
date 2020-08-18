@@ -63,7 +63,7 @@ filebeat.inputs:
   fields:
     logzio_codec: json
     token: "{{ logz_io_shared_token }}"
-    type: lotus-miner
+    type: lotus-fountain
   paths:
     - "{{ lotus_fountain_golog_file }}"
   fields_under_root: true
@@ -97,7 +97,7 @@ filebeat.inputs:
   fields:
     logzio_codec: json
     token: "{{ logz_io_shared_token }}"
-    type: lotus-daemon
+    type: lotus-stats
   paths:
     - "{{ stats_golog_file }}"
   fields_under_root: true
