@@ -62,7 +62,7 @@ resource "aws_route53_record" "monitoring" {
 }
 
 resource "aws_route53_record" "ceph_osd" {
-  count   = 0 #length(packet_device.ceph_osd)
+  count   = length(packet_device.ceph_osd)
   name    = "${packet_device.ceph_osd[count.index].hostname}.${local.subdomain}"
   zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"
@@ -71,7 +71,7 @@ resource "aws_route53_record" "ceph_osd" {
 }
 
 resource "aws_route53_record" "ceph_mon" {
-  count   = 0 #length(packet_device.ceph_mon_c2)
+  count   = length(packet_device.ceph_mon_c2)
   name    = "${packet_device.ceph_mon_c2[count.index].hostname}.${local.subdomain}"
   zone_id = data.aws_route53_zone.default.zone_id
   type    = "A"

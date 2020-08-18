@@ -6,6 +6,12 @@ metadata:
   namespace: rook-ceph
 spec:
   dataDirHostPath: /var/lib/rook
+  mgr:
+    modules:
+    - name: pg_autoscaler
+      enabled: true
+    - name: prometheus
+      enabled: true
   placement:
     mgr:
       tolerations:
@@ -50,7 +56,7 @@ spec:
     count: 3
     allowMultiplePerNode: false
   cephVersion:
-    image: ceph/ceph:v14.2.6
+    image: ceph/ceph:v14.2.10
     allowUnsupported: false
   skipUpgradeChecks: false
   continueUpgradeAfterChecksEvenIfNotHealthy: false
@@ -59,6 +65,7 @@ spec:
     ssl: true
   network:
     hostNetwork: true
+    provider: host
   crashCollector:
     disable: false
   storage:
@@ -71,12 +78,12 @@ spec:
         metadataDevice: "md0"
         storeType: bluestore
     - name: "storage-miner-ceph-osd-1"
-      deviceFilter: "^sd[a-k|n]"
+      deviceFilter: "^sd[a-l|n]"
       config:
         metadataDevice: "md0"
         storeType: bluestore
     - name: "storage-miner-ceph-osd-2"
-      deviceFilter: "^sd[b-n]"
+      deviceFilter: "^sd[a-l|n]"
       config:
         metadataDevice: "md0"
         storeType: bluestore

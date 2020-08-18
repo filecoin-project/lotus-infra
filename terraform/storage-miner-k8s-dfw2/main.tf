@@ -74,7 +74,7 @@ output "seal_worker_private_ips" {
 }
 
 resource "packet_device" "seal_worker_gpu" {
-  count               = 1
+  count               = 2
   hostname            = "storage-miner-precomm2-comm-worker-${count.index}"
   plan                = "g2.large.x86"
   facilities          = ["dfw2"]
@@ -107,8 +107,8 @@ resource "packet_device" "ceph_osd" {
   project_ssh_key_ids              = values(local.ssh_keys)
   hardware_reservation_id          = "next-available"
   wait_for_reservation_deprovision = true
-  #network_type                     = "hybrid"
-  network_type = "layer2-individual"
+  network_type                     = "hybrid"
+  #network_type = "layer2-individual"
 }
 
 output "ceph_osd_public_ips" {
@@ -122,7 +122,7 @@ output "ceph_osd_private_ips" {
 output "ceph_osd_ids" {
   value = packet_device.ceph_osd.*.id
 }
-
+/*
 resource "packet_device" "ceph_mon" {
   count               = 3
   hostname            = "storage-miner-ceph-mon-${count.index}"
@@ -135,7 +135,7 @@ resource "packet_device" "ceph_mon" {
   #network_type        = "hybrid"
   network_type = "layer2-individual"
 }
-
+*/
 resource "packet_device" "ceph_mon_c2" {
   count               = 3
   hostname            = "storage-miner-ceph-mon-${count.index}"
@@ -145,10 +145,11 @@ resource "packet_device" "ceph_mon_c2" {
   billing_cycle       = "hourly"
   project_id          = var.project_id
   project_ssh_key_ids = values(local.ssh_keys)
-  #network_type        = "hybrid"
-  network_type = "layer2-individual"
+  network_type        = "hybrid"
+  #network_type = "layer2-individual"
 }
 
+/*
 output "ceph_mon_public_ips" {
   value = packet_device.ceph_mon.*.access_public_ipv4
 }
@@ -160,6 +161,7 @@ output "ceph_mon_private_ips" {
 output "ceph_mon_ids" {
   value = packet_device.ceph_mon.*.id
 }
+*/
 
 resource "packet_device" "monitoring" {
   count               = 1
@@ -248,12 +250,14 @@ resource "packet_port_vlan_attachment" "generic" {
   port_name = "eth1"
 }
 
+/*
 resource "packet_port_vlan_attachment" "ceph_mon" {
   count     = length(packet_device.ceph_mon)
   device_id = packet_device.ceph_mon[count.index].id
   vlan_vnid = packet_vlan.k8s.vxlan
   port_name = "eth1"
 }
+*/
 
 resource "packet_port_vlan_attachment" "ceph_mon_c2" {
   count     = length(packet_device.ceph_mon_c2)
@@ -269,27 +273,31 @@ resource "packet_port_vlan_attachment" "ceph_osd" {
   port_name = "eth1"
 }
 
+/*
 resource "packet_port_vlan_attachment" "ceph_mon_2" {
   count     = length(packet_device.ceph_mon)
   device_id = packet_device.ceph_mon[count.index].id
   vlan_vnid = packet_vlan.ceph.vxlan
   port_name = "eth0"
 }
+*/
 
+/*
 resource "packet_port_vlan_attachment" "ceph_mon_2_c2" {
   count     = length(packet_device.ceph_mon_c2)
   device_id = packet_device.ceph_mon_c2[count.index].id
   vlan_vnid = packet_vlan.ceph.vxlan
   port_name = "eth0"
 }
-
-
+*/
+/*
 resource "packet_port_vlan_attachment" "ceph_osd_2" {
   count     = length(packet_device.ceph_osd)
   device_id = packet_device.ceph_osd[count.index].id
   vlan_vnid = packet_vlan.ceph.vxlan
   port_name = "eth0"
 }
+*/
 
 resource "packet_port_vlan_attachment" "monitoring" {
   count     = length(packet_device.monitoring)

@@ -30,6 +30,7 @@
   roles:
     - geerlingguy.docker
     - geerlingguy.kubernetes
+    - ntp
 
 - hosts: k8s_master
   tasks:
@@ -53,3 +54,4 @@
       apt:
         name: helm
         state: present
+        version: 3.2.4-1

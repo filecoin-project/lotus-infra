@@ -1,7 +1,42 @@
 ---
-- hosts: seal_worker,seal_worker_gpu,miner,ceph_osd
+- hosts: seal_worker,seal_worker_gpu,miner,ceph_osd,seal_worker_gpu_comm
   roles:
     - mrlesmithjr.mdadm
+
+- hosts: ceph_osd
+  tasks:
+    - name: Install LVM
+      apt:
+        name: lvm2
+        state: present
+
+#- hosts: seal_worker_gpu_comm
+#  tasks:
+#    - name: Create a ext4 filesystem on /dev/sdb
+#      filesystem:
+#        fstype: ext4
+#        dev: "{{ item }}"
+#      with_items:
+#        - "/dev/sdb"
+#        - "/dev/sdc"
+#    - name: Create mount directory
+#      file:
+#        path: "{{ item }}"
+#        state: directory
+#      with_items:
+#        - /mnt/worker0
+#        - /mnt/worker1
+#    - name: mount worker drives
+#      mount:
+#        path: "{{ item.path }}"
+#        src: "{{ item.device }}"
+#        fstype: ext4
+#        state: mounted
+#      with_items:
+#        - device: /dev/sdb
+#          path: /mnt/worker0
+#        - device: /dev/sdc
+#          path: /mnt/worker1
 
 #- hosts: seal_worker
 #  vars:
@@ -24,4 +59,4 @@
 #        state: mounted
 #    - name: enable swap
 #      include_role:
-#        name: geerlingguy.swap
+#         name: geerlingguy.swap

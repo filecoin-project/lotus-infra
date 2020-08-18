@@ -20,10 +20,17 @@
         pkg:
           - nvidia-container-toolkit
           - nvidia-docker2
+          - clinfo
+          - jq
         update_cache: yes
         state: present
       notify:
         - "restart docker"
+
+    - name: configure default docker runtime
+      shell: |
+        cat /etc/docker/daemon.json | jq -r '. += {"default-runtime": "nvidia"}' | tee /etc/docker/daemon.json
+
   handlers:
     - name: restart docker
       service:
