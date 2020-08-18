@@ -12,6 +12,7 @@ Environment=LOTUS_PATH="{{ lotus_path }}"
 Environment=LOTUS_MINER_PATH="{{ lotus_miner_path }}"
 Environment=GOLOG_FILE="{{ lotus_miner_golog_file }}"
 Environment=GOLOG_LOG_FMT="{{ lotus_miner_golog_log_fmt }}"
+Environment=TRUST_PARAMS="1"
 {% for item in lotus_miner_env | dict2items -%}
 Environment={{ item.key }}="{{ item.value }}"
 {% endfor %}
