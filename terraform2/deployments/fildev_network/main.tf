@@ -125,14 +125,14 @@ module "calibrationnet" {
  * us-east-1
  *****************/
 
-module "testnet2" {
+module "testnet" {
   source                      = "../../modules/devnet"
   providers = {
     aws = aws.us-east-1
   }
-  name                        = "testnet2"
+  name                        = "testnet"
   zone_id                     = aws_route53_zone.fildev_domain.id
-  ami                         = "ami-053bc2e89490c5ab7"
+  ami                         = "ami-0bcc094591f354be2"
   key_name                    = "filecoin"
   vpc_id                      = module.fildev_network_vpc_east.vpc_id
   environment                 = "prod"
