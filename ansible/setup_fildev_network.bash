@@ -53,6 +53,20 @@ miners_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ miners_initial_
 if [ "$generate_new_keys" = true ]; then
   # get a list of all hosts which have a lotus_libp2p_address defined somewhere in their group / hosts vars.
   libp2p_hosts=( $(ansible-inventory -i $hostfile --list | jq -r '._meta.hostvars | to_entries[] | select( .value.lotus_libp2p_address?) | .key ') )
+  jwt_hosts=( $(ansible-inventory -i $hostfile --list | jq -r '._meta.hostvars | to_entries[] | select( .value.lotus_import_jwt?) | .key ') )
+
+  for host in ${jwt_hosts[@]}; do
+    lotus-shed jwt new ${host}
+    jwt_keyinfo=$(cat jwt-${host}.jwts)
+    jwt_token=$(cat jwt-${host}.token)
+    rm "jwt-${host}.jwts"
+    rm "jwt-${host}.token"
+
+    cat > "$(dirname $hostfile)/host_vars/$host/lotus_jwt.vault.yml" <<EOF
+vault_lotus_jwt_keyinfo: $jwt_keyinfo
+vault_lotus_jwt_token: $jwt_token
+EOF
+  done
 
   for bootstrapper in ${libp2p_hosts[@]}; do
     p2p_address=$(lotus-shed keyinfo new libp2p-host)
