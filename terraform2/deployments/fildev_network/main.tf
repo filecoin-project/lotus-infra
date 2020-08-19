@@ -12,8 +12,15 @@ locals {
   private_subnets = ["10.0.128.0/24", "10.0.129.0/24", "10.0.130.0/24", "10.0.131.0/24"]
 }
 
+/*****************
+ * us-west-2
+ *****************/
+
 module "nerpanet" {
   source                      = "../../modules/devnet"
+  providers = {
+    aws = aws.us-west-2
+  }
   name                        = "nerpa"
   zone_id                     = aws_route53_zone.fildev_domain.id
   ami                         = "ami-053bc2e89490c5ab7"
@@ -39,6 +46,9 @@ module "nerpanet" {
 
 module "butterflynet" {
   source                      = "../../modules/devnet"
+  providers = {
+    aws = aws.us-west-2
+  }
   name                        = "butterfly"
   zone_id                     = aws_route53_zone.fildev_domain.id
   ami                         = "ami-053bc2e89490c5ab7"
@@ -65,6 +75,9 @@ module "butterflynet" {
 
 module "seeding" {
   source                      = "../../modules/seeding"
+  providers = {
+    aws = aws.us-west-2
+  }
   name                        = "seeding"
   zone_id                     = aws_route53_zone.fildev_domain.id
   ami                         = "ami-053bc2e89490c5ab7"
@@ -80,6 +93,9 @@ module "seeding" {
 
 module "calibrationnet" {
   source                      = "../../modules/devnet"
+  providers = {
+    aws = aws.us-west-2
+  }
   name                        = "calibration"
   zone_id                     = aws_route53_zone.fildev_domain.id
   ami                         = "ami-053bc2e89490c5ab7"
@@ -103,4 +119,38 @@ module "calibrationnet" {
   public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[3]
   private_subnet_id           = module.fildev_network_vpc.database_subnets[3]
   private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[3]
+}
+
+/*****************
+ * us-east-1
+ *****************/
+
+module "testnet2" {
+  source                      = "../../modules/devnet"
+  providers = {
+    aws = aws.us-east-1
+  }
+  name                        = "testnet2"
+  zone_id                     = aws_route53_zone.fildev_domain.id
+  ami                         = "ami-053bc2e89490c5ab7"
+  key_name                    = "filecoin"
+  vpc_id                      = module.fildev_network_vpc_east.vpc_id
+  environment                 = "prod"
+  toolshed_count              = 2
+  bootstrapper_count          = 4
+  preminer_count              = 3
+  scratch_count               = 2
+  toolshed_instance_type      = "m5a.large"
+  chainwatch_db_instance_type = "db.m5.large"
+  chainwatch_password         = var.nerpanet_chainwatch_password
+  preminer_instance_type      = "p3.2xlarge"
+  preminer_volume_size        = 384
+  bootstrapper_instance_type  = "m5a.large"
+  scratch_instance_type       = "m5a.large"
+  preminer_iam_profile        = aws_iam_instance_profile.sectors.id
+  database_subnet_group       = module.fildev_network_vpc_east.database_subnet_group
+  public_subnet_id            = module.fildev_network_vpc_east.public_subnets[0]
+  public_subnet_cidr          = module.fildev_network_vpc_east.public_subnets_cidr_blocks[0]
+  private_subnet_id           = module.fildev_network_vpc_east.database_subnets[0]
+  private_subnet_cidr         = module.fildev_network_vpc_east.database_subnets_cidr_blocks[0]
 }
