@@ -29,7 +29,13 @@
   lotus_fountain = "true"
 {% endif %}
 {% if 'stats' in group_names %}
-  stats = "true"
+  lotus_stats = "true"
+{% endif %}
+{% if 'chainwatch' in group_names %}
+  lotus_chainwatch = "true"
+{% endif %}
+{% if 'pcr' in group_names %}
+  lotus_pcr = "true"
 {% endif %}
 
 # Configuration for telegraf agent
@@ -249,6 +255,27 @@
 [[inputs.procstat]]
   systemd_unit = "lotus-fountain.service"
 {% endif %}
+{% if 'stats' in group_names %}
+[[inputs.procstat]]
+  systemd_unit = "stats.service"
+{% endif %}
+{% if 'chainwatch' in group_names %}
+[[inputs.procstat]]
+  systemd_unit = "chainwatch.service"
+{% endif %}
+{% if 'pcr' in group_names %}
+[[inputs.procstat]]
+  systemd_unit = "lotus-pcr.service"
+{% endif %}
+
+{% if telegraf_inputs_prometheus_enabled %}
+[[inputs.prometheus]]
+urls = [
+  {% for promurl in inputs_prometheus_urls %}
+    "{{ promurl }}",
+  {% endfor %}
+]
+{% endif %}
 
 # Read metrics about cpu usage
 [[inputs.cpu]]
@@ -338,9 +365,6 @@
 
 # Read TCP metrics such as established, time wait and sockets counts.
 [[inputs.netstat]]
-  # no configuration
-
-[[inputs.interrupts]]
   # no configuration
 
 [[inputs.linux_sysctl_fs]]

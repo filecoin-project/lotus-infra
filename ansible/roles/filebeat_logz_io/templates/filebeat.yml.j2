@@ -5,7 +5,7 @@ filebeat.inputs:
 - encoding: utf-8
   type: log
   fields:
-    logzio_codec: json
+    logzio_codec: plain
     token: "{{ logz_io_shared_token }}"
     type: lotus-chainwatch
   paths:
@@ -19,7 +19,7 @@ filebeat.inputs:
 - encoding: utf-8
   type: log
   fields:
-    logzio_codec: json
+    logzio_codec: plain
     token: "{{ logz_io_shared_token }}"
     type: lotus-pcr
   paths:
@@ -33,7 +33,7 @@ filebeat.inputs:
 - encoding: utf-8
   type: log
   fields:
-    logzio_codec: json
+    logzio_codec: plain
     token: "{{ logz_io_shared_token }}"
     type: lotus-daemon
   paths:
@@ -47,7 +47,7 @@ filebeat.inputs:
 - encoding: utf-8
   type: log
   fields:
-    logzio_codec: json
+    logzio_codec: plain
     token: "{{ logz_io_shared_token }}"
     type: lotus-miner
   paths:
@@ -61,7 +61,7 @@ filebeat.inputs:
 - encoding: utf-8
   type: log
   fields:
-    logzio_codec: json
+    logzio_codec: plain
     token: "{{ logz_io_shared_token }}"
     type: lotus-fountain
   paths:
@@ -95,7 +95,7 @@ filebeat.inputs:
 - encoding: utf-8
   type: log
   fields:
-    logzio_codec: json
+    logzio_codec: plain
     token: "{{ logz_io_shared_token }}"
     type: lotus-stats
   paths:
@@ -123,22 +123,22 @@ processors:
     ignore_missing: true
 
 - if:
-    has_fields: ['json.ts']
+    has_fields: ['ts']
   then:
     - timestamp:
-        field: 'json.ts'
+        field: 'ts'
         layouts:
           - '2006-01-02T15:04:05.000Z0700'
         test:
           - '2019-10-10T22:37:48.297+0200'
     - drop_fields:
-        fields: ['json.ts']
+        fields: ['ts']
 - if:
-    has_fields: ['json.msg']
+    has_fields: ['msg']
   then:
     - rename:
         fields:
-          - from: 'json.msg'
+          - from: 'msg'
             to: 'message'
 {{ filebeat_additional_processors }}
 
