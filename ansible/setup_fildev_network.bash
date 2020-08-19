@@ -42,12 +42,13 @@ build_flags="${buildflags:-"-f"}"
 genesis_delay="${delay:-"600"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 sentinel_src="${ssrc:-"$GOPATH/src/github.com/filecoin-project/sentinel"}"
-verifreg_rootkey="t3qfoulel6fy6gn3hjmbhpdpf6fs5aqjb5fkurhtwvgssizq4jey5nw4ptq5up6h7jk7frdvvobv52qzmgjinq"
+verifreg_rootkey="t1meqrx2ijvgrdquybafmlwgszpmc34b3kg3nohvy"
 
 # gets a list of all the hostnames for the preminers
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
 
 faucet_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ faucet_initial_balance }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
+miners_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ miners_initial_balance }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 
 if [ "$generate_new_keys" = true ]; then
   # get a list of all hosts which have a lotus_libp2p_address defined somewhere in their group / hosts vars.
@@ -149,11 +150,16 @@ fi
 
 # build the genesis
 pushd "$lotus_src"
+  genesistmp=$(mktemp)
+
   ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
 
   for m in "${miners[@]}"; do
     ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/tmp/presealed-metadata.json"
   done
+
+  jq --arg MinerBalance ${miners_balance}  '.Accounts[].Balance = $MinerBalance ' < "${genpath}/genesis.json" > ${genesistmp}
+  mv ${genesistmp} "${genpath}/genesis.json"
 
   if [ -f "${genpath}/multisig.csv" ]; then
     ./lotus-seed genesis add-msigs "${genpath}/genesis.json" "${genpath}/multisig.csv"
@@ -161,15 +167,13 @@ pushd "$lotus_src"
 
   timestamp=$(echo $(date -d $(date --utc +%FT%H:%M:00Z) +%s) + ${genesis_delay} | bc)
 
-  genesistmp=$(mktemp)
-
   jq --arg Timestamp ${timestamp} ' . + { Timestamp: $Timestamp|tonumber } ' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
 
   jq --arg Owner ${faucet_addr} --arg Balance ${faucet_balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
 
-  jq --arg VerifyKey ${verifreg_rootkey} '.VerifregRootKey = {Type: "account", Balance: "0", Meta: {Owner: $VerifyKey}} ' < "${genpath}/genesis.json" > ${genesistmp}
+  jq --arg VerifyKey ${verifreg_rootkey} '.VerifregRootKey.Meta.Signers = [$VerifyKey] ' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
 
   ./lotus --repo="${genpath}" daemon --api 0 --lotus-make-genesis="${genpath}/testnet.car" --genesis-template="${genpath}/genesis.json" --bootstrap=false &

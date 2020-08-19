@@ -24,7 +24,7 @@
         - name: Register sectors
           shell: find "{{ lotus_miner_data_root }}" -type f  -name 's-{{ lotus_miner_addr }}-*'
           register: sectors
-        - name:
+        - name: Truncate sectors to size
           shell: "truncate -s {{ sector_size }} {{ item }}"
           loop: "{{ sectors.stdout_lines }}"
     - name: Merge preminer metadata
