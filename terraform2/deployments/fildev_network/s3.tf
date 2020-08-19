@@ -3,6 +3,7 @@ locals {
 }
 
 resource "aws_s3_bucket" "fildev_network" {
+  provider = aws.us-west-2
   bucket = local.bucket_name
   acl    = "private"
 
@@ -13,11 +14,13 @@ resource "aws_s3_bucket" "fildev_network" {
 }
 
 resource "aws_iam_instance_profile" "sectors" {
+  provider = aws.us-west-2
   name = "${local.bucket_name}-access"
   role = aws_iam_role.role.name
 }
 
 resource "aws_iam_role" "role" {
+  provider = aws.us-west-2
   name = "read-access"
   path = "/"
 
@@ -38,6 +41,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "sector_ro" {
+  provider = aws.us-west-2
   name = "sector-ro"
   role = aws_iam_role.role.id
 
@@ -64,11 +68,13 @@ EOF
 
 
 resource "aws_iam_instance_profile" "presealer" {
+  provider = aws.us-west-2
   name = "${local.bucket_name}-access-write"
   role = aws_iam_role.role_write.name
 }
 
 resource "aws_iam_role" "role_write" {
+  provider = aws.us-west-2
   name = "write-access"
   path = "/"
 
@@ -89,6 +95,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "sector_rw" {
+  provider = aws.us-west-2
   name = "sector-rw"
   role = aws_iam_role.role_write.id
 
