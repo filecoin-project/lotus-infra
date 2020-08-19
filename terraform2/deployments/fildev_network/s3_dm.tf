@@ -1,5 +1,6 @@
 resource "aws_s3_bucket_policy" "dm" {
   bucket = local.bucket_name
+  provider = aws.us-west-2
   policy = <<EOF
 {
   "Version": "2012-10-17",
