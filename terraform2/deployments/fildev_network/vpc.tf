@@ -25,7 +25,7 @@ module "fildev_network_vpc_east" {
   }
 
   name                         = "fildev-network-vpc"
-  azs                          = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  azs                          = ["us-east-1b", "us-east-1c", "us-east-1d"]
   cidr                         = local.cidr
   public_subnets               = local.public_subnets
   database_subnets             = local.private_subnets
