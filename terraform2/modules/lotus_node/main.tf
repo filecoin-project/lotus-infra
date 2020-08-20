@@ -29,14 +29,3 @@ resource "aws_route53_record" "node" {
   records = [aws_instance.node[count.index].public_ip]
   ttl     = 30
 }
-
-resource "aws_network_interface" "private" {
-  count           = var.scale
-  subnet_id       = var.private_subnet_id
-  security_groups = var.private_security_group_ids
-
-  attachment {
-    instance     = aws_instance.node[count.index].id
-    device_index = 1
-  }
-}
