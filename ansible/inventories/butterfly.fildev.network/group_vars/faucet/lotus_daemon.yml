@@ -1,5 +1,2 @@
 lotus_wallet_keyinfo: "{{ vault_lotus_wallet_keyinfo }}"
 lotus_wallet_address: "{{ vault_lotus_wallet_address }}"
-lotus_jwt_keyinfo: "{{ vault_lotus_jwt_keyinfo }}"
-lotus_jwt_token: "{{ vault_lotus_jwt_token }}"
-lotus_import_jwt: true

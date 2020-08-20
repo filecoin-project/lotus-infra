@@ -39,6 +39,7 @@
           | jq --arg Addr "{{ lotus_miner_wallet_address }}" --arg MinerId "{{ lotus_miner_addr }}" --arg VerifiedDeal "{{ lotus_miner_verified_deals | lower }}" '
               .[$MinerId].Owner = $Addr
             | .[$MinerId].Worker = $Addr
+            | .[$MinerId].ID = $MinerId
             | .[$MinerId].Sectors[].Deal.Client = $Addr
             | .[$MinerId].Sectors[].Deal.VerifiedDeal = ($VerifiedDeal == "true")
             | .[$MinerId].Sectors[] |= (.Deal.Label = .CommR."/")

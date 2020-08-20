@@ -3,5 +3,7 @@ required_vars:
   - lotus_golog_file
   - lotus_proof_params_path
   - lotus_libp2p_port
+  - lotus_api_multiaddr
+  - lotus_prometheus_url
 lotus_libp2p_keyname: "NRUWE4BSOAWWQ33TOQ"
 lotus_jwt_keyname: "MF2XI2BNNJ3XILLQOJUXMYLUMU"
