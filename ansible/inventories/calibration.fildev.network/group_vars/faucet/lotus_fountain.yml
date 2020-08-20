@@ -3,5 +3,4 @@ lotus_fountain_enable_https: true
 lotus_fountain_address: "{{ lotus_wallet_address }}"
 lotus_fountain_amount: 1000
 lotus_fountain_external: true
-lotus_jwt_import: true
 lotus_fountain_external_redirect: "https://faucet.glif.io/"

@@ -127,11 +127,13 @@ EOF
 
 fi
 
-# gets the wallet address for the fountain
+# gets the wallet address for the fountain, pcr servers and additional other balances
 faucet_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_fountain_address }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
+pcr_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_wallet_address }}"' pcr | sed 's/.*=>//' | jq -r '.msg')
+additional_accounts=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ additional_account_balance }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 
 ../scripts/build_binaries.bash -s "$lotus_src" ${build_flags}
-../scripts/build_binaries.bash -s "$sentinel_src" -- telegraf
+# ../scripts/build_binaries.bash -s "$sentinel_src" -- telegraf
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
@@ -143,7 +145,7 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-fountain"    \
     -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-stats"                \
     -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-chainwatch"      \
-    -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"       \
+#   -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"       \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes                                 \
     -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
     -e certbot_create_certificate=${create_certificate}                                            \
@@ -186,6 +188,15 @@ pushd "$lotus_src"
 
   jq --arg Owner ${faucet_addr} --arg Balance ${faucet_balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
+
+  # Provide the PCR service the same balance as the faucet
+  jq --arg Owner ${pcr_addr} --arg Balance ${faucet_balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
+  mv ${genesistmp} "${genpath}/genesis.json"
+
+  while read -r addr balance; do
+    jq --arg Owner ${addr} --arg Balance ${balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
+    mv ${genesistmp} "${genpath}/genesis.json"
+  done <<<$(echo $additional_accounts | jq -rc '.[] | [.address, .balance] | @tsv' )
 
   jq --arg VerifyKey ${verifreg_rootkey} '.VerifregRootKey.Meta.Signers = [$VerifyKey] ' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
