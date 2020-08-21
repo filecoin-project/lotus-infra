@@ -106,13 +106,13 @@ module "calibrationnet" {
   bootstrapper_count          = 4
   preminer_count              = 3
   scratch_count               = 2
-  toolshed_instance_type      = "m5a.large"
+  toolshed_instance_type      = "m5a.4xlarge"
   chainwatch_db_instance_type = "db.m5.large"
   chainwatch_password         = var.nerpanet_chainwatch_password
   preminer_instance_type      = "p3.2xlarge"
   preminer_volume_size        = 384
-  bootstrapper_instance_type  = "m5a.large"
-  scratch_instance_type       = "m5a.large"
+  bootstrapper_instance_type  = "m5a.2xlarge"
+  scratch_instance_type       = "m5a.2xlarge"
   preminer_iam_profile        = aws_iam_instance_profile.sectors.id
   database_subnet_group       = module.fildev_network_vpc.database_subnet_group
   public_subnet_id            = module.fildev_network_vpc.public_subnets[3]
@@ -125,14 +125,14 @@ module "calibrationnet" {
  * us-east-1
  *****************/
 
-module "testnet2" {
+module "testnet" {
   source                      = "../../modules/devnet"
   providers = {
     aws = aws.us-east-1
   }
-  name                        = "testnet2"
+  name                        = "testnet"
   zone_id                     = aws_route53_zone.fildev_domain.id
-  ami                         = "ami-053bc2e89490c5ab7"
+  ami                         = "ami-0bcc094591f354be2"
   key_name                    = "filecoin"
   vpc_id                      = module.fildev_network_vpc_east.vpc_id
   environment                 = "prod"
@@ -140,13 +140,13 @@ module "testnet2" {
   bootstrapper_count          = 4
   preminer_count              = 3
   scratch_count               = 2
-  toolshed_instance_type      = "m5a.large"
+  toolshed_instance_type      = "m5a.4xlarge"
   chainwatch_db_instance_type = "db.m5.large"
   chainwatch_password         = var.nerpanet_chainwatch_password
   preminer_instance_type      = "p3.2xlarge"
   preminer_volume_size        = 384
-  bootstrapper_instance_type  = "m5a.large"
-  scratch_instance_type       = "m5a.large"
+  bootstrapper_instance_type  = "m5a.2xlarge"
+  scratch_instance_type       = "m5a.2xlarge"
   preminer_iam_profile        = aws_iam_instance_profile.sectors.id
   database_subnet_group       = module.fildev_network_vpc_east.database_subnet_group
   public_subnet_id            = module.fildev_network_vpc_east.public_subnets[0]

@@ -1,7 +1,3 @@
-locals {
-  azs = ["us-west-2a", "us-west-2b", "us-west-2c"]
-}
-
 module "fildev_network_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "2.21.0"
@@ -11,7 +7,7 @@ module "fildev_network_vpc" {
   }
 
   name                         = "fildev-network-vpc"
-  azs                          = local.azs
+  azs                          = ["us-west-2a", "us-west-2b", "us-west-2c"]
   cidr                         = local.cidr
   public_subnets               = local.public_subnets
   database_subnets             = local.private_subnets
@@ -29,7 +25,7 @@ module "fildev_network_vpc_east" {
   }
 
   name                         = "fildev-network-vpc"
-  azs                          = local.azs
+  azs                          = ["us-east-1b", "us-east-1c", "us-east-1d"]
   cidr                         = local.cidr
   public_subnets               = local.public_subnets
   database_subnets             = local.private_subnets
