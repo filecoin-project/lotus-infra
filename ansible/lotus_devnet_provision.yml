@@ -9,6 +9,7 @@
     - include_role: name=ntp
     - include_role: name=filebeat_logz_io
     - include_role: name=telegraf
+    - include_role: name=sentinel_telegraf
     - include_role: name=ufw
 
 - hosts: preminer
@@ -43,22 +44,14 @@
     - include_role: name=lotus_fullnode
       vars:
         lotus_import_peerkey: true
-        lotus_import_wallet: true
     - include_role: name=lotus_fountain
+      when: "'faucet' in group_names"
     - include_role: name=stats
+      when: "'stats' in group_names"
     - include_role: name=chainwatch
-
-- hosts: pcr
-  become: true
-  module_defaults:
-    package:
-      force_apt_get: yes
-  tasks:
-    - include_role: name=lotus_fullnode
-      vars:
-        lotus_import_peerkey: true
-        lotus_import_wallet: true
+      when: "'chainwatch' in group_names"
     - include_role: name=lotus_pcr
+      when: "'pcr' in group_names"
 
 - hosts: scratch
   become: true

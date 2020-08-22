@@ -4,8 +4,17 @@ network_name: butterflynet
 faucet_initial_balance: "50000000000000000000000000"
 miners_initial_balance: "1000000000000000000000000"
 
+additional_account_balance:
+  - address: "t1rcfdg7c2xviu5o6at2kwfdsqksb444p75crv6nq"
+    balance: "10000000000000000000000000"
+  - address: "t1rj7kbxyjfcvxhocz2tjihimgrpyktqjxfgqyzdi"
+    balance: "10000000000000000000000000"
+  - address: "t1q2tquf6kxutn4wz6jrhdnoiaoqyst4e4qispgma"
+    balance: "10000000000000000000000000"
+
 telegraf_global_tags:
   network: "{{ network_name }}"
+
 # influx monitoring options
 telegraf_outputs_influxdb_enabled: true
 telegraf_outputs_influxdb_username: lotus
@@ -17,6 +26,7 @@ inputs_prometheus_urls:
   - "http://127.0.0.1:1234/debug/metrics"
 
 # Sentinel monitoring options
+sentinel_telegraf_outputs_postgresql_conn: "{{ vault_timescale_conn }}"
 # telegraf_outputs_postgresql_conn: "{{ vault_timescale_conn }}"
 # telegraf_outputs_postgresql_enabled: false
 # telegraf_inputs_lotus_enabled: true

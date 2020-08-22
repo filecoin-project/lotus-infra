@@ -133,7 +133,7 @@ pcr_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_wallet_address 
 additional_accounts=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ additional_account_balance }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 
 ../scripts/build_binaries.bash -s "$lotus_src" ${build_flags}
-# ../scripts/build_binaries.bash -s "$sentinel_src" -- telegraf
+../scripts/build_binaries.bash -s "$sentinel_src" -- telegraf
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
@@ -145,11 +145,12 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-fountain"    \
     -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-stats"                \
     -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-chainwatch"      \
-#   -e telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"       \
-    -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes                                 \
+    -e sentinel_telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"\
+    -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes -e lotus_pcr_reset=yes          \
     -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
     -e certbot_create_certificate=${create_certificate}                                            \
     --diff
+
 
 preseal_metadata=$(mktemp -d)
 
@@ -166,7 +167,7 @@ fi
 
 # build the genesis
 pushd "$lotus_src"
-  genesistmp=$(mktemp)
+  genesistmp=$(mktemp --suffix "-${network_name}")
 
   ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
 
@@ -194,6 +195,10 @@ pushd "$lotus_src"
   mv ${genesistmp} "${genpath}/genesis.json"
 
   while read -r addr balance; do
+    if [ -z "${addr}" ]; then
+      continue
+    fi
+
     jq --arg Owner ${addr} --arg Balance ${balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
     mv ${genesistmp} "${genpath}/genesis.json"
   done <<<$(echo $additional_accounts | jq -rc '.[] | [.address, .balance] | @tsv' )
