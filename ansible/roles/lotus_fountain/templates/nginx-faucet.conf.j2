@@ -53,7 +53,7 @@ server {
     }
 {% endif %}
 
-{% if lotus_fountain_external | bool == true %}
+{% if lotus_fountain_external_redirect is defined %}
     location / {
         return 301 {{ lotus_fountain_external_redirect }};
     }
