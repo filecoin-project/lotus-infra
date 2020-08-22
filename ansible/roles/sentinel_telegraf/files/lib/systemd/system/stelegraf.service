@@ -1,0 +1,17 @@
+[Unit]
+Description=Sentinel telegraf
+Documentation=https://github.com/filecoin-project/sentinel
+After=network.target
+
+[Service]
+EnvironmentFile=-/etc/default/stelegraf
+User=stelegraf
+ExecStart=/usr/local/bin/stelegraf -config /etc/stelegraf/stelegraf.conf -config-directory /etc/stelegraf/stelegraf.d $STELEGRAF_OPTS
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=30
+RestartForceExitStatus=SIGPIPE
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

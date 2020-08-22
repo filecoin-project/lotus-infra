@@ -1,0 +1,4 @@
+- name: restart_stelegraf
+  systemd:
+    name: stelegraf
+    state: restarted
