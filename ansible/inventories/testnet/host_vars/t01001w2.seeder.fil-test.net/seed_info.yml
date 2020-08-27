@@ -1,1 +1,0 @@
-lotus_seed_sector_offset: "{{ 2 * lotus_seed_sector_count * (lotus_seed_workers | length) }}"

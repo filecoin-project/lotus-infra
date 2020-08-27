@@ -1,0 +1,48 @@
+---
+logz_io_shared_token: "{{ vault_logz_io_shared_token }}"
+network_name: testnet
+faucet_initial_balance: "10000000000000000000000000"
+miners_initial_balance: "1000000000000000000000000"
+
+pubsub_tracker: "/dns4/pubsub-tracer.filecoin.io/tcp/4001/p2p/QmTd6UvR47vUidRNZ1ZKXHrAFhqTJAD27rKL9XYghEKgKX"
+
+additional_account_balance:
+  - address: "t1nslxql4pck5pq7hddlzym3orxlx35wkepzjkm3i"
+    balance: "200000000000000000000000"
+  - address: "t1stghxhdp2w53dym2nz2jtbpk6ccd4l2lxgmezlq"
+    balance: "200000000000000000000000"
+  - address: "t1mcr5xkgv4jdl3rnz77outn6xbmygb55vdejgbfi"
+    balance: "200000000000000000000000"
+
+telegraf_global_tags:
+  network: "{{ network_name }}"
+
+# influx monitoring options
+telegraf_outputs_influxdb_enabled: true
+telegraf_outputs_influxdb_username: lotus
+telegraf_outputs_influxdb_password: "{{ vault_influxdb_lotus_password }}"
+telegraf_outputs_influxdb_database: lotus-nodes
+telegraf_outputs_influxdb_url: https://eightyeight-1b1e0a69.influxcloud.net:8086
+telegraf_inputs_prometheus_enabled: true
+inputs_prometheus_urls:
+  - "http://127.0.0.1:1234/debug/metrics"
+
+# Sentinel monitoring options
+sentinel_telegraf_outputs_postgresql_conn: "{{ vault_timescale_conn }}"
+# telegraf_outputs_postgresql_conn: "{{ vault_timescale_conn }}"
+# telegraf_outputs_postgresql_enabled: true
+# telegraf_inputs_lotus_enabled: true
+# lotus_api_multiaddr: "/ip4/127.0.0.1/tcp/1234"
+# telegraf_inputs_prometheus_enabled: true
+
+lotus_ipfs_gateway: https://proofs.filecoin.io/ipfs/
+lotus_user: "fc"
+lotus_user_uid: "532"
+proof_version: v27.1
+proof_type: fake
+sector_size: 32GiB
+filebeat_additional_processors: |
+  - drop_event:
+      when:
+        regexp:
+          message: "^received message from router graylisted peer"

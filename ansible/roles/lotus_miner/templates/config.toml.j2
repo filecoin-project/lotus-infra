@@ -7,3 +7,8 @@
    ConsiderOnlineRetrievalDeals = false
    ConsiderOfflineRetrievalDeals = false
 {% endif %}
+
+{% if lotus_miner_pubsub_tracker is defined %}
+[PubSub]
+RemoteTracer = "{{ lotus_miner_pubsub_tracker }}"
+{% endif %}

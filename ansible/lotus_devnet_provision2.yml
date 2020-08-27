@@ -1,0 +1,13 @@
+---
+- hosts: preminer
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+    - include_role: name=lotus_fullnode
+      vars:
+        lotus_import_peerkey: true
+    - include_role: name=lotus_miner
+      vars:
+        lotus_miner_import_wallet: true
