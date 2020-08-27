@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User={{ lotus_user }}
 Group={{ lotus_user }}
-ExecStart=/usr/local/bin/lotus-pcr run
+ExecStart=/usr/local/bin/lotus-pcr --log-level=debug run
 Environment=LOTUS_PATH="{{ lotus_path }}"
 Environment=LOTUS_PCR_PATH="{{ lotus_pcr_path }}"
 Environment=GOLOG_FILE="{{ lotus_pcr_golog_file }}"
