@@ -1,0 +1,6 @@
+lotus_daemon_profile: "bootstrapper"
+lotus_drand_peers: |
+  /dnsaddr/pl-eu.incentinet.drand.sh/
+  /dnsaddr/pl-us.incentinet.drand.sh/
+  /dnsaddr/pl-sin.incentinet.drand.sh/
+lotus_drand_bootstrap: true
