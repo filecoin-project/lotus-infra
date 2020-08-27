@@ -40,6 +40,7 @@ network_name="${network%%.*}net"
 create_certificate="${cert:-"false"}"
 build_flags="${buildflags:-"-f"}"
 genesis_delay="${delay:-"600"}"
+#genesis_timestamp="2020-08-24T22:00:00Z"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 sentinel_src="${ssrc:-"$GOPATH/src/github.com/filecoin-project/sentinel"}"
 verifreg_rootkey="t1meqrx2ijvgrdquybafmlwgszpmc34b3kg3nohvy"
@@ -132,6 +133,22 @@ faucet_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_fountain_add
 pcr_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_wallet_address }}"' pcr | sed 's/.*=>//' | jq -r '.msg')
 additional_accounts=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ additional_account_balance }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 
+#ssh ubuntu@192.168.1.240 bash -c "'
+#git -C /home/ubuntu/src/github.com/filecoin-project/lotus fetch black
+#git -C /home/ubuntu/src/github.com/filecoin-project/lotus checkout v0.5.0
+#pushd /home/ubuntu/src/github.com/filecoin-project/lotus-infra
+#./scripts/build_binaries.bash -f -s /home/ubuntu/src/github.com/filecoin-project/lotus
+#popd
+#'"
+
+#pushd $lotus_src/intel
+#rm -rf lotus lotus-miner lotus-shed lotus-seed
+#scp ubuntu@192.168.1.240:/home/ubuntu/src/github.com/filecoin-project/lotus/lotus .
+#scp ubuntu@192.168.1.240:/home/ubuntu/src/github.com/filecoin-project/lotus/lotus-miner .
+#scp ubuntu@192.168.1.240:/home/ubuntu/src/github.com/filecoin-project/lotus/lotus-seed .
+#scp ubuntu@192.168.1.240:/home/ubuntu/src/github.com/filecoin-project/lotus/lotus-shed .
+#popd
+
 ../scripts/build_binaries.bash -s "$lotus_src" ${build_flags}
 ../scripts/build_binaries.bash -s "$sentinel_src" -- telegraf
 
@@ -150,6 +167,18 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
     -e certbot_create_certificate=${create_certificate}                                            \
     --diff
+
+# runs all the roles
+# ansible-playbook -i $hostfile lotus_devnet_provision2.yml                                           \
+#    -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/intel/lotus"                      \
+#    -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/intel/lotus-miner"          \
+#    -e lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/intel/lotus-shed"            \
+#    -e lotus_seed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/intel/lotus-seed"            \
+#    -e sentinel_telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"\
+#    -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes -e lotus_pcr_reset=yes          \
+#    -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
+#    -e certbot_create_certificate=${create_certificate}                                            \
+#    --diff
 
 
 preseal_metadata=$(mktemp -d)
@@ -182,7 +211,12 @@ pushd "$lotus_src"
     ./lotus-seed genesis add-msigs "${genpath}/genesis.json" "${genpath}/multisig.csv"
   fi
 
-  timestamp=$(echo $(date -d $(date --utc +%FT%H:%M:00Z) +%s) + ${genesis_delay} | bc)
+  if [ -z "${genesis_timestamp}" ]; then
+    timestamp=$(echo $(date -d $(date --utc +%FT%H:%M:00Z) +%s) + ${genesis_delay} | bc)
+  else
+    timestamp=$(date -d "${genesis_timestamp}" +%s)
+  fi
+
 
   jq --arg Timestamp ${timestamp} ' . + { Timestamp: $Timestamp|tonumber } ' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
