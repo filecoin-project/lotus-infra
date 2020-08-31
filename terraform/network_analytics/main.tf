@@ -2,6 +2,10 @@ variable "instance_type" {
   default = "m5.2xlarge"
 }
 
+variable "instance_type_large" {
+  default = "m5.4xlarge"
+}
+
 variable "zone_id" {
   default = "Z4QUK41V3HPV5"
 }
@@ -45,7 +49,7 @@ data "aws_vpc" "default" {
 }
 
 resource "aws_instance" "compute" {
-  count                       = 2
+  count                       = 4
   ami                         = "ami-07c1207a9d40bc3bd"
   instance_type               = var.instance_type
   key_name                    = "filecoin"
@@ -69,6 +73,34 @@ resource "aws_route53_record" "compute" {
   zone_id = var.zone_id
   type    = "A"
   records = ["${aws_instance.compute[count.index].public_ip}"]
+  ttl     = 30
+}
+
+resource "aws_instance" "compute_large" {
+  count                       = 1
+  ami                         = "ami-07c1207a9d40bc3bd"
+  instance_type               = var.instance_type_large
+  key_name                    = "filecoin"
+  vpc_security_group_ids      = [aws_security_group.main.id]
+  subnet_id                   = aws_subnet.main.id
+  associate_public_ip_address = "true"
+
+  root_block_device {
+    volume_type = "gp2"
+    volume_size = 512
+  }
+
+  tags = {
+    Name  = "na.compute${count.index}-large"
+  }
+}
+
+resource "aws_route53_record" "compute_large" {
+  count   = length(aws_instance.compute_large)
+  name    = "compute${count.index}-large.na"
+  zone_id = var.zone_id
+  type    = "A"
+  records = ["${aws_instance.compute_large[count.index].public_ip}"]
   ttl     = 30
 }
 
