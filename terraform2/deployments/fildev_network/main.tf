@@ -15,27 +15,27 @@ locals {
 /*****************
  * us-west-2
  *****************/
-
-module "nerpanet" {
+module "yafnet" {
   source                      = "../../modules/devnet"
   providers = {
     aws = aws.us-west-2
   }
-  name                        = "nerpa"
+  name                        = "yaf"
   zone_id                     = aws_route53_zone.fildev_domain.id
   ami                         = "ami-053bc2e89490c5ab7"
   key_name                    = "filecoin"
   vpc_id                      = module.fildev_network_vpc.vpc_id
   environment                 = "prod"
-  bootstrapper_count          = 4
-  preminer_count              = 3
+  toolshed_count              = 2
+  bootstrapper_count          = 2
+  preminer_count              = 6
   scratch_count               = 2
-  toolshed_instance_type      = "m5a.large"
+  toolshed_instance_type      = "m5a.xlarge"
   chainwatch_db_instance_type = "db.m5.large"
   chainwatch_password         = var.nerpanet_chainwatch_password
-  preminer_instance_type      = "m5a.2xlarge"
-  bootstrapper_instance_type  = "m5a.large"
-  scratch_instance_type       = "m5a.large"
+  preminer_instance_type      = "m5a.4xlarge"
+  bootstrapper_instance_type  = "m5a.xlarge"
+  scratch_instance_type       = "m5a.xlarge"
   preminer_iam_profile        = aws_iam_instance_profile.sectors.id
   database_subnet_group       = module.fildev_network_vpc.database_subnet_group
   public_subnet_id            = module.fildev_network_vpc.public_subnets[0]
@@ -136,8 +136,8 @@ module "testnet" {
   key_name                    = "filecoin"
   vpc_id                      = module.fildev_network_vpc_east.vpc_id
   environment                 = "prod"
-  toolshed_count              = 2
-  bootstrapper_count          = 4
+  toolshed_count              = 4
+  bootstrapper_count          = 0
   preminer_count              = 3
   scratch_count               = 2
   toolshed_instance_type      = "m5a.4xlarge"
