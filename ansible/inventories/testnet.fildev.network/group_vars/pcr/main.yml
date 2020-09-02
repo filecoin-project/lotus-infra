@@ -3,3 +3,5 @@ lotus_pcr_path: "/var/lib/lotus-pcr"
 lotus_pcr_golog_file: "/var/log/lotus-pcr.log"
 lotus_pcr_env:
   LOTUS_PCR_FROM: "{{ lotus_pcr_address }}"
+  LOTUS_PCR_PROVE_COMMIT: "false"
+  LOTUS_PCR_PERCENT_EXTRA: 10
