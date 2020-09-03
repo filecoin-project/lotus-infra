@@ -25,6 +25,15 @@ resource "aws_route53_record" "miner" {
   ttl     = 300
 }
 
+resource "aws_route53_record" "miner_noresrv" {
+  count   = length(packet_device.miner_noreserv)
+  name    = "${packet_device.miner_noreserv[count.index].hostname}.${local.subdomain}"
+  zone_id = data.aws_route53_zone.default.zone_id
+  type    = "A"
+  records = ["${packet_device.miner_noreserv[count.index].access_public_ipv4}"]
+  ttl     = 300
+}
+
 resource "aws_route53_record" "seal_worker" {
   count   = length(packet_device.seal_worker)
   name    = "${packet_device.seal_worker[count.index].hostname}.${local.subdomain}"

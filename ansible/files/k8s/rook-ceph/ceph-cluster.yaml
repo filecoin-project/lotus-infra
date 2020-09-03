@@ -14,18 +14,14 @@ spec:
       enabled: true
   placement:
     mgr:
-      tolerations:
-      - key: ceph
-        operator: Equal
-        value: mon
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: ceph
+            - key: role
               operator: In
               values:
-              - mon
+              - generic
     mon:
       tolerations:
       - key: ceph
@@ -56,7 +52,7 @@ spec:
     count: 3
     allowMultiplePerNode: false
   cephVersion:
-    image: ceph/ceph:v14.2.10
+    image: ceph/ceph:v14.2.6
     allowUnsupported: false
   skipUpgradeChecks: false
   continueUpgradeAfterChecksEvenIfNotHealthy: false

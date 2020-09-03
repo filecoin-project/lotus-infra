@@ -31,7 +31,7 @@ spec:
                 - mon
       containers:
       - name: rook-ceph-tools
-        image: rook/ceph:master
+        image: rook/ceph:v1.3.7
         command: ["/tini"]
         args: ["-g", "--", "/usr/local/bin/toolbox.sh"]
         imagePullPolicy: IfNotPresent

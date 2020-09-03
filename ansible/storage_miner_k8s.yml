@@ -52,6 +52,5 @@
         state: present
     - name: install helm
       apt:
-        name: helm
+        name: helm=3.2.*
         state: present
-        version: 3.2.4-1

@@ -13,4 +13,4 @@ kubectl label nodes storage-miner-0 role=lotus-miner
 kubectl label nodes storage-miner-precomm2-comm-worker-0 storage-miner-precomm2-comm-worker-1 role=lotus-precomm2-comm-worker
 kubectl taint nodes storage-miner-monitoring-0 monitoring=true:NoSchedule
 kubectl label nodes storage-miner-monitoring-0 monitoring=true
-kubectl taint nodes storage-miner-generic-0 nat-gateway=true:NoSchedule
+kubectl label nodes storage-miner-generic-0 role=generic

@@ -41,6 +41,19 @@ resource "packet_device" "miner" {
   network_type                     = "hybrid"
 }
 
+resource "packet_device" "miner_noreserv" {
+  count               = 1
+  hostname            = "storage-miner-1"
+  plan                = "g2.large.x86"
+  facilities          = ["dfw2"]
+  operating_system    = "ubuntu_18_04"
+  billing_cycle       = "hourly"
+  project_id          = var.project_id
+  project_ssh_key_ids = values(local.ssh_keys)
+  network_type        = "hybrid"
+}
+
+
 output "miner_public_ips" {
   value = packet_device.miner.*.access_public_ipv4
 }
@@ -74,7 +87,7 @@ output "seal_worker_private_ips" {
 }
 
 resource "packet_device" "seal_worker_gpu" {
-  count               = 2
+  count               = 3
   hostname            = "storage-miner-precomm2-comm-worker-${count.index}"
   plan                = "g2.large.x86"
   facilities          = ["dfw2"]
@@ -228,6 +241,14 @@ resource "packet_port_vlan_attachment" "miner" {
   vlan_vnid = packet_vlan.k8s.vxlan
   port_name = "eth1"
 }
+
+resource "packet_port_vlan_attachment" "miner_noreserv" {
+  count     = length(packet_device.miner_noreserv)
+  device_id = packet_device.miner_noreserv[count.index].id
+  vlan_vnid = packet_vlan.k8s.vxlan
+  port_name = "eth1"
+}
+
 
 resource "packet_port_vlan_attachment" "seal_worker" {
   count     = length(packet_device.seal_worker)
