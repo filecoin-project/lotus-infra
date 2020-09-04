@@ -1,7 +1,19 @@
 ---
+- name: Set fact 'keys' blank
+  set_fact:
+    keys: ""
+
+- name: Set fact 'keys' append item
+  set_fact:
+    keys: |
+      {{ keys }}
+      {{ item }}
+  with_file:
+    "{{ ssh_keys_access | product(['public-keys']) | map('reverse') | map('join', '/') | list }}"
+
 - name: Ensure authorized keys
   authorized_key:
     user: "{{ ssh_user }}"
+    exclusive: yes
     state: present
-    key: "{{ item }}"
-  with_file: "{{ ssh_keys_access | product(['public-keys']) | map('reverse') | map('join', '/') | list }}"
+    key: "{{ keys }}"
