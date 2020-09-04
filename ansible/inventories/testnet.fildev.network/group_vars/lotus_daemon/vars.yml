@@ -11,7 +11,10 @@ lotus_prometheus_url: "http://localhost:1234/debug/metrics"
 lotus_api_multiaddr: "/ip4/127.0.0.1/tcp/1234"
 lotus_import_jwt: true
 lotus_pubsub_tracker: "{{ pubsub_tracker }}"
+lotus_env:
+  LOTUS_CHAIN_TIPSET_CACHE: 128000
+  LOTUS_CHAIN_MSGMETA_CACHE: 128000
 lotus_systemd_extras:
-  MemoryHigh: 12G
-  MemoryMax: 16G
+  MemoryHigh: 20G
+  MemoryMax: 24G
   LimitNOFILE: 32768
