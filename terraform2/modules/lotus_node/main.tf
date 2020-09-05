@@ -21,6 +21,30 @@ resource "aws_instance" "node" {
   }
 }
 
+resource "aws_ebs_volume" "external" {
+  count             = var.scale * var.external
+  availability_zone = var.availability_zone
+  size              = 192
+  iops              = 5000
+  type              = "io1"
+
+  tags = {
+    Name = "${var.name}-${count.index}-external"
+  }
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_volume_attachment" "external" {
+  count        = var.scale * var.external
+  device_name  = "/dev/xvds"
+  volume_id    = aws_ebs_volume.external[count.index].id
+  instance_id  = aws_instance.node[count.index].id
+  force_detach = false
+}
+
 resource "aws_route53_record" "node" {
   count   = var.scale
   name    = "${var.name}-${count.index}"

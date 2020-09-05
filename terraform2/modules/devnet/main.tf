@@ -6,6 +6,7 @@ data "aws_subnet" "selected" {
 module "toolshed" {
   source                     = "../lotus_node"
   name                       = "toolshed"
+  external                   = var.toolshed_external
   scale                      = var.toolshed_count
   instance_type              = var.toolshed_instance_type
   availability_zone          = data.aws_subnet.selected.availability_zone
@@ -24,6 +25,7 @@ module "toolshed" {
 module "bootstrappers" {
   source                     = "../lotus_node"
   name                       = "bootstrap"
+  external                   = var.bootstrapper_external
   scale                      = var.bootstrapper_count
   instance_type              = var.bootstrapper_instance_type
   availability_zone          = data.aws_subnet.selected.availability_zone
@@ -42,6 +44,7 @@ module "bootstrappers" {
 module "preminers" {
   source                     = "../lotus_node"
   name                       = "preminer"
+  external                   = var.preminer_external
   scale                      = var.preminer_count
   instance_type              = var.preminer_instance_type
   availability_zone          = data.aws_subnet.selected.availability_zone
@@ -62,6 +65,7 @@ module "preminers" {
 module "scratch" {
   source                     = "../lotus_node"
   name                       = "scratch"
+  external                   = var.scratch_external
   scale                      = var.scratch_count
   instance_type              = var.scratch_instance_type
   availability_zone          = data.aws_subnet.selected.availability_zone
