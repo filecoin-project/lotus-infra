@@ -104,4 +104,12 @@ resource "aws_route53_record" "compute_large" {
   ttl     = 30
 }
 
+resource "aws_route53_record" "sentinel" {
+  zone_id = var.zone_id
+  type    = "CNAME"
+  name    = "sentinel"
+  records = ["compute0-large.na.kittyhawk.wtf"]
+  ttl     = 30
+}
+
 data "aws_availability_zones" "available" {}
