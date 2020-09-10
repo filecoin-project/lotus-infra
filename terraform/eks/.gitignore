@@ -1,0 +1,17 @@
+/secret/
+/.dependencies/
+*.tfstate
+*.tfstate.backup
+*.tfvars-*
+*.tfvars
+!*.auto.tfvars
+.ansible/
+**.retry
+.terraform
+debug.log
+override.tf
+*_override.tf
+.DS_Store
+kubeconfig_*
+config-map-aws-auth_*
+extra/eni-config.yml
