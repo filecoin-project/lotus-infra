@@ -137,9 +137,11 @@ module "testnet" {
   vpc_id                      = module.fildev_network_vpc_east.vpc_id
   environment                 = "prod"
   toolshed_count              = 4
+  toolshed_external           = 1
   bootstrapper_count          = 0
   preminer_count              = 3
   scratch_count               = 2
+  scratch_external            = 1
   toolshed_instance_type      = "m5a.4xlarge"
   chainwatch_db_instance_type = "db.m5.large"
   chainwatch_password         = var.nerpanet_chainwatch_password

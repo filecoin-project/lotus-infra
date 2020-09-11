@@ -31,6 +31,10 @@ variable "toolshed_count" {
   type = number
   default = 1
 }
+variable "toolshed_external" {
+  type    = number
+  default = 0
+}
 variable "chainwatch_db_instance_type" {
   type    = string
   default = "db.t2.micro"
@@ -58,6 +62,10 @@ variable "preminer_count" {
   type    = number
   default = 1
 }
+variable "preminer_external" {
+  type    = number
+  default = 0
+}
 
 variable "bootstrapper_instance_type" {
   type    = string
@@ -67,6 +75,10 @@ variable "bootstrapper_count" {
   type    = number
   default = 1
 }
+variable "bootstrapper_external" {
+  type    = number
+  default = 0
+}
 
 
 variable "scratch_instance_type" {
@@ -74,6 +86,10 @@ variable "scratch_instance_type" {
   default = "t2.micro"
 }
 variable "scratch_count" {
+  type    = number
+  default = 0
+}
+variable "scratch_external" {
   type    = number
   default = 0
 }

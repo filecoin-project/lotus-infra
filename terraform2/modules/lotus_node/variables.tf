@@ -61,3 +61,8 @@ variable "volume_size" {
   type    = number
   default = 128
 }
+
+variable "external" {
+  type    = number
+  default = 0
+}
