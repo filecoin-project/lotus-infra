@@ -52,15 +52,15 @@ module "eks" {
 
   #workers_additional_policies_count = 1
 
-  worker_groups = [
+  node_groups = [
     {
       name          = "${local.name}-k8s-workers"
-      instance_type = "c5.2xlarge"
+      instance_type = "c5.9xlarge"
       key_name      = var.key_name
       # additional_userdata  = "aws s3 cp s3://filecoin-proof-parameters /opt/filecoin-proof-parameters --region us-east-1 --recursive --no-sign-request"
-      asg_desired_capacity = "1"
-      asg_min_size         = "1"
-      asg_max_size         = "300"
+      desired_capacity = "2"
+      min_capacity     = "1"
+      max_capacity     = "20"
     },
   ]
 
