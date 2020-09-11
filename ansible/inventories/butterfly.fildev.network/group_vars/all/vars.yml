@@ -4,13 +4,7 @@ network_name: butterflynet
 faucet_initial_balance: "50000000000000000000000000"
 miners_initial_balance: "1000000000000000000000000"
 
-additional_account_balance:
-  - address: "t1rcfdg7c2xviu5o6at2kwfdsqksb444p75crv6nq"
-    balance: "10000000000000000000000000"
-  - address: "t1rj7kbxyjfcvxhocz2tjihimgrpyktqjxfgqyzdi"
-    balance: "10000000000000000000000000"
-  - address: "t1q2tquf6kxutn4wz6jrhdnoiaoqyst4e4qispgma"
-    balance: "10000000000000000000000000"
+additional_account_balance: []
 
 telegraf_global_tags:
   network: "{{ network_name }}"
