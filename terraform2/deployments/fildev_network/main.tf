@@ -140,6 +140,7 @@ module "testnet" {
   toolshed_external           = 1
   bootstrapper_count          = 0
   preminer_count              = 3
+  preminer_external           = 1
   scratch_count               = 2
   scratch_external            = 1
   toolshed_instance_type      = "m5a.4xlarge"

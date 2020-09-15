@@ -1,3 +1,4 @@
+lotus_path: "/storage/lotus"
 lotus_miner_presealed: "yes"
 lotus_miner_systemd_extras:
   LimitNOFILE: 327680
