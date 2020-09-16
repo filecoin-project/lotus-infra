@@ -24,7 +24,7 @@ resource "aws_instance" "node" {
 resource "aws_ebs_volume" "external" {
   count             = var.scale * var.external
   availability_zone = var.availability_zone
-  size              = 192
+  size              = 512
   iops              = 5000
   type              = "io1"
 

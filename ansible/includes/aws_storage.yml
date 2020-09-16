@@ -1,0 +1,55 @@
+---
+- name: Checking required variables
+  fail: msg="Variable '{{ item }}' is not defined"
+  when: vars[item] is not defined
+  with_items:
+    - path
+    - device
+
+- name: Ensure mount point exists
+  file:
+    name: "{{ path }}"
+    state: directory
+
+- name: Create partition
+  parted:
+    device: "{{ device }}"
+    number: "1"
+    label: gpt
+    state: present
+
+- name: Register partition
+  shell: fdisk -l -o Device "{{ device }}" | grep '^{{ device }}'
+  register: partition
+
+- name: Create ext4 filesystem on partition
+  filesystem:
+    fstype: ext4
+    dev: "{{ partition.stdout }}"
+
+- name: Wait 5
+  pause:
+    seconds: 5
+
+- name: Probe partition
+  shell: partprobe "{{ partition.stdout }}"
+
+- name: Wait 5
+  pause:
+    seconds: 5
+
+- name: Register uuid
+  shell: lsblk --noheading --list -o uuid "{{ partition.stdout }}"
+  register: uuid
+
+- name: Ensure merged mounted
+  mount:
+    src: "UUID={{ uuid.stdout }}"
+    path: "{{ path }}"
+    state: mounted
+    fstype: ext4
+
+- name: Remove lost+found
+  file:
+    name: "{{ path }}/lost+found"
+    state: absent
