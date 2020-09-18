@@ -1,7 +1,7 @@
 image:
   repository: travisperson/lotus
   pullPolicy: Always
-  tag: latest
+  tag: v0.7.1
 
 ports:
   api: 1234
