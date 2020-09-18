@@ -43,7 +43,7 @@ spec:
           items:
           - key: config.toml
             path: config.toml
-      - name: {{ .Release.Name }}-daemon-keystore-volume
+      - name: {{ .Release.Name }}-daemon-secrets-volume
         secret:
           secretName: {{ .Release.Name }}-daemon-secrets
           defaultMode: 0600
@@ -59,7 +59,27 @@ spec:
           items:
           - key: {{ .Values.token.name }}
             path: token
+      - name: {{ .Release.Name }}-daemon-keystore-volume
+        emptyDir:
+          medium: Memory
       initContainers:
+      # We have to do this dance because the keystore in lotus doesn't like the way that
+      # k8s juggle the files via symlinks
+      - name: {{ .Chart.Name }}-keystore-transfer
+        image: busybox
+        command: ["sh","-c"]
+        args:
+          - |
+            for key in $(ls /secrets); do
+              cp "/secrets/$key" /keystore/
+              chmod 0600 "/keystore/$key"
+            done
+        volumeMounts:
+          - name: {{ .Release.Name }}-daemon-secrets-volume
+            mountPath: /secrets
+            readOnly: true
+          - name: {{ .Release.Name }}-daemon-keystore-volume
+            mountPath: /keystore
       - name: {{ .Chart.Name }}-keystore-verifier
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
