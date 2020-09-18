@@ -1,0 +1,25 @@
+image:
+  repository: travisperson/lotus
+  pullPolicy: Always
+  tag: latest
+
+ports:
+  api: 1234
+  libp2p: 1347
+
+token:
+  name: jwt-all-privs-token
+
+keystore:
+- key: auth-jwt-private
+  path: MF2XI2BNNJ3XILLQOJUXMYLUMU
+- key: libp2p-host
+  path: NRUWE4BSOAWWQ33TOQ
+
+persistence:
+  enabled: true
+  daemon:
+    size: "10Gi"
+    accessModes:
+      - ReadWriteOnce
+    storageClassName: "gp2"

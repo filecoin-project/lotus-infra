@@ -1,32 +1,30 @@
+FROM lotus-builder:latest as builder
 FROM ubuntu:18.04
 MAINTAINER Lotus Development Team
 
 # Base resources
-COPY --from=builder /etc/ssl/certs                       /etc/ssl/certs
-COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so  /lib/x86_64-linux-gnu/libdl-2.24.so
-COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1     /lib/x86_64-linux-gnu/librt.so.1
-COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1  /lib/x86_64-linux-gnu/libgcc_s.so.1
-COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1   /lib/x86_64-linux-gnu/libutil.so.1
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1
+COPY --from=builder /etc/ssl/certs                           /etc/ssl/certs
+COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so      /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1         /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1      /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1       /lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/
 
-COPY --from=builder /usr/local/bin/lotus                 /usr/local/bin/lotus
+COPY --from=builder /usr/local/bin/lotus                 /usr/local/bin/
+COPY --from=builder /usr/local/bin/lotus-shed            /usr/local/bin/
 
-RUN adduser --home /var/filecoin -u 1000 --ingroup users --disabled-password --gecos "" filecoin
-RUN id filecoin
+RUN useradd -r -u 532 -U fc
 
-ENV FILECOIN_PARAMETER_CACHE="/var/tmp/filecoin-proof-parameters"
-ENV LOTUS_PATH /var/filecoin
-ENV SHARED_DATA /var/shared-data
+ENV FILECOIN_PARAMETER_CACHE /var/tmp/filecoin-proof-parameters
+ENV LOTUS_PATH /var/lib/lotus
 
-# Swarm
-EXPOSE 1234
+RUN mkdir /var/lib/lotus /var/tmp/filecoin-proof-parameters && chown fc /var/lib/lotus /var/tmp/filecoin-proof-parameters
 
-VOLUME /var/shared-data
-VOLUME /var/filecoin
+VOLUME /var/lib/lotus
 VOLUME /var/tmp/filecoin-proof-parameters
 
-USER filecoin
+USER fc
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.bash"]
+ENTRYPOINT ["/usr/local/bin/lotus"]
 
 CMD ["-help"]

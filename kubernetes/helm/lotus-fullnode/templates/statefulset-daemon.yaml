@@ -1,0 +1,159 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name}}-daemon-config
+  namespace: {{ .Release.Namespace }}
+data:
+  config.toml: |
+    [API]
+      ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+    [Libp2p]
+      ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}-app
+spec:
+  # Hard set to a single replica, scaling should be done through additional releases
+  replicas: 1
+  serviceName: {{ .Release.Name }}-service
+  selector:
+    matchLabels:
+      app: lotus-fullnode-app
+  template:
+    metadata:
+      labels:
+        app: lotus-fullnode-app
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        release: {{ .Release.Name }}
+    spec:
+      securityContext:
+        fsGroup: 532
+        runAsNonRoot: true
+        runAsUser: 532
+        runAsGroup: 532
+      volumes:
+      - name: {{ .Release.Name }}-daemon-config-volume
+        configMap:
+          name: {{ .Release.Name}}-daemon-config
+          items:
+          - key: config.toml
+            path: config.toml
+      - name: {{ .Release.Name }}-daemon-keystore-volume
+        secret:
+          secretName: {{ .Release.Name }}-daemon-secrets
+          defaultMode: 0600
+          items:
+          {{- range .Values.keystore }}
+          - key: {{ .key }}
+            path: {{ .path }}
+          {{- end }}
+      - name: {{ .Release.Name }}-daemon-token-volume
+        secret:
+          secretName: {{ .Release.Name }}-daemon-secrets
+          defaultMode: 0600
+          items:
+          - key: {{ .Values.token.name }}
+            path: token
+      initContainers:
+      - name: {{ .Chart.Name }}-keystore-verifier
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["bash", "-c"]
+        args:
+          - |
+            # Exit if anything fails
+            set -e
+
+            pushd /keystore
+            for key in $(ls .); do
+              if [ "$key" == "token" ]; then
+                continue
+              fi
+
+              echo "Verifying $key"
+              lotus-shed keyinfo verify "$key"
+            done
+            popd
+        volumeMounts:
+          - name: {{ .Release.Name }}-daemon-keystore-volume
+            mountPath: /keystore
+            readOnly: true
+{{- if .Values.debug }}
+      - name: {{ .Chart.Name }}-debug
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["sh", "-c", "tail -f /dev/null"]
+        volumeMounts:
+          - name: {{ .Release.Name }}-daemon-config-volume
+            mountPath: /var/lib/lotus/config.toml
+            subPath: config.toml
+            readOnly: true
+          - name: {{ .Release.Name }}-daemon-token-volume
+            mountPath: /var/lib/lotus/token
+            subPath: token
+            readOnly: true
+          - name: {{ .Release.Name }}-daemon-keystore-volume
+            mountPath: /var/lib/lotus/keystore
+            readOnly: true
+          - name: daemon-datastore-volume
+            mountPath: /var/lib/lotus/datastore
+{{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-daemon
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/usr/local/bin/lotus","daemon"]
+        volumeMounts:
+          - name: {{ .Release.Name }}-daemon-config-volume
+            mountPath: /var/lib/lotus/config.toml
+            subPath: config.toml
+            readOnly: true
+          - name: {{ .Release.Name }}-daemon-token-volume
+            mountPath: /var/lib/lotus/token
+            subPath: token
+            readOnly: true
+          - name: {{ .Release.Name }}-daemon-keystore-volume
+            mountPath: /var/lib/lotus/keystore
+            readOnly: true
+          - name: daemon-datastore-volume
+            mountPath: /var/lib/lotus/datastore
+        livenessProbe:
+          httpGet:
+            path: /debug/metrics
+            port: api
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 6
+        readinessProbe:
+          httpGet:
+            path: /debug/metrics
+            port: api
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 3
+        ports:
+        - containerPort: 1234
+          name: api
+        - containerPort: 1347
+          name: p2p
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: daemon-datastore-volume
+      spec:
+        accessModes:
+        {{- range .Values.persistence.daemon.accessModes }}
+        - {{ . | quote }}
+        {{- end }}
+        storageClassName: {{ .Values.persistence.daemon.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.daemon.size | quote }}
+  {{- end }}

@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-daemon
+  labels:
+    app: {{ .Release.Name }}-app
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "{{ .Values.ports.api }}"
+    prometheus.io/path: /debug/metrics
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Release.Name }}-app
+    release: {{ .Release.Name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.ports.api }}
+      targetPort: 1234
+      name: api
+    - protocol: TCP
+      port: {{ .Values.ports.libp2p }}
+      targetPort: 1347
+      name: libp2p
