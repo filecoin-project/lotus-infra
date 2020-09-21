@@ -20,6 +20,7 @@ You will need to install the following:
 [aws-iam-authenticator]: https://docs.aws.amazon.com/eks/latest/userguide/configure-kubectl.html
 [kubectl]: https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-with-homebrew-on-macos
 [helm]: https://docs.helm.sh/using_helm/#installing-the-helm-client
+[terraform-provider-tls]: https://registry.terraform.io/providers/hashicorp/tls/latest/docs
 
 You will also need the following environment variables set for `terraform`
 and `aws` to authenticate with AWS:

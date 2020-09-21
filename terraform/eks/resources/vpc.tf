@@ -9,6 +9,7 @@ module "vpc" {
   cidr                 = var.cidr
   public_subnets       = flatten([var.public_subnets])
   enable_dns_hostnames = true
+  enable_s3_endpoint   = true
 
   tags = "${merge(
     local.tags,
