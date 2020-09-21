@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-daemon
   labels:
-    app: {{ .Release.Name }}-app
+    app: lotus-fullnode-app
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "{{ .Values.ports.api }}"

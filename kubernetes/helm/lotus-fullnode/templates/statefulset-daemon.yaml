@@ -16,7 +16,7 @@ kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}
   labels:
-    app: {{ .Release.Name }}-app
+    app: lotus-fullnode-app
 spec:
   # Hard set to a single replica, scaling should be done through additional releases
   replicas: 1
@@ -24,6 +24,7 @@ spec:
   selector:
     matchLabels:
       app: lotus-fullnode-app
+      release: {{ .Release.Name }}
   template:
     metadata:
       labels:
