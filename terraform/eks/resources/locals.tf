@@ -19,6 +19,21 @@ locals {
       username = "cory"
       groups   = ["system:masters"]
     },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/iand"
+      username = "iand"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/frrst"
+      username = "frrst"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/mg"
+      username = "mg"
+      groups   = ["system:masters"]
+    },
   ]
 
   tags = {
