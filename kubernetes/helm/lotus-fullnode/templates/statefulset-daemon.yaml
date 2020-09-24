@@ -38,35 +38,81 @@ spec:
         runAsUser: 532
         runAsGroup: 532
       volumes:
-      - name: {{ .Release.Name }}-daemon-config-volume
+      - name: config-volume
         configMap:
-          name: {{ .Release.Name}}-daemon-config
+          name: {{ .Release.Name }}-daemon-config
           items:
           - key: config.toml
             path: config.toml
-      - name: {{ .Release.Name }}-daemon-secrets-volume
+{{- if .Values.secrets.jwt.enabled }}
+      - name: jwt-secrets-volume
         secret:
-          secretName: {{ .Release.Name }}-daemon-secrets
+          secretName: {{ default (print .Release.Name "-jwt-secrets") .Values.secrets.jwt.secretName }}
           defaultMode: 0600
           items:
-          {{- range .Values.keystore }}
-          - key: {{ .key }}
-            path: {{ .path }}
-          {{- end }}
-      - name: {{ .Release.Name }}-daemon-token-volume
+          - key: {{ .Values.secrets.jwt.jwts_key }}
+            path: MF2XI2BNNJ3XILLQOJUXMYLUMU
+      - name: jwt-token-volume
         secret:
-          secretName: {{ .Release.Name }}-daemon-secrets
+          secretName: {{ default (print .Release.Name "-jwt-secrets") .Values.secrets.jwt.secretName }}
           defaultMode: 0600
           items:
-          - key: {{ .Values.token.name }}
+          - key: {{ .Values.secrets.jwt.token_key }}
             path: token
-      - name: {{ .Release.Name }}-daemon-keystore-volume
+{{- else }}
+      - name: jwt-secrets-volume
+        emptyDir:
+          medium: Memory
+      - name: jwt-token-volume
+        emptyDir:
+          medium: Memory
+{{- end }}
+{{- if .Values.secrets.libp2p.enabled }}
+      - name: libp2p-secrets-volume
+        secret:
+          secretName: {{ default (print .Release.Name "-libp2p-secrets") .Values.secrets.libp2p.secretName }}
+          defaultMode: 0600
+          items:
+          - key: {{ .Values.secrets.libp2p.libp2p_key }}
+            path: NRUWE4BSOAWWQ33TOQ
+{{- else }}
+      - name: libp2p-secrets-volume
+        emptyDir:
+          medium: Memory
+{{- end }}
+{{- if .Values.secrets.wallets.enabled }}
+      - name: wallets-secrets-volume
+        secret:
+          secretName: {{ .Values.secrets.wallets.secretName }}
+          defaultMode: 0600
+          items:
+          {{- range .Values.secrets.wallets.keystore }}
+           - key: {{ .key }}
+             path: {{ .path }}
+          {{- end }}
+{{- end }}
+      - name: keystore-volume
         emptyDir:
           medium: Memory
       initContainers:
-      # We have to do this dance because the keystore in lotus doesn't like the way that
-      # k8s juggle the files via symlinks
-      - name: {{ .Chart.Name }}-keystore-transfer
+{{- if not .Values.secrets.jwt.enabled }}
+      - name: temp-jwt
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        command: ["bash","-c"]
+        args:
+          - |
+            pushd /tmp/
+
+            lotus-shed jwt new node
+            lotus-shed base16 -decode < jwt-node.jwts > "/jwt-secrets-volume/MF2XI2BNNJ3XILLQOJUXMYLUMU"
+            mv jwt-node.token /jwt-token-volume/token
+        volumeMounts:
+          - name: jwt-secrets-volume
+            mountPath: /jwt-secrets-volume
+          - name: jwt-token-volume
+            mountPath: /jwt-token-volume
+{{- end }}
+      - name: keystore-transfer-jwt
         image: busybox
         command: ["sh","-c"]
         args:
@@ -76,12 +122,60 @@ spec:
               chmod 0600 "/keystore/$key"
             done
         volumeMounts:
-          - name: {{ .Release.Name }}-daemon-secrets-volume
+          - name: jwt-secrets-volume
             mountPath: /secrets
             readOnly: true
-          - name: {{ .Release.Name }}-daemon-keystore-volume
+          - name: keystore-volume
             mountPath: /keystore
-      - name: {{ .Chart.Name }}-keystore-verifier
+{{- if not .Values.secrets.libp2p.enabled }}
+      - name: temp-libp2p
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        command: ["bash","-c"]
+        args:
+          - |
+            pushd /tmp/
+
+            lotus-shed keyinfo new --output "<type>.keyinfo" libp2p-host
+            lotus-shed base16 -decode < libp2p-host.keyinfo > /libp2p-secrets-volume/NRUWE4BSOAWWQ33TOQ
+
+            popd
+        volumeMounts:
+          - name: libp2p-secrets-volume
+            mountPath: /libp2p-secrets-volume
+{{- end }}
+      - name: keystore-transfer-libp2p
+        image: busybox
+        command: ["sh","-c"]
+        args:
+          - |
+            for key in $(ls /secrets); do
+              cp "/secrets/$key" /keystore/
+              chmod 0600 "/keystore/$key"
+            done
+        volumeMounts:
+          - name: libp2p-secrets-volume
+            mountPath: /secrets
+            readOnly: true
+          - name: keystore-volume
+            mountPath: /keystore
+{{- if .Values.secrets.wallets.enabled }}
+      - name: keystore-transfer-wallets
+        image: busybox
+        command: ["sh","-c"]
+        args:
+          - |
+            for key in $(ls /secrets); do
+              cp "/secrets/$key" /keystore/
+              chmod 0600 "/keystore/$key"
+            done
+        volumeMounts:
+          - name: wallets-secrets-volume
+            mountPath: /secrets
+            readOnly: true
+          - name: keystore-volume
+            mountPath: /keystore
+{{- end }}
+      - name: keystore-verifier
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["bash", "-c"]
@@ -101,48 +195,60 @@ spec:
             done
             popd
         volumeMounts:
-          - name: {{ .Release.Name }}-daemon-keystore-volume
+          - name: keystore-volume
             mountPath: /keystore
             readOnly: true
 {{- if .Values.debug }}
-      - name: {{ .Chart.Name }}-debug
+      - name: debug
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["sh", "-c", "tail -f /dev/null"]
         volumeMounts:
-          - name: {{ .Release.Name }}-daemon-config-volume
+          - name: config-volume
             mountPath: /var/lib/lotus/config.toml
             subPath: config.toml
             readOnly: true
-          - name: {{ .Release.Name }}-daemon-token-volume
+          - name: jwt-token-volume
             mountPath: /var/lib/lotus/token
             subPath: token
             readOnly: true
-          - name: {{ .Release.Name }}-daemon-keystore-volume
+          - name: keystore-volume
             mountPath: /var/lib/lotus/keystore
             readOnly: true
-          - name: daemon-datastore-volume
+          {{- if .Values.persistence.datastore.enabled }}
+          - name: datastore-volume
             mountPath: /var/lib/lotus/datastore
+          {{- end }}
+          {{- if .Values.persistence.journal.enabled }}
+          - name: journal-volume
+            mountPath: /var/lib/lotus/journal
+          {{- end }}
 {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-daemon
+      - name: daemon
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/usr/local/bin/lotus","daemon"]
         volumeMounts:
-          - name: {{ .Release.Name }}-daemon-config-volume
+          - name: config-volume
             mountPath: /var/lib/lotus/config.toml
             subPath: config.toml
             readOnly: true
-          - name: {{ .Release.Name }}-daemon-token-volume
+          - name: jwt-token-volume
             mountPath: /var/lib/lotus/token
             subPath: token
             readOnly: true
-          - name: {{ .Release.Name }}-daemon-keystore-volume
+          - name: keystore-volume
             mountPath: /var/lib/lotus/keystore
             readOnly: true
-          - name: daemon-datastore-volume
+          {{- if .Values.persistence.datastore.enabled }}
+          - name: datastore-volume
             mountPath: /var/lib/lotus/datastore
+          {{- end }}
+          {{- if .Values.persistence.journal.enabled }}
+          - name: journal-volume
+            mountPath: /var/lib/lotus/journal
+          {{- end }}
         livenessProbe:
           httpGet:
             path: /debug/metrics
@@ -164,17 +270,32 @@ spec:
           name: api
         - containerPort: 1347
           name: p2p
-  {{- if .Values.persistence.enabled }}
+  {{- if or .Values.persistence.journal.enabled .Values.persistence.datastore.enabled }}
   volumeClaimTemplates:
+  {{- if .Values.persistence.datastore.enabled }}
     - metadata:
-        name: daemon-datastore-volume
+        name: datastore-volume
       spec:
         accessModes:
-        {{- range .Values.persistence.daemon.accessModes }}
+        {{- range .Values.persistence.datastore.accessModes }}
         - {{ . | quote }}
         {{- end }}
-        storageClassName: {{ .Values.persistence.daemon.storageClassName }}
+        storageClassName: {{ .Values.persistence.datastore.storageClassName }}
         resources:
           requests:
-            storage: {{ .Values.persistence.daemon.size | quote }}
+            storage: {{ .Values.persistence.datastore.size | quote }}
+  {{- end }}
+  {{- if .Values.persistence.journal.enabled }}
+    - metadata:
+        name: journal-volume
+      spec:
+        accessModes:
+        {{- range .Values.persistence.journal.accessModes }}
+        - {{ . | quote }}
+        {{- end }}
+        storageClassName: {{ .Values.persistence.journal.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.journal.size | quote }}
+  {{- end }}
   {{- end }}
