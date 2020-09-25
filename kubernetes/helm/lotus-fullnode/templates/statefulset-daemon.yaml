@@ -40,7 +40,7 @@ spec:
       volumes:
       - name: chain-archives
         persistentVolumeClaim:
-          claimName: {{ .Values.chainArchivesClaimName }}
+          claimName: {{ .Values.importSnapshot.claimName }}
       - name: config-volume
         configMap:
           name: {{ .Release.Name }}-daemon-config
