@@ -3,6 +3,18 @@ image:
   pullPolicy: Always
   tag: v0.7.1
 
+importSnapshot:
+  # when importSnapshot is enabled prior to the daemon starting a snapshot will
+  # be imported into the blockstore
+  enabled: false
+  # if the snapshot can't be found, the import init container will exit with
+  # this status code, if you want the daemon to come back online regardless set
+  # this value to `0`
+  exitCodeOnMissing: 1
+
+  # this is the claimName of a pvc that will be used for chain importing
+  claimName: chain-archives
+
 ports:
   api: 1234
   libp2p: 1347

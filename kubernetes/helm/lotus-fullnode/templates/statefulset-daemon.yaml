@@ -38,6 +38,9 @@ spec:
         runAsUser: 532
         runAsGroup: 532
       volumes:
+      - name: chain-archives
+        persistentVolumeClaim:
+          claimName: {{ .Values.chainArchivesClaimName }}
       - name: config-volume
         configMap:
           name: {{ .Release.Name }}-daemon-config
@@ -198,6 +201,59 @@ spec:
           - name: keystore-volume
             mountPath: /keystore
             readOnly: true
+{{- if .Values.importSnapshot }}
+      - name: lock-and-wait
+        image: busybox
+        command: ["sh", "-c"]
+        args:
+          - |
+            # wait for the write to finish
+            while [ -f /chain-archives/exports/write.lock ]; do
+              echo $(date -Iseconds) " - waiting for write lock to be removed"
+              sleep 60
+            done
+
+            # take the read lock so the data doesn't change out from under us
+            touch /chain-archives/exports/read-{{ .Release.Namespace }}-{{ .Release.Name }}.lock
+
+        volumeMounts:
+        - name: chain-archives
+          mountPath: "/chain-archives"
+      - name: chain-import
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["bash", "-c"]
+        args:
+          - |
+            if [ ! -f /chain-archives/exports/snapshot.car ]; then
+              echo "No snapshot was found"
+              exit {{ .Values.importSnapshot.exitCodeOnMissing }}
+            fi
+            lotus daemon --bootstrap=false --halt-after-import --import-snapshot=/chain-archives/exports/snapshot.car
+            rm -f /chain-archives/exports/read-{{ .Release.Namespace }}-{{ .Release.Name }}.lock
+        volumeMounts:
+          - name: config-volume
+            mountPath: /var/lib/lotus/config.toml
+            subPath: config.toml
+            readOnly: true
+          - name: jwt-token-volume
+            mountPath: /var/lib/lotus/token
+            subPath: token
+            readOnly: true
+          - name: keystore-volume
+            mountPath: /var/lib/lotus/keystore
+            readOnly: true
+          {{- if .Values.persistence.datastore.enabled }}
+          - name: datastore-volume
+            mountPath: /var/lib/lotus/datastore
+          {{- end }}
+          {{- if .Values.persistence.journal.enabled }}
+          - name: journal-volume
+            mountPath: /var/lib/lotus/journal
+          {{- end }}
+          - name: chain-archives
+            mountPath: "/chain-archives"
+{{- end }}
 {{- if .Values.debug }}
       - name: debug
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

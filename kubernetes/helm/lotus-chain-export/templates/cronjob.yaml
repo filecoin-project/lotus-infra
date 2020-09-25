@@ -1,0 +1,121 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-chain-exporter
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-chain-exporter
+rules:
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-chain-exporter
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ .Release.Name }}-chain-exporter
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-chain-exporter
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-chain-exporter
+spec:
+  schedule: {{ .Values.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ .Release.Name }}-chain-exporter
+          restartPolicy: Never
+          securityContext:
+            fsGroup: 532
+            runAsNonRoot: true
+            runAsUser: 532
+            runAsGroup: 532
+          initContainers:
+          - name: lock
+            image: busybox
+            command: ["sh", "-c"]
+            args:
+              - |
+                # take the write lock so that no other chain imports can start
+                # we export to a intermediate volume, so we don't have to wait
+                # for other reads to finish yet, before we copy the new export
+                # we perform the wait for all reads to finish
+                touch /chain-archives/exports/write.lock
+            volumeMounts:
+            - name: scratch
+              mountPath: "/scratch"
+            - name: chain-archives
+              mountPath: "/chain-archives"
+          - name: find-nodes
+            image: bitnami/kubectl
+            command: ["bash", "-c"]
+            args:
+              - |
+                kubectl get service -o jsonpath='{range .items[*]}/ip4/{.spec.clusterIP}/tcp/{.spec.ports[?(@.name=="api")].port}/http{"\n"}{end}' | tee -a /scratch/multiaddrs
+            volumeMounts:
+            - name: scratch
+              mountPath: "/scratch"
+          containers:
+          - name: export
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            command: ["bash", "-c"]
+            args:
+              - |
+                set -xe
+                pushd /scratch
+
+                # dump the multiaddrs for logging purposes
+                cat multiaddrs
+
+                # check that all nodes are in consensus
+                lotus-shed consensus check --height @expected --lookback 30 multiaddrs
+
+                # pick a random node to export from
+                shuf -n1 multiaddrs -o api
+
+                head_height=$(lotus chain list --count 1 --format "<height>")
+
+                export LOTUS_PATH=$(pwd)
+
+                lotus chain export --tipset @$(($head_height - {{ .Values.lookback }})) --recent-stateroots {{ .Values.recentStateroots }} --skip-old-messages={{ .Values.skipOldMsgs }} /chain-archives/exports/snapshot.car.part
+
+                # wait for all current read exports to finish
+                while [ "$(find /chain-archives/exports/ -type f -name 'read-*.lock' | wc -l)" -gt "0" ]; do
+                  echo $(date -Iseconds) " - waiting for read locks to be removed"
+                  sleep 60
+                done
+
+                rm -f /chain-archives/exports/snapshot.car
+                mv /chain-archives/exports/snapshot.car.part /chain-archives/exports/snapshot.car
+                rm -f /chain-archives/exports/write.lock
+
+                popd
+                exit 0
+            volumeMounts:
+            - name: scratch
+              mountPath: "/scratch"
+            - name: chain-archives
+              mountPath: "/chain-archives"
+          volumes:
+          - name: scratch
+            emptyDir:
+              medium: Memory
+          - name: chain-archives
+            persistentVolumeClaim:
+              claimName: {{ .Values.chainArchivesClaimName }}
