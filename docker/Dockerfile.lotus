@@ -92,6 +92,23 @@ COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-lin
 RUN useradd -r -u 532 -U fc
 
 # ---------------------
+# base_opencl
+# ---------------------
+
+FROM nvidia/opencl:runtime-ubuntu18.04 AS base_opencl
+MAINTAINER Lotus Development Team
+
+# Base resources
+COPY --from=builder /etc/ssl/certs                           /etc/ssl/certs
+COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so      /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1         /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1      /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1       /lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/
+
+RUN useradd -r -u 532 -U fc
+
+# ---------------------
 # lotus
 # ---------------------
 
@@ -132,7 +149,7 @@ CMD ["-help"]
 # miner 
 # ---------------------
 
-FROM base AS miner
+FROM base_opencl AS miner
 MAINTAINER Lotus Development Team
 
 COPY --from=builder /opt/filecoin/lotus-miner /usr/local/bin/
@@ -148,7 +165,7 @@ CMD ["-help"]
 # worker
 # ---------------------
 
-FROM base AS worker
+FROM base_opencl AS worker
 MAINTAINER Lotus Development Team
 
 COPY --from=builder /opt/filecoin/lotus-worker /usr/local/bin/
@@ -167,7 +184,10 @@ CMD ["-help"]
 FROM base AS shed
 MAINTAINER Lotus Development Team
 
-COPY --from=builder /opt/filecoin/lotus-shed  /usr/local/bin/
+RUN apt-get update && apt-get install -y jq curl net-tools dnsutils
+
+COPY --from=builder /opt/filecoin/lotus      /usr/local/bin/
+COPY --from=builder /opt/filecoin/lotus-shed /usr/local/bin/
 
 USER fc
 
