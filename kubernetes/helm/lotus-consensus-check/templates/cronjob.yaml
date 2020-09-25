@@ -45,7 +45,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 532
             runAsGroup: 532
-          containers:
+          initContainers:
           - name: find-nodes
             image: bitnami/kubectl
             command: ["bash", "-c"]
@@ -55,6 +55,7 @@ spec:
             volumeMounts:
             - name: {{ .Release.Name }}-scratch
               mountPath: "/tmp/scratch"
+          containers:
           - name: consensus-check
             image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
             imagePullPolicy: {{ .Values.image.pullPolicy }}
