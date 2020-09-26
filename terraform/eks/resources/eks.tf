@@ -44,7 +44,7 @@ module "eks" {
   #map_users_count                            = length(local.map_users)
   kubeconfig_aws_authenticator_env_variables = var.kubeconfig_aws_authenticator_env_variables
   config_output_path                         = local.config_path
-  worker_additional_security_group_ids       = [aws_security_group.lotus.id]
+  worker_additional_security_group_ids       = [aws_security_group.lotus.id, aws_security_group.efs.id]
 
   workers_additional_policies = [
     aws_iam_policy.external_dns.arn,
