@@ -1,7 +1,8 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: chain-archives
+  # This name should match that of the name of the storageClassName
+  name: efs
 spec:
   capacity:
     storage: 4096Gi
@@ -12,5 +13,7 @@ spec:
   storageClassName: efs
   csi:
     driver: efs.csi.aws.com
-    # NOTE! You must provide this value
-    volumeHandle: ${ efs.id }
+    # NOTE! You must provide this value.
+    # Due to the way efs works with k8s, this pv only needs to be created
+    # once per cluster.
+    volumeHandle:
