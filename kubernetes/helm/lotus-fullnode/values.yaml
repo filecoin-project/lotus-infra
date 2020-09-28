@@ -3,6 +3,8 @@ image:
   pullPolicy: Always
   tag: v0.7.1
 
+prometheusOperatorServiceMonitor: true
+
 importSnapshot:
   # when importSnapshot is enabled prior to the daemon starting a snapshot will
   # be imported into the blockstore

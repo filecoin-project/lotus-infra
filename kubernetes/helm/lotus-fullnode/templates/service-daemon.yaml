@@ -3,12 +3,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-daemon
+  namespace: {{ .Release.Namespace }}
   labels:
     app: lotus-fullnode-app
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "{{ .Values.ports.api }}"
-    prometheus.io/path: /debug/metrics
 spec:
   type: ClusterIP
   selector:
