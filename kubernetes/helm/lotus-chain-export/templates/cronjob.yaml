@@ -55,12 +55,17 @@ spec:
                 # we export to a intermediate volume, so we don't have to wait
                 # for other reads to finish yet, before we copy the new export
                 # we perform the wait for all reads to finish
-                touch /chain-archives/exports/write.lock
+                touch /chain-exports/write.lock
             volumeMounts:
             - name: scratch
               mountPath: "/scratch"
-            - name: chain-archives
-              mountPath: "/chain-archives"
+            - name: chain-exports
+              mountPath: "/chain-exports"
+              {{- if .Values.network }}
+              subPath: chain-exports/by-network/{{ .Values.network }}/
+              {{- else }}
+              subPath: chain-exports/by-namespace/{{ .Release.Namespace }}/
+              {{- end }}
           - name: find-nodes
             image: bitnami/kubectl
             command: ["bash", "-c"]
@@ -93,29 +98,34 @@ spec:
 
                 export LOTUS_PATH=$(pwd)
 
-                lotus chain export --tipset @$(($head_height - {{ .Values.lookback }})) --recent-stateroots {{ .Values.recentStateroots }} --skip-old-messages={{ .Values.skipOldMsgs }} /chain-archives/exports/snapshot.car.part
+                lotus chain export --tipset @$(($head_height - {{ .Values.lookback }})) --recent-stateroots {{ .Values.recentStateroots }} --skip-old-messages={{ .Values.skipOldMsgs }} /chain-exports/snapshot.car.part
 
                 # wait for all current read exports to finish
-                while [ "$(find /chain-archives/exports/ -type f -name 'read-*.lock' | wc -l)" -gt "0" ]; do
+                while [ "$(find /chain-exports/ -type f -name 'read-*.lock' | wc -l)" -gt "0" ]; do
                   echo $(date -Iseconds) " - waiting for read locks to be removed"
                   sleep 60
                 done
 
-                rm -f /chain-archives/exports/snapshot.car
-                mv /chain-archives/exports/snapshot.car.part /chain-archives/exports/snapshot.car
-                rm -f /chain-archives/exports/write.lock
+                rm -f /chain-exports/snapshot.car
+                mv /chain-exports/snapshot.car.part /chain-exports/snapshot.car
+                rm -f /chain-exports/write.lock
 
                 popd
                 exit 0
             volumeMounts:
             - name: scratch
               mountPath: "/scratch"
-            - name: chain-archives
-              mountPath: "/chain-archives"
+            - name: chain-exports
+              mountPath: "/chain-exports"
+              {{- if .Values.network }}
+              subPath: chain-exports/by-network/{{ .Values.network }}/
+              {{- else }}
+              subPath: chain-exports/by-namespace/{{ .Release.Namespace }}/
+              {{- end }}
           volumes:
           - name: scratch
             emptyDir:
               medium: Memory
-          - name: chain-archives
+          - name: chain-exports
             persistentVolumeClaim:
-              claimName: {{ .Values.chainArchivesClaimName }}
+              claimName: {{ .Values.claimName }}

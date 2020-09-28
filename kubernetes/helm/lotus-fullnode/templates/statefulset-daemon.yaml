@@ -38,7 +38,7 @@ spec:
         runAsUser: 532
         runAsGroup: 532
       volumes:
-      - name: chain-archives
+      - name: chain-exports
         persistentVolumeClaim:
           claimName: {{ .Values.importSnapshot.claimName }}
       - name: config-volume
@@ -208,29 +208,34 @@ spec:
         args:
           - |
             # wait for the write to finish
-            while [ -f /chain-archives/exports/write.lock ]; do
+            while [ -f /chain-exports/write.lock ]; do
               echo $(date -Iseconds) " - waiting for write lock to be removed"
               sleep 60
             done
 
             # take the read lock so the data doesn't change out from under us
-            touch /chain-archives/exports/read-{{ .Release.Namespace }}-{{ .Release.Name }}.lock
+            touch /chain-exports/read-{{ .Release.Namespace }}-{{ .Release.Name }}.lock
 
         volumeMounts:
-        - name: chain-archives
-          mountPath: "/chain-archives"
+        - name: chain-exports
+          mountPath: "/chain-exports"
+          {{- if .Values.network }}
+          subPath: chain-exports/by-network/{{ .Values.network }}/
+          {{- else }}
+          subPath: chain-exports/by-namespace/{{ .Release.Namespace }}/
+          {{- end }}
       - name: chain-import
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["bash", "-c"]
         args:
           - |
-            if [ ! -f /chain-archives/exports/snapshot.car ]; then
+            if [ ! -f /chain-exports/snapshot.car ]; then
               echo "No snapshot was found"
               exit {{ .Values.importSnapshot.exitCodeOnMissing }}
             fi
-            lotus daemon --bootstrap=false --halt-after-import --import-snapshot=/chain-archives/exports/snapshot.car
-            rm -f /chain-archives/exports/read-{{ .Release.Namespace }}-{{ .Release.Name }}.lock
+            lotus daemon --bootstrap=false --halt-after-import --import-snapshot=/chain-exports/snapshot.car
+            rm -f /chain-exports/read-{{ .Release.Namespace }}-{{ .Release.Name }}.lock
         volumeMounts:
           - name: config-volume
             mountPath: /var/lib/lotus/config.toml
@@ -251,8 +256,13 @@ spec:
           - name: journal-volume
             mountPath: /var/lib/lotus/journal
           {{- end }}
-          - name: chain-archives
-            mountPath: "/chain-archives"
+          - name: chain-exports
+            mountPath: "/chain-exports"
+            {{- if .Values.network }}
+            subPath: chain-exports/by-network/{{ .Values.network }}/
+            {{- else }}
+            subPath: chain-exports/by-namespace/{{ .Release.Namespace }}/
+            {{- end }}
 {{- end }}
 {{- if .Values.debug }}
       - name: debug

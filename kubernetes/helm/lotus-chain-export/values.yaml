@@ -10,7 +10,9 @@ lookback: 30
 recentStateroots: 1800
 # when true, do not export messages
 skipOldMsgs: false
+# when set, this cronjob will act as the network level chain exporter
+network: ""
 
 # this is the claimName of a pvc that will be used for chain exporting
 # this must support ReadWriteMany
-chainArchivesClaimName: chain-archives
+claimName: chain-exports

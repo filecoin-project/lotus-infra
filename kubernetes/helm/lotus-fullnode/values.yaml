@@ -13,7 +13,10 @@ importSnapshot:
   exitCodeOnMissing: 1
 
   # this is the claimName of a pvc that will be used for chain importing
-  claimName: chain-archives
+  claimName: chain-exports
+
+  # when set, the network level chain export will be used
+  network: ""
 
 ports:
   api: 1234
