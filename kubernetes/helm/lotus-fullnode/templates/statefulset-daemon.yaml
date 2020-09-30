@@ -38,9 +38,11 @@ spec:
         runAsUser: 532
         runAsGroup: 532
       volumes:
+{{- if .Values.importSnapshot.enabled }}
       - name: chain-exports
         persistentVolumeClaim:
           claimName: {{ .Values.importSnapshot.claimName }}
+{{- end }}
       - name: config-volume
         configMap:
           name: {{ .Release.Name }}-daemon-config
