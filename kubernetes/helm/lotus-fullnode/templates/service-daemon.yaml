@@ -6,6 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app: lotus-fullnode-app
+    release: {{ .Release.Name }}
 spec:
   type: ClusterIP
   selector:
