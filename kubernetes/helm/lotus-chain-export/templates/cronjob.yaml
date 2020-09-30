@@ -28,12 +28,13 @@ subjects:
   name: {{ .Release.Name }}-chain-exporter
   namespace: {{ .Release.Namespace }}
 ---
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: {{ .Release.Name }}-chain-exporter
 spec:
   schedule: {{ .Values.schedule | quote }}
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
@@ -51,6 +52,12 @@ spec:
             command: ["sh", "-c"]
             args:
               - |
+                if [ -e /chain-exports/write.lock ]; then
+                  echo "Job already running"
+                  exit 1
+                else
+                  echo "No job found running"
+                fi
                 # take the write lock so that no other chain imports can start
                 # we export to a intermediate volume, so we don't have to wait
                 # for other reads to finish yet, before we copy the new export
@@ -71,7 +78,7 @@ spec:
             command: ["bash", "-c"]
             args:
               - |
-                kubectl get service -o jsonpath='{range .items[*]}/ip4/{.spec.clusterIP}/tcp/{.spec.ports[?(@.name=="api")].port}/http{"\n"}{end}' | tee -a /scratch/multiaddrs
+                kubectl get service -l app=lotus-fullnode-app -o jsonpath='{range .items[*]}/ip4/{.spec.clusterIP}/tcp/{.spec.ports[?(@.name=="api")].port}/http{"\n"}{end}' | tee -a /scratch/multiaddrs
             volumeMounts:
             - name: scratch
               mountPath: "/scratch"
@@ -88,6 +95,22 @@ spec:
                 # dump the multiaddrs for logging purposes
                 cat multiaddrs
 
+                export LOTUS_PATH=$(pwd)
+
+                # probe each service and determine if it responds to api requests
+                for addr in $(cat multiaddrs); do
+                  echo $addr > api
+                  if ! lotus net id; then
+                    sed -ie "s|$addr||g" multiaddrs
+                  fi
+                done
+
+                # remove blank lines
+                sed -i '/^$/d' multiaddrs
+
+                # dump the multiaddrs for logging purposes
+                cat multiaddrs
+
                 # check that all nodes are in consensus
                 lotus-shed consensus check --height @expected --lookback 30 multiaddrs
 
@@ -96,9 +119,7 @@ spec:
 
                 head_height=$(lotus chain list --count 1 --format "<height>")
 
-                export LOTUS_PATH=$(pwd)
-
-                lotus chain export --tipset @$(($head_height - {{ .Values.lookback }})) --recent-stateroots {{ .Values.recentStateroots }} --skip-old-messages={{ .Values.skipOldMsgs }} /chain-exports/snapshot.car.part
+                lotus chain export --tipset @$(($head_height - {{ .Values.lookback }})) --recent-stateroots {{ .Values.recentStateroots }} --skip-old-msgs={{ .Values.skipOldMsgs }} /chain-exports/snapshot.car.part
 
                 # wait for all current read exports to finish
                 while [ "$(find /chain-exports/ -type f -name 'read-*.lock' | wc -l)" -gt "0" ]; do
