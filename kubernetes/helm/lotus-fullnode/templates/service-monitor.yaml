@@ -3,7 +3,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ .Release.Name }}-service-monitor
+  name: {{ .Release.Name }}-lotus-service-monitor
   namespace: {{ .Release.Namespace }}
 spec:
   namespaceSelector:
