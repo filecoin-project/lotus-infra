@@ -17,7 +17,10 @@ importSnapshot:
   # this is the claimName of a pvc that will be used for chain importing
   claimName: chain-exports
 
-  # when set, the network level chain export will be used
+  # exportRelease is the name of the chain-export release
+  exportRelease: ""
+
+  # when set, the network level chain export will be used instead of a namespaced one
   network: ""
 
 ports:

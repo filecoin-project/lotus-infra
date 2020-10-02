@@ -211,13 +211,13 @@ spec:
           - |
             # wait for the write to finish
             ls -alh /chain-exports
-            while [ -f /chain-exports/write.lock ]; do
+            while [ -f /chain-exports/{{ .Values.importSnapshot.exportRelease }}-write.lock ]; do
               echo $(date -Iseconds) " - waiting for write lock to be removed"
               sleep 60
             done
 
             # take the read lock so the data doesn't change out from under us
-            touch /chain-exports/read-{{ .Release.Namespace }}-{{ .Release.Name }}.lock
+            touch /chain-exports/{{ .Values.importSnapshot.exportRelease }}-read-{{ .Release.Namespace }}-{{ .Release.Name }}.lock
 
         volumeMounts:
         - name: chain-exports
@@ -233,12 +233,12 @@ spec:
         command: ["bash", "-c"]
         args:
           - |
-            if [ ! -f /chain-exports/snapshot.car ]; then
-              echo "No snapshot was found"
+            if [ ! -f /chain-exports/{{ .Values.importSnapshot.exportRelease }}.car ]; then
+              echo "No export was found"
               exit {{ .Values.importSnapshot.exitCodeOnMissing }}
             fi
-            lotus daemon --bootstrap=false --halt-after-import --import-snapshot=/chain-exports/snapshot.car
-            rm -f /chain-exports/read-{{ .Release.Namespace }}-{{ .Release.Name }}.lock
+            lotus daemon --bootstrap=false --halt-after-import --import-snapshot=/chain-exports/{{ .Values.importSnapshot.exportRelease }}.car
+            rm -f /chain-exports/{{ .Values.importSnapshot.exportRelease }}-read-{{ .Release.Namespace }}-{{ .Release.Name }}.lock
         volumeMounts:
           - name: config-volume
             mountPath: /var/lib/lotus/config.toml

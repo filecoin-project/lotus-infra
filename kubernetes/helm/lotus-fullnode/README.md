@@ -47,6 +47,15 @@ they will be removed if the pod is deleted.
 helm upgrade --install lotus-0 ./lotus-fullnode --set secrets.libp2p.enabled=false --set secrets.jwt.enabled=false
 ```
 
+### Using import snapshots
+
+This funcitonality requires an installation of the `lotus-chain-export` chart. The `exportRelease` value is the name of the
+`lotus-chain-export` release. See the `values.yaml` file for more details.
+
+```
+helm upgrade --install lotus-0 ./lotus-fullnode --set importSnapshot.enabled=true --set importSnapshot.exportRelease=<release-name>
+```
+
 ### Adding wallets
 
 Wallets must be managed externally to the chart. A secret name must be provided along with the key of the secret entry and the

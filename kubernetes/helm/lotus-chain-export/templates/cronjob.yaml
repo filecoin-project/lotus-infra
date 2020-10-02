@@ -12,7 +12,7 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["services"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  verbs: ["get", "list"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -35,6 +35,7 @@ metadata:
 spec:
   schedule: {{ .Values.schedule | quote }}
   concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
   jobTemplate:
     spec:
       template:
@@ -52,7 +53,7 @@ spec:
             command: ["sh", "-c"]
             args:
               - |
-                if [ -e /chain-exports/write.lock ]; then
+                if [ -e /chain-exports/{{ .Release.Name }}-write.lock ]; then
                   echo "Job already running"
                   exit 1
                 else
@@ -62,7 +63,7 @@ spec:
                 # we export to a intermediate volume, so we don't have to wait
                 # for other reads to finish yet, before we copy the new export
                 # we perform the wait for all reads to finish
-                touch /chain-exports/write.lock
+                touch /chain-exports/{{ .Release.Name }}-write.lock
             volumeMounts:
             - name: scratch
               mountPath: "/scratch"
@@ -90,6 +91,13 @@ spec:
             args:
               - |
                 set -xe
+
+                finish() {
+                  rm -f /chain-exports/{{ .Release.Name }}-write.lock
+                }
+
+                trap finish EXIT
+
                 pushd /scratch
 
                 # dump the multiaddrs for logging purposes
@@ -119,17 +127,16 @@ spec:
 
                 head_height=$(lotus chain list --count 1 --format "<height>")
 
-                lotus chain export --tipset @$(($head_height - {{ .Values.lookback }})) --recent-stateroots {{ .Values.recentStateroots }} --skip-old-msgs={{ .Values.skipOldMsgs }} /chain-exports/snapshot.car.part
+                lotus chain export --tipset @$(($head_height - {{ .Values.lookback }})) --recent-stateroots {{ .Values.recentStateroots }} --skip-old-msgs={{ .Values.skipOldMsgs }} /chain-exports/{{ .Release.Name }}.car.part
 
                 # wait for all current read exports to finish
-                while [ "$(find /chain-exports/ -type f -name 'read-*.lock' | wc -l)" -gt "0" ]; do
+                while [ "$(find /chain-exports/ -type f -name '{{ .Release.Name }}-read-*.lock' | wc -l)" -gt "0" ]; do
                   echo $(date -Iseconds) " - waiting for read locks to be removed"
                   sleep 60
                 done
 
-                rm -f /chain-exports/snapshot.car
-                mv /chain-exports/snapshot.car.part /chain-exports/snapshot.car
-                rm -f /chain-exports/write.lock
+                rm -f /chain-exports/{{ .Release.Name }}.car
+                mv /chain-exports/{{ .Release.Name }}.car.part /chain-exports/{{ .Release.Name }}.car
 
                 popd
                 exit 0
