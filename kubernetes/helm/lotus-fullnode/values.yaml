@@ -1,6 +1,6 @@
 image:
   repository: travisperson/lotus
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   tag: v0.7.1
 
 prometheusOperatorServiceMonitor: true
@@ -86,3 +86,11 @@ persistence:
     accessModes:
       - ReadWriteOnce
     storageClassName: "gp2"
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

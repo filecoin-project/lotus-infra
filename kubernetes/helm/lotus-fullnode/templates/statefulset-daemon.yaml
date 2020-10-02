@@ -334,11 +334,25 @@ spec:
           periodSeconds: 30
           successThreshold: 1
           timeoutSeconds: 3
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         ports:
         - containerPort: 1234
           name: api
         - containerPort: 1347
           name: p2p
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   {{- if or .Values.persistence.journal.enabled .Values.persistence.datastore.enabled }}
   volumeClaimTemplates:
   {{- if .Values.persistence.datastore.enabled }}
