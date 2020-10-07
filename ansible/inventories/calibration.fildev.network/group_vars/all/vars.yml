@@ -4,13 +4,7 @@ network_name: calibrationnet
 faucet_initial_balance: "10000000000000000000000000"
 miners_initial_balance: "1000000000000000000000000"
 
-additional_account_balance:
-  - address: "t12thv7e3x3tomo5nuunsvzqnl5txflpztdqcbtai"
-    balance: "10000000000000000000000000"
-  - address: "t1capnpwjvm4gfbdlbavblmvjldwqzdo6ukh7mmqq"
-    balance: "10000000000000000000000000"
-  - address: "t12heuwfbg654jgdnctywyafxrqbmcidwj6osecha"
-    balance: "10000000000000000000000000"
+additional_account_balance: {}
 
 telegraf_global_tags:
   network: "{{ network_name }}"
@@ -37,7 +31,7 @@ lotus_user: "fc"
 lotus_user_uid: "532"
 proof_version: v27.1
 proof_type: fake
-sector_size: 32GiB
+sector_size: 512MiB
 filebeat_additional_processors: |
   - drop_event:
       when:
