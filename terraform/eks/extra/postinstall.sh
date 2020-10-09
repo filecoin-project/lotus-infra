@@ -26,5 +26,20 @@ install_external_dns() {
   kubectl apply -f /tmp/external-dns.yml
 }
 
+install_efs_csi() {
+  kubectl apply -k "github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/ecr/?ref=release-1.0"
+}
+
+install_ebs_csi() {
+  kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=master"
+}
+
+install_calico() {
+  kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/v1.7.2/config/v1.7/calico.yaml
+}
+
 check_kubectl_version
 install_external_dns
+install_efs_csi
+install_ebs_csi
+install_calico

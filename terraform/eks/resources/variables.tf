@@ -40,6 +40,10 @@ variable "eks_iam_usernames" {
     "marcus",
     "travisperson",
     "cory",
+    "mg",
+    "frrst",
+    "iand",
+    "lanzafame",
   ]
 }
 
