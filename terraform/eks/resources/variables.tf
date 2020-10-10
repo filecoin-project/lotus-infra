@@ -80,3 +80,12 @@ variable "external_dns_zone_id" {
   default     = "Z4QUK41V3HPV5"
 }
 
+variable "worker_count_open" {
+  description = "k8s worker count that have open networking permissions"
+  default     = 5
+}
+
+variable "worker_count_restricted" {
+  description = "k8s worker count that have restricted networking permissions"
+  default     = 5
+}

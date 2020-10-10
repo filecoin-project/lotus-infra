@@ -51,26 +51,36 @@ module "eks" {
     aws_iam_policy.ebs_cni.arn,
   ]
 
-  #workers_additional_policies_count = 1
-
   node_groups = [
     {
-      name          = "${local.name}-k8s-workers"
-      instance_type = "c5.9xlarge"
+      instance_type = "c5.4xlarge"
       key_name      = var.key_name
       # additional_userdata  = "aws s3 cp s3://filecoin-proof-parameters /opt/filecoin-proof-parameters --region us-east-1 --recursive --no-sign-request"
-      desired_capacity = "2"
-      min_capacity     = "1"
-      max_capacity     = "20"
+      desired_capacity = var.worker_count_open
+      min_capacity     = "3"
+      max_capacity     = "50"
+      k8s_labels = {
+        mode = "open"
+      }
+    },
+    {
+      instance_type = "c5.4xlarge"
+      key_name      = var.key_name
+      # additional_userdata  = "aws s3 cp s3://filecoin-proof-parameters /opt/filecoin-proof-parameters --region us-east-1 --recursive --no-sign-request"
+      desired_capacity = var.worker_count_restricted
+      min_capacity     = "3"
+      max_capacity     = "50"
+      k8s_labels = {
+        mode = "restricted"
+      }
     },
   ]
-
-  #worker_group_count = 1
 }
 
+/*
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "~> v2.0"
+  version = "v2.11.0"
 
   domain_name = var.external_dns_fqdn
   zone_id     = var.external_dns_zone_id
@@ -83,29 +93,35 @@ module "acm" {
     Name = var.external_dns_fqdn
   }
 }
+*/
 
 resource "aws_iam_policy" "external_dns" {
   name = "external-dns-${local.name}"
 
   policy = <<POLICY
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": "route53:ChangeResourceRecordSets",
-            "Resource": "arn:aws:route53:::hostedzone/${var.external_dns_zone_id}"
-        },
-        {
-            "Sid": "VisualEditor1",
-            "Effect": "Allow",
-            "Action": [
-                "route53:ListHostedZones",
-                "route53:ListResourceRecordSets"
-            ],
-            "Resource": "*"
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:ChangeResourceRecordSets"
+      ],
+      "Resource": [
+        "arn:aws:route53:::hostedzone/${var.external_dns_zone_id}"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:ListHostedZones",
+        "route53:ListResourceRecordSets"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
 }
 POLICY
 }
