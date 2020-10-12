@@ -2,5 +2,6 @@ lotus_fountain_server_name: faucet.calibration.fildev.network
 lotus_fountain_enable_https: true
 lotus_fountain_address: "{{ lotus_wallet_address }}"
 lotus_fountain_amount: 1000
+lotus_import_wallet: true
 # lotus_fountain_external: false
 # lotus_fountain_external_redirect: "https://faucet.glif.io/"
