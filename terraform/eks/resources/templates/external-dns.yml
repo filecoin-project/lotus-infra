@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: external-dns
+  namespace: kube-system
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::759815798766:role/mainnet-us-east-1-eks2020100917120375560000000a
 ---
@@ -9,6 +10,7 @@ apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
   name: external-dns
+  namespace: kube-system
 rules:
 - apiGroups: [""]
   resources: ["services","endpoints","pods"]
