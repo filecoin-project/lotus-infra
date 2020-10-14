@@ -89,3 +89,13 @@ variable "worker_count_restricted" {
   description = "k8s worker count that have restricted networking permissions"
   default     = 5
 }
+
+variable "node_groups" {
+  description = "autoscaling group for kubernetes worker"
+  default     = [{}]
+}
+
+variable "acm_enabled" {
+  description = "generate ACM cerificate for external DNS? only required if wanting HTTPS"
+  default     = 0
+}

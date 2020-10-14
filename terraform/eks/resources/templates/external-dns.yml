@@ -2,10 +2,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: external-dns
-  # If you're using Amazon EKS with IAM Roles for Service Accounts, specify the following annotation.
-  # Otherwise, you may safely omit it.
   annotations:
-    # Substitute your account ID and IAM service role name below.
     eks.amazonaws.com/role-arn: arn:aws:iam::759815798766:role/mainnet-us-east-1-eks2020100917120375560000000a
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -59,11 +56,11 @@ spec:
         args:
         - --source=service
         - --source=ingress
-        - --domain-filter=filops.net # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
+        - --domain-filter=filops.net
         - --provider=aws
         - --registry=txt
         - --txt-owner-id=mainnet-us-east-1-eks
         - --log-level=debug
         - --aws-zone-type=public
       securityContext:
-        fsGroup: 65534 # For ExternalDNS to be able to read Kubernetes and AWS token files
+        fsGroup: 65534
