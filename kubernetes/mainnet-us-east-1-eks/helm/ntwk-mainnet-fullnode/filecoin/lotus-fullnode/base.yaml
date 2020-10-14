@@ -1,0 +1,42 @@
+image:
+  tag: v0.10.0
+
+resources:
+  requests:
+    memory: 24Gi
+    cpu: 8
+  limits:
+    memory: 32Gi
+    cpu: 16
+
+importSnapshot:
+  enabled: false
+  claimName: chain-exports
+  network: mainnet
+  exportRelease: export-full-archive
+  exitCodeOnMissing: 0
+
+daemonEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+    BootstrapPeers = [
+      "/dns4/bootstrap-0-lotus-daemon.ntwk-mainnet-bootstrap.svc.cluster.local/tcp/1347/p2p/12D3KooWCoEwV8Jt1xSFTsg8e1u77zBabEqs6TDd3ULWzTwtKkF8",
+      "/dns4/bootstrap-1-lotus-daemon.ntwk-mainnet-bootstrap.svc.cluster.local/tcp/1347/p2p/12D3KooWAs4FJ5BUVw4kgarCGRytBNf4YaHBw2TYVZwt5MGAzSLp"
+    ]
+    ConnMgrLow = 1
+
+additionalLabels:
+  mode: restricted
+  network: mainnet
+
+persistence:
+  datastore:
+    enabled: true
+    storageClassName: "ebs-csi"
+    size: "2000Gi"
