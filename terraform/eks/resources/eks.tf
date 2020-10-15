@@ -151,9 +151,8 @@ resource "null_resource" "k8s_config" {
   provisioner "local-exec" {
     command = <<-EOT
     echo '${data.template_file.external_dns.rendered}' > /tmp/external-dns.yml
-    ../../extra/postinstall.sh "${var.aws_profile}" "${var.k8s_version}"
+    ../../extra/postinstall.sh "${var.aws_profile}" "${var.k8s_version}" "${local.name}" "${var.region}"
     EOT
-
     environment = {
       KUBECONFIG = "${local.kubeconfig_path}"
     }

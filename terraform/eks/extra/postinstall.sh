@@ -2,6 +2,8 @@
 set -ex -o pipefail
 AWS_PROFILE="${1:-}"
 K8S_VERSION="${2}"
+CLUSTER_NAME="${3}"
+REGION="${4}"
 AWS_PROFILE_FLAG=""
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 if [[ ! -z "${AWS_PROFILE}" ]]; then
@@ -23,7 +25,14 @@ check_kubectl_version() {
 }
 
 install_external_dns() {
-  kubectl apply -f /tmp/external-dns.yml
+  helm repo add bitnami https://charts.bitnami.com/bitnami
+  helm upgrade --namespace=kube-system --install public-dns \
+    --set aws.region="${REGION}"  \
+    --set aws.zoneType="public" \
+    --set domainFilters="{filops.net}" \
+    --set logLevel="debug" \
+    --set txtOwnerId="${CLUSTER_NAME}" \
+    bitnami/external-dns
 }
 
 install_efs_csi() {
