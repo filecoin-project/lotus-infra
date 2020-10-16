@@ -19,4 +19,5 @@ module "main" {
   public_subnets                             = var.public_subnets
   eks_iam_usernames                          = var.eks_iam_usernames
   kubeconfig_aws_authenticator_env_variables = var.kubeconfig_aws_authenticator_env_variables
+  worker_count                               = var.worker_count
 }

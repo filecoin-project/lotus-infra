@@ -40,6 +40,10 @@ variable "eks_iam_usernames" {
     "marcus",
     "travisperson",
     "cory",
+    "mg",
+    "frrst",
+    "iand",
+    "lanzafame",
   ]
 }
 
@@ -76,3 +80,22 @@ variable "external_dns_zone_id" {
   default     = "Z4QUK41V3HPV5"
 }
 
+variable "worker_count_open" {
+  description = "k8s worker count that have open networking permissions"
+  default     = 5
+}
+
+variable "worker_count_restricted" {
+  description = "k8s worker count that have restricted networking permissions"
+  default     = 5
+}
+
+variable "node_groups" {
+  description = "autoscaling group for kubernetes worker"
+  default     = [{}]
+}
+
+variable "acm_enabled" {
+  description = "generate ACM cerificate for external DNS? only required if wanting HTTPS"
+  default     = 0
+}

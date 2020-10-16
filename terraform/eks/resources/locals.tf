@@ -10,8 +10,8 @@ locals {
       groups   = ["system:masters"]
     },
     {
-      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/travisperson"
-      username = "travisperson"
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/travis"
+      username = "travis"
       groups   = ["system:masters"]
     },
     {
@@ -25,8 +25,8 @@ locals {
       groups   = ["system:masters"]
     },
     {
-      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/frrst"
-      username = "frrst"
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/frrist"
+      username = "frrist"
       groups   = ["system:masters"]
     },
     {
