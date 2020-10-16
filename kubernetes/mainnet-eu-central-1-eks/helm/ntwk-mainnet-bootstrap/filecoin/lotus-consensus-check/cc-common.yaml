@@ -1,0 +1,6 @@
+image:
+  tag: v0.10.0
+
+schedule: "*/15 * * * *"
+lookback: 30
+height: "@common"
