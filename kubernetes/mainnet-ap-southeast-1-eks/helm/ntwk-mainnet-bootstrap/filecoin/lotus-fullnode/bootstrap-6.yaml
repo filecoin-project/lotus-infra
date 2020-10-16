@@ -1,0 +1,12 @@
+secrets:
+  libp2p:
+    enabled: true
+    secretName: bootstrap-6-libp2p-secrets
+    libp2p_key: libp2p-host
+
+loadBalancer:
+  enabled: true
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: bootstrap-6.mainnet.filops.net
+    external-dns.alpha.kubernetes.io/alias: "true"
+    external-dns.alpha.kubernetes.io/ttl: "60"

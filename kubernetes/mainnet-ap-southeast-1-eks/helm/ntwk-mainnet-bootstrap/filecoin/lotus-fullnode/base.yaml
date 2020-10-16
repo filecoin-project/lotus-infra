@@ -1,0 +1,52 @@
+image:
+  tag: v0.10.0
+
+prometheusOperatorServiceMonitor: false
+
+importSnapshot:
+  enabled: false
+  claimName: chain-exports
+  network: mainnet
+  exportRelease: export-1800-with-msgs
+  exitCodeOnMissing: 0
+
+persistence:
+  datastore:
+    enabled: true
+    size: "2000Gi"
+    storageClassName: "ebs-csi"
+
+daemonArgs:
+  - --profile=bootstrapper
+
+daemonEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+
+additionalLabels:
+  mode: open
+  network: mainnet
+
+nodeSelector:
+  mode: open
+
+tolerations:
+- key: "mode"
+  operator: "Equal"
+  value: "open"
+  effect: "NoSchedule"
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - topologyKey: "kubernetes.io/hostname"
+      labelSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - lotus-fullnode-app
+        - key: network
+          operator: In
+          values:
+          - mainnet
