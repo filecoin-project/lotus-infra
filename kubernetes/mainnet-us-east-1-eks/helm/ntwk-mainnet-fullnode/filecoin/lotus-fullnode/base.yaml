@@ -26,8 +26,8 @@ daemonConfig: |
   [Libp2p]
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
     BootstrapPeers = [
-      "/dns4/bootstrap-0-lotus-daemon.ntwk-mainnet-bootstrap.svc.cluster.local/tcp/1347/p2p/12D3KooWCoEwV8Jt1xSFTsg8e1u77zBabEqs6TDd3ULWzTwtKkF8",
-      "/dns4/bootstrap-1-lotus-daemon.ntwk-mainnet-bootstrap.svc.cluster.local/tcp/1347/p2p/12D3KooWAs4FJ5BUVw4kgarCGRytBNf4YaHBw2TYVZwt5MGAzSLp"
+      "/dns4/bootstrap-0-lotus-daemon.ntwk-mainnet-bootstrap.svc.cluster.local/tcp/1347/p2p/12D3KooWCVe8MmsEMes2FzgTpt9fXtmCY7wrq91GRiaC8PHSCCBj",
+      "/dns4/bootstrap-1-lotus-daemon.ntwk-mainnet-bootstrap.svc.cluster.local/tcp/1347/p2p/12D3KooWCwevHg1yLCvktf2nvLu7L9894mcrJR4MsBCcm4syShVc"
     ]
     ConnMgrLow = 1
 
