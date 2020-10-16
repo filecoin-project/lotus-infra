@@ -47,6 +47,13 @@ deployments:
     values:
       - base
       - bootstrap-1
+  - chart: filecoin/lotus-fullnode
+    version: 0.1.11
+    namespace: ntwk-mainnet-bootstrap
+    name: bootstrap-2
+    values:
+      - base
+      - bootstrap-2
   # consensus check
   - chart: filecoin/lotus-consensus-check
     version: 0.1.1
