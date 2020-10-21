@@ -32,6 +32,20 @@ deployments:
     name: fullnode-2
     values:
       - base
+  - chart: filecoin/lotus-fullnode
+    version: 0.1.11
+    namespace: ntwk-mainnet-fullnode
+    name: fullnode-3
+    values:
+      - base
+      - from-snapshot
+  - chart: filecoin/lotus-fullnode
+    version: 0.1.11
+    namespace: ntwk-mainnet-fullnode
+    name: fullnode-4
+    values:
+      - base
+      - from-snapshot
   # bootstrap
   - chart: filecoin/lotus-fullnode
     version: 0.1.11
