@@ -3,6 +3,7 @@ lotus_miner_systemd_extras:
   LimitNOFILE: 327680
 lotus_miner_env:
   RUST_LOG: info
+  BELLMAN_NO_GPU: true
 
 lotus_miner_verified_deals: true
 lotus_miner_ensure_params: false
