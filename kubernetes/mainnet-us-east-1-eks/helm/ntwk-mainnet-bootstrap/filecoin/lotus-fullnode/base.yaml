@@ -1,5 +1,5 @@
 image:
-  tag: v0.10.0
+  tag: v1.1.0
 
 importSnapshot:
   enabled: false

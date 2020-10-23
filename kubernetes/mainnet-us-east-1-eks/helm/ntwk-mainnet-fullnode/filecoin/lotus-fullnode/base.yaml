@@ -1,5 +1,5 @@
 image:
-  tag: v0.10.0
+  tag: v1.1.0
 
 resources:
   requests:
@@ -35,6 +35,9 @@ daemonConfig: |
 additionalLabels:
   mode: restricted
   network: mainnet
+
+nodeSelector:
+  mode: restricted
 
 persistence:
   datastore:
