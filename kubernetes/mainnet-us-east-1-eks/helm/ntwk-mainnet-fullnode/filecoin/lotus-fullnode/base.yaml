@@ -1,5 +1,5 @@
 image:
-  tag: v1.1.0
+  tag: v1.1.2
 
 resources:
   requests:
@@ -30,7 +30,7 @@ daemonConfig: |
       "/dns4/bootstrap-1-lotus-daemon.ntwk-mainnet-bootstrap.svc.cluster.local/tcp/1347/p2p/12D3KooWCwevHg1yLCvktf2nvLu7L9894mcrJR4MsBCcm4syShVc",
       "/dns4/bootstrap-2-lotus-daemon.ntwk-mainnet-bootstrap.svc.cluster.local/tcp/1347/p2p/12D3KooWEWVwHGn2yR36gKLozmb4YjDJGerotAPGxmdWZx2nxMC4"
     ]
-    ConnMgrLow = 1
+    ConnMgrLow = 2
 
 additionalLabels:
   mode: restricted
