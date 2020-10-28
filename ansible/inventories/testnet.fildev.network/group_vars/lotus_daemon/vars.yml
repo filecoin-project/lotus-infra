@@ -15,6 +15,6 @@ lotus_env:
   LOTUS_CHAIN_TIPSET_CACHE: 128000
   LOTUS_CHAIN_MSGMETA_CACHE: 128000
 lotus_systemd_extras:
-  MemoryHigh: 20G
-  MemoryMax: 24G
+  MemoryHigh: 30G
+  MemoryMax: 32G
   LimitNOFILE: 32768
