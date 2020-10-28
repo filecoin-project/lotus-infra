@@ -42,7 +42,7 @@ resource "packet_device" "miner" {
 }
 
 resource "packet_device" "miner_noreserv" {
-  count               = 1
+  count               = 0
   hostname            = "storage-miner-1"
   plan                = "g2.large.x86"
   facilities          = ["dfw2"]
