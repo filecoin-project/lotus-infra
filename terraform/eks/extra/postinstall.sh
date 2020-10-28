@@ -40,11 +40,22 @@ install_efs_csi() {
 }
 
 install_ebs_csi() {
-  kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=master"
+  kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/alpha/?ref=master"
+}
+
+install_snapshot_crd() {
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/master/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/master/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/master/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
 }
 
 install_calico() {
   kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/v1.7.2/config/v1.7/calico.yaml
+}
+
+install_storage_classes() {
+  kubectl apply -f storage-ebs-csi-snapclass.yaml
+  kubectl apply -f storage-ebs.yaml
 }
 
 check_kubectl_version
@@ -52,3 +63,4 @@ install_external_dns
 install_efs_csi
 install_ebs_csi
 install_calico
+install_snapshot_crd
