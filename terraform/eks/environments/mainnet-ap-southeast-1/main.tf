@@ -4,6 +4,7 @@ terraform {
     key            = "filecoin-mainnet-eks-ap-southeast-1.tfstate"
     dynamodb_table = "filecoin-mainnet-terraform-state"
     region         = "us-east-1"
+    profile        = "mainnet"
   }
 }
 
@@ -14,7 +15,7 @@ locals {
       key_name      = var.key_name
       # additional_userdata  = "aws s3 cp s3://filecoin-proof-parameters /opt/filecoin-proof-parameters --region us-east-1 --recursive --no-sign-request"
       desired_capacity = var.worker_count_open
-      min_capacity     = "1"
+      min_capacity     = "3"
       max_capacity     = "50"
       k8s_labels = {
         mode = "open"

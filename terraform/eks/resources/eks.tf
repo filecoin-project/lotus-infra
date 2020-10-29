@@ -51,7 +51,6 @@ module "eks" {
   node_groups = var.node_groups
 }
 
-/*
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "v2.11.0"
@@ -67,7 +66,6 @@ module "acm" {
     Name = var.external_dns_fqdn
   }
 }
-*/
 
 resource "aws_iam_policy" "external_dns" {
   name = "external-dns-${local.name}"
