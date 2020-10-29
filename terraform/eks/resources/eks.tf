@@ -28,15 +28,6 @@ resource "aws_security_group" "lotus" {
   }
 }
 
-data "template_file" "external_dns" {
-  template = "${file("../../resources/templates/external-dns.yml")}"
-
-  vars = {
-    name   = local.name
-    domain = var.external_dns_fqdn
-  }
-}
-
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "13.0.0"
@@ -150,7 +141,6 @@ resource "null_resource" "k8s_config" {
 
   provisioner "local-exec" {
     command = <<-EOT
-    echo '${data.template_file.external_dns.rendered}' > /tmp/external-dns.yml
     ../../extra/postinstall.sh "${var.aws_profile}" "${var.k8s_version}" "${local.name}" "${var.region}"
     EOT
     environment = {
