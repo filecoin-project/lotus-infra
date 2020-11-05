@@ -4,6 +4,7 @@ terraform {
     key            = "filecoin-mainnet-eks-us-east-1.tfstate"
     dynamodb_table = "filecoin-mainnet-terraform-state"
     region         = "us-east-1"
+    profile        = "mainnet"
   }
 }
 
