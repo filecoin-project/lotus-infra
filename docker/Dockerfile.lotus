@@ -1,32 +1,212 @@
-FROM ubuntu:18.04
+ARG BUILDER_BASE=builder-local
+
+# ---------------------
+# builder-base
+# ---------------------
+
+FROM golang:1.14.7-stretch AS builder-deps
+MAINTAINER Lotus Development Team
+
+RUN apt-get update && apt-get install -y ca-certificates build-essential clang ocl-icd-opencl-dev ocl-icd-libopencl1 jq
+
+ARG UID=1000
+ARG GID=1000
+ARG RUST_VERSION=nightly
+ENV XDG_CACHE_HOME="/tmp"
+
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+
+RUN addgroup -gid $GID filecoin && \
+    adduser --no-create-home --disabled-password -uid $UID --ingroup filecoin --gecos "" filecoin && \
+    mkdir -p "/go/pkg/mod" && \
+    chown -R filecoin:filecoin "/go/pkg/mod"
+
+RUN wget "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
+    chmod +x rustup-init; \
+    ./rustup-init -y --no-modify-path --profile minimal --default-toolchain $RUST_VERSION; \
+    rm rustup-init; \
+    chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+    rustup --version; \
+    cargo --version; \
+    rustc --version;
+
+# ---------------------
+# builder-local
+# ---------------------
+
+FROM builder-deps AS builder-local
+MAINTAINER Lotus Development Team
+
+COPY ./lotus/ /opt/filecoin
+WORKDIR /opt/filecoin
+RUN make clean deps
+
+# ---------------------
+# builder-git
+# ---------------------
+
+FROM builder-deps AS builder-git
+MAINTAINER Lotus Development Team
+
+ARG REPO=https://github.com/filecoin-project/lotus.git
+ARG TAG=""
+
+RUN git clone $REPO --single-branch --branch $TAG /opt/filecoin
+WORKDIR /opt/filecoin
+RUN make clean deps
+
+# ---------------------
+# builder
+# ---------------------
+
+FROM $BUILDER_BASE AS builder
+MAINTAINER Lotus Development Team
+
+RUN chown -R filecoin:filecoin /opt/filecoin
+
+USER filecoin
+WORKDIR /opt/filecoin
+
+ARG RUSTFLAGS=""
+ARG GOFLAGS=""
+
+RUN make deps lotus lotus-miner lotus-worker lotus-shed lotus-chainwatch lotus-stats
+
+# ---------------------
+# base
+# ---------------------
+
+FROM ubuntu:18.04 AS base
 MAINTAINER Lotus Development Team
 
 # Base resources
-COPY --from=builder /etc/ssl/certs                       /etc/ssl/certs
-COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so  /lib/x86_64-linux-gnu/libdl-2.24.so
-COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1     /lib/x86_64-linux-gnu/librt.so.1
-COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1  /lib/x86_64-linux-gnu/libgcc_s.so.1
-COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1   /lib/x86_64-linux-gnu/libutil.so.1
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so.1
+COPY --from=builder /etc/ssl/certs                           /etc/ssl/certs
+COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so      /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1         /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1      /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1       /lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/
 
-COPY --from=builder /usr/local/bin/lotus                 /usr/local/bin/lotus
+RUN useradd -r -u 532 -U fc
 
-RUN adduser --home /var/filecoin -u 1000 --ingroup users --disabled-password --gecos "" filecoin
-RUN id filecoin
+# ---------------------
+# base_opencl
+# ---------------------
 
-ENV FILECOIN_PARAMETER_CACHE="/var/tmp/filecoin-proof-parameters"
-ENV LOTUS_PATH /var/filecoin
-ENV SHARED_DATA /var/shared-data
+FROM nvidia/opencl:runtime-ubuntu18.04 AS base_opencl
+MAINTAINER Lotus Development Team
 
-# Swarm
-EXPOSE 1234
+# Base resources
+COPY --from=builder /etc/ssl/certs                           /etc/ssl/certs
+COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so      /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1         /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1      /lib/x86_64-linux-gnu/
+COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1       /lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/
 
-VOLUME /var/shared-data
-VOLUME /var/filecoin
-VOLUME /var/tmp/filecoin-proof-parameters
+RUN useradd -r -u 532 -U fc
 
-USER filecoin
+# ---------------------
+# lotus
+# ---------------------
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.bash"]
+FROM base AS lotus
+MAINTAINER Lotus Development Team
+
+COPY --from=builder /opt/filecoin/lotus      /usr/local/bin/
+COPY --from=builder /opt/filecoin/lotus-shed /usr/local/bin/
+
+ENV FILECOIN_PARAMETER_CACHE /var/tmp/filecoin-proof-parameters
+ENV LOTUS_PATH /var/lib/lotus
+
+RUN mkdir /var/lib/lotus /var/tmp/filecoin-proof-parameters && chown fc /var/lib/lotus /var/tmp/filecoin-proof-parameters
+
+USER fc
+
+ENTRYPOINT ["/usr/local/bin/lotus"]
+
+CMD ["-help"]
+
+# ---------------------
+# chainwatch 
+# ---------------------
+
+FROM base AS chainwatch
+MAINTAINER Lotus Development Team
+
+COPY --from=builder /opt/filecoin/lotus-chainwatch /usr/local/bin/
+COPY --from=builder /opt/filecoin/lotus-shed       /usr/local/bin/
+
+USER fc
+
+ENTRYPOINT ["/usr/local/bin/lotus-chainwatch"]
+
+CMD ["-help"]
+
+# ---------------------
+# miner 
+# ---------------------
+
+FROM base_opencl AS miner
+MAINTAINER Lotus Development Team
+
+COPY --from=builder /opt/filecoin/lotus-miner /usr/local/bin/
+COPY --from=builder /opt/filecoin/lotus-shed  /usr/local/bin/
+
+USER fc
+
+ENTRYPOINT ["/usr/local/bin/lotus-miner"]
+
+CMD ["-help"]
+
+# ---------------------
+# worker
+# ---------------------
+
+FROM base_opencl AS worker
+MAINTAINER Lotus Development Team
+
+COPY --from=builder /opt/filecoin/lotus-worker /usr/local/bin/
+COPY --from=builder /opt/filecoin/lotus-shed   /usr/local/bin/
+
+USER fc
+
+ENTRYPOINT ["/usr/local/bin/lotus-worker"]
+
+CMD ["-help"]
+
+# ---------------------
+# shed
+# ---------------------
+
+FROM base AS shed
+MAINTAINER Lotus Development Team
+
+RUN apt-get update && apt-get install -y jq curl net-tools dnsutils
+
+COPY --from=builder /opt/filecoin/lotus      /usr/local/bin/
+COPY --from=builder /opt/filecoin/lotus-shed /usr/local/bin/
+
+USER fc
+
+ENTRYPOINT ["/usr/local/bin/lotus-shed"]
+
+CMD ["-help"]
+
+# ---------------------
+# stats
+# ---------------------
+
+FROM base AS stats
+MAINTAINER Lotus Development Team
+
+COPY --from=builder /opt/filecoin/lotus-stats /usr/local/bin/
+COPY --from=builder /opt/filecoin/lotus-shed  /usr/local/bin/
+
+USER fc
+
+ENTRYPOINT ["/usr/local/bin/lotus-stats"]
 
 CMD ["-help"]
