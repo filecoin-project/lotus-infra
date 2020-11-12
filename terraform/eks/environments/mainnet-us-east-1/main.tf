@@ -10,10 +10,12 @@ terraform {
 
 locals {
   node_groups = [
+    // These nodes are dedicated to running the bootstrap daemons they are special because
+    // we need to ensure that two daemons do not run on the same k8s node to ensure ip
+    // colocation does not occure.
     {
       instance_type = "c5.4xlarge"
       key_name      = var.key_name
-      # additional_userdata  = "aws s3 cp s3://filecoin-proof-parameters /opt/filecoin-proof-parameters --region us-east-1 --recursive --no-sign-request"
       desired_capacity = var.worker_count_open
       min_capacity     = "3"
       max_capacity     = "50"
@@ -21,11 +23,23 @@ locals {
         mode = "open"
       }
     },
+    // These are general purpose compute for all other pods in the cluster.
     {
       instance_type = "c5.4xlarge"
       key_name      = var.key_name
-      # additional_userdata  = "aws s3 cp s3://filecoin-proof-parameters /opt/filecoin-proof-parameters --region us-east-1 --recursive --no-sign-request"
       desired_capacity = var.worker_count_restricted
+      min_capacity     = "3"
+      max_capacity     = "50"
+      k8s_labels = {
+        mode = "restricted"
+      }
+    },
+    // These nodes are dedicated to running the fullnode daemons that provide api access to
+    // other services running in the cluster
+    {
+      instance_type = "r5.4xlarge"
+      key_name      = var.key_name
+      desired_capacity = 5
       min_capacity     = "3"
       max_capacity     = "50"
       k8s_labels = {
