@@ -7,7 +7,7 @@ ARG BUILDER_BASE=builder-local
 FROM golang:1.14.7-stretch AS builder-deps
 MAINTAINER Lotus Development Team
 
-RUN apt-get update && apt-get install -y ca-certificates build-essential clang ocl-icd-opencl-dev ocl-icd-libopencl1 jq
+RUN apt-get update && apt-get install -y ca-certificates build-essential clang ocl-icd-opencl-dev ocl-icd-libopencl1 jq libhwloc-dev
 
 ARG UID=1000
 ARG GID=1000
@@ -87,6 +87,9 @@ COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so      /lib/x86_64-linux-g
 COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1         /lib/x86_64-linux-gnu/
 COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1      /lib/x86_64-linux-gnu/
 COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1       /lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libltdl.so.7   /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libnuma.so.1   /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libhwloc.so.5  /usr/lib/x86_64-linux-gnu/
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/
 
 RUN useradd -r -u 532 -U fc
@@ -104,6 +107,9 @@ COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so      /lib/x86_64-linux-g
 COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1         /lib/x86_64-linux-gnu/
 COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1      /lib/x86_64-linux-gnu/
 COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1       /lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libltdl.so.7   /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libnuma.so.1   /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libhwloc.so    /lib/x86_64-linux-gnu/
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/
 
 RUN useradd -r -u 532 -U fc
