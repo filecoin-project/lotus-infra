@@ -17,7 +17,7 @@ while [ "$1" != "" ]; do
                                 ;;
         --2k )                  smallsectors=true
                                 ;;
-        -f | --build-ffi )      ffi=true
+        -f | --build-ffi )      ffi=false
                                 ;;
         -h | --help )           usage
                                 exit
