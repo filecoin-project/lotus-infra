@@ -91,7 +91,7 @@ if [ ! -z "$BUILD_REPO" ]; then
 
   docker tag "lotus:$tag"            "$BUILD_REPO/lotus:latest"
   docker tag "lotus-shed:$tag"       "$BUILD_REPO/lotus-shed:latest"
-  docker tag "lotus-stats:$tag"       "$BUILD_REPO/lotus-stats:latest"
+  docker tag "lotus-stats:$tag"      "$BUILD_REPO/lotus-stats:latest"
   docker tag "lotus-miner:$tag"      "$BUILD_REPO/lotus-miner:latest"
   docker tag "lotus-worker:$tag"     "$BUILD_REPO/lotus-worker:latest"
   docker tag "lotus-chainwatch:$tag" "$BUILD_REPO/lotus-chainwatch:latest"
