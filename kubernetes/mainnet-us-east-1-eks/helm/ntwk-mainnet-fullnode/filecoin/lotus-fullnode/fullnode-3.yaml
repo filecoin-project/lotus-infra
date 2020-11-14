@@ -1,0 +1,8 @@
+secrets:
+  libp3p:
+    enabled: true
+    secretName: fullnode-3-libp2p-secrets
+    libp3p_key: libp2p-host
+  jwt:
+    enabled: true
+    secretName: fullnode-3-jwt-secrets

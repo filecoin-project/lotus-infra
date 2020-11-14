@@ -9,21 +9,21 @@ deployments:
       - efs-access
   # bootstrap
   - chart: filecoin/lotus-fullnode
-    version: 0.1.11
+    version: 0.2.0
     namespace: ntwk-mainnet-bootstrap
     name: bootstrap-6
     values:
       - base
       - bootstrap-6
   - chart: filecoin/lotus-fullnode
-    version: 0.1.11
+    version: 0.2.0
     namespace: ntwk-mainnet-bootstrap
     name: bootstrap-7
     values:
       - base
       - bootstrap-7
   - chart: filecoin/lotus-fullnode
-    version: 0.1.11
+    version: 0.2.0
     namespace: ntwk-mainnet-bootstrap
     name: bootstrap-8
     values:
