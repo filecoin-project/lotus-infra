@@ -32,7 +32,7 @@ deleted first._
    `mainnet-us-east-1-eks/helm/ntwk-mainnet-fullnode/filecoin/lotus-fullnode/base.yaml`
 3. Run the `helm.bash` in diff mode for the cluster, and test execute the upgrade using for the selected helm release.
    ```
-   $ ./helm.bash --cluster mainnet-us-east-1-ek --diff
+   $ ./helm.bash --cluster mainnet-us-east-1-eks --diff
    ```
 4. Delete the jobs for the release.
    ```
@@ -42,7 +42,7 @@ deleted first._
    ```
 5. Next generate the helm command without diff and apply the changes
    ```
-   $ ./helm.bash --cluster mainnet-us-east-1-ek
+   $ ./helm.bash --cluster mainnet-us-east-1-eks
    ```
 6. Verify that the pod has terminated / restarted. If it hasn't delete the pod for the release
    ```
