@@ -4,7 +4,7 @@ ARG BUILDER_BASE=builder-local
 # builder-base
 # ---------------------
 
-FROM golang:1.14.7-stretch AS builder-deps
+FROM golang:1.15.5 AS builder-deps
 MAINTAINER Lotus Development Team
 
 RUN apt-get update && apt-get install -y ca-certificates build-essential clang ocl-icd-opencl-dev ocl-icd-libopencl1 jq libhwloc-dev
@@ -78,19 +78,18 @@ RUN make deps lotus lotus-miner lotus-worker lotus-shed lotus-chainwatch lotus-s
 # base
 # ---------------------
 
-FROM ubuntu:18.04 AS base
+FROM ubuntu:20.04 AS base
 MAINTAINER Lotus Development Team
 
 # Base resources
-COPY --from=builder /etc/ssl/certs                           /etc/ssl/certs
-COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so      /lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1         /lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1      /lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1       /lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libltdl.so.7   /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libnuma.so.1   /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libhwloc.so.5  /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/
+COPY  --from=builder  /lib/x86_64-linux-gnu/libdl.so.2              /lib/libdl.so.2
+COPY  --from=builder  /lib/x86_64-linux-gnu/libutil.so.1            /lib/libutil.so.1
+COPY  --from=builder  /usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0  /lib/libOpenCL.so.1
+COPY  --from=builder  /lib/x86_64-linux-gnu/librt.so.1              /lib/librt.so.1
+COPY  --from=builder  /lib/x86_64-linux-gnu/libgcc_s.so.1           /lib/libgcc_s.so.1
+COPY  --from=builder  /usr/lib/x86_64-linux-gnu/libhwloc.so.5       /lib/libhwloc.so.5
+COPY  --from=builder  /usr/lib/x86_64-linux-gnu/libnuma.so.1        /lib/libnuma.so.1
+COPY  --from=builder  /usr/lib/x86_64-linux-gnu/libltdl.so.7        /lib/libltdl.so.7
 
 RUN useradd -r -u 532 -U fc
 
@@ -102,15 +101,14 @@ FROM nvidia/opencl:runtime-ubuntu18.04 AS base_opencl
 MAINTAINER Lotus Development Team
 
 # Base resources
-COPY --from=builder /etc/ssl/certs                           /etc/ssl/certs
-COPY --from=builder /lib/x86_64-linux-gnu/libdl-2.24.so      /lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/librt.so.1         /lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1      /lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1       /lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libltdl.so.7   /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libnuma.so.1   /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libhwloc.so    /lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /usr/lib/x86_64-linux-gnu/
+COPY  --from=builder  /lib/x86_64-linux-gnu/libdl.so.2              /lib/libdl.so.2
+COPY  --from=builder  /lib/x86_64-linux-gnu/libutil.so.1            /lib/libutil.so.1
+COPY  --from=builder  /usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0  /lib/libOpenCL.so.1
+COPY  --from=builder  /lib/x86_64-linux-gnu/librt.so.1              /lib/librt.so.1
+COPY  --from=builder  /lib/x86_64-linux-gnu/libgcc_s.so.1           /lib/libgcc_s.so.1
+COPY  --from=builder  /usr/lib/x86_64-linux-gnu/libhwloc.so.5       /lib/libhwloc.so.5
+COPY  --from=builder  /usr/lib/x86_64-linux-gnu/libnuma.so.1        /lib/libnuma.so.1
+COPY  --from=builder  /usr/lib/x86_64-linux-gnu/libltdl.so.7        /lib/libltdl.so.7
 
 RUN useradd -r -u 532 -U fc
 
