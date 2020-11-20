@@ -3,10 +3,10 @@ image:
 
 resources:
   requests:
-    memory: 24Gi
+    memory: 96Gi
     cpu: 8
   limits:
-    memory: 32Gi
+    memory: 112Gi
     cpu: 16
 
 importSnapshot:
@@ -33,7 +33,7 @@ daemonConfig: |
     ConnMgrLow = 2
 
 additionalLabels:
-  mode: restricted
+  mode: open
   network: mainnet
 
 nodeSelector:
