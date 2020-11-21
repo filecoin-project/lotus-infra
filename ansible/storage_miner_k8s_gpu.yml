@@ -1,0 +1,47 @@
+- hosts: miner,seal_worker_gpu
+  vars:
+    nvidia_drivers_url: https://us.download.nvidia.com/tesla/440.33.01/NVIDIA-Linux-x86_64-440.33.01.run
+  tasks:
+    - include: includes/gpu_drivers.yml
+      notify: reboot system
+
+    - name: install nvidia_docker apt key
+      apt_key:
+        url: https://nvidia.github.io/nvidia-docker/gpgkey
+        state: present
+
+    - name: Download nvidia-docker sources.list
+      get_url:
+        url: https://nvidia.github.io/nvidia-docker/ubuntu18.04/nvidia-docker.list
+        dest: /etc/apt/sources.list.d/nvidia-docker.list
+
+    - name: install nvidia tools
+      apt:
+        pkg:
+          - nvidia-container-toolkit
+          - nvidia-docker2
+          - clinfo
+          - jq
+        update_cache: yes
+        state: present
+      notify:
+        - "restart docker"
+
+    - name: configure default docker runtime
+      shell: |
+        cat /etc/docker/daemon.json | jq -r '. += {"default-runtime": "nvidia"}' | tee /etc/docker/daemon.json
+
+  handlers:
+    - name: restart docker
+      service:
+        name: docker
+        state: restarted
+    - name: reboot system
+      reboot:
+
+- hosts: miner,seal_worker_gpu
+  tasks:
+    - name: verify nvidia-smi works
+      shell: 'nvidia-smi -L'
+    - name: verify docker nvidia-smi works
+      shell: 'docker run --gpus all nvidia/cuda:10.0-base nvidia-smi -L'

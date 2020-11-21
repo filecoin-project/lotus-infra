@@ -1,0 +1,56 @@
+---
+- hosts: k8s_master,k8s_worker
+  vars:
+    kubernetes_allow_pods_on_master: false
+    kubernetes_apiserver_advertise_address: '192.168.1.1'
+    kubernetes_kubelet_extra_args: "--node-ip {{ vlan1_ip }} --fail-swap-on=false --cgroup-driver=cgroupfs --cpu-manager-policy=static --kube-reserved=cpu=200m,memory=500Mi,ephemeral-storage=1Gi"
+    lotus_miner_libp2p_port: '15432'
+    # cni: 'calico'
+    # cidr: '192.168.0.0/16'
+  tasks:
+#      - include_role: name=ufw
+#      - name: get eth0 interface name
+#        shell: "ip link | awk '{print $2}' | grep enp | tr -d : | head -1"
+#        register: eth0
+#      - name: allow all incoming
+#        ufw:
+#          default: allow
+#          direction: incoming
+#      - name: block incoming on eth0 interface
+#        ufw:
+#          rule: deny
+#          direction: in
+#          interface: "{{ eth0.stdout }}"
+#      - name: allow libp2p eth0 interface
+#        ufw:
+#          rule: allow
+#          direction: in
+#          port: '{{ lotus_miner_libp2p_port }}'
+#          interface: "{{ eth0.stdout }}"
+  roles:
+    - geerlingguy.docker
+    - geerlingguy.kubernetes
+    - ntp
+
+- hosts: k8s_master
+  tasks:
+    - name: copy necessary files
+      copy:
+        src: files/k8s/
+        dest: /root/
+        mode: preserve
+    - name: add namespaces
+      shell: |
+        kubectl apply -f namespaces.yaml
+    - name: install helm repository key
+      apt_key:
+        url: https://helm.baltorepo.com/organization/signing.asc
+        state: present
+    - name: add helm apt repository
+      apt_repository:
+        repo: deb https://baltocdn.com/helm/stable/debian/ all main
+        state: present
+    - name: install helm
+      apt:
+        name: helm=3.2.*
+        state: present

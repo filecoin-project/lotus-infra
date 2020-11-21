@@ -1,0 +1,39 @@
+---
+- hosts: generic
+  tasks:
+    - include_role: name=ufw
+    - name: get eth1 interface name
+      shell: "ip link | awk '{print $2}' | grep enp | tr -d : | tail -1"
+      register: eth1
+    - name: allow incoming on vlan interface
+      ufw:
+        rule: allow
+        direction: in
+        interface: "{{ eth1.stdout }}"
+  roles:
+    - ufw_nat
+
+- hosts: ceph
+  vars:
+    vlan1_nat_gw: 192.168.1.254
+  tasks:
+    - name: get eth1 interface name
+      shell: "ip link | awk '{print $2}' | grep enp | tr -d : | tail -1"
+      register: eth1
+    - name: configure nat gateway
+      lineinfile:
+        path: /etc/network/interfaces
+        insertafter: '^address {{ vlan2_ip }}\n    netmask 255.255.255.0'
+        line: '    post-up route add -net 0.0.0.0 netmask 0.0.0.0 gw {{ vlan1_nat_gw }}'
+        state: present
+      notify: reboot
+    - name: configure nat gateway down
+      lineinfile:
+        path: /etc/network/interfaces
+        insertafter: '^post-up route add -net 0.0.0.0 netmask 0.0.0.0 gw {{ vlan1_nat_gw }}'
+        line: '    post-down route del -net 0.0.0.0 netmask 0.0.0.0 gw {{ vlan1_nat_gw }}'
+        state: present
+      notify: reboot
+  handlers:
+    - name: reboot
+      reboot:
