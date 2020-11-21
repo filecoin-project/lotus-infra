@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-miner-pod
+  labels:
+    app: debug-miner
+spec:
+  hostNetwork: true
+  nodeSelector:
+    kubernetes.io/hostname: storage-miner-0 
+  tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "lotus-storage-miner"
+      effect: "NoSchedule"
+  containers:
+  - name: debug-miner-container
+    image: stongo/lotus:0.4.3 
+    command: [sh, -c, tail -f /dev/null]
+    env: 
+      - name: FIL_PROOFS_PARAMETER_CACHE
+        value: /proof-params
+    volumeMounts:
+      - name: lotus-storage-miner-vol
+        mountPath: /var/lib/filecoin-storage-miner    
+      - name: proof-params
+        mountPath: /proof-params        
+  volumes:
+    - name: lotus-storage-miner-vol
+      persistentVolumeClaim:
+        claimName: lotus-storage-miner-vol-lotus-storage-miner-app-0
+        readOnly: false          
+    - name: proof-params
+      persistentVolumeClaim:
+        claimName: proof-params-pvc
+        readOnly: false

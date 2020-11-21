@@ -1,0 +1,30 @@
+useOperatorHostNetwork: true
+tolerations:
+  - key: "ceph"
+    operator: "Equal"
+    value: "mon"
+nodeSelector:
+  ceph: mon
+csi:
+  provisionerTolerations:
+    - key: "ceph"
+      operator: "Equal"
+      value: "mon"
+  provisionerNodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: ceph
+          operator: In
+          values:
+          - mon
+  pluginTolerations:
+    - key: "role"
+      operator: "Exists"
+    - key: "ceph"
+      operator: "Equal"
+      value: "mon"
+agent:
+  tolerations:
+    - key: "role"
+      operator: "Exists"

@@ -1,0 +1,38 @@
+---
+- hosts: all
+  tasks:
+    - name: get eth1 interface name
+      shell: "ip link | awk '{print $2}' | grep enp | tr -d : | tail -1"
+      register: eth1
+    - debug:
+        msg: "{{ eth1.stdout }}"
+    - name: 'remove eth1 from bond'
+      shell: 'echo "-{{ eth1.stdout }}" > /sys/class/net/bond0/bonding/slaves'
+      run_once: False
+      ignore_errors: True
+    - name: edit network interfaces config
+      lineinfile:
+        path: /etc/network/interfaces
+        regexp: '{{ item.from }}'
+        line: '{{ item.to }}'
+        insertafter: 'auto {{ eth1.stdout }}'
+        state: present
+      with_items:
+        - { from: 'iface {{ eth1.stdout }} inet manual', to: 'iface {{ eth1.stdout }} inet static'}
+        - { from: 'pre-up sleep 4', to: '    address {{ vlan1_ip }}'}
+        - { from: 'bond-master bond0', to: '    netmask 255.255.255.0'}
+      run_once: False
+      ignore_errors: True
+      when: inventory_hostname is not regex("^192")
+    - name: restart eth1
+      shell: 'ifdown {{ eth1.stdout }} && sleep 5 && ifup {{ eth1.stdout }}'
+      run_once: False
+      ignore_errors: True
+      when: inventory_hostname is not regex("^192")
+
+- hosts: all,!k8s_master
+  tasks:
+    - name: ping test
+      shell: 'ping -I {{ eth1.stdout }} -c2 192.168.1.1'
+      run_once: False
+      ignore_errors: True
