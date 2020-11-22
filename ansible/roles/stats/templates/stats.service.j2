@@ -7,10 +7,12 @@ PartOf=lotus-daemon.service
 [Service]
 User={{ lotus_user }}
 Group={{ lotus_user }}
-ExecStart=/usr/local/bin/stats -repo={{ lotus_path }} -database={{ stats_influxdb_database }} -nosync={{ stats_nosync | lower }}
-Environment=INFLUX_ADDR="{{ stats_influxdb_url }}"
-Environment=INFLUX_USER="{{ stats_influxdb_username }}"
-Environment=INFLUX_PASS="{{ stats_influxdb_password }}"
+ExecStart=/usr/local/bin/stats --nosync={{ stats_nosync | lower }}
+Environment=FULLNODE_API_INFO="{{ stats_fullnode_multiaddr }}"
+Environment=LOTUS_STATS_INFLUX_DATABASE="{{ stats_influx_database }}"
+Environment=LOTUS_STATS_INFLUX_HOSTNAME="{{ stats_influxdb_url }}"
+Environment=LOTUS_STATS_INFLUX_USERNAME="{{ stats_influxdb_username }}"
+Environment=LOTUS_STATS_INFLUX_PASSWORD="{{ stats_influxdb_password }}"
 Environment=GOLOG_FILE="{{ stats_golog_file }}"
 Environment=GOLOG_LOG_LEVEL="{{ stats_golog_log_level }}"
 Environment=GOLOG_LOG_FMT="{{ stats_golog_log_fmt }}"
