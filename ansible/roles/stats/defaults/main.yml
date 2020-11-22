@@ -1,3 +1,4 @@
+stats_fullnode_multiaddr: /ipv4/127.0.0.1/tcp/1234/http
 stats_golog_log_fmt: json
 stats_golog_log_level: info
 stats_nosync: false
