@@ -1,0 +1,8 @@
+image:
+  tag: f4df58ed0
+
+# Nov 9 00:00:00
+height: 219120
+lotusApiInfo: /dns/fullnode-0-lotus-daemon.ntwk-mainnet-fullnode.svc.cluster.local/tcp/1234
+
+influxDatabase: chainstats-ntwk-mainnet

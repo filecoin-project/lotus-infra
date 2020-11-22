@@ -1,5 +1,12 @@
 ---
 deployments:
+  # stats
+  - chart: filecoin/lotus-stats
+    version: 0.1.1
+    namespace: ntwk-mainnet-stats
+    name: lotus-stats
+    values:
+      - lotus-stats
   # efs access
   - chart: filecoin/efs-access
     version: 0.1.0
