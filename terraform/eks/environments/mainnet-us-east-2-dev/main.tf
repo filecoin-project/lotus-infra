@@ -41,7 +41,10 @@ locals {
       min_capacity     = "3"
       max_capacity     = "50"
       k8s_labels       = {}
-      subnet_ids       = [aws_subnet.workers[*].id]
+      subnet_ids = [
+        for subnet in aws_subnet.workers :
+        subnet.id
+      ]
     },
   ]
   acm_enabled = 1
