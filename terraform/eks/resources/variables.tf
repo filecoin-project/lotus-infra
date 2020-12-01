@@ -21,6 +21,18 @@ variable "private_subnets" {
   default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
 
+
+variable "private_subnets_workers" {
+  description = "CIDR for public subnets in the VPC for kubernetes workers (must be within var.cidr)"
+  type        = set(string)
+
+  default = [
+    "10.0.16.0/20",
+    "10.0.32.0/20",
+    "10.0.48.0/20",
+  ]
+}
+
 variable "public_subnets" {
   description = "CIDR for public subnets in the VPC (must be within var.cidr)"
   type        = list(string)
@@ -29,6 +41,17 @@ variable "public_subnets" {
     "10.0.4.0/24",
     "10.0.5.0/24",
     "10.0.6.0/24",
+  ]
+}
+
+variable "public_subnets_workers" {
+  description = "CIDR for public subnets in the VPC for kubernetes workers (must be within var.cidr)"
+  type        = set(string)
+
+  default = [
+    "10.0.64.0/20",
+    "10.0.80.0/20",
+    "10.0.96.0/20",
   ]
 }
 
