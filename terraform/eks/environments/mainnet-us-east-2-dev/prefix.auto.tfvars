@@ -1,1 +1,1 @@
-prefix = "mainnet-us-east-2-eks"
+prefix = "mainnet-us-east-2-dev"

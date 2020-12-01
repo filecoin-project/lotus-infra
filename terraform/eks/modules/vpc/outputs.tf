@@ -17,3 +17,7 @@ output "private_subnet_ids" {
 output "security_group_ids" {
   value = [aws_security_group.efs.id]
 }
+
+output "public_route_table_ids" {
+  value = module.vpc.public_route_table_ids
+}

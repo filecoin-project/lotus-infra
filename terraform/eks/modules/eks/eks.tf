@@ -32,16 +32,16 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "13.0.0"
 
-  cluster_name    = local.name
-  cluster_version = var.k8s_version
-  vpc_id          = var.vpc_id
-  subnets         = flatten([var.public_subnets])
-  tags            = local.tags
-  map_users       = local.map_users
-  #map_users_count                            = length(local.map_users)
+  cluster_name                               = local.name
+  cluster_version                            = var.k8s_version
+  vpc_id                                     = var.vpc_id
+  subnets                                    = flatten([var.public_subnets])
+  tags                                       = local.tags
+  map_users                                  = local.map_users
   kubeconfig_aws_authenticator_env_variables = var.kubeconfig_aws_authenticator_env_variables
-  config_output_path                         = local.config_path
-  worker_additional_security_group_ids       = merge(aws_security_group.lotus.id, var.security_group_ids)
+  #kubeconfig_aws_authenticator_command       = "/usr/local/bin/aws eks --region ${var.region} update-kubeconfig --name ${local.name}"
+  config_output_path                   = local.config_path
+  worker_additional_security_group_ids = concat(var.security_group_ids, [aws_security_group.lotus.id])
 
   workers_additional_policies = [
     aws_iam_policy.external_dns.arn,
@@ -51,6 +51,7 @@ module "eks" {
   node_groups = var.node_groups
 }
 
+/*
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "v2.11.0"
@@ -66,6 +67,7 @@ module "acm" {
     Name = var.external_dns_fqdn
   }
 }
+*/
 
 resource "aws_iam_policy" "external_dns" {
   name = "external-dns-${local.name}"

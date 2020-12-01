@@ -21,13 +21,17 @@ module "vpc" {
 
 
 resource "aws_subnet" "workers" {
-  for_each   = var.public_subnets_workers
-  vpc_id     = module.vpc.vpc_id
-  cidr_block = each.value
+  for_each                = var.public_subnets_workers
+  vpc_id                  = module.vpc.vpc_id
+  cidr_block              = each.value
+  tags                    = local.subnet_tags
+  map_public_ip_on_launch = true
+}
 
-  tags = {
-    Name = "${var.prefix}-worker"
-  }
+resource "aws_route_table_association" "workers" {
+  for_each       = aws_subnet.workers
+  subnet_id      = each.value.id
+  route_table_id = module.vpc.public_route_table_ids[0]
 }
 
 locals {
@@ -41,13 +45,19 @@ locals {
       min_capacity     = "3"
       max_capacity     = "50"
       k8s_labels       = {}
-      subnet_ids = [
+      subnets = [
         for subnet in aws_subnet.workers :
         subnet.id
       ]
     },
   ]
   acm_enabled = 1
+  subnet_tags = {
+    "kubernetes.io/role/alb-ingress"          = "1"
+    "kubernetes.io/role/elb"                  = "1"
+    "kubernetes.io/cluster/${var.prefix}-eks" = "shared"
+    "Name"                                    = "${var.prefix}-worker"
+  }
 }
 
 module "eks" {
@@ -69,5 +79,4 @@ module "eks" {
   external_dns_fqdn                          = var.external_dns_fqdn
   node_groups                                = local.node_groups
   security_group_ids                         = module.vpc.security_group_ids
-  #acm_enabled                                = local.acm_enabled
 }
