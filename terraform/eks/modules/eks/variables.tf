@@ -3,56 +3,27 @@ variable "prefix" {
   type        = string
 }
 
+variable "vpc_id" {
+  description = "VPC ID for eks cluster"
+}
+
 variable "region" {
   description = "AWS region e.g. us-east-1"
   type        = string
   default     = "us-east-2"
 }
 
-variable "cidr" {
-  description = "CIDR for the VPC"
-  type        = string
-  default     = "10.0.0.0/16"
+variable "public_subnets" {
+  description = "Public Subnets for EKS control plane"
 }
 
 variable "private_subnets" {
-  description = "CIDR for private subnets in the VPC (must be within var.cidr)"
-  type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  description = "Private Subnets for EKS control plane"
 }
 
-
-variable "private_subnets_workers" {
-  description = "CIDR for public subnets in the VPC for kubernetes workers (must be within var.cidr)"
-  type        = set(string)
-
-  default = [
-    "10.0.16.0/20",
-    "10.0.32.0/20",
-    "10.0.48.0/20",
-  ]
-}
-
-variable "public_subnets" {
-  description = "CIDR for public subnets in the VPC (must be within var.cidr)"
-  type        = list(string)
-
-  default = [
-    "10.0.4.0/24",
-    "10.0.5.0/24",
-    "10.0.6.0/24",
-  ]
-}
-
-variable "public_subnets_workers" {
-  description = "CIDR for public subnets in the VPC for kubernetes workers (must be within var.cidr)"
-  type        = set(string)
-
-  default = [
-    "10.0.64.0/20",
-    "10.0.80.0/20",
-    "10.0.96.0/20",
-  ]
+variable "security_group_ids" {
+  description = "Security group ids for EKS"
+  type        = list
 }
 
 variable "eks_iam_usernames" {
