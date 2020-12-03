@@ -1,5 +1,5 @@
 image:
-  tag: v1.2.0
+  tag: df66f48f6-dirty
 
 importSnapshot:
   enabled: false
