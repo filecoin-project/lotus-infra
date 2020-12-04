@@ -15,6 +15,11 @@ variable "cidr" {
   default     = "10.0.0.0/16"
 }
 
+variable "azs" {
+  description = "AWS availability zones from region"
+  default     = ["us-east-2a", "us-east-2b", "us-east-2c", ]
+}
+
 variable "private_subnets" {
   description = "CIDR for private subnets in the VPC (must be within var.cidr)"
   type        = list(string)
