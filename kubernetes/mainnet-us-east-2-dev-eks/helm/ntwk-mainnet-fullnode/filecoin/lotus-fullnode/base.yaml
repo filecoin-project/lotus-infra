@@ -1,7 +1,7 @@
 image:
   tag: df66f48f6
 
-prometheusOperatorServiceMonitor: false
+prometheusOperatorServiceMonitor: true
 
 resources:
   requests:
@@ -17,9 +17,6 @@ importSnapshot:
   network: mainnet
   exportRelease: export-full-archive
   exitCodeOnMissing: 0
-
-daemonArgs:
-  - --bootstrap=false
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
