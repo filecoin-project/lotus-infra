@@ -1,4 +1,3 @@
-/*
 terraform {
   backend "s3" {
     bucket         = "filecoin-mainnet-terraform-state"
@@ -8,7 +7,6 @@ terraform {
     profile        = "mainnet"
   }
 }
-*/
 
 module "vpc" {
   source = "../../modules/vpc"
