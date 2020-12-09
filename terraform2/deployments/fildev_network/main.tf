@@ -135,11 +135,11 @@ module "testnet" {
   key_name                    = "filecoin"
   vpc_id                      = module.fildev_network_vpc_east.vpc_id
   environment                 = "prod"
-  toolshed_count              = 6
-  toolshed_external           = 1
+  toolshed_count              = 0
+  toolshed_external           = 0
   bootstrapper_count          = 0
-  preminer_count              = 3
-  preminer_external           = 1
+  preminer_count              = 0
+  preminer_external           = 0
   scratch_count               = 2
   scratch_external            = 1
   toolshed_instance_type      = "m5a.4xlarge"
