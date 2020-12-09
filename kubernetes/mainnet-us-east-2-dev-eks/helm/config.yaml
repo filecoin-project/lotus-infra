@@ -1,0 +1,81 @@
+---
+deployments:
+  # efs access
+  - chart: filecoin/efs-access
+    version: 0.1.0
+    namespace: ntwk-mainnet-fullnode
+    name: efs-access
+    values:
+      - efs-access
+  # fullnodes
+  - chart: filecoin/lotus-fullnode
+    version: 0.2.0
+    namespace: ntwk-mainnet-fullnode
+    name: fullnode-0
+    values:
+      - base
+      - from-snapshot
+      - fullnode-0
+  - chart: filecoin/lotus-fullnode
+    version: 0.2.0
+    namespace: ntwk-mainnet-fullnode
+    name: fullnode-1
+    values:
+      - base
+      - from-snapshot
+      - fullnode-1
+  - chart: filecoin/lotus-fullnode
+    version: 0.2.0
+    namespace: ntwk-mainnet-fullnode
+    name: fullnode-2
+    values:
+      - base
+      - from-snapshot
+      - fullnode-2
+  - chart: filecoin/lotus-fullnode
+    version: 0.2.0
+    namespace: ntwk-mainnet-fullnode
+    name: fullnode-3
+    values:
+      - base
+      - from-snapshot
+      - fullnode-3
+  - chart: filecoin/lotus-fullnode
+    version: 0.2.0
+    namespace: ntwk-mainnet-fullnode
+    name: fullnode-4
+    values:
+      - base
+      - from-snapshot
+      - fullnode-4
+  - chart: filecoin/lotus-fullnode
+    version: 0.2.0
+    namespace: ntwk-mainnet-fullnode
+    name: fullnode-5
+    values:
+      - base
+      - from-snapshot
+      - fullnode-5
+  - chart: filecoin/lotus-fullnode
+    version: 0.2.0
+    namespace: ntwk-mainnet-fullnode
+    name: fullnode-6
+    values:
+      - base
+      - from-snapshot
+      - fullnode-6
+  - chart: filecoin/lotus-fullnode
+    version: 0.2.0
+    namespace: ntwk-mainnet-fullnode
+    name: fullnode-7
+    values:
+      - base
+      - from-snapshot
+      - fullnode-7
+  # consensus check
+  - chart: filecoin/lotus-consensus-check
+    version: 0.1.1
+    namespace: ntwk-mainnet-fullnode
+    name: cc-common
+    values:
+      - cc-common

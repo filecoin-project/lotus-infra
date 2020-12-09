@@ -1,0 +1,17 @@
+image:
+  tag: dc06d30f5
+
+daemonEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+  - name: GODEBUG
+    value: madvdontneed=1,gctrace=1
+
+secrets:
+  libp2p:
+    enabled: true
+    secretName: fullnode-0-libp2p-secrets
+    libp2p_key: libp2p-host
+  jwt:
+    enabled: true
+    secretName: fullnode-0-jwt-secrets

@@ -1,0 +1,9 @@
+persistence:
+  datastore:
+    enabled: true
+    storageClassName: "ebs-csi"
+    size: "2000Gi"
+    dataSource:
+      name: lotus-fullnode-0-datastore
+      kind: VolumeSnapshot
+      apiGroup: snapshot.storage.k8s.io
