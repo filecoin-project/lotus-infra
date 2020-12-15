@@ -21,11 +21,15 @@ module "vpc" {
 }
 
 resource "aws_subnet" "workers" {
-  for_each                = var.public_subnets_workers
+  for_each                = toset(var.public_subnets_workers)
   vpc_id                  = module.vpc.vpc_id
   cidr_block              = each.value
   tags                    = local.subnet_tags
   map_public_ip_on_launch = true
+  availability_zone       = var.azs[index(var.public_subnets_workers, each.value)]
+  lifecycle {
+    create_before_destroy = false
+  }
 }
 
 resource "aws_route_table_association" "workers" {

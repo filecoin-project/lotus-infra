@@ -60,7 +60,6 @@ module "acm" {
 
   subject_alternative_names = [
     "*.${var.external_dns_fqdn}",
-    "${var.external_dns_fqdn}",
   ]
 
   tags = {

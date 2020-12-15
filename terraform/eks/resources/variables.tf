@@ -51,7 +51,7 @@ variable "public_subnets" {
 
 variable "public_subnets_workers" {
   description = "CIDR for public subnets in the VPC for kubernetes workers (must be within var.cidr)"
-  type        = set(string)
+  type        = list(string)
 
   default = [
     "10.0.64.0/20",
