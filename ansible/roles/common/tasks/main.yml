@@ -9,6 +9,7 @@
     name:
       - jq
       - unzip
+      - libhwloc-dev
 
 - name: Ensure hostname
   hostname:
