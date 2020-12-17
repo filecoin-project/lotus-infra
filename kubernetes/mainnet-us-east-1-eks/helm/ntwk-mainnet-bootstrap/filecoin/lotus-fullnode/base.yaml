@@ -1,5 +1,13 @@
 image:
-  tag: df66f48f6-dirty
+  tag: v1.3.0
+
+resources:
+  requests:
+    memory: 32Gi
+    cpu: 4
+  limits:
+    memory: 48Gi
+    cpu: 6
 
 importSnapshot:
   enabled: false
@@ -20,31 +28,5 @@ daemonArgs:
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
-
-additionalLabels:
-  mode: open
-  network: mainnet
-
-nodeSelector:
-  mode: open
-
-tolerations:
-- key: "mode"
-  operator: "Equal"
-  value: "open"
-  effect: "NoSchedule"
-
-affinity:
-  podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-    - topologyKey: "kubernetes.io/hostname"
-      labelSelector:
-        matchExpressions:
-        - key: app
-          operator: In
-          values:
-          - lotus-fullnode-app
-        - key: network
-          operator: In
-          values:
-          - mainnet
+  - name: GODEBUG
+    value: madvdontneed=1,gctrace=1
