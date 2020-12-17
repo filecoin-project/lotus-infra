@@ -7,6 +7,49 @@ deployments:
     name: lotus-stats
     values:
       - lotus-stats
+  # volume snapshotter
+  - chart: filecoin/volume-snapshotter
+    version: 0.1.0
+    namespace: ntwk-mainnet-bootstrap
+    name: vsnap-datastore-volume-bootstrap-0-lotus-0
+    values:
+      - base
+      - bootstrap-0
+  - chart: filecoin/volume-snapshotter
+    version: 0.1.0
+    namespace: ntwk-mainnet-bootstrap
+    name: vsnap-datastore-volume-bootstrap-1-lotus-0
+    values:
+      - base
+      - bootstrap-1
+  - chart: filecoin/volume-snapshotter
+    version: 0.1.0
+    namespace: ntwk-mainnet-bootstrap
+    name: vsnap-datastore-volume-bootstrap-2-lotus-0
+    values:
+      - base
+      - bootstrap-2
+  - chart: filecoin/volume-snapshotter
+    version: 0.1.0
+    namespace: ntwk-mainnet-fullnode
+    name: vsnap-datastore-volume-fullnode-0-lotus-0
+    values:
+      - base
+      - fullnode-0
+  - chart: filecoin/volume-snapshotter
+    version: 0.1.0
+    namespace: ntwk-mainnet-fullnode
+    name: vsnap-datastore-volume-fullnode-1-lotus-0
+    values:
+      - base
+      - fullnode-1
+  - chart: filecoin/volume-snapshotter
+    version: 0.1.0
+    namespace: ntwk-mainnet-fullnode
+    name: vsnap-datastore-volume-fullnode-2-lotus-0
+    values:
+      - base
+      - fullnode-2
   # efs access
   - chart: filecoin/efs-access
     version: 0.1.0
