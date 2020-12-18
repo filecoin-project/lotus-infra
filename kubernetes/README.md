@@ -22,9 +22,8 @@ Download from: https://github.com/databus23/helm-diff
 
 #### Updating lotus version
 
-_Note: Currently there is a job created as part of the lotus-fullnode chart to create the jwt and libp2p secrets when they are
-enabled and no secret name is provided. This bit of code doesn't correctly detect the existing job, which requires that it is
-deleted first._
+_Note: when you run helm.bash, it will spit out a bunch of command, you will want to only run the commands you need to
+run to target the helm release you want to upgrade._
 
 1. Find the correct docker tag that you need to deploy
 2. Update the `tag` value for the chart
@@ -34,17 +33,11 @@ deleted first._
    ```
    $ ./helm.bash --cluster mainnet-us-east-1-eks --diff
    ```
-4. Delete the jobs for the release.
-   ```
-   $ kubectl get jobs
-   $ kubectl delete job <release>-jwt-secrets-creator
-   $ kubectl delete job <release>-libp2p-secrets-creator
-   ```
-5. Next generate the helm command without diff and apply the changes
+4. Next generate the helm command without diff and apply the changes
    ```
    $ ./helm.bash --cluster mainnet-us-east-1-eks
    ```
-6. Verify that the pod has terminated / restarted. If it hasn't delete the pod for the release
+5. Verify that the pod has terminated / restarted. If it hasn't delete the pod for the release
    ```
    $ kubectl delete pod <release>-lotus-0
    ```
