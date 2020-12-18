@@ -37,7 +37,7 @@ persistence:
   datastore:
     enabled: true
     storageClassName: "ebs-csi"
-    size: "2000Gi"
+    size: "4000Gi"
 
 affinity:
   podAntiAffinity:
