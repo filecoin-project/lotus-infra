@@ -13,7 +13,7 @@ persistence:
     storageClassName: "ebs-csi"
     size: "2000Gi"
     dataSource:
-      name: snapshot-datastore-volume-bootstrap-0-lotus-0-1607461053
+      name: snapshot-datastore-volume-bootstrap-0-lotus-0-1608249612
       kind: VolumeSnapshot
       apiGroup: snapshot.storage.k8s.io
 
