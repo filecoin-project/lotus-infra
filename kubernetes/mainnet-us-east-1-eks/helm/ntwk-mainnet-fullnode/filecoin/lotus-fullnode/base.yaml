@@ -1,5 +1,5 @@
 image:
-  tag: v1.2.0
+  tag: v1.3.0
 
 resources:
   requests:
@@ -19,6 +19,8 @@ importSnapshot:
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
+  - name: GODEBUG
+    value: madvdontneed=1,gctrace=1
 
 daemonConfig: |
   [API]
@@ -37,4 +39,4 @@ persistence:
   datastore:
     enabled: true
     storageClassName: "ebs-csi"
-    size: "2000Gi"
+    size: "4000Gi"
