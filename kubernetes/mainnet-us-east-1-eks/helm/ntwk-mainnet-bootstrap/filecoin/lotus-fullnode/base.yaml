@@ -1,5 +1,5 @@
 image:
-  tag: v1.3.0
+  tag: 667e006a2
 
 resources:
   requests:
@@ -29,4 +29,4 @@ daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
   - name: GODEBUG
-    value: madvdontneed=1,gctrace=1
+    value: madvdontneed=1
