@@ -9,19 +9,12 @@ MAINTAINER Lotus Development Team
 
 RUN apt-get update && apt-get install -y ca-certificates build-essential clang ocl-icd-opencl-dev ocl-icd-libopencl1 jq libhwloc-dev
 
-ARG UID=1000
-ARG GID=1000
 ARG RUST_VERSION=nightly
 ENV XDG_CACHE_HOME="/tmp"
 
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH
-
-RUN addgroup -gid $GID filecoin && \
-    adduser --no-create-home --disabled-password -uid $UID --ingroup filecoin --gecos "" filecoin && \
-    mkdir -p "/go/pkg/mod" && \
-    chown -R filecoin:filecoin "/go/pkg/mod"
 
 RUN wget "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
     chmod +x rustup-init; \
@@ -72,16 +65,13 @@ RUN make clean deps
 FROM $BUILDER_BASE AS builder
 MAINTAINER Lotus Development Team
 
-RUN chown -R filecoin:filecoin /opt/filecoin
-
-USER filecoin
 WORKDIR /opt/filecoin
 
 ARG RUSTFLAGS
 ARG FFI_BUILD_FROM_SOURCE
 ARG GOFLAGS
 
-RUN make deps lotus lotus-miner lotus-worker lotus-shed lotus-chainwatch lotus-stats
+RUN make lotus lotus-miner lotus-worker lotus-shed lotus-chainwatch lotus-stats
 
 # ---------------------
 # base
@@ -199,7 +189,7 @@ CMD ["-help"]
 FROM base AS shed
 MAINTAINER Lotus Development Team
 
-RUN apt-get update && apt-get install -y jq curl net-tools dnsutils
+RUN apt-get update && apt-get install -y jq curl net-tools dnsutils netcat wget rsync
 
 COPY --from=builder /opt/filecoin/lotus      /usr/local/bin/
 COPY --from=builder /opt/filecoin/lotus-shed /usr/local/bin/

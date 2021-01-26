@@ -19,6 +19,9 @@ while [ "$1" != "" ]; do
                                 ;;
         -f | --build-ffi )      ffi=false
                                 ;;
+        --network )             shift
+                                network="$1"
+                                ;;
         -h | --help )           usage
                                 exit
                                 ;;
@@ -34,6 +37,7 @@ done
 BUILD_SRC="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 SMALL_SECTORS="${smallsectors:-""}"
 BUILD_FFI="${ffi:-""}"
+NETWORK="${network:-""}"
 
 if ! docker info 2>&1 > /dev/null ; then
   echo "Docker is not running, or you do not have permission to execute commands"
@@ -43,11 +47,22 @@ fi
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 pushd "$SCRIPTDIR/../docker"
 
-goflags=()
 
+gotags=()
 if [ "$SMALL_SECTORS" = true ]; then
-  goflags+=(-e GOFLAGS="-tags=2k")
+  gotags+=("2k")
 fi
+
+function join { local IFS="$1"; shift; echo "$*"; }
+
+if [ ! -z NETWORK]; then
+  gotags+=("${NETWORK}")
+fi
+
+tags=$(join , ${gotags[@]})
+
+envflags=()
+envflags+=(-e GOFLAGS="-tags=$tags")
 
 ffiargs=()
 if [ "$BUILD_FFI" = true ]; then
@@ -80,6 +95,6 @@ else
   buildlist="$@"
 fi
 
-docker run --rm "${ffiargs[@]}" "${volumes[@]}" "${goflags[@]}" "lotus-binary-builder:$sha" ${buildlist[@]}
+docker run --rm "${ffiargs[@]}" "${volumes[@]}" "${envflags[@]}" "lotus-binary-builder:$sha" ${buildlist[@]}
 
 popd
