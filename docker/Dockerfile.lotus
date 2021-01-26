@@ -9,12 +9,19 @@ MAINTAINER Lotus Development Team
 
 RUN apt-get update && apt-get install -y ca-certificates build-essential clang ocl-icd-opencl-dev ocl-icd-libopencl1 jq libhwloc-dev
 
+ARG UID=1000
+ARG GID=1000
 ARG RUST_VERSION=nightly
 ENV XDG_CACHE_HOME="/tmp"
 
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH
+
+RUN addgroup -gid $GID filecoin && \
+    adduser --no-create-home --disabled-password -uid $UID --ingroup filecoin --gecos "" filecoin && \
+    mkdir -p "/go/pkg/mod" && \
+    chown -R filecoin:filecoin "/go/pkg/mod"
 
 RUN wget "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
     chmod +x rustup-init; \
@@ -32,6 +39,10 @@ RUN wget "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rust
 FROM builder-deps AS builder-local
 MAINTAINER Lotus Development Team
 
+ARG RUSTFLAGS
+ARG FFI_BUILD_FROM_SOURCE
+ARG GOFLAGS
+
 COPY ./lotus/ /opt/filecoin
 WORKDIR /opt/filecoin
 RUN make clean deps
@@ -46,6 +57,10 @@ MAINTAINER Lotus Development Team
 ARG REPO=https://github.com/filecoin-project/lotus.git
 ARG TAG=""
 
+ARG RUSTFLAGS
+ARG FFI_BUILD_FROM_SOURCE
+ARG GOFLAGS
+
 RUN git clone $REPO --single-branch --branch $TAG /opt/filecoin
 WORKDIR /opt/filecoin
 RUN make clean deps
@@ -57,10 +72,14 @@ RUN make clean deps
 FROM $BUILDER_BASE AS builder
 MAINTAINER Lotus Development Team
 
+RUN chown -R filecoin:filecoin /opt/filecoin
+
+USER filecoin
 WORKDIR /opt/filecoin
 
-ARG RUSTFLAGS=""
-ARG GOFLAGS=""
+ARG RUSTFLAGS
+ARG FFI_BUILD_FROM_SOURCE
+ARG GOFLAGS
 
 RUN make deps lotus lotus-miner lotus-worker lotus-shed lotus-chainwatch lotus-stats
 
@@ -126,7 +145,7 @@ ENTRYPOINT ["/usr/local/bin/lotus"]
 CMD ["-help"]
 
 # ---------------------
-# chainwatch 
+# chainwatch
 # ---------------------
 
 FROM base AS chainwatch
@@ -142,7 +161,7 @@ ENTRYPOINT ["/usr/local/bin/lotus-chainwatch"]
 CMD ["-help"]
 
 # ---------------------
-# miner 
+# miner
 # ---------------------
 
 FROM base_opencl AS miner
