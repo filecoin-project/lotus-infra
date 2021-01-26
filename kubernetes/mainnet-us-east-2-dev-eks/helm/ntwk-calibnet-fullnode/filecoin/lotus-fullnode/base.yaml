@@ -1,0 +1,33 @@
+image:
+  tag: calibnet-d6c06881e
+
+prometheusOperatorServiceMonitor: true
+
+resources:
+  requests:
+    memory: 32Gi
+    cpu: 4
+  limits:
+    memory: 64Gi
+    cpu: 6
+
+daemonEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+  - name: GODEBUG
+    value: madvdontneed=1
+
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+
+additionalLabels:
+  network: calibnet
+
+persistence:
+  datastore:
+    enabled: true
+    storageClassName: "gp2"
+    size: "300Gi"
