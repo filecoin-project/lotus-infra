@@ -14,7 +14,7 @@ $ git clone https://github.com/filecoin-project/lotus.git --branch <branch/tag> 
 2. Run a build of the code and required binaries to update
 
 ```
-$ ../scripts/build_binaries.bash --src /tmp/<branch/tag> -- lotus lotus-miner lotus-seed lotus-shed lotus-stats
+$ ../scripts/build_binaries.bash --src /tmp/<branch/tag> --network <network> -- lotus lotus-miner lotus-seed lotus-shed lotus-stats
 ```
 
 3. Check update
