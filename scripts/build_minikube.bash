@@ -4,7 +4,7 @@
 # Pass minikube commands first, then build_containers arguments after "--"
 # For example, for native compilation with GPUs, try the following:
 #
-#                       (minikube options)           || (build_containers options)
+#                       (minikube args)             || (build_containers args)
 # ./build_minikube.bash --driver kvm2 --kvm-gpu=true -- --native
 
 declare -a MINIKUBE_ARGS
@@ -42,7 +42,7 @@ minikube addons enable logviewer
 minikube addons enable metrics-server
 minikube addons enable volumesnapshots
 
-echo Added these images to local kubernetes dev environment.
+echo These images have been added to the local dev environment cache.
 echo Try them out! 
 echo e.g. `kubectl run  --image lotus:localdev my_k8s_daemon -- daemon`
 echo
