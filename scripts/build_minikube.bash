@@ -7,29 +7,28 @@
 #                       (minikube options)           || (build_containers options)
 # ./build_minikube.bash --driver kvm2 --kvm-gpu=true -- --native
 
-declare -a MINIKUBE_OPTS
+declare -a MINIKUBE_ARGS
 
 while [ "$1" != "" ]; do
   case $1 in
     -- ) shift
       break
       ;;
-    * )  MINIKUBE_OPTS+=($1)
+    * )  MINIKUBE_ARGS+=($1)
       shift
       ;;
   esac
 done
 
-# Minikube options stored in the MINIKUBE_OPTS array
+# Minikube arguments are stored in the MINIKUBE_OPTS array
 # build_containers arguments are stored in the shifted arguments array $@
-
 
 # Build containers
 DEV_DOCKER_TAG=localdev
 ./build_containers.bash "${@}" --docker-tag $DEV_DOCKER_TAG
 
 # Start kubernetes
-minikube start "${MINIKUBE_OPTS[@]}"
+minikube start "${MINIKUBE_ARGS[@]}"
 
 # Add local images to kubernetes cache
 minikube cache add lotus-miner:"$DEV_DOCKER_TAG"
@@ -46,4 +45,5 @@ minikube addons enable volumesnapshots
 echo Added these images to local kubernetes dev environment.
 echo Try them out! 
 echo e.g. `kubectl run  --image lotus:localdev my_k8s_daemon -- daemon`
+echo
 minikube cache list
