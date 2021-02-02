@@ -10,25 +10,26 @@
 declare -a MINIKUBE_OPTS
 
 while [ "$1" != "" ]; do
-	case $1 in
-		-- ) shift
-			   break
-				 ;;
-		 * )  MINIKUBE_OPTS+=($1)
-			   shift
-			   ;;
-	esac
+  case $1 in
+    -- ) shift
+      break
+      ;;
+    * )  MINIKUBE_OPTS+=($1)
+      shift
+      ;;
+  esac
 done
 
 # Minikube options stored in the MINIKUBE_OPTS array
 # build_containers arguments are stored in the shifted arguments array $@
 
-# Start kubernetes
-minikube start "${MINIKUBE_OPTS[@]}"
 
 # Build containers
 DEV_DOCKER_TAG=localdev
 ./build_containers.bash "${@}" --docker-tag $DEV_DOCKER_TAG
+
+# Start kubernetes
+minikube start "${MINIKUBE_OPTS[@]}"
 
 # Add local images to kubernetes cache
 minikube cache add lotus-miner:"$DEV_DOCKER_TAG"
