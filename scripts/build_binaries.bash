@@ -55,9 +55,10 @@ fi
 
 function join { local IFS="$1"; shift; echo "$*"; }
 
-if [ ! -z NETWORK]; then
+if [ ! -z $NETWORK ]; then
   gotags+=("${NETWORK}")
 fi
+
 
 tags=$(join , ${gotags[@]})
 
