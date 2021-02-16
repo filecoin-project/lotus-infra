@@ -10,9 +10,6 @@ while [ "$1" != "" ]; do
         -s | --src )            shift
                                 src="$1"
                                 ;;
-        -ss | --sentinel-src )   shift
-                                ssrc="$1"
-                                ;;
         -p | --preseal )        preseal=true
                                 ;;
         -c | --create-cert )    cert=true
@@ -42,7 +39,6 @@ build_flags="${buildflags:-"-f"}"
 genesis_delay="${delay:-"600"}"
 #genesis_timestamp="2020-08-24T22:00:00Z"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
-sentinel_src="${ssrc:-"$GOPATH/src/github.com/filecoin-project/sentinel"}"
 verifreg_rootkey="t1meqrx2ijvgrdquybafmlwgszpmc34b3kg3nohvy"
 
 # gets a list of all the hostnames for the preminers
@@ -50,6 +46,7 @@ miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] a
 
 faucet_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ faucet_initial_balance }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
 miners_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ miners_initial_balance }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
+network_flag=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ network_flag }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 
 if [ "$generate_new_keys" = true ]; then
   # get a list of all hosts which have a lotus_libp2p_address defined somewhere in their group / hosts vars.
@@ -116,11 +113,11 @@ EOF
   bootstrap_multiaddrs=( $(ansible -o -i $hostfile -b -m debug -a 'msg="/dns4/{{ ansible_host }}/tcp/{{ lotus_libp2p_port }}/p2p/{{ lotus_libp2p_address }}"' bootstrap | sed 's/.* =>//' | jq -r '.msg') )
 
   pushd "$lotus_src"
-    rm -f ./build/genesis/devnet.car || true
-    truncate -s 0 ./build/bootstrap/bootstrappers.pi
+    rm -f ./build/genesis/${network_flag}.car || true
+    truncate -s 0 ./build/bootstrap/${network_flag}.pi
 
     for multiaddr in ${bootstrap_multiaddrs[@]}; do
-      echo $multiaddr >> ./build/bootstrap/bootstrappers.pi
+      echo $multiaddr >> ./build/bootstrap/${network_flag}.pi
     done
   popd
 
@@ -149,8 +146,7 @@ additional_accounts=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ additional
 #scp ubuntu@192.168.1.240:/home/ubuntu/src/github.com/filecoin-project/lotus/lotus-shed .
 #popd
 
-../scripts/build_binaries.bash -s "$lotus_src" ${build_flags}
-../scripts/build_binaries.bash -s "$sentinel_src" -- telegraf
+../scripts/build_binaries.bash --src "$lotus_src" ${build_flags} --network $network_flag --build-ffi
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
@@ -162,7 +158,6 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-fountain"    \
     -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-stats"                \
     -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-chainwatch"      \
-    -e sentinel_telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"\
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes -e lotus_pcr_reset=yes          \
     -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
     -e certbot_create_certificate=${create_certificate}                                            \
@@ -174,7 +169,6 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
 #    -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/intel/lotus-miner"          \
 #    -e lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/intel/lotus-shed"            \
 #    -e lotus_seed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/intel/lotus-seed"            \
-#    -e sentinel_telegraf_binary_src="$GOPATH/src/github.com/filecoin-project/sentinel/build/telegraf"\
 #    -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes -e lotus_pcr_reset=yes          \
 #    -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
 #    -e certbot_create_certificate=${create_certificate}                                            \
@@ -225,8 +219,8 @@ pushd "$lotus_src"
   mv ${genesistmp} "${genpath}/genesis.json"
 
   # Provide the PCR service the same balance as the faucet
-  jq --arg Owner ${pcr_addr} --arg Balance ${faucet_balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
-  mv ${genesistmp} "${genpath}/genesis.json"
+  # jq --arg Owner ${pcr_addr} --arg Balance ${faucet_balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
+  # mv ${genesistmp} "${genpath}/genesis.json"
 
   while read -r addr balance; do
     if [ -z "${addr}" ]; then
@@ -257,13 +251,13 @@ pushd "$lotus_src"
 
   wait
 
-  cp "${genpath}/testnet.car" build/genesis/devnet.car
+  cp "${genpath}/testnet.car" build/genesis/$network_flag.car
 
 popd
 
 # copy the genesis and start up all the services
 ansible-playbook -i $hostfile lotus_devnet_start.yml                                            \
-    -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/devnet.car"
+    -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/$network_flag.car"
 
 set +x
 
