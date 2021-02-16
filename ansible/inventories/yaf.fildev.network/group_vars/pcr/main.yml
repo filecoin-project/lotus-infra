@@ -1,5 +1,0 @@
-lotus_pcr_address: "{{ lotus_wallet_address }}"
-lotus_pcr_path: "/var/lib/lotus-pcr"
-lotus_pcr_golog_file: "/var/log/lotus-pcr.log"
-lotus_pcr_env:
-  LOTUS_PCR_FROM: "{{ lotus_pcr_address }}"
