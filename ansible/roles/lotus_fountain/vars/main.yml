@@ -1,2 +1,4 @@
 required_vars:
   - lotus_fountain_address
+  - lotus_fountain_recaptcha_secret_key
+  - lotus_fountain_recaptcha_site_key
