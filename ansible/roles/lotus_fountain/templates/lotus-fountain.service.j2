@@ -11,6 +11,8 @@ ExecStart=/usr/local/bin/lotus-fountain run --front "127.0.0.1:7777" --from "{{ 
 Environment=LOTUS_PATH="{{ lotus_path }}"
 Environment=GOLOG_FILE="{{ lotus_fountain_golog_file }}"
 Environment=GOLOG_LOG_FMT="{{ lotus_fountain_golog_log_fmt }}"
+Environment=RECAPTCHA_SECRET_KEY="{{ lotus_fountain_recaptcha_secret_key }}"
+Environment=RECAPTCHA_SITE_KEY="{{ lotus_fountain_recaptcha_site_key }}"
 {% for item in lotus_fountain_env | dict2items -%}
 Environment={{ item.key }}="{{ item.value }}"
 {% endfor %}
