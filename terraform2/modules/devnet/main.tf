@@ -15,6 +15,7 @@ module "toolshed" {
   key_name                   = var.key_name
   environment                = var.environment
   network_name               = var.name
+  volume_size                = var.toolshed_volume_size
   public_security_group_ids  = [aws_security_group.devnet_public.id]
   private_security_group_ids = [aws_security_group.devnet_private.id]
   private_subnet_id          = var.private_subnet_id
@@ -34,6 +35,7 @@ module "bootstrappers" {
   key_name                   = var.key_name
   environment                = var.environment
   network_name               = var.name
+  volume_size                = var.bootstrapper_volume_size
   public_security_group_ids  = [aws_security_group.devnet_public.id]
   private_security_group_ids = [aws_security_group.devnet_private.id]
   private_subnet_id          = var.private_subnet_id
@@ -74,6 +76,7 @@ module "scratch" {
   key_name                   = var.key_name
   environment                = var.environment
   network_name               = var.name
+  volume_size                = var.scratch_volume_size
   public_security_group_ids  = [aws_security_group.devnet_public.id]
   private_security_group_ids = [aws_security_group.devnet_private.id]
   private_subnet_id          = var.private_subnet_id

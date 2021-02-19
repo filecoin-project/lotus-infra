@@ -1,7 +1,8 @@
 ---
 logz_io_shared_token: "{{ vault_logz_io_shared_token }}"
 network_name: calibrationnet
-faucet_initial_balance: "10000000000000000000000000"
+network_flag: calibnet
+faucet_initial_balance: "250000000000000000000000000"
 miners_initial_balance: "1000000000000000000000000"
 
 additional_account_balance: {}
@@ -31,7 +32,7 @@ lotus_user: "fc"
 lotus_user_uid: "532"
 proof_version: v27.1
 proof_type: fake
-sector_size: 512MiB
+sector_size: 32GiB
 filebeat_additional_processors: |
   - drop_event:
       when:

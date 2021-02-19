@@ -14,3 +14,5 @@ lotus_systemd_extras:
   MemoryHigh: 12G
   MemoryMax: 16G
   LimitNOFILE: 32768
+lotus_env:
+  LOTUS_SYNC_BOOTSTRAP_PEERS: 1

@@ -35,6 +35,10 @@ variable "toolshed_external" {
   type    = number
   default = 0
 }
+variable "toolshed_volume_size" {
+  type    = number
+  default = 128
+}
 variable "chainwatch_db_instance_type" {
   type    = string
   default = "db.t2.micro"
@@ -79,6 +83,10 @@ variable "bootstrapper_external" {
   type    = number
   default = 0
 }
+variable "bootstrapper_volume_size" {
+  type    = number
+  default = 128
+}
 
 
 variable "scratch_instance_type" {
@@ -92,4 +100,8 @@ variable "scratch_count" {
 variable "scratch_external" {
   type    = number
   default = 0
+}
+variable "scratch_volume_size" {
+  type    = number
+  default = 128
 }
