@@ -15,12 +15,13 @@ locals {
 /*****************
  * us-west-2
  *****************/
-module "yafnet" {
+/*
+module "interopnet" {
   source                      = "../../modules/devnet"
   providers = {
     aws = aws.us-west-2
   }
-  name                        = "yaf"
+  name                        = "interop"
   zone_id                     = aws_route53_zone.fildev_domain.id
   ami                         = "ami-053bc2e89490c5ab7"
   key_name                    = "filecoin"
@@ -43,6 +44,7 @@ module "yafnet" {
   private_subnet_id           = module.fildev_network_vpc.database_subnets[0]
   private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[0]
 }
+*/
 
 module "butterflynet" {
   source                      = "../../modules/devnet"
@@ -63,6 +65,7 @@ module "butterflynet" {
   chainwatch_db_instance_type = "db.m5.large"
   chainwatch_password         = var.nerpanet_chainwatch_password
   preminer_instance_type      = "m5a.4xlarge"
+  preminer_volume_size        = 384
   bootstrapper_instance_type  = "m5a.large"
   scratch_instance_type       = "m5a.large"
   preminer_iam_profile        = aws_iam_instance_profile.sectors.id
@@ -109,7 +112,11 @@ module "calibrationnet" {
   toolshed_instance_type      = "m5a.large"
   chainwatch_db_instance_type = "db.m5.large"
   chainwatch_password         = var.nerpanet_chainwatch_password
-  preminer_instance_type      = "m5a.4xlarge"
+  preminer_instance_type      = "p3.2xlarge"
+  preminer_volume_size        = 1200
+  bootstrapper_volume_size    = 1000
+  scratch_volume_size         = 1000
+  toolshed_volume_size        = 1000
   bootstrapper_instance_type  = "m5a.large"
   scratch_instance_type       = "m5a.large"
   preminer_iam_profile        = aws_iam_instance_profile.sectors.id
