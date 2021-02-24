@@ -4,17 +4,18 @@ image:
 prometheusOperatorServiceMonitor: true
 
 importSnapshot:
-  enabled: false
+  enabled: true
   claimName: chain-exports
   network: mainnet
-  exportRelease: export-1800-with-msgs
-  exitCodeOnMissing: 0
+  exportRelease: finality-stateroots
+  exitCodeOnMissing: 1
 
 persistence:
   datastore:
     enabled: true
+    easyReset: true
     size: "2000Gi"
-    storageClassName: "ebs-csi"
+    storageClassName: "gp2"
 
 daemonArgs:
   - --profile=bootstrapper
@@ -26,7 +27,6 @@ daemonEnvs:
     value: madvdontneed=1
 
 additionalLabels:
-  mode: open
   network: mainnet
 
 nodeSelector:

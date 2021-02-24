@@ -7,16 +7,6 @@ secrets:
     enabled: true
     secretName: bootstrap-2-jwt-secrets
 
-persistence:
-  datastore:
-    enabled: true
-    storageClassName: "ebs-csi"
-    size: "2000Gi"
-    dataSource:
-      name: snapshot-datastore-volume-bootstrap-0-lotus-0-1608249612
-      kind: VolumeSnapshot
-      apiGroup: snapshot.storage.k8s.io
-
 loadBalancer:
   enabled: true
   annotations:
