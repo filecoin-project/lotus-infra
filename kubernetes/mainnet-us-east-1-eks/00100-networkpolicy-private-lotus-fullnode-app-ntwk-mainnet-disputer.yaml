@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: private-lotus-fullnode-app
+  namespace: ntwk-mainnet-disputer
+spec:
+  podSelector:
+    matchLabels:
+      app: lotus-fullnode-app
+      mode: restricted
+  policyTypes:
+  - Ingress
+  - Egress
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 10.0.0.0/16
+    - ipBlock:
+        cidr: 209.94.78.1/32
+  - ports:
+     - port: 53
+       protocol: UDP
+     - port: 53
+       protocol: TCP
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: 10.0.0.0/16
