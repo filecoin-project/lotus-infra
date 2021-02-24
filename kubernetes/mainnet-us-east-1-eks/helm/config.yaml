@@ -119,3 +119,11 @@ deployments:
     name: cc-common
     values:
       - cc-common
+  # disputer
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.1
+    namespace: ntwk-mainnet-disputer
+    name: disputer-0
+    values:
+      - base
+      - disputer-0
