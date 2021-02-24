@@ -38,14 +38,3 @@ persistence:
     enabled: true
     storageClassName: "ebs-csi"
     size: "4000Gi"
-
-affinity:
-  podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-    - topologyKey: "kubernetes.io/hostname"
-      labelSelector:
-        matchExpressions:
-        - key: network
-          operator: In
-          values:
-          - mainnet
