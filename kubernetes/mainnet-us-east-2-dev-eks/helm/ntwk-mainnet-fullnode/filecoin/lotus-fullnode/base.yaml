@@ -45,12 +45,7 @@ affinity:
     - topologyKey: "kubernetes.io/hostname"
       labelSelector:
         matchExpressions:
-        - key: app
-          operator: In
-          values:
-          - lotus-fullnode-app
         - key: network
           operator: In
           values:
           - mainnet
-
