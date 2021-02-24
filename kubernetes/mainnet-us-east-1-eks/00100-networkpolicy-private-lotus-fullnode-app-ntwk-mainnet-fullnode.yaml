@@ -4,10 +4,6 @@ metadata:
   name: private-lotus-fullnode-app
   namespace: ntwk-mainnet-fullnode
 spec:
-  podSelector:
-    matchLabels:
-      app: lotus-fullnode-app
-      mode: restricted
   policyTypes:
   - Ingress
   - Egress
