@@ -1,6 +1,8 @@
 image:
   tag: 667e006a2
 
+prometheusOperatorServiceMonitor: true
+
 resources:
   requests:
     memory: 32Gi
@@ -10,17 +12,18 @@ resources:
     cpu: 6
 
 importSnapshot:
-  enabled: false
+  enabled: true
   claimName: chain-exports
   network: mainnet
-  exportRelease: export-1800-with-msgs
-  exitCodeOnMissing: 0
+  exportRelease: finality-stateroots
+  exitCodeOnMissing: 1
 
 persistence:
   datastore:
     enabled: true
+    easyReset: true
     size: "2000Gi"
-    storageClassName: "ebs-csi"
+    storageClassName: "gp2"
 
 daemonArgs:
   - --profile=bootstrapper
@@ -30,3 +33,6 @@ daemonEnvs:
     value: json
   - name: GODEBUG
     value: madvdontneed=1
+
+additionalLabels:
+  network: mainnet

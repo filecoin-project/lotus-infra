@@ -1,0 +1,85 @@
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: finality-stateroots-snapshot-fetcher
+  namespace: ntwk-mainnet-bootstrap
+spec:
+  schedule: "0 0 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            fsGroup: 532
+            runAsNonRoot: true
+            runAsUser: 532
+            runAsGroup: 532
+          initContainers:
+          - name: lock
+            image: busybox
+            command: ["sh", "-c"]
+            args:
+              - |
+                if [ -e /chain-exports/finality-stateroots-write.lock ]; then
+                  echo "Job already running"
+                  exit 1
+                else
+                  echo "No job found running"
+                fi
+                # take the write lock so that no other chain imports can start
+                # we export to a intermediate volume, so we don't have to wait
+                # for other reads to finish yet, before we copy the new export
+                # we perform the wait for all reads to finish
+                touch /chain-exports/finality-stateroots-write.lock
+            volumeMounts:
+            - name: scratch
+              mountPath: "/scratch"
+            - name: chain-exports
+              mountPath: "/chain-exports"
+              subPath: chain-exports/by-network/mainnet/
+          containers:
+          - name: download
+            image: "centos"
+            command: ["bash", "-c"]
+            args:
+              - |
+                set -xe
+
+                finish() {
+                  rm -f /chain-exports/finality-stateroots-write.lock
+                }
+
+                trap finish EXIT
+
+                pushd /scratch
+
+                curl -o /chain-exports/finality-stateroots.car.part https://fil-chain-snapshots-fallback.s3.amazonaws.com/mainnet/minimal_finality_stateroots_latest.car
+
+                # wait for all current read exports to finish
+                while [ "$(find /chain-exports/ -type f -name 'finality-stateroots-read-*.lock' | wc -l)" -gt "0" ]; do
+                  echo $(date -Iseconds) " - waiting for read locks to be removed"
+                  sleep 60
+                done
+
+                rm -f /chain-exports/finality-stateroots.car
+                mv /chain-exports/finality-stateroots.car.part /chain-exports/finality-stateroots.car
+
+                popd
+                exit 0
+            volumeMounts:
+            - name: scratch
+              mountPath: "/scratch"
+            - name: chain-exports
+              mountPath: "/chain-exports"
+              subPath: chain-exports/by-network/mainnet/
+          volumes:
+          - name: scratch
+            emptyDir:
+              medium: Memory
+          - name: chain-exports
+            persistentVolumeClaim:
+              claimName: chain-exports
