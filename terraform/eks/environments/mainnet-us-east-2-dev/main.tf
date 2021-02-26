@@ -22,7 +22,8 @@ module "vpc" {
 
 
 resource "aws_subnet" "workers" {
-  for_each                = var.public_subnets_workers
+  for_each                = toset(var.public_subnets_workers)
+  availability_zone       = var.azs[index(var.public_subnets_workers, each.value)]
   vpc_id                  = module.vpc.vpc_id
   cidr_block              = each.value
   tags                    = local.subnet_tags
