@@ -1,5 +1,5 @@
 image:
-  tag: 667e006a2
+  tag: mainnet-v1.5.0
 
 prometheusOperatorServiceMonitor: true
 
