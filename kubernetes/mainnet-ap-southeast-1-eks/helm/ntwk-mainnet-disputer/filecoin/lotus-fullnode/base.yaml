@@ -32,8 +32,8 @@ daemonEnvs:
     value: madvdontneed=1
 
 disputer:
-  enabled: yes
-  walletAddr: xxxxxxx
+  enabled: true
+  walletAddr: f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da
   # maxFee:
   # env:
 
