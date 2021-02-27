@@ -33,7 +33,7 @@ daemonEnvs:
 
 disputer:
   enabled: yes
-  walletAddr: xxxxxxx
+  walletAddr: f1tq6t4t5qrlosirgoweyb3lgrdwa3zspixwukbfa
   # maxFee:
   # env:
 
