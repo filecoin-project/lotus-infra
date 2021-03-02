@@ -28,27 +28,3 @@ daemonEnvs:
 
 additionalLabels:
   network: mainnet
-
-nodeSelector:
-  mode: open
-
-tolerations:
-- key: "mode"
-  operator: "Equal"
-  value: "open"
-  effect: "NoSchedule"
-
-affinity:
-  podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-    - topologyKey: "kubernetes.io/hostname"
-      labelSelector:
-        matchExpressions:
-        - key: app
-          operator: In
-          values:
-          - lotus-fullnode-app
-        - key: network
-          operator: In
-          values:
-          - mainnet

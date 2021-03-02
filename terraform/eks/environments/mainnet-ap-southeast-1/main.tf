@@ -38,7 +38,7 @@ resource "aws_route_table_association" "workers" {
 locals {
   node_groups = {
     "0" = {
-      instance_type = "r5.2xlarge"
+      instance_type = "r5.4xlarge"
       key_name      = var.key_name
       # additional_userdata  = "aws s3 cp s3://filecoin-proof-parameters /opt/filecoin-proof-parameters --region us-east-1 --recursive --no-sign-request"
       desired_capacity = var.worker_count_open

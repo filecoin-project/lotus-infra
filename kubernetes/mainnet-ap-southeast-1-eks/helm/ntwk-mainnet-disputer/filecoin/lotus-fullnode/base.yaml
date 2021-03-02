@@ -1,7 +1,15 @@
 image:
-  tag: 667e006a2
+  tag: mainnet-v1.5.0
 
 prometheusOperatorServiceMonitor: true
+
+resources:
+  requests:
+    memory: 32Gi
+    cpu: 4
+  limits:
+    memory: 48Gi
+    cpu: 6
 
 importSnapshot:
   enabled: true
@@ -17,14 +25,17 @@ persistence:
     size: "2000Gi"
     storageClassName: "gp2"
 
-daemonArgs:
-  - --profile=bootstrapper
-
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
   - name: GODEBUG
     value: madvdontneed=1
+
+disputer:
+  enabled: true
+  walletAddr: f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da
+  # maxFee:
+  # env:
 
 additionalLabels:
   network: mainnet

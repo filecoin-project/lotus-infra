@@ -36,3 +36,24 @@ deployments:
     name: cc-common
     values:
       - cc-common
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.1
+    namespace: ntwk-mainnet-disputer
+    name: disputer-1
+    values:
+      - base
+      - disputer-1
+  # efs access
+  - chart: filecoin/efs-access
+    version: 0.1.0
+    namespace: ntwk-mainnet-disputer
+    name: efs-access
+    values:
+      - efs-access
+  # consensus check
+  - chart: filecoin/lotus-consensus-check
+    version: 0.1.1
+    namespace: ntwk-mainnet-disputer
+    name: cc-common
+    values:
+      - cc-common
