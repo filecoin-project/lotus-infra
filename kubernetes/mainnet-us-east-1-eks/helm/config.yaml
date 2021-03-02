@@ -91,14 +91,14 @@ deployments:
       - base
       - fullnode-5
   - chart: filecoin/lotus-fullnode
-    version: 0.2.0
+    version: 0.3.1
     namespace: ntwk-mainnet-fullnode
     name: fullnode-6
     values:
       - base
       - fullnode-6
   - chart: filecoin/lotus-fullnode
-    version: 0.2.0
+    version: 0.3.1
     namespace: ntwk-mainnet-fullnode
     name: fullnode-7
     values:
