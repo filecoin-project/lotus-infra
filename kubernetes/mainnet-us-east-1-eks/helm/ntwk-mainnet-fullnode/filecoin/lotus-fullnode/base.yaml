@@ -10,11 +10,11 @@ resources:
     cpu: 16
 
 importSnapshot:
-  enabled: true
+  enabled: false
   claimName: chain-exports
   network: mainnet
   exportRelease: export-full-archive
-  exitCodeOnMissing: 1
+  exitCodeOnMissing: 0
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
