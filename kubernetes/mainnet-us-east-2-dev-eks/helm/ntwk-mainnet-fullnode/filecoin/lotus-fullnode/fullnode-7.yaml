@@ -3,6 +3,14 @@ image:
   pullPolicy: IfNotPresent
   tag: 0e91461a
 
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+  [Chainstore]
+    EnableSplitstore = true
+
 secrets:
   libp2p:
     enabled: true
