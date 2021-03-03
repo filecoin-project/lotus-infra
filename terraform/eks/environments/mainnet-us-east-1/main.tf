@@ -70,7 +70,7 @@ locals {
     "2" = {
       instance_type    = "r5.4xlarge"
       key_name         = var.key_name
-      desired_capacity = 5
+      desired_capacity = 7
       min_capacity     = "3"
       max_capacity     = "50"
       k8s_labels = {
