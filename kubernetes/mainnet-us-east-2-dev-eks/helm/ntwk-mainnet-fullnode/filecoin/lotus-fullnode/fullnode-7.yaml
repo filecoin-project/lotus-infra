@@ -1,7 +1,7 @@
 image:
   repository: public.ecr.aws/p5f3y3g5/lotus-dev
   pullPolicy: IfNotPresent
-  tag: 0e91461a
+  tag: e1a93183
 
 daemonConfig: |
   [API]
