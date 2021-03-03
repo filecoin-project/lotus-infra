@@ -1,5 +1,5 @@
 image:
-  tag: v1.4.0
+  tag: mainnet-v1.5.0-pre-migration-flag
 
 prometheusOperatorServiceMonitor: true
 
@@ -23,6 +23,8 @@ daemonEnvs:
     value: json
   - name: GODEBUG
     value: madvdontneed=1
+  - name: DISABLE_PRE_MIGRATIONS
+    value: "1"
 
 daemonConfig: |
   [API]
