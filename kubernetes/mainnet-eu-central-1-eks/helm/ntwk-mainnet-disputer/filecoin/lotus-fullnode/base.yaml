@@ -35,7 +35,9 @@ disputer:
   enabled: true
   walletAddr: f1vkujr5ecab5t6nkstqukbt2vv2ams55pwl3crki
   # maxFee:
-  # env:
+  env:
+    - name: GOLOG_LOG_FMT
+      value: json
 
 additionalLabels:
   network: mainnet
