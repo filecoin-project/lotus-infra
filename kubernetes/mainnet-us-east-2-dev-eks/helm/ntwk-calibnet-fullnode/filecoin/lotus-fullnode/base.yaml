@@ -1,5 +1,5 @@
 image:
-  tag: calibnet-d6c06881e
+  tag: calibnet-v1.5.0
 
 prometheusOperatorServiceMonitor: true
 
@@ -30,4 +30,4 @@ persistence:
   datastore:
     enabled: true
     storageClassName: "gp2"
-    size: "300Gi"
+    size: "1000Gi"
