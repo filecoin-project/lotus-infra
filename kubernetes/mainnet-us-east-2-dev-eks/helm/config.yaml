@@ -102,7 +102,7 @@ deployments:
       - cc-common
   # fullnodes-calibnet
   - chart: filecoin/lotus-fullnode
-    version: 0.2.0
+    version: 0.3.1
     namespace: ntwk-calibnet-fullnode
     name: fullnode-0
     values:
@@ -110,7 +110,7 @@ deployments:
       - fullnode-0
   # fullnodes-calibnet
   - chart: filecoin/lotus-fullnode
-    version: 0.2.0
+    version: 0.3.1
     namespace: ntwk-calibnet-fullnode
     name: fullnode-1
     values:
