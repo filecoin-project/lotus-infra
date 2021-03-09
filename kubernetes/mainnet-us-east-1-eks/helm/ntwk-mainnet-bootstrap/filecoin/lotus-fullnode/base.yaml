@@ -1,5 +1,5 @@
 image:
-  tag: mainnet-v1.5.0-bootstrap
+  tag: mainnet-1c62d7a40
 
 prometheusOperatorServiceMonitor: true
 
@@ -35,7 +35,7 @@ daemonConfig: |
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
     ConnMgrLow = 400
     ConnMgrHigh = 500
-    ConnMgrGrace = "5min"
+    ConnMgrGrace = "5m0s"
   [Pubsub]
     IPColocationWhitelist = ["10.0.0.0/8"]
 
