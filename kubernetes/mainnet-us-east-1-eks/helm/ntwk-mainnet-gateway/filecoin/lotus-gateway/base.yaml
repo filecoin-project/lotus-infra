@@ -8,4 +8,4 @@ ingress:
   host: somethingsomething.chain.love
 
 lotus:
-  fullnode_api_multiaddr: "/dns/fullnode-0-lotus-daemon.ntwk-mainnet-fullnode.svc.cluster.local/tcp/1234"
+  fullnodeApiMultiaddr: "/dns/fullnode-0-lotus-daemon.ntwk-mainnet-fullnode.svc.cluster.local/tcp/1234"
