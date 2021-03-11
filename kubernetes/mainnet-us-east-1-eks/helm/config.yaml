@@ -153,3 +153,12 @@ deployments:
     values:
       - base
       - disputer-0
+  # disputer
+  - chart: filecoin/lotus-gateway
+    version: 0.1.1
+    namespace: ntwk-mainnet-gateway
+    name: gateway-0
+    values:
+      - base
+      - gateway-0
+

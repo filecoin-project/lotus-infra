@@ -1,0 +1,11 @@
+---
+image:
+  repository: coryschwartz/lotus-gateway
+  tag: mainnet-1c62d7a40
+
+ingress:
+  enabled: true
+  host: somethingsomething.chain.love
+
+lotus:
+  fullnode_api_multiaddr: "/dns/fullnode-0-lotus-daemon.ntwk-mainnet-fullnode.svc.cluster.local/tcp/1234"
