@@ -5,7 +5,7 @@ image:
 
 ingress:
   enabled: true
-  host: somethingsomething.chain.love
+  host: api.chain.love
 
 deployment:
   replicas: 2
