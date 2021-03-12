@@ -1,5 +1,5 @@
 image:
-  tag: mainnet-1c62d7a40
+  tag: mainnet-v1.5.1
 
 prometheusOperatorServiceMonitor: true
 
@@ -38,7 +38,6 @@ daemonConfig: |
     ConnMgrGrace = "5m0s"
   [Pubsub]
     IPColocationWhitelist = ["10.0.0.0/8"]
-    Bootstrapper = true
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
