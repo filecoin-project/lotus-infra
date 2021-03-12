@@ -5,4 +5,4 @@ secrets:
     token_key: jwt-rw-privs-token
 
 lotus:
-  fullnodeApiMultiaddr: "/dns/fullnode-0-lotus-daemon.svc.cluster.local/tcp/1234"
+  fullnodeApiMultiaddr: "/dns/fullnode-0-lotus-daemon.ntwk-mainnet-fullnode.svc.cluster.local/tcp/1234"
