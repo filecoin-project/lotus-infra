@@ -10,5 +10,3 @@ ingress:
 deployment:
   replicas: 2
 
-lotus:
-  fullnodeApiMultiaddr: "/dns/fullnode-0-lotus-daemon.ntwk-mainnet-fullnode.svc.cluster.local/tcp/1234"
