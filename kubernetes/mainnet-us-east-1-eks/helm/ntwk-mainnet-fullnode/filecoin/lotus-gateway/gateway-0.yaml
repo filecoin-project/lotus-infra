@@ -1,0 +1,5 @@
+secrets:
+  jwt:
+    enabled: true
+    secretName: fullnode-0-jwt-secrets
+    token_key: jwt-rw-privs-token
