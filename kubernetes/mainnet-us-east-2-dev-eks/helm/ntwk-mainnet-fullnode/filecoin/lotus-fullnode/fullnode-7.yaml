@@ -1,7 +1,8 @@
 image:
   repository: public.ecr.aws/p5f3y3g5/lotus-dev
   pullPolicy: IfNotPresent
-  tag: e1a93183
+  # https://github.com/filecoin-project/lotus/pull/5808
+  tag: 1324517b
 
 daemonConfig: |
   [API]
