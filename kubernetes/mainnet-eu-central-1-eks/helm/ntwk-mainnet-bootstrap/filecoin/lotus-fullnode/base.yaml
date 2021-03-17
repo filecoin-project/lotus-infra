@@ -28,3 +28,8 @@ daemonEnvs:
 
 additionalLabels:
   network: mainnet
+
+resources:
+  requests:
+    memory: 32Gi
+    cpu: 4
