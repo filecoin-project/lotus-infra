@@ -41,41 +41,12 @@ resource "aws_route_table_association" "workers" {
 
 locals {
   node_groups = {
-    // These nodes are dedicated to running the bootstrap daemons they are special because
-    // we need to ensure that two daemons do not run on the same k8s node to ensure ip
-    // colocation does not occure.
-    "0" = {
-      instance_type    = "c5.4xlarge"
-      key_name         = var.key_name
-      desired_capacity = var.worker_count_open
-      min_capacity     = "3"
-      max_capacity     = "50"
-      k8s_labels = {
-        mode = "open"
-      }
-    },
-    // These are general purpose compute for all other pods in the cluster.
-    "1" = {
-      instance_type    = "c5.4xlarge"
-      key_name         = var.key_name
-      desired_capacity = var.worker_count_restricted
-      min_capacity     = "1"
-      max_capacity     = "50"
-      k8s_labels = {
-        mode = "restricted"
-      }
-    },
-    // These nodes are dedicated to running the fullnode daemons that provide api access to
-    // other services running in the cluster
     "2" = {
       instance_type    = "r5.4xlarge"
       key_name         = var.key_name
       desired_capacity = 7
       min_capacity     = "3"
       max_capacity     = "50"
-      k8s_labels = {
-        mode = "restricted"
-      }
     },
     "3" = {
       instance_type    = "r5.4xlarge"
@@ -83,9 +54,6 @@ locals {
       desired_capacity = 5
       min_capacity     = "3"
       max_capacity     = "50"
-      k8s_labels = {
-        mode = "open"
-      }
       subnets = [
         for subnet in aws_subnet.workers :
         subnet.id

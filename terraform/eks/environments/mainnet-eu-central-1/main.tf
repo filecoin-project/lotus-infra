@@ -21,11 +21,15 @@ module "vpc" {
 }
 
 resource "aws_subnet" "workers" {
-  for_each                = var.public_subnets_workers
+  for_each                = toset(var.public_subnets_workers)
   vpc_id                  = module.vpc.vpc_id
   cidr_block              = each.value
   tags                    = local.subnet_tags
   map_public_ip_on_launch = true
+  availability_zone       = var.azs[index(var.public_subnets_workers, each.value)]
+  lifecycle {
+    create_before_destroy = false
+  }
 }
 
 resource "aws_route_table_association" "workers" {
@@ -39,13 +43,9 @@ locals {
     "1" = {
       instance_type = "r5.4xlarge"
       key_name      = var.key_name
-      # additional_userdata  = "aws s3 cp s3://filecoin-proof-parameters /opt/filecoin-proof-parameters --region us-east-1 --recursive --no-sign-request"
-      desired_capacity = var.worker_count_open
+      desired_capacity = "3"
       min_capacity     = "1"
       max_capacity     = "50"
-      k8s_labels = {
-        mode = "open"
-      }
       subnets = [
         for subnet in aws_subnet.workers :
         subnet.id

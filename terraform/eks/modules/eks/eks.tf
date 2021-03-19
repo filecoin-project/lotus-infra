@@ -43,6 +43,8 @@ module "eks" {
   config_output_path                   = local.config_path
   worker_additional_security_group_ids = concat(var.security_group_ids, [aws_security_group.lotus.id])
 
+  cluster_enabled_log_types = ["audit"]
+
   workers_additional_policies = [
     aws_iam_policy.external_dns.arn,
     aws_iam_policy.ebs_cni.arn,

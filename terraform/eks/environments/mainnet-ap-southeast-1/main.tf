@@ -40,13 +40,9 @@ locals {
     "0" = {
       instance_type = "r5.4xlarge"
       key_name      = var.key_name
-      # additional_userdata  = "aws s3 cp s3://filecoin-proof-parameters /opt/filecoin-proof-parameters --region us-east-1 --recursive --no-sign-request"
-      desired_capacity = var.worker_count_open
+      desired_capacity = "3"
       min_capacity     = "1"
       max_capacity     = "50"
-      k8s_labels = {
-        mode = "open"
-      }
       subnets = [
         for subnet in aws_subnet.workers :
         subnet.id
