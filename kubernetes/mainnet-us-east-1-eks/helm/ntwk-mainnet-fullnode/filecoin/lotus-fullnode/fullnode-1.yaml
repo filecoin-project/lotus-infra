@@ -9,3 +9,6 @@ secrets:
   jwt:
     enabled: true
     secretName: fullnode-1-jwt-secrets
+persistence:
+  datastore:
+    size: "6000Gi"
