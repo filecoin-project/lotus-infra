@@ -17,10 +17,29 @@ data "aws_ami" "mainnet" {
   most_recent = true
   filter {
     name = "name"
-    values = [ "lotus-mainnet-v1.5.3-*" ]
+    values = [ "lotus-mainnet-*" ]
   }
   owners = [ 657871693752 ]
 }
+
+data "aws_ami" "calibrationnet" {
+  most_recent = true
+  filter {
+    name = "name"
+    values = [ "lotus-calibrationnet-*" ]
+  }
+  owners = [ 657871693752 ]
+}
+
+data "aws_ami" "nerpanet" {
+  most_recent = true
+  filter {
+    name = "name"
+    values = [ "lotus-nerpanet-*" ]
+  }
+  owners = [ 657871693752 ]
+}
+
 
 // it is okay to open up all traffic because these boxes are running a host
 // firewall. This might seem odd on AWS, but this is a requirement for
@@ -62,14 +81,13 @@ resource "aws_key_pair" "oneclickkeys" {
 }
 
 
-resource "aws_instance" "oneclickinstance" {
+resource "aws_instance" "oneclickmainnet" {
   for_each = var.oneclickusers
   ami = data.aws_ami.mainnet.id
   instance_type = "r5.2xlarge"
   key_name = aws_key_pair.oneclickkeys[each.key].key_name
   tags = {
     Name = format("oneclick-mainnet-%s", each.key)
-    Lotus-version = "1.5.3"
     Lotus-network = "mainnet"
     Owner = each.key
   }
@@ -83,16 +101,42 @@ resource "aws_instance" "oneclickinstance" {
   }
 }
 
-/* resource "aws_ebs_volume" "oneclickvolume" { */
-/*   for_each = var.oneclickusers */
-/*   availability_zone = aws_instance.oneclickinstance[each.key].availability_zone */
-/*   size = 1000 */
-/*   type = "gp2" */
-/* } */
+resource "aws_instance" "oneclickcalibrationnet" {
+  for_each = var.oneclickusers
+  ami = data.aws_ami.calibrationnet.id
+  instance_type = "r5.2xlarge"
+  key_name = aws_key_pair.oneclickkeys[each.key].key_name
+  tags = {
+    Name = format("oneclick-calibrationnet-%s", each.key)
+    Lotus-network = "calibrationnet"
+    Owner = each.key
+  }
+  security_groups = [ aws_security_group.alltraffic.name ]
+  user_data = file("user_data.sh")
+  ebs_block_device {
+    device_name = "/dev/sdf"
+    volume_size = 1000
+    volume_type = "gp2"
+    delete_on_termination = false
+  }
+}
 
-/* resource "aws_volume_attachment" "oneclickattachment" { */
-/*   for_each = var.oneclickusers */
-/*   device_name = "/dev/sdf" */
-/*   volume_id = aws_ebs_volume.oneclickvolume[each.key].id */
-/*   instance_id = aws_instance.oneclickinstance[each.key].id */
-/* } */
+resource "aws_instance" "oneclicknerpanet" {
+  for_each = var.oneclickusers
+  ami = data.aws_ami.nerpanet.id
+  instance_type = "r5.2xlarge"
+  key_name = aws_key_pair.oneclickkeys[each.key].key_name
+  tags = {
+    Name = format("oneclick-nerpanet-%s", each.key)
+    Lotus-network = "nerpanet"
+    Owner = each.key
+  }
+  security_groups = [ aws_security_group.alltraffic.name ]
+  user_data = file("user_data.sh")
+  ebs_block_device {
+    device_name = "/dev/sdf"
+    volume_size = 1000
+    volume_type = "gp2"
+    delete_on_termination = false
+  }
+}
