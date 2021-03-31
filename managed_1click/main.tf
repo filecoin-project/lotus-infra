@@ -1,3 +1,19 @@
+provider "aws" {
+  alias = "us-east-1"
+  region = "us-east-1"
+  profile = "filecoin"
+}
+
+terraform {
+  backend "s3" {
+    bucket         = "filecoin-terraform-state"
+    key            = "1click-terraform.tfstate"
+    dynamodb_table = "filecoin-terraform-state"
+    region         = "us-east-1"
+    profile        = "filecoin"
+  }
+}
+
 data "aws_ami" "mainnet" {
   most_recent = true
   filter {
@@ -19,27 +35,30 @@ resource "aws_key_pair" "alexcruikshank" {
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDwXg25uubw6iOi49+lsF4SCuOlQueRVsMs+cDbmIDO0TTzrw4Y4znvjm93+6WXmEQyG9JlJdhRjqveGCcD1HbcwX4xjQR8WhPcSH2sOY9Axj9BDwgdBcIYixuvTUADo7QrYlkbfZAlkLeNpR8z9DaYlmG76OrMT38B7LEF9JuyYNu4t4bs4aTx8CSfCmJSBpWGz/jkvaylW35lA/UqE286ILVU5B2MmjgwG5ZRYpJ+2E+knauX+5mOWnoy0AHqAoI4uI8eqOZHwsmKF3ilqvsDKNBmqFgtYTodxxZDQOdQ3JgYWmKOl/0xfkobNRszz6lntzTFWiM9M7YKBweeOYNR"
 }
 
-resource "aws_instance" "mainet-willscot" {
+
+resource "aws_instance" "mainnet-willscot" {
   ami = data.aws_ami.mainnet.id
-  instance_type = "t3.2xlarge"
-  key_name = 
+  instance_type = "r5.2xlarge"
+  key_name = aws_key_pair.willscot.key_name
   tags = {
-    name = aws_key_pair.willscot.key_name
-    lotus-version = "1.5.3"
-    lotus-network = "mainnet"
-    owner = "Will Scot"
+    Name = "mainnet-willscot"
+    Lotus-version = "1.5.3"
+    Lotus-network = "mainnet"
+    Owner = "Will Scot"
   }
+  user_data = "${file("user_data.sh")}"
 }
 
 
-resource "aws_instance" "mainet-alexcruikshank" {
+resource "aws_instance" "mainnet-alexcruikshank" {
   ami = data.aws_ami.mainnet.id
-  instance_type = "t3.2xlarge"
-  key_name = 
+  instance_type = "r5.2xlarge"
+  key_name = aws_key_pair.alexcruikshank.key_name
   tags = {
-    name = aws_key_pair.alexcruikshank.key_name
-    lotus-version = "1.5.3"
-    lotus-network = "mainnet"
-    owner = "Alex Cruikshank"
+    Name = "mainnet-alexcruikshank"
+    Lotus-version = "1.5.3"
+    Lotus-network = "mainnet"
+    Owner = "Alex Cruikshank"
   }
+  user_data = "${file("user_data.sh")}"
 }
