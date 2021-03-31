@@ -22,6 +22,27 @@ data "aws_ami" "mainnet" {
   owners = [ 657871693752 ]
 }
 
+// it is okay to open up all traffic because these boxes are running a host
+// firewall. This might seem odd on AWS, but this is a requirement for
+// digitalocean 1-click apps, so the same behavior is replicated here.
+resource "aws_security_group" "alltraffic" {
+  name = "oneclick allow all"
+  ingress {
+    description = "permissive inbound"
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    description = "permissive outbound"
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 // Map between user and their SSH key.
 // https://github.com/willscott.keys
 // https://github.com/acruikshank.keys
@@ -35,7 +56,7 @@ variable "oneclickusers" {
 
 resource "aws_key_pair" "oneclickkeys" {
   for_each = var.oneclickusers
-  key_name = each.key
+  key_name = format("oneclick-%s", each.key)
   public_key = each.value
 }
 
@@ -46,10 +67,11 @@ resource "aws_instance" "oneclickinstance" {
   instance_type = "r5.2xlarge"
   key_name = aws_key_pair.oneclickkeys[each.key].key_name
   tags = {
-    Name = format("%s-%s", "mainnet", each.key)
+    Name = format("oneclick-mainnet-%s", each.key)
     Lotus-version = "1.5.3"
     Lotus-network = "mainnet"
     Owner = each.key
   }
+  security_groups = [ aws_security_group.alltraffic.name ]
   user_data = file("user_data.sh")
 }
