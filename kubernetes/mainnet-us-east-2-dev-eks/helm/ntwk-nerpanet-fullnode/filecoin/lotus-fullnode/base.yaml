@@ -5,26 +5,17 @@ prometheusOperatorServiceMonitor: true
 
 resources:
   requests:
-    memory: 96Gi
-    cpu: 8
+    memory: 32Gi
+    cpu: 4
   limits:
-    memory: 112Gi
-    cpu: 12
-
-importSnapshot:
-  enabled: false
-  claimName: chain-exports
-  network: nerpanet
-  exportRelease: export-full-archive
-  exitCodeOnMissing: 0
+    memory: 64Gi
+    cpu: 6
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
   - name: GODEBUG
     value: madvdontneed=1
-  - name: DISABLE_PRE_MIGRATIONS
-    value: "1"
 
 daemonConfig: |
   [API]
@@ -38,5 +29,5 @@ additionalLabels:
 persistence:
   datastore:
     enabled: true
-    storageClassName: "ebs-csi"
-    size: "8000Gi"
+    storageClassName: "gp2"
+    size: "1000Gi"
