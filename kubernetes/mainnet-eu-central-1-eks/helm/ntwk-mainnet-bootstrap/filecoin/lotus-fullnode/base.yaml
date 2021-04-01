@@ -1,5 +1,5 @@
 image:
-  tag: mainnet-v1.5.3-rc2
+  tag: mainnet-v1.5.3
 
 prometheusOperatorServiceMonitor: true
 
@@ -17,9 +17,6 @@ persistence:
     size: "2000Gi"
     storageClassName: "gp2"
 
-daemonArgs:
-  - --profile=bootstrapper
-
 daemonConfig: |
   [API]
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
@@ -30,6 +27,7 @@ daemonConfig: |
     ConnMgrGrace = "5m0s"
   [Pubsub]
     IPColocationWhitelist = ["10.0.0.0/8"]
+    Bootstrapper = true
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
