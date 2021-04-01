@@ -1,0 +1,7 @@
+secrets:
+  libp2p:
+    enabled: true
+    secretName: fullnode-2-libp2p-secrets
+  jwt:
+    enabled: true
+    secretName: fullnode-2-jwt-secrets
