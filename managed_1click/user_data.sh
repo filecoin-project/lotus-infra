@@ -23,17 +23,23 @@ echo INSTALLING PARTED
 apt-get update
 apt-get -y install parted
 
-echo PARTITIONING NVME1N1
-# Partition, format, mount
-parted /dev/nvme1n1 mklabel gpt
-parted /dev/nvme1n1 mkpart primary "0%" "100%"
-partprobe /dev/nvme1n1
+# Test if EBS is already partitioned. If not, partition it.
+grep nvme1n1p1 /proc/partitions
+if [ $? -eq 1 ]; then
+  echo PARTITIONING NVME1N1
+	# Partition, format, mount
+	parted /dev/nvme1n1 mklabel gpt
+	parted /dev/nvme1n1 mkpart primary "0%" "100%"
+	partprobe /dev/nvme1n1
 
-# Even with partprobe, it might take a second before a new partition appears in /proc/partitions
-sleep 30
+	# Even with partprobe, it might take a second before a new partition appears in /proc/partitions
+	sleep 30
 
-echo FORMATTING EBS
-mkfs.ext4 -L LOTUS -F /dev/nvme1n1p1
+	echo FORMATTING EBS
+	mkfs.ext4 -L LOTUS -F /dev/nvme1n1p1
+else
+	echo PARTITION FOUND. NOT RE-PARTITIONING.
+fi
 
 echo MOUNTING EBS
 echo "/dev/nvme1n1p1 /var/lib/lotus ext4 defaults 0 0" >> /etc/fstab

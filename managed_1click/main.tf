@@ -84,7 +84,8 @@ resource "aws_key_pair" "oneclickkeys" {
 }
 
 
-resource "aws_instance" "oneclickmainnet" {
+// Mainnet
+resource "aws_instance" "oneclickmainnetinstance" {
   for_each = var.oneclickusers
   ami = data.aws_ami.mainnet.id
   instance_type = "r5.2xlarge"
@@ -96,15 +97,26 @@ resource "aws_instance" "oneclickmainnet" {
   }
   security_groups = [ aws_security_group.alltraffic.name ]
   user_data = file("user_data.sh")
-  ebs_block_device {
-    device_name = "/dev/sdf"
-    volume_size = 1000
-    volume_type = "gp2"
-    delete_on_termination = false
-  }
+  availability_zone = "us-east-1f"
 }
 
-resource "aws_instance" "oneclickcalibrationnet" {
+resource "aws_ebs_volume" "oneclickmainnetvolume" {
+  for_each = var.oneclickusers
+  /* availability_zone = aws_instance.oneclickmainnetinstance[each.key].availability_zone */
+  availability_zone = "us-east-1f"
+  size = 1000
+  type = "gp2"
+}
+
+resource "aws_volume_attachment" "oneclickmainnetattachment" {
+  for_each = var.oneclickusers
+  device_name = "/dev/sdf"
+  volume_id = aws_ebs_volume.oneclickmainnetvolume[each.key].id
+  instance_id = aws_instance.oneclickmainnetinstance[each.key].id
+}
+
+// Calibrationnet
+resource "aws_instance" "oneclickcalibrationnetinstance" {
   for_each = var.oneclickusers
   ami = data.aws_ami.calibrationnet.id
   instance_type = "r5.2xlarge"
@@ -116,15 +128,26 @@ resource "aws_instance" "oneclickcalibrationnet" {
   }
   security_groups = [ aws_security_group.alltraffic.name ]
   user_data = file("user_data.sh")
-  ebs_block_device {
-    device_name = "/dev/sdf"
-    volume_size = 1000
-    volume_type = "gp2"
-    delete_on_termination = false
-  }
+  availability_zone = "us-east-1f"
 }
 
-resource "aws_instance" "oneclicknerpanet" {
+resource "aws_ebs_volume" "oneclickcalibrationnetvolume" {
+  for_each = var.oneclickusers
+  /* availability_zone = aws_instance.oneclickcalibrationnetinstance[each.key].availability_zone */
+  availability_zone = "us-east-1f"
+  size = 1000
+  type = "gp2"
+}
+
+resource "aws_volume_attachment" "oneclickcalibrationnetattachment" {
+  for_each = var.oneclickusers
+  device_name = "/dev/sdf"
+  volume_id = aws_ebs_volume.oneclickcalibrationnetvolume[each.key].id
+  instance_id = aws_instance.oneclickcalibrationnetinstance[each.key].id
+}
+
+// Nerpanet
+resource "aws_instance" "oneclicknerpanetinstance" {
   for_each = var.oneclickusers
   ami = data.aws_ami.nerpanet.id
   instance_type = "r5.2xlarge"
@@ -136,10 +159,20 @@ resource "aws_instance" "oneclicknerpanet" {
   }
   security_groups = [ aws_security_group.alltraffic.name ]
   user_data = file("user_data.sh")
-  ebs_block_device {
-    device_name = "/dev/sdf"
-    volume_size = 1000
-    volume_type = "gp2"
-    delete_on_termination = false
-  }
+  availability_zone = "us-east-1f"
+}
+
+resource "aws_ebs_volume" "oneclicknerpanetvolume" {
+  for_each = var.oneclickusers
+  /* availability_zone = aws_instance.oneclicknerpanetinstance[each.key].availability_zone */
+  availability_zone = "us-east-1f"
+  size = 1000
+  type = "gp2"
+}
+
+resource "aws_volume_attachment" "oneclicknerpanetattachment" {
+  for_each = var.oneclickusers
+  device_name = "/dev/sdf"
+  volume_id = aws_ebs_volume.oneclicknerpanetvolume[each.key].id
+  instance_id = aws_instance.oneclicknerpanetinstance[each.key].id
 }
