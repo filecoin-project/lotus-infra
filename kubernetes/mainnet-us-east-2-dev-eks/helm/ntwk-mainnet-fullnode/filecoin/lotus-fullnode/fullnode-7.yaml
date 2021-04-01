@@ -1,9 +1,3 @@
-image:
-  repository: public.ecr.aws/p5f3y3g5/lotus-dev
-  pullPolicy: IfNotPresent
-  # https://github.com/filecoin-project/lotus/pull/5808
-  tag: 1324517b
-
 daemonConfig: |
   [API]
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"

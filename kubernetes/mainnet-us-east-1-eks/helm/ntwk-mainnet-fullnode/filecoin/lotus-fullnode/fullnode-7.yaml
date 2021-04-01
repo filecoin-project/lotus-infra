@@ -1,6 +1,3 @@
-image:
-  tag: mainnet-v1.5.0
-
 secrets:
   libp2p:
     enabled: true
