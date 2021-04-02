@@ -15,17 +15,27 @@ echo "${dealbot}" >> /home/ubuntu/.ssh/authorized_keys
 
 echo STOPPING LOTUS
 # Stop lotus for now.
-systemctl kill -s SIGKILL lotus-daemon
-sleep 30
-rm -rf /var/lib/lotus/*
+systemctl stop lotus-daemon
 
-echo INSTALLING PARTED
-apt-get update
-apt-get -y install parted
+# remove any files that might have been created already,
+# and prevent them from accidently being created again.
+rm -rf /var/lib/lotus/*
+chown root: /var/lib/lotus
+
+# Wait until the EBS volume is attached.
+while ! grep nvme1n1 /proc/partitions; do
+	echo NVME1N1 NOT PRESENT. TRYING AGAIN
+	sleep 10
+done
+
+echo NVMEN1 FOUND.
 
 # Test if EBS is already partitioned. If not, partition it.
 grep nvme1n1p1 /proc/partitions
 if [ $? -eq 1 ]; then
+	echo INSTALLING PARTED
+	apt-get update
+	apt-get -y install parted
   echo PARTITIONING NVME1N1
 	# Partition, format, mount
 	parted /dev/nvme1n1 mklabel gpt
