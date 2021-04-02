@@ -19,6 +19,7 @@ systemctl stop lotus-daemon
 
 # remove any files that might have been created already,
 # and prevent them from accidently being created again.
+mv /var/lib/lotus/config.toml .
 rm -rf /var/lib/lotus/*
 chown root: /var/lib/lotus
 
@@ -58,6 +59,7 @@ mount -a
 echo FIXING PERMISSIONS
 # Fix permissions.
 chown fc: /var/lib/lotus
+mv ./config.toml /var/lib/lotus
 
 echo STARTING LOTUS
 # Restart lotus
