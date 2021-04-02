@@ -39,7 +39,7 @@ build_flags="${buildflags:-"-f"}"
 genesis_delay="${delay:-"600"}"
 #genesis_timestamp="2020-08-24T22:00:00Z"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
-verifreg_rootkey="t1meqrx2ijvgrdquybafmlwgszpmc34b3kg3nohvy"
+verifreg_rootkey="t1q6eqszdqoqxevhoehil6jcl3ftbogghuwz4yqti"
 
 # gets a list of all the hostnames for the preminers
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
@@ -211,11 +211,12 @@ pushd "$lotus_src"
     timestamp=$(date -d "${genesis_timestamp}" +%s)
   fi
 
-
   jq --arg Timestamp ${timestamp} ' . + { Timestamp: $Timestamp|tonumber } ' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
 
-  jq --arg Owner ${faucet_addr} --arg Balance ${faucet_balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
+  ./lotus-seed genesis set-remainder --account ${faucet_addr} "${genpath}/genesis.json"
+
+  jq --arg VerifyKey ${verifreg_rootkey} '.VerifregRootKey.Meta.Signers = [$VerifyKey] ' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
 
   # Provide the PCR service the same balance as the faucet
@@ -230,9 +231,6 @@ pushd "$lotus_src"
     jq --arg Owner ${addr} --arg Balance ${balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
     mv ${genesistmp} "${genpath}/genesis.json"
   done <<<$(echo $additional_accounts | jq -rc '.[] | [.address, .balance] | @tsv' )
-
-  jq --arg VerifyKey ${verifreg_rootkey} '.VerifregRootKey.Meta.Signers = [$VerifyKey] ' < "${genpath}/genesis.json" > ${genesistmp}
-  mv ${genesistmp} "${genpath}/genesis.json"
 
   ./lotus --repo="${genpath}" daemon --api 0 --lotus-make-genesis="${genpath}/testnet.car" --genesis-template="${genpath}/genesis.json" --bootstrap=false &
   ldpid=$!
