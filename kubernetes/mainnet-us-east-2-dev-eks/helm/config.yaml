@@ -116,3 +116,9 @@ deployments:
     values:
       - base
       - fullnode-1
+  - chart: filecoin/tweety
+    version: 0.0.1
+    namespace: canaries
+    name: tweety
+    values:
+      - base
