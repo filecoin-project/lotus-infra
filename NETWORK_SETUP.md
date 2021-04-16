@@ -29,6 +29,9 @@ Binaries required:
 - lotus
 - lotus-miner
 
+# Building Binaries
+@TODO add instructions relevant to editing Lotus source, build configuration and make commands for building proper binaries
+
 # Simple Example
 
 This example documents how to set up the Nerpa Network with a simple network configuration.
