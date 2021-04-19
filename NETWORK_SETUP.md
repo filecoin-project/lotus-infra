@@ -32,6 +32,53 @@ Binaries required:
 # Building Binaries
 @TODO add instructions relevant to editing Lotus source, build configuration and make commands for building proper binaries
 
+## Creating a new Network
+
+The network configuration for lotus are defined at build. This means to add a new network, some source code configuration is required.
+Network parameters are stored in the `./build` folder of lotus, with the convention of `params_<network>.go`. The default configration
+for mainnet is in `params_mainnet.go`.
+
+Adding a new network requires naming the network, and creating a new network configuration files. It's best to use another network configuration as
+a template as there is no complete documenation of all the configuration that is required to be set.
+
+Some of the things can are configured for networks include
+- drand network configuration
+- network upgrade epochs
+- supported sector sizes
+- minimum miner size
+- block production delay
+
+Note: The network parameters is also where to define the `BootstrapPeerThreshold`, which is covered with more detail in another section.
+
+[TODO]: <> (mainnet and testnet params should be fully documented param files)
+
+
+- `./build/params_<network>.go`
+- `./build/bootstrap/<network>.pi`
+
+In the network parameters file (`params_<network>.go`), there are two important constants that must be set, `BootstrappersFile`, and `GenesisFile`, these
+describe the names of the files that will be built into the the binary. The `BootstrappersFile` points to a file of multiaddrs that will be used for bootstrap configuration, and the `GenesisFile` points to the genesis file that will be built in to the binary if present.
+
+_params_&lt;network&gt;.go
+```
+// +build <network>
+package build
+
+const BootstrappersFile = "<network>.pi"
+const GenesisFile = "<network>.car"
+```
+
+Important! For each network created a build configuration needs to be added to mainnet configuration to disable it when building a different network. You must had a `// +build !<network>` to `params_mainnet.go`.
+
+## Adding make targets
+
+To make it easier to build the binaries for the new network, make targets can be added to the `Makefile`.
+
+```
+<network>: GOFLAGS+=-tags=<network>
+<network>: build-devnets
+```
+
 # Simple Example
 
 This example documents how to set up the Nerpa Network with a simple network configuration.
