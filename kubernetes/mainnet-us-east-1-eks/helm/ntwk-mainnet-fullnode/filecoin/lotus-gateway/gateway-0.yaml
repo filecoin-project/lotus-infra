@@ -1,8 +1,8 @@
 secrets:
   jwt:
     enabled: true
-    secretName: fullnode-0-jwt-secrets
+    secretName: fullnode-7-jwt-secrets
     token_key: jwt-rw-privs-token
 
 lotus:
-  fullnodeApiMultiaddr: "/dns/fullnode-0-lotus-daemon/tcp/1234"
+  fullnodeApiMultiaddr: "/dns/fullnode-7-lotus-daemon/tcp/1234"
