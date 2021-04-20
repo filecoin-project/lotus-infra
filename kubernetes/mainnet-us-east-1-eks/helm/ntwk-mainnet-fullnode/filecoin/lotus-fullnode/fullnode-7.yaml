@@ -1,3 +1,6 @@
+image:
+  tag: mainnet-ad0fdd5ec
+
 secrets:
   libp2p:
     enabled: true
