@@ -1,0 +1,76 @@
+# Default values for filecoin dealbot
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+logLevel: info
+image:
+  repo: coryschwartz/dealbot
+  tag: "latest" # required
+  pullPolicy: Always
+
+# Custom labels
+#labels:
+  #name: foo
+
+# prometheus service monitor
+prometheusOperatorServiceMonitor: false
+prometheusPort: ":9991"
+
+logLevel: error
+#logFormat: json
+#logLevelNamed: "vm:error,badgerbs:error"
+
+jaeger:
+  enabled: false
+  host: ""
+  port: 6831
+  serviceName: "dealbot"
+  sampler:
+    type: "probabilistic"
+    param: 0.0001
+
+controller: 
+  enabled: true
+  postgres:
+    enabled: true
+  secrets:
+    keySecret: dealbot-controller-key
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1000Mi
+    requests:
+      cpu: 500m
+      memory: 500Mi
+
+postgres:
+  enabled: true
+  instances: 1
+  version: 13
+  teamid: dealbotteam
+  user: dealbotuser
+  database: dealbotdb
+  volume: 100Gi
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1000Mi
+    requests:
+      cpu: 500m
+      memory: 500Mi
+
+daemon:
+  enabled: true
+  replicas: 1
+  lotusAPI:
+    lotusAPITokenSecret: "fullnode-0-jwt-secrets"
+    lotusAPIMultiaddr: "/dns/dealbot-fullnode-0-lotus-daemon/tcp/1234/p2p/12D3KooWDxZrDEfnPq3CEWfXL8W5xG6yr2nZcwE1yShv3KatZXt6"
+    wallet: f3xg5otbsfffe7zvj45wyn6qxwbw3m4eghwj77c72hkqg7pzzgzbwoiskasnmumar553zcl5rxdrp7ec7rm4fa
+  persistence:
+    enabled: false
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1000Mi
+    requests:
+      cpu: 500m
+      memory: 1000Mi

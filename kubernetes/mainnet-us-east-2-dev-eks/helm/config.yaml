@@ -116,3 +116,17 @@ deployments:
     values:
       - base
       - fullnode-1
+  # dealbot fullnodes.
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.1
+    namespace: ntwk-mainnet-dealbot
+    name: dealbot-fullnode-0
+    values:
+      - base
+      - dealbot-fullnode-0
+  - chart: filecoin/dealbot
+    version: 0.0.1
+    namespace: ntwk-mainnet-dealbot
+    name: dealbot-0
+    values:
+      - base
