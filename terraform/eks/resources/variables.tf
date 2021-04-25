@@ -51,7 +51,7 @@ variable "public_subnets" {
 
 variable "public_subnets_workers" {
   description = "CIDR for public subnets in the VPC for kubernetes workers (must be within var.cidr)"
-  type        = list(string)
+  type        = set(string)
 
   default = [
     "10.0.64.0/20",
@@ -126,4 +126,12 @@ variable "node_groups" {
 variable "acm_enabled" {
   description = "generate ACM cerificate for external DNS? only required if wanting HTTPS"
   default     = 0
+}
+
+variable "efs_volumes" {
+  description = "efs volumes for the cluster"
+  default = [
+    "chain_archives",
+    "dealbot",
+  ]
 }

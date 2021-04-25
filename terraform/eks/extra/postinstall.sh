@@ -56,6 +56,7 @@ install_calico() {
 install_storage_classes() {
   kubectl apply -f storage-ebs-csi-snapclass.yaml
   kubectl apply -f storage-ebs.yaml
+  kubectl apply -f storage-efs.yaml
 }
 
 check_kubectl_version

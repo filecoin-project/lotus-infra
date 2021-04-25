@@ -12,19 +12,21 @@ resource "aws_security_group" "efs" {
   }
 }
 
-resource "aws_efs_file_system" "chain_archives" {
+resource "aws_efs_file_system" "efs_filesystems" {
+  for_each = var.efs_volumes
   lifecycle_policy {
     transition_to_ia = "AFTER_30_DAYS"
   }
 
   tags = merge(local.tags, {
-    Name = "chain-archives"
+    Name = each
   })
 }
 
-resource "aws_efs_mount_target" "chain_archives" {
+resource "aws_efs_mount_target" "efs_mounts" {
+  for_each        = var.efs_volumes
   count           = length(flatten([module.vpc.public_subnets]))
-  file_system_id  = aws_efs_file_system.chain_archives.id
+  file_system_id  = aws_efs_file_system.efs_filesystems[each].id
   subnet_id       = flatten([module.vpc.public_subnets])[count.index]
   security_groups = [aws_security_group.efs.id]
 }
