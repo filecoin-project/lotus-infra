@@ -1,5 +1,5 @@
 image:
-  tag: mainnet-v1.6.0
+  tag: nerpanet-v1.6.0
 
 prometheusOperatorServiceMonitor: true
 
@@ -30,7 +30,7 @@ daemonConfig: |
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
 
 additionalLabels:
-  network: mainnet
+  network: nerpanet
 
 persistence:
   datastore:

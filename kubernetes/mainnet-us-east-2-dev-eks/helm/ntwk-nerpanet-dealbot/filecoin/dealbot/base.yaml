@@ -63,13 +63,13 @@ daemon:
   replicas: 1
   lotusAPI:
     lotusAPITokenSecret: "fullnode-0-jwt-secrets"
-    lotusAPIMultiaddr: "/dns/dealbot-fullnode-0-lotus-daemon/tcp/1234/p2p/12D3KooWDxZrDEfnPq3CEWfXL8W5xG6yr2nZcwE1yShv3KatZXt6"
-    wallet: f3xg5otbsfffe7zvj45wyn6qxwbw3m4eghwj77c72hkqg7pzzgzbwoiskasnmumar553zcl5rxdrp7ec7rm4fa
+    lotusAPIMultiaddr: "/dns/dealbot-fullnode-0-lotus-daemon/tcp/1234/p2p/12D3KooWRYwgMKMFWYu7kc81s1puTJ91zidsJLsZfx6J6jGREuJp"
+    wallet: t3ubrfptbtiquvihchzyzt3xumcbkxj7clgggghomghwh4vmuc7bik7pazomk4qbp3twzj5xwljp4qurrjaluq
   persistence:
     enabled: true
     claimName: chain-exports
-    data: /efs/dealbot/mainnet/data
-    nodedata: /efs/dealbot/mainnet/nodedata
+    data: /efs/dealbot/nerpanet/data
+    nodedata: /efs/dealbot/nerpanet/nodedata
   resources:
     limits:
       cpu: 1000m

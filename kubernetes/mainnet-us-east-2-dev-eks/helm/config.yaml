@@ -116,7 +116,13 @@ deployments:
     values:
       - base
       - fullnode-1
-  # dealbot fullnodes.
+  # dealbot mainnet
+  - chart: filecoin/efs-access
+    version: 0.1.0
+    namespace: ntwk-mainnet-dealbot
+    name: efs-access
+    values:
+      - efs-access
   - chart: filecoin/lotus-fullnode
     version: 0.3.1
     namespace: ntwk-mainnet-dealbot
@@ -133,6 +139,32 @@ deployments:
   - chart: runix/pgadmin4
     version: 1.6.1
     namespace: ntwk-mainnet-dealbot
+    name: pgadmin
+    values:
+      - base
+  # dealbot nerpanet
+  - chart: filecoin/efs-access
+    version: 0.1.0
+    namespace: ntwk-nerpanet-dealbot
+    name: efs-access
+    values:
+      - efs-access
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.1
+    namespace: ntwk-nerpanet-dealbot
+    name: dealbot-fullnode-0
+    values:
+      - base
+      - dealbot-fullnode-0
+  - chart: filecoin/dealbot
+    version: 0.0.1
+    namespace: ntwk-nerpanet-dealbot
+    name: dealbot-0
+    values:
+      - base
+  - chart: runix/pgadmin4
+    version: 1.6.1
+    namespace: ntwk-nerpanet-dealbot
     name: pgadmin
     values:
       - base
