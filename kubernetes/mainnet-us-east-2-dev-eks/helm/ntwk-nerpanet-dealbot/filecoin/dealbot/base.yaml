@@ -83,6 +83,7 @@ daemon:
   persistence:
     enabled: true
     claimName: chain-exports
+    mountPath: /efs
     data: /efs/dealbot/nerpanet/data
     nodedata: /efs/dealbot/nerpanet/nodedata
   resources:
