@@ -130,3 +130,9 @@ deployments:
     name: dealbot-0
     values:
       - base
+  - chart: runix/pgadmin4
+    version: 1.6.1
+    namespace: ntwk-mainnet-dealbot
+    name: pgadmin
+    values:
+      - base
