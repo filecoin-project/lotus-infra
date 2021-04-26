@@ -88,7 +88,7 @@ ingress:
   hosts:
     - host: lb.mainnet-us-east-2-dev.fildevops.net
       paths:
-        - path: /dealbotdb(/|$)(.*)
+        - path: /mainnet-dealbotdb(/|$)(.*)
           backend:
             serviceName: pgadmin-pgadmin4
             servicePort: 80
@@ -145,7 +145,7 @@ env:
   # pgpassfile: /var/lib/pgadmin/storage/pgadmin/file.pgpass
 
   # set context path for application (e.g. /pgadmin4/*)
-  contextPath: /dealbotdb
+  contextPath: /mainnet-dealbotdb
 
   ## If True, allows pgAdmin4 to create session cookies based on IP address
   ## Ref: https://www.pgadmin.org/docs/pgadmin4/latest/config_py.html
