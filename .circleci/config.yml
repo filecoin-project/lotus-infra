@@ -1,13 +1,74 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-# Use a package of configuration called an orb.
+
 orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.4.1
-# Orchestrate or schedule a set of jobs
+  aws-eks: circleci/aws-eks@1.0.3
+  helm: circleci/helm@1.2.0
+
+commands:
+  install-helm:
+    steps:
+      - helm/install-helm-client:
+          version: v3.5.0
+  install-helm-repos:
+    steps:
+      - run:
+          command: |
+            helm repo add filecoin https://filecoin-project.github.io/helm-charts
+  setup-eks:
+      parameters:
+        cluster:
+          type: string
+          default: ${cluster}
+          description: eks cluster
+        region:
+          type: string
+          default: ${region}
+          description: aws region
+      steps:
+        - aws-eks/install-aws-iam-authenticator
+        - aws-eks/update-kubeconfig-with-authenticator:
+            install-kubectl: true
+            cluster-name: <<parameters.cluster>>
+            aws-region: <<parameters.region>>
+
+jobs:
+  lotus-deploy:
+      parameters:
+        cluster:
+          type: string
+          default: ${cluster}
+          description: eks cluster
+        region:
+          type: string
+          default: ${region}
+          description: aws region
+        namespace:
+          type: string
+          default: ${namespace}
+          description: kubernetes namespace
+      executor: aws-eks/python3
+      steps:
+        - setup-eks:
+            cluster: <<parameters.cluster>>
+            region: <<parameters.region>>
+        - install-helm
+        - install-helm-repos
+        - checkout
+        - run:
+            name: deploy butterfly fullnodes
+            command: |
+              helm -n <<parameters.namespace>> list
+              echo test test test
+              sleep 600
+
 workflows:
-  # Name the workflow "welcome"
-  welcome:
-    # Run the welcome/run job in its own container
+  butterfly-nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - /^(main|master)$/
     jobs:
-      - welcome/run
+      - lotus-butterfly
