@@ -48,6 +48,7 @@ jobs:
           description: kubernetes namespace
       executor: aws-eks/python3
       steps:
+        - checkout
         - setup-eks:
             cluster: <<parameters.cluster>>
             region: <<parameters.region>>
