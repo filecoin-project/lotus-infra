@@ -53,7 +53,6 @@ jobs:
             region: <<parameters.region>>
         - install-helm
         - install-helm-repos
-        - checkout
         - run:
             name: deploy butterfly fullnodes
             command: |
