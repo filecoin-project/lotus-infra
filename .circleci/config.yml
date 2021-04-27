@@ -63,13 +63,13 @@ jobs:
 
 workflows:
   butterfly-nightly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - /^(main|master)$/
+    # triggers:
+    #   - schedule:
+    #       cron: "0 0 * * *"
+    #       filters:
+    #         branches:
+    #           only:
+    #             - /^(main|master)$/
     jobs:
       - lotus-deploy:
           cluster: arn:aws:eks:us-east-2:657871693752:cluster/mainnet-us-east-2-dev-eks
