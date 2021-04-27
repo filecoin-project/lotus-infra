@@ -58,7 +58,7 @@ while [ "$1" != "" ]; do
     shift
 done
 
-BUILD_SRC="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
+BUILD_SRC=$(realpath "${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}")
 BUILD_FFI="${native:-""}"
 BUILD_TAG="${tag:-""}"
 BUILD_REPO="${repo:-""}"
