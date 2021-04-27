@@ -71,4 +71,7 @@ workflows:
               only:
                 - /^(main|master)$/
     jobs:
-      - lotus-butterfly
+      - lotus-deploy:
+          cluster: arn:aws:eks:us-east-2:657871693752:cluster/mainnet-us-east-2-dev-eks
+          region: us-east-2
+          namespace: ntwk-butterfly-fullnode
