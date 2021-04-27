@@ -1,0 +1,11 @@
+image:
+  tag: butterfly-v1.6.0
+
+secrets:
+  libp2p:
+    enabled: true
+    secretName: fullnode-butterfly-libp2p-secrets
+    libp2p_key: libp2p-butterfly-host
+  jwt:
+    enabled: true
+    secretName: fullnode-butterfly-jwt-secrets

@@ -1,0 +1,11 @@
+image:
+  tag: nerpanet-v1.6.0
+
+secrets:
+  libp2p:
+    enabled: true
+    secretName: fullnode-nerpanet-libp2p-secrets
+    libp2p_key: libp2p-nerpanet-host
+  jwt:
+    enabled: true
+    secretName: fullnode-nerpanet-jwt-secrets

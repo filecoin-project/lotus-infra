@@ -1,0 +1,11 @@
+image:
+  tag: mainnet-v1.6.0
+
+secrets:
+  libp2p:
+    enabled: true
+    secretName: fullnode-mainnet-libp2p-secrets
+    libp2p_key: libp2p-mainnet-host
+  jwt:
+    enabled: true
+    secretName: fullnode-mainnet-jwt-secrets

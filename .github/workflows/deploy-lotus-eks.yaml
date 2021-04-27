@@ -1,0 +1,36 @@
+---
+name: deploy-lotus-nightly
+on:
+  schedule:
+    # See build-lotus-container.yaml.
+    # Set the cron for eks deploy to happen after nightly build
+    - cron: '0 2 * * *'
+
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        network:
+          - mainnet
+          - nerpanet
+          - butterflynet
+          - calibnet
+    steps:
+      - name: docker login
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Checkout lotus-infra
+        uses: actions/checkout@v2
+      - name: Add filecoin helm chart
+        uses: koslib/helm-eks-action@master
+        with:
+          command: helm repo add filecoin https://filecoin-project.github.io/helm-charts
+      - name: deploy to nightly
+        uses: koslib/helm-eks-action@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_MAINNET_US_EAST_2_DEV_EKS }}
+        with:
+          command: helm --namespace nightly --install fullnode-${{ matrix.network }} filecoin/lotus-fullnode --version 0.3.1 --values kubernetes/mainnet-us-east-2-dev-eks/helm/ntwk-mainnet-fullnode/filecoin/lotus-fullnode/base.yaml --values kubernetes/mainnet-us-east-2-dev-eks/helm/ntwk-mainnet-fullnode/filecoin/lotus-fullnode/fullnode-${{ matrix.network }}.yaml
