@@ -32,34 +32,43 @@ commands:
             aws-region: <<parameters.region>>
 
 jobs:
-  lotus-deploy:
-      parameters:
-        cluster:
-          type: string
-          default: ${cluster}
-          description: eks cluster
-        region:
-          type: string
-          default: ${region}
-          description: aws region
-        namespace:
-          type: string
-          default: ${namespace}
-          description: kubernetes namespace
-      executor: aws-eks/python3
-      steps:
-        - checkout
-        - setup-eks:
-            cluster: <<parameters.cluster>>
-            region: <<parameters.region>>
-        - install-helm
-        - install-helm-repos
-        - run:
-            name: deploy butterfly fullnodes
-            command: |
-              helm -n <<parameters.namespace>> list
-              echo test test test
-              sleep 600
+  helm-deploy:
+    parameters:
+      cluster:
+        type: string
+        description: eks cluster name
+      region:
+        type: string
+        description: aws region
+      namespace:
+        type: string
+        description: kubernetes namespace
+      release:
+        type: string
+        description: helm release
+      chart:
+        type: string
+        description: helm chart
+      chart_version:
+        type: string
+        description: helm chart version
+      values:
+        type: list
+        description: helm values
+    executor: aws-eks/python3
+    steps:
+      - checkout
+      - setup-eks:
+          cluster: << parameters.cluster >>
+          region: << parameters.region >>
+      - install-helm
+      - install-helm-repos
+      - run:
+          name: deploy << parameters.chart >> to << parameters.cluster >>/<< parameters.namespace >>
+          command: |
+            echo helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> \
+            << parameters.chart >> --version << parameters.chart_version >> \
+            << range parameters.values >> --values project/kubernetes<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< . >> << end >>
 
 workflows:
   butterfly-nightly:
@@ -71,8 +80,14 @@ workflows:
     #           only:
     #             - /^(main|master)$/
     jobs:
-      - lotus-deploy:
+      - helm-deploy:
           context: sentinel-staging-deploy
           cluster: mainnet-us-east-2-dev-eks
           region: us-east-2
           namespace: ntwk-butterfly-fullnode
+          release: butterfly-nightly-0
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          values:
+            - base.yaml
+            - fullnode-0.yaml
