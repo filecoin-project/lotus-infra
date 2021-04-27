@@ -72,6 +72,7 @@ workflows:
     #             - /^(main|master)$/
     jobs:
       - lotus-deploy:
+          context: sentinel-staging-deploy
           cluster: arn:aws:eks:us-east-2:657871693752:cluster/mainnet-us-east-2-dev-eks
           region: us-east-2
           namespace: ntwk-butterfly-fullnode
