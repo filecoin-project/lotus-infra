@@ -1,0 +1,14 @@
+name: build-lotus-container
+on:
+  repository_dispatch:
+    types:
+      - build-lotus-container
+jobs:
+  build-lotus:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Lotus
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.client_payload.ref }}
+          path: go/src/github.com/filecoin-project/lotus
