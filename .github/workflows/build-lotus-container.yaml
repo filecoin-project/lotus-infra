@@ -2,7 +2,7 @@
 name: build-lotus-container
 on:
   schedule:
-    - cron: '30 4 * * *'
+    - cron: '30 16 * * *'
   workflow_dispatch:
     inputs:
       ref:
