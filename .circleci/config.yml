@@ -1,0 +1,242 @@
+version: 2.1
+
+orbs:
+  aws-eks: circleci/aws-eks@1.0.3
+  helm: circleci/helm@1.2.0
+
+commands:
+  install-helm:
+    steps:
+      - helm/install-helm-client:
+          version: v3.5.0
+  install-helm-repos:
+    steps:
+      - run:
+          command: |
+            helm repo add filecoin https://filecoin-project.github.io/helm-charts
+  setup-eks:
+    parameters:
+      cluster:
+        type: string
+        description: eks cluster
+      region:
+        type: string
+        description: aws region
+    steps:
+      - aws-eks/install-aws-iam-authenticator
+      - aws-eks/update-kubeconfig-with-authenticator:
+          install-kubectl: true
+          cluster-name: <<parameters.cluster>>
+          aws-region: <<parameters.region>>
+  git-clone:
+    parameters:
+      repo:
+        type: string
+        description: repo url
+      where:
+        type: string
+        description: where to save
+    steps:
+      - run:
+          command: git clone << parameters.repo >> << parameters.where >>
+  docker-login:
+    steps:
+      - run:
+          command: echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
+
+
+jobs:
+  # build and push lotus.
+  lotus-build-containers:
+    parameters:
+      tag:
+        type: string
+        description: lotus tag to checkout
+      repo:
+        type: string
+        description: docker repository
+      network:
+        type: string
+        description: filecoin network
+      use_gitsha:
+        type: boolean
+        default: false
+        description: append gitsha to image tag (useful when tag is master)
+    machine:
+      image: ubuntu-2004:202010-01
+    steps:
+      - checkout
+      - docker-login
+      - git-clone:
+          repo: https://github.com/filecoin-project/lotus
+          where: $HOME/lotus
+      - run:
+          name: push docker << parameters.network >> << parameters.tag >> to << parameters.repo >>
+          environment:
+            USE_GITSHA: << parameters.use_gitsha >>
+            DOCKER_TAG: << parameters.network >>-<< parameters.tag >>
+          command: |
+            echo "gitsha: $USE_GITSHA"
+            if [ $USE_GITSHA -eq 1 ]
+            then
+              echo "gitsha was true"
+              DOCKER_TAG=$DOCKER_TAG-$CIRCLE_SHA1
+            fi
+            scripts/build_containers.bash --src $HOME/lotus --network << parameters.network >> --tag << parameters.tag >> --docker-tag $DOCKER_TAG --repo << parameters.repo >>
+            mkdir -p /tmp/circle
+            echo -n $DOCKER_TAG > /tmp/circle/docker_tag
+            echo -n << parameters.repo >> > /tmp/circle/docker_repo
+      - persist_to_workspace:
+          root: /tmp/circle
+          paths:
+            - docker_tag
+            - docker_repo
+
+  # This will deploy a helm chart with values stored in this repo.
+  # Each release will have two helm values files -- "base.yaml" and <release_name>.yaml
+  # and they must be installed in the right directory in this repo.
+  helm-deploy:
+    parameters:
+      cluster:
+        type: string
+        description: eks cluster name
+      region:
+        type: string
+        description: aws region
+      namespace:
+        type: string
+        description: kubernetes namespace
+      release:
+        type: string
+        description: helm release
+      chart:
+        type: string
+        description: helm chart
+      chart_version:
+        type: string
+        description: helm chart version
+      helm_append:
+        type: string
+        default: ""
+        description: Anything more you want to add to the helm commandline
+      override_repository:
+        type: string
+        default: ""
+        description: override image.repository in helm chart
+      override_tag:
+        type: string
+        default: ""
+        description: override image.tag in helm chart
+      override_from_workspace:
+        type: boolean
+        default: false
+        description: override image.repository and image.tag using the workspace.
+    executor: aws-eks/python3
+    steps:
+      - checkout
+      - setup-eks:
+          cluster: << parameters.cluster >>
+          region: << parameters.region >>
+      - install-helm
+      - install-helm-repos
+      - attach_workspace:
+          at: /tmp/circle
+      - run:
+          name: deploy << parameters.chart >>/<< parameters.release >> to << parameters.cluster >>/<< parameters.namespace >>
+          environment:
+            OVERRIDE_FROM_WORKSPACE: << parameters.override_from_workspace >>
+            DOCKER_TAG: << parameters.override_tag >>
+            DOCKER_REPO: << parameters.override_repository >>
+            HELM_APPEND: << parameters.helm_append >>
+          command: |
+            if [ $OVERRIDE_FROM_WORKSPACE -eq 1 ]
+            then
+              DOCKER_REPO=$(cat /tmp/circle/docker_repo)
+              DOCKER_TAG=$(cat /tmp/circle/docker_tag)
+            fi
+            if [ ! -z "$DOCKER_TAG" ]; then HELM_APPEND=" --set image.tag=${DOCKER_TAG} ${HELM_APPEND}"; fi
+            if [ ! -z "$DOCKER_REPO" ]; then HELM_APPEND=" --set image.repository=${DOCKER_REPO} ${HELM_APPEND}"; fi
+            echo "all helm overrides being applied:"
+            echo $HELM_APPEND
+            helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
+
+workflows:
+  butterfly-nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - /^(main|master)$/
+    jobs:
+      - lotus-build-containers:
+          tag: master
+          repo: coryschwartz
+          network: butterflynet
+          use_gitsha: true
+      - helm-deploy:
+          context: sentinel-staging-deploy
+          requires:
+            - lotus-build-containers
+          cluster: mainnet-us-east-2-dev-eks
+          region: us-east-2
+          namespace: ntwk-butterfly-fullnode
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_from_workspace: true
+          matrix:
+            parameters:
+              release:
+                - fullnode-0
+                - fullnode-1
+                - fullnode-2
+
+
+  # This commented workflow demonstrates the different ways to call helm-deploy
+  #
+  # example:
+  #   jobs:
+  #     # build containers with a tag that includes the gitsha
+  #     - lotus-build-containers:
+  #         tag: master
+  #         repo: coryschwartz
+  #         network: butterflynet
+  #         use_gitsha: true
+  #     # no overrides
+  #     - helm-deploy:
+  #         context: sentinel-staging-deploy
+  #         requires:
+  #           - lotus-build-containers
+  #         cluster: mainnet-us-east-2-dev-eks
+  #         region: us-east-2
+  #         namespace: ntwk-butterfly-fullnode
+  #         chart: filecoin/lotus-fullnode
+  #         chart_version: 0.3.1
+  #         release: fullnode-0
+  #     # override from workspace (use_gitsha from build step)
+  #     - helm-deploy:
+  #         context: sentinel-staging-deploy
+  #         requires:
+  #           - lotus-build-containers
+  #         cluster: mainnet-us-east-2-dev-eks
+  #         region: us-east-2
+  #         namespace: ntwk-butterfly-fullnode
+  #         chart: filecoin/lotus-fullnode
+  #         chart_version: 0.3.1
+  #         override_from_workspace: true
+  #         release: fullnode-1
+  #     # helm deploy something with specific docker overrides
+  #     # This allows remote API to specify their own tag and repo
+  #     - helm-deploy:
+  #         context: sentinel-staging-deploy
+  #         requires:
+  #           - lotus-build-containers
+  #         cluster: mainnet-us-east-2-dev-eks
+  #         region: us-east-2
+  #         namespace: ntwk-butterfly-fullnode
+  #         chart: filecoin/lotus-fullnode
+  #         chart_version: 0.3.1
+  #         override_repository: coryschwartz
+  #         override_tag: superspecial
+  #         release: fullnode-2
