@@ -52,9 +52,6 @@ jobs:
       chart_version:
         type: string
         description: helm chart version
-      values:
-        type: string
-        description: helm values
     executor: aws-eks/python3
     steps:
       - checkout
@@ -66,10 +63,7 @@ jobs:
       - run:
           name: deploy << parameters.chart >>/<< parameters.release >> to << parameters.cluster >>/<< parameters.namespace >>
           command: |
-            VALUES=$(for i in <<parameters.values>>; do echo -n " --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/$i"; done)
-            COMMAND=$(echo helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> $VALUES )
-            echo running $COMMAND
-            $COMMAND
+            helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml
 
 workflows:
   butterfly-nightly:
@@ -86,25 +80,11 @@ workflows:
           cluster: mainnet-us-east-2-dev-eks
           region: us-east-2
           namespace: ntwk-butterfly-fullnode
-          release: butterfly-nightly-0
           chart: filecoin/lotus-fullnode
           chart_version: 0.3.1
-          values: "base.yaml fullnode-0.yaml"
-      - helm-deploy:
-          context: sentinel-staging-deploy
-          cluster: mainnet-us-east-2-dev-eks
-          region: us-east-2
-          namespace: ntwk-butterfly-fullnode
-          release: butterfly-nightly-1
-          chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
-          values: "base.yaml fullnode-1.yaml"
-      - helm-deploy:
-          context: sentinel-staging-deploy
-          cluster: mainnet-us-east-2-dev-eks
-          region: us-east-2
-          namespace: ntwk-butterfly-fullnode
-          release: butterfly-nightly-2
-          chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
-          values: "base.yaml fullnode-2.yaml"
+          matrix:
+            parameters:
+              release:
+                - fullnode-0
+                - fullnode-1
+                - fullnode-2
