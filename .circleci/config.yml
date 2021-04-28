@@ -115,12 +115,15 @@ jobs:
         description: helm chart version
       helm_append:
         type: string
+        default: ""
         description: Anything more you want to add to the helm commandline
       override_repository:
         type: string
+        default: ""
         description: override image.repository in helm chart
       override_tag:
         type: string
+        default: ""
         description: override image.tag in helm chart
       override_from_workspace:
         type: boolean
