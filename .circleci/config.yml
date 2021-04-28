@@ -106,13 +106,13 @@ jobs:
 
 workflows:
   nightly:
-    # triggers:
-    #   - schedule:
-    #       cron: "0 0 * * *"
-    #       filters:
-    #         branches:
-    #           only:
-    #             - /^(main|master)$/
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - /^(main|master)$/
     jobs:
       - lotus-build-containers:
           tag: master
