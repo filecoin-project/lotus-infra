@@ -73,13 +73,13 @@ jobs:
 
 workflows:
   butterfly-nightly:
-    # triggers:
-    #   - schedule:
-    #       cron: "0 0 * * *"
-    #       filters:
-    #         branches:
-    #           only:
-    #             - /^(main|master)$/
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - /^(main|master)$/
     jobs:
       - helm-deploy:
           context: sentinel-staging-deploy
@@ -90,3 +90,21 @@ workflows:
           chart: filecoin/lotus-fullnode
           chart_version: 0.3.1
           values: "base.yaml fullnode-0.yaml"
+      - helm-deploy:
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-2-dev-eks
+          region: us-east-2
+          namespace: ntwk-butterfly-fullnode
+          release: butterfly-nightly-1
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          values: "base.yaml fullnode-1.yaml"
+      - helm-deploy:
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-2-dev-eks
+          region: us-east-2
+          namespace: ntwk-butterfly-fullnode
+          release: butterfly-nightly-2
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          values: "base.yaml fullnode-2.yaml"
