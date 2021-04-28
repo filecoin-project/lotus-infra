@@ -37,12 +37,12 @@ commands:
         type: string
         description: where to save
     steps:
-      run:
-        command: git pull << parameters.repo >> << parameters.where >>
+      - run:
+          command: git pull << parameters.repo >> << parameters.where >>
   docker-login:
     steps:
-      run:
-        command: echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --passwd-stdin
+      - run:
+          command: echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --passwd-stdin
 
 
 jobs:
