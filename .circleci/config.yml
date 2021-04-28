@@ -223,7 +223,7 @@ workflows:
           namespace: ntwk-butterfly-fullnode
           chart: filecoin/lotus-fullnode
           chart_version: 0.3.1
-          override_from_workspace: "butterflynet"
+          override_from_workspace: true
           release: fullnode-1
       - helm-deploy:
           context: sentinel-staging-deploy
