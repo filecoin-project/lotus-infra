@@ -189,47 +189,52 @@ workflows:
                 - fullnode-0
                 - fullnode-1
                 - fullnode-2
-  test123:
-    jobs:
-      - lotus-build-containers:
-          tag: master
-          repo: coryschwartz
-          network: butterflynet
-          use_gitsha: true
-      # no overrides
-      - helm-deploy:
-          context: sentinel-staging-deploy
-          requires:
-            - lotus-build-containers
-          cluster: mainnet-us-east-2-dev-eks
-          region: us-east-2
-          namespace: ntwk-butterfly-fullnode
-          chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
-          release: fullnode-0
-      # override from workspace (use_gitsha)
-      - helm-deploy:
-          context: sentinel-staging-deploy
-          requires:
-            - lotus-build-containers
-          cluster: mainnet-us-east-2-dev-eks
-          region: us-east-2
-          namespace: ntwk-butterfly-fullnode
-          chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
-          override_from_workspace: true
-          release: fullnode-1
-      # helm deploy something with specific docker overrides
-      # This allows remote 
-      - helm-deploy:
-          context: sentinel-staging-deploy
-          requires:
-            - lotus-build-containers
-          cluster: mainnet-us-east-2-dev-eks
-          region: us-east-2
-          namespace: ntwk-butterfly-fullnode
-          chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
-          override_repository: coryschwartz
-          override_tag: superspecial
-          release: fullnode-2
+
+
+  # This commented workflow demonstrates the different ways to call helm-deploy
+  #
+  # example:
+  #   jobs:
+  #     # build containers with a tag that includes the gitsha
+  #     - lotus-build-containers:
+  #         tag: master
+  #         repo: coryschwartz
+  #         network: butterflynet
+  #         use_gitsha: true
+  #     # no overrides
+  #     - helm-deploy:
+  #         context: sentinel-staging-deploy
+  #         requires:
+  #           - lotus-build-containers
+  #         cluster: mainnet-us-east-2-dev-eks
+  #         region: us-east-2
+  #         namespace: ntwk-butterfly-fullnode
+  #         chart: filecoin/lotus-fullnode
+  #         chart_version: 0.3.1
+  #         release: fullnode-0
+  #     # override from workspace (use_gitsha from build step)
+  #     - helm-deploy:
+  #         context: sentinel-staging-deploy
+  #         requires:
+  #           - lotus-build-containers
+  #         cluster: mainnet-us-east-2-dev-eks
+  #         region: us-east-2
+  #         namespace: ntwk-butterfly-fullnode
+  #         chart: filecoin/lotus-fullnode
+  #         chart_version: 0.3.1
+  #         override_from_workspace: true
+  #         release: fullnode-1
+  #     # helm deploy something with specific docker overrides
+  #     # This allows remote API to specify their own tag and repo
+  #     - helm-deploy:
+  #         context: sentinel-staging-deploy
+  #         requires:
+  #           - lotus-build-containers
+  #         cluster: mainnet-us-east-2-dev-eks
+  #         region: us-east-2
+  #         namespace: ntwk-butterfly-fullnode
+  #         chart: filecoin/lotus-fullnode
+  #         chart_version: 0.3.1
+  #         override_repository: coryschwartz
+  #         override_tag: superspecial
+  #         release: fullnode-2
