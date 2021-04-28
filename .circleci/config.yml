@@ -58,7 +58,8 @@ jobs:
       network:
         type: string
         description: filecoin network
-    executor: docker
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
       - checkout
       - docker-login
