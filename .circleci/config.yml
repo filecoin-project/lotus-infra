@@ -53,7 +53,7 @@ jobs:
         type: string
         description: helm chart version
       values:
-        type: list
+        type: string
         description: helm values
     executor: aws-eks/python3
     steps:
@@ -66,9 +66,9 @@ jobs:
       - run:
           name: deploy << parameters.chart >> to << parameters.cluster >>/<< parameters.namespace >>
           command: |
+            VALUES=$(for i in <<parameters.values>>; do echo -n " --values project/kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/$i"; done)
             echo helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> \
-            << parameters.chart >> --version << parameters.chart_version >> \
-            << range parameters.values >> --values project/kubernetes<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< . >> << end >>
+            << parameters.chart >> --version << parameters.chart_version >> $VALUES 
 
 workflows:
   butterfly-nightly:
@@ -88,6 +88,4 @@ workflows:
           release: butterfly-nightly-0
           chart: filecoin/lotus-fullnode
           chart_version: 0.3.1
-          values:
-            - base.yaml
-            - fullnode-0.yaml
+          values: "base.yaml fullnode-0.yaml"
