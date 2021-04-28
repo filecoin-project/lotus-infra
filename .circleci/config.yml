@@ -128,7 +128,8 @@ workflows:
 
       - helm-deploy:
           context: sentinel-staging-deploy
-          requires: lotus-build-containers
+          requires:
+            - lotus-build-containers
           cluster: mainnet-us-east-2-dev-eks
           region: us-east-2
           namespace: ntwk-butterfly-fullnode
