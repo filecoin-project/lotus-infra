@@ -28,7 +28,7 @@ commands:
           install-kubectl: true
           cluster-name: <<parameters.cluster>>
           aws-region: <<parameters.region>>
-  git-pull:
+  git-clone:
     parameters:
       repo:
         type: string
@@ -38,7 +38,7 @@ commands:
         description: where to save
     steps:
       - run:
-          command: git pull << parameters.repo >> << parameters.where >>
+          command: git clone << parameters.repo >> << parameters.where >>
   docker-login:
     steps:
       - run:
@@ -63,7 +63,7 @@ jobs:
     steps:
       - checkout
       - docker-login
-      - git-pull:
+      - git-clone:
           repo: https://github.com/filecoin-project/lotus
           where: $HOME/lotus
       - run:
