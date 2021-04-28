@@ -66,7 +66,7 @@ jobs:
       - run:
           name: deploy << parameters.chart >>/<< parameters.release >> to << parameters.cluster >>/<< parameters.namespace >>
           command: |
-            VALUES=$(for i in <<parameters.values>>; do echo -n " --values project/kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/$i"; done)
+            VALUES=$(for i in <<parameters.values>>; do echo -n " --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/$i"; done)
             COMMAND=$(echo helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> $VALUES )
             echo running $COMMAND
             $COMMAND
