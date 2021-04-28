@@ -232,4 +232,4 @@ workflows:
           chart_version: 0.3.1
           override_repository: coryschwartz
           override_tag: superspecial
-          release: fullnode-1
+          release: fullnode-2
