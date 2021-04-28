@@ -116,13 +116,14 @@ workflows:
       - lotus-build-containers:
         tag: master
         repo: coryschwartz
-        matrix:
-          parameters:
-            network:
-              - mainnet
-              - nerpanet
-              - calibnet
-              - butterflynet
+        network: butterflynet
+        # matrix:
+        #   parameters:
+        #     network:
+        #       - mainnet
+        #       - nerpanet
+        #       - calibnet
+        #       - butterflynet
 
       - helm-deploy:
           context: sentinel-staging-deploy
