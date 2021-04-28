@@ -155,7 +155,7 @@ jobs:
               DOCKER_TAG=$(cat /tmp/circle/docker_tag)
             fi
             if [ ! -z "$DOCKER_TAG" ]; then HELM_APPEND=" --set image.tag=${DOCKER_TAG} ${HELM_APPEND}"; fi
-            if [ ! -z "$DOCKER_REPO" ]; then HELM_APPEND=" --set image.reposotory=${DOCKER_REPO} ${HELM_APPEND}"; fi
+            if [ ! -z "$DOCKER_REPO" ]; then HELM_APPEND=" --set image.repository=${DOCKER_REPO} ${HELM_APPEND}"; fi
             echo "all helm overrides being applied:"
             echo $HELM_APPEND
             helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
