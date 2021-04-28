@@ -83,7 +83,7 @@ jobs:
               DOCKER_TAG=$DOCKER_TAG-$CIRCLE_SHA1
             fi
             scripts/build_containers.bash --src $HOME/lotus --network << parameters.network >> --tag << parameters.tag >> --docker-tag $DOCKER_TAG --repo << parameters.repo >>
-            mkdir -p /tmp/circle/<< parameters.network >>
+            mkdir -p /tmp/circle
             echo -n $DOCKER_TAG > /tmp/circle/docker_tag
             echo -n << parameters.repo >> > /tmp/circle/docker_repo
       - persist_to_workspace:
@@ -154,14 +154,14 @@ jobs:
               DOCKER_REPO=$(cat /tmp/circle/docker_repo)
               DOCKER_TAG=$(cat /tmp/circle/docker_tag)
             fi
-            if [ ! -z DOCKER_TAG ]; then HELM_APPEND=" -var image.tag=${DOCKER_TAG} ${HELM_APPEND}"; fi
-            if [ ! -z DOCKER_REPO ]; then HELM_APPEND=" -var image.reposotory=${DOCKER_TAG} ${HELM_APPEND}"; fi
+            if [ $DOCKER_TAG == "" ]; then HELM_APPEND=" -var image.tag=${DOCKER_TAG} ${HELM_APPEND}"; fi
+            if [ $DOCKER_REPO == "" ]; then HELM_APPEND=" -var image.reposotory=${DOCKER_TAG} ${HELM_APPEND}"; fi
             echo "all helm overrides being applied:"
             echo $HELM_APPEND
             helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
 
 workflows:
-  nightly:
+  butterfly-nightly:
     triggers:
       - schedule:
           cron: "0 0 * * *"
@@ -174,14 +174,6 @@ workflows:
           tag: master
           repo: coryschwartz
           network: butterflynet
-          matrix:
-            parameters:
-              network:
-                - mainnet
-                - nerpanet
-                - calibnet
-                - butterflynet
-
       - helm-deploy:
           context: sentinel-staging-deploy
           requires:
@@ -204,6 +196,7 @@ workflows:
           repo: coryschwartz
           network: butterflynet
           use_gitsha: true
+      # no overrides
       - helm-deploy:
           context: sentinel-staging-deploy
           requires:
@@ -214,6 +207,7 @@ workflows:
           chart: filecoin/lotus-fullnode
           chart_version: 0.3.1
           release: fullnode-0
+      # override from workspace (use_gitsha)
       - helm-deploy:
           context: sentinel-staging-deploy
           requires:
@@ -225,6 +219,8 @@ workflows:
           chart_version: 0.3.1
           override_from_workspace: true
           release: fullnode-1
+      # helm deploy something with specific docker overrides
+      # This allows remote 
       - helm-deploy:
           context: sentinel-staging-deploy
           requires:
