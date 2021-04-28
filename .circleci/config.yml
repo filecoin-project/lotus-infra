@@ -128,8 +128,8 @@ jobs:
         default: ""
         description: override image.tag in helm chart
       override_from_workspace:
-        type: boolean
-        default: false
+        type: string
+        default: ""
         description: override image.repository and image.tag using the workspace.
     executor: aws-eks/python3
     steps:
@@ -149,10 +149,10 @@ jobs:
             DOCKER_REPO: << parameters.override_repository >>
             HELM_APPEND: << parameters.helm_append >>
           command: |
-            if [ $OVERRIDE_FROM_WORKSPACE -eq 1 ]
+            if [ ! -z $OVERRIDE_FROM_WORKSPACE ]
             then
-              DOCKER_REPO=$(cat /tmp/circle/<< parameters.network >>/docker_repo)
-              DOCKER_TAG=$(cat /tmp/circle/<< parameters.network >>/docker_tag)
+              DOCKER_REPO=$(cat /tmp/circle/$OVERRIDE_FROM_WORKSPACE/docker_repo)
+              DOCKER_TAG=$(cat /tmp/circle/$OVERRIDE_FROM_WORKSPACE/docker_tag)
             fi
             if [ ! -z DOCKER_TAG ]; then HELM_APPEND=" -var image.tag=${DOCKER_TAG} ${HELM_APPEND}"; fi
             if [ ! -z DOCKER_REPO ]; then HELM_APPEND=" -var image.reposotory=${DOCKER_TAG} ${HELM_APPEND}"; fi
@@ -231,7 +231,7 @@ workflows:
           namespace: ntwk-butterfly-fullnode
           chart: filecoin/lotus-fullnode
           chart_version: 0.3.1
-          override_from_workspace: true
+          override_from_workspace: "butterflynet"
           release: fullnode-1
       - helm-deploy:
           context: sentinel-staging-deploy
