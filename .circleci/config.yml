@@ -42,7 +42,7 @@ commands:
   docker-login:
     steps:
       - run:
-          command: echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --passwd-stdin
+          command: echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
 
 
 jobs:
@@ -128,6 +128,7 @@ workflows:
 
       - helm-deploy:
           context: sentinel-staging-deploy
+          requires: lotus-build-containers
           cluster: mainnet-us-east-2-dev-eks
           region: us-east-2
           namespace: ntwk-butterfly-fullnode
