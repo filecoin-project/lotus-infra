@@ -76,8 +76,10 @@ jobs:
             USE_GITSHA: << parameters.use_gitsha >>
             DOCKER_TAG: << parameters.network >>-<< parameters.tag >>
           command: |
+            echo "gitsha: $USE_GITSHA"
             if [ $USE_GITSHA == "true" ]
             then
+              echo "gitsha was true"
               DOCKER_TAG=$DOCKER_TAG-$CIRCLE_SHA1
             fi
             scripts/build_containers.bash --src $HOME/lotus --network << parameters.network >> --tag << parameters.tag >> --docker-tag $DOCKER_TAG --repo << parameters.repo >>
