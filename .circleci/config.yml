@@ -142,10 +142,10 @@ jobs:
       - run:
           name: deploy << parameters.chart >>/<< parameters.release >> to << parameters.cluster >>/<< parameters.namespace >>
           environment:
-            OVERRIDE_FROM_WORKSPACE=<< parameters.override_from_workspace >>
-            DOCKER_TAG=<< parameters.override_tag >>
-            DOCKER_REPO=<< parameters.override_repository >>
-            HELM_APPEND=<< parameters.helm_append >>
+            OVERRIDE_FROM_WORKSPACE: << parameters.override_from_workspace >>
+            DOCKER_TAG: << parameters.override_tag >>
+            DOCKER_REPO: << parameters.override_repository >>
+            HELM_APPEND: << parameters.helm_append >>
           command: |
             if [ $OVERRIDE_FROM_WORKSPACE == "true" ]
             then
