@@ -77,20 +77,20 @@ jobs:
             DOCKER_TAG: << parameters.network >>-<< parameters.tag >>
           command: |
             echo "gitsha: $USE_GITSHA"
-            if [ $USE_GITSHA == "true" ]
+            if [ $USE_GITSHA -eq 1 ]
             then
               echo "gitsha was true"
               DOCKER_TAG=$DOCKER_TAG-$CIRCLE_SHA1
             fi
             scripts/build_containers.bash --src $HOME/lotus --network << parameters.network >> --tag << parameters.tag >> --docker-tag $DOCKER_TAG --repo << parameters.repo >>
-            mkdir /tmp/circle
-            echo -n $DOCKER_TAG > /tmp/circle/docker_tag 
-            echo -n << parameters.repo >> > /tmp/circle/docker_repo
+            mkdir -p /tmp/circle/<< parameters.network >>
+            echo -n $DOCKER_TAG > /tmp/circle/<< parameters.network >>/docker_tag
+            echo -n << parameters.repo >> > /tmp/circle/<< parameters.network >>/docker_repo
       - persist_to_workspace:
           root: /tmp/circle
           paths:
-            - docker_tag
-            - docker_repo
+            - << parameters.network >>/docker_tag
+            - << parameters.network >>/docker_repo
 
   # This will deploy a helm chart with values stored in this repo.
   # Each release will have two helm values files -- "base.yaml" and <release_name>.yaml
@@ -149,10 +149,10 @@ jobs:
             DOCKER_REPO: << parameters.override_repository >>
             HELM_APPEND: << parameters.helm_append >>
           command: |
-            if [ $OVERRIDE_FROM_WORKSPACE == "true" ]
+            if [ $OVERRIDE_FROM_WORKSPACE -eq 1 ]
             then
-              DOCKER_REPO=$(cat /tmp/circle/docker_repo)
-              DOCKER_TAG=$(cat /tmp/circle/docker_tag)
+              DOCKER_REPO=$(cat /tmp/circle/<< parameters.network >>/docker_repo)
+              DOCKER_TAG=$(cat /tmp/circle/<< parameters.network >>/docker_tag)
             fi
             if [ ! -z DOCKER_TAG ]; then HELM_APPEND=" -var image.tag=${DOCKER_TAG} ${HELM_APPEND}"; fi
             if [ ! -z DOCKER_REPO ]; then HELM_APPEND=" -var image.reposotory=${DOCKER_TAG} ${HELM_APPEND}"; fi
