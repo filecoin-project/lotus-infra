@@ -64,11 +64,12 @@ jobs:
       - install-helm
       - install-helm-repos
       - run:
-          name: deploy << parameters.chart >> to << parameters.cluster >>/<< parameters.namespace >>
+          name: deploy << parameters.chart >>/<< parameters.release >> to << parameters.cluster >>/<< parameters.namespace >>
           command: |
             VALUES=$(for i in <<parameters.values>>; do echo -n " --values project/kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/$i"; done)
-            echo helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> \
-            << parameters.chart >> --version << parameters.chart_version >> $VALUES 
+            COMMAND=$(echo helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> $VALUES )
+            echo running $COMMAND
+            $COMMAND
 
 workflows:
   butterfly-nightly:
