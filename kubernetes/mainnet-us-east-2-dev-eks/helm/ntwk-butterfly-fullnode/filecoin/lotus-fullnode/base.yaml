@@ -1,5 +1,5 @@
 image:
-  tag: butterfly-nightly
+  tag: butterflynet-master
 
 prometheusOperatorServiceMonitor: true
 

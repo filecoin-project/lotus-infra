@@ -15,23 +15,61 @@ commands:
           command: |
             helm repo add filecoin https://filecoin-project.github.io/helm-charts
   setup-eks:
-      parameters:
-        cluster:
-          type: string
-          default: ${cluster}
-          description: eks cluster
-        region:
-          type: string
-          default: ${region}
-          description: aws region
-      steps:
-        - aws-eks/install-aws-iam-authenticator
-        - aws-eks/update-kubeconfig-with-authenticator:
-            install-kubectl: true
-            cluster-name: <<parameters.cluster>>
-            aws-region: <<parameters.region>>
+    parameters:
+      cluster:
+        type: string
+        description: eks cluster
+      region:
+        type: string
+        description: aws region
+    steps:
+      - aws-eks/install-aws-iam-authenticator
+      - aws-eks/update-kubeconfig-with-authenticator:
+          install-kubectl: true
+          cluster-name: <<parameters.cluster>>
+          aws-region: <<parameters.region>>
+  git-pull:
+    parameters:
+      repo:
+        type: string
+        description: repo url
+      where:
+        type: string
+        description: where to save
+    steps:
+      run:
+        command: git pull << parameters.repo >> << parameters.where >>
+  docker-login:
+    steps:
+      run:
+        command: echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --passwd-stdin
+
 
 jobs:
+  # build and push lotus.
+  lotus-build-containers:
+    parameters:
+      tag:
+        type: string
+        description: lotus tag to checkout
+      repo:
+        type: string
+        description: docker repository
+      network:
+        type: string
+        description: filecoin network
+    steps:
+      - checkout
+      - docker-login
+      - git-pull:
+          repo: https://github.com/filecoin-project/lotus
+          where: $HOME/lotus
+      - run:
+          command: scripts/build_containers.bash --src $HOME/lotus --network << parameters.network >> --tag << parameters.tag >> --docker-tag << parameters.network >>-<< parameters.tag >> --repo << parameters.repo >>
+
+  # This will deploy a helm chart with values stored in this repo.
+  # Each release will have two helm values files -- "base.yaml" and <release_name>.yaml
+  # and they must be installed in the right directory in this repo.
   helm-deploy:
     parameters:
       cluster:
@@ -62,11 +100,10 @@ jobs:
       - install-helm-repos
       - run:
           name: deploy << parameters.chart >>/<< parameters.release >> to << parameters.cluster >>/<< parameters.namespace >>
-          command: |
-            helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml
+          command: helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml
 
 workflows:
-  butterfly-nightly:
+  nightly:
     # triggers:
     #   - schedule:
     #       cron: "0 0 * * *"
@@ -75,6 +112,17 @@ workflows:
     #           only:
     #             - /^(main|master)$/
     jobs:
+      - lotus-build-containers:
+        tag: master
+        repo: coryschwartz
+        matrix:
+          parameters:
+            network:
+              - mainnet
+              - nerpanet
+              - calibnet
+              - butterflynet
+
       - helm-deploy:
           context: sentinel-staging-deploy
           cluster: mainnet-us-east-2-dev-eks
