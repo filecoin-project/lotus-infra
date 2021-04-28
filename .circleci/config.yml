@@ -58,6 +58,7 @@ jobs:
       network:
         type: string
         description: filecoin network
+    executor: docker
     steps:
       - checkout
       - docker-login
