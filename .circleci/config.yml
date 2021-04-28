@@ -204,7 +204,6 @@ workflows:
           repo: coryschwartz
           network: butterflynet
           use_gitsha: true
-          network: butterflynet
       - helm-deploy:
           context: sentinel-staging-deploy
           requires:
