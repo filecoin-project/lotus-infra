@@ -4,6 +4,34 @@ orbs:
   aws-eks: circleci/aws-eks@1.0.3
   helm: circleci/helm@1.2.0
 
+
+# Some of the workflows in this CI config are intended to be triggered over the CircleCI API
+# The Circle v2 API allows API users to call a pipeline, and conditionally execute workflows.
+# When editing this file, be careful to make sure workflows are run at the right time.
+
+parameters:
+  api_workflow_requested:
+    type: string
+    default: "none"
+    description: run different workflows depending on whether triggered through api or git push
+  namespace:
+    type: string
+  release:
+    type: string
+  chart:
+    type: string
+  chart_version:
+    type: string
+  helm_append:
+    type: string
+    default: ""
+  override_repository:
+    type: string
+    default: ""
+  override_tag:
+    type: string
+    default: ""
+
 commands:
   install-helm:
     steps:
@@ -162,6 +190,8 @@ jobs:
 
 workflows:
   butterfly-nightly:
+    when:
+      equal: [ "none", << pipeline.parameters.api_workflow_requeted >>
     triggers:
       - schedule:
           cron: "0 0 * * *"
@@ -192,51 +222,18 @@ workflows:
                 - fullnode-1
                 - fullnode-2
 
-
-  # This commented workflow demonstrates the different ways to call helm-deploy
-  #
-  # example:
-  #   jobs:
-  #     # build containers with a tag that includes the gitsha
-  #     - lotus-build-containers:
-  #         tag: master
-  #         repo: coryschwartz
-  #         network: butterflynet
-  #         use_gitsha: true
-  #     # no overrides
-  #     - helm-deploy:
-  #         context: sentinel-staging-deploy
-  #         requires:
-  #           - lotus-build-containers
-  #         cluster: mainnet-us-east-2-dev-eks
-  #         region: us-east-2
-  #         namespace: ntwk-butterfly-fullnode
-  #         chart: filecoin/lotus-fullnode
-  #         chart_version: 0.3.1
-  #         release: fullnode-0
-  #     # override from workspace (use_gitsha from build step)
-  #     - helm-deploy:
-  #         context: sentinel-staging-deploy
-  #         requires:
-  #           - lotus-build-containers
-  #         cluster: mainnet-us-east-2-dev-eks
-  #         region: us-east-2
-  #         namespace: ntwk-butterfly-fullnode
-  #         chart: filecoin/lotus-fullnode
-  #         chart_version: 0.3.1
-  #         override_from_workspace: true
-  #         release: fullnode-1
-  #     # helm deploy something with specific docker overrides
-  #     # This allows remote API to specify their own tag and repo
-  #     - helm-deploy:
-  #         context: sentinel-staging-deploy
-  #         requires:
-  #           - lotus-build-containers
-  #         cluster: mainnet-us-east-2-dev-eks
-  #         region: us-east-2
-  #         namespace: ntwk-butterfly-fullnode
-  #         chart: filecoin/lotus-fullnode
-  #         chart_version: 0.3.1
-  #         override_repository: coryschwartz
-  #         override_tag: superspecial
-  #         release: fullnode-2
+  api-helm-deploy:
+    when:
+      equal: [ "helm-deploy", << pipeline.parameters.api_workflow_requested >> ]
+    jobs:
+      - helm-deploy:
+          context: sentinel-staging-context
+          cluster: mainnet-us-east-2-dev-eks
+          region: us-east-2
+          namespace: << pipeline.parameters.namespace >>
+          chart: << pipeline.parameters.chart >>
+          chart_version: << pipeline.parameters.chart_version >>
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          release: << pipeline.parameters.release >>
+          helm_append: << pipeline.parameters.helm_append >>
