@@ -316,6 +316,8 @@ workflows:
                 - fullnode-0
                 - fullnode-1
                 - fullnode-2
+          requires:
+           - lotus-build-containers
       # calibrationnet ansible
       - ansible-deploy:
           context: sentinel-staging-deploy
