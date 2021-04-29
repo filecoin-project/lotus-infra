@@ -365,7 +365,7 @@ workflows:
                 - bootstrap-1
                 - bootstrap-2
           requires:
-           - start-bootstrap-mainnet-us-east-1
+           - start-bootstrap-mainnet-us-east-1-eks
       - helm-deploy:
           name: helm-deploy-bootstrap-mainnet-eu-central-1-eks
           context: sentinel-staging-deploy
