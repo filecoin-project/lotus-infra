@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   aws-eks: circleci/aws-eks@1.0.3
   helm: circleci/helm@1.2.0
+  ansible-playbook: orbss/ansible-playbook@0.0.5
 
 
 # Some of the workflows in this CI config are intended to be triggered over the CircleCI API
@@ -174,23 +175,64 @@ jobs:
       - attach_workspace:
           at: /tmp/circle
       - run:
-          name: deploy << parameters.chart >>/<< parameters.release >> to << parameters.cluster >>/<< parameters.namespace >>
-          environment:
-            OVERRIDE_FROM_WORKSPACE: << parameters.override_from_workspace >>
-            DOCKER_TAG: << parameters.override_tag >>
-            DOCKER_REPO: << parameters.override_repository >>
-            HELM_APPEND: << parameters.helm_append >>
-          command: |
-            if [ $OVERRIDE_FROM_WORKSPACE -eq 1 ]
-            then
-              DOCKER_REPO=$(cat /tmp/circle/docker_repo)
-              DOCKER_TAG=$(cat /tmp/circle/docker_tag)
-            fi
-            if [ ! -z "$DOCKER_TAG" ]; then HELM_APPEND=" --set image.tag=${DOCKER_TAG} ${HELM_APPEND}"; fi
-            if [ ! -z "$DOCKER_REPO" ]; then HELM_APPEND=" --set image.repository=${DOCKER_REPO} ${HELM_APPEND}"; fi
-            echo "all helm overrides being applied:"
-            echo $HELM_APPEND
-            helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
+        name: fake helm deploy
+        command: echo fake helm deploy
+      # - run:
+      #     name: deploy << parameters.chart >>/<< parameters.release >> to << parameters.cluster >>/<< parameters.namespace >>
+      #     environment:
+      #       OVERRIDE_FROM_WORKSPACE: << parameters.override_from_workspace >>
+      #       DOCKER_TAG: << parameters.override_tag >>
+      #       DOCKER_REPO: << parameters.override_repository >>
+      #       HELM_APPEND: << parameters.helm_append >>
+      #     command: |
+      #       if [ $OVERRIDE_FROM_WORKSPACE -eq 1 ]
+      #       then
+      #         DOCKER_REPO=$(cat /tmp/circle/docker_repo)
+      #         DOCKER_TAG=$(cat /tmp/circle/docker_tag)
+      #       fi
+      #       if [ ! -z "$DOCKER_TAG" ]; then HELM_APPEND=" --set image.tag=${DOCKER_TAG} ${HELM_APPEND}"; fi
+      #       if [ ! -z "$DOCKER_REPO" ]; then HELM_APPEND=" --set image.repository=${DOCKER_REPO} ${HELM_APPEND}"; fi
+      #       echo "all helm overrides being applied:"
+      #       echo $HELM_APPEND
+      #       helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
+
+  ansible-deploy:
+    parameters:
+      network:
+        type: string
+      preseal:
+        type: boolean
+        default: true
+      create_cert:
+        type: boolean
+        default: true
+      build_flags:
+        type: string
+        default: "-f"
+      reset:
+        type: boolean
+        default: true
+      delay:
+        type: string
+        default: "600"
+    executor: ansible-playbook/default
+    steps:
+      - checkout
+      - aws-eks/install-aws-iam-authenticator
+      - git-clone:
+          repo: https://github.com/filecoin-project/lotus
+          where: $HOME/lotus
+      - run:
+        name: fake ansible deploy
+        command: echo fake ansible deploy
+      # - run:
+      #     name: ansible deploy << parameters.network >>
+      #     command: |
+      #       cd ansible
+      #       test << parameters.preseal >> == 0 && PRESEAL="true" || PRESEAL="false"
+      #       test << parameters.create_cert >> == 0 && CREATECERT="true" || CREATECERT="false"
+      #       test << parameters.reset >> == 0 && RESET="true" || RESET="false"
+      #       ./setup_fildev_network.bash -n << parameters.network >> -s $HOME/lotus -p $PRESEAL -c $CREATECERT -b "<< parameters.build_flags >>" -r $RESET --delay << parameters.delay >>
 
 workflows:
   butterfly-nightly:
@@ -241,3 +283,50 @@ workflows:
           override_tag: << pipeline.parameters.override_tag >>
           release: << pipeline.parameters.release >>
           helm_append: << pipeline.parameters.helm_append >>
+
+  api-lotus-rollout:
+    when:
+      equal: [ "lotus-rollout", << pipeline.parameters.api_workflow_requested >> ]
+    jobs:
+      - lotus-build-containers:
+          tag: << pipeline.parameters.override_tag >>
+          repo: << pipeline.parameters.override_repository >>
+          use_gitsha: false
+          matrix:
+            parameters:
+              network:
+                - butterflynet
+                - calibnet
+                - nerpanet
+                - mainnet
+      # calibrationnet on kubernetes
+      - helm-deploy:
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-2-dev-eks
+          region: us-east-2
+          namespace: ntwk-calibrationnet-fullnode
+          chart: << pipeline.parameters.chart >>
+          chart_version: << pipeline.parameters.chart_version >>
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          matrix:
+            parameters:
+              release:
+                - fullnode-0
+                - fullnode-1
+                - fullnode-2
+      # calibrationnet ansible
+      - ansible-deploy:
+          context: sentinel-staging-deploy
+          network: calibration
+          preseal: false
+          create_cert: false
+          build_flags: "-f"
+          reset: false
+          delay: "true"
+      - verify:
+          type: approval
+          requires:
+           - ansible-deploy
+           - helm-deploy
