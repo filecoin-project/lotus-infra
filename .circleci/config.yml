@@ -351,14 +351,6 @@ workflows:
           type: approval
           requires:
            - build-containers-mainnet
-      - start-fullnode-mainnet-eu-central-1-eks:
-          type: approval
-          requires:
-           - build-containers-mainnet
-      - start-fullnode-mainnet-ap-southeast-1-eks:
-          type: approval
-          requires:
-           - build-containers-mainnet
       # deploy bootstrappers one DC at a time
       - helm-deploy:
           name: helm-deploy-bootstrap-mainnet-us-east-1-eks
