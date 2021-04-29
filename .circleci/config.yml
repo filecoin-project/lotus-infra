@@ -292,12 +292,14 @@ workflows:
       equal: [ "lotus-rollout", << pipeline.parameters.api_workflow_requested >> ]
     jobs:
       - lotus-build-containers:
+          name: build-containers-calibrationnet
           tag: << pipeline.parameters.override_tag >>
           repo: << pipeline.parameters.override_repository >>
           use_gitsha: false
           network: calibnet
       # calibrationnet on kubernetes
       - helm-deploy:
+          name: helm-deploy-calibrationnet
           context: sentinel-staging-deploy
           cluster: mainnet-us-east-2-dev-eks
           region: us-east-2
@@ -314,9 +316,10 @@ workflows:
                 - fullnode-1
                 - fullnode-2
           requires:
-           - lotus-build-containers
+           - build-containers-calibrationnet
       # calibrationnet ansible
       - ansible-deploy:
+          name: ansible-deploy-calibrationnet
           context: sentinel-staging-deploy
           network: calibration
           preseal: false
@@ -327,10 +330,11 @@ workflows:
       - verify-calibrationnet:
           type: approval
           requires:
-           - ansible-deploy
-           - helm-deploy
+           - ansible-deploy-calibrationnet
+           - helm-deploy-calibrationnet
       # mainnet
       - lotus-build-containers:
+          name: build-containers-mainnet
           tag: << pipeline.parameters.override_tag >>
           repo: << pipeline.parameters.override_repository >>
           use_gitsha: false
@@ -339,7 +343,7 @@ workflows:
           type: approval
           requires:
            - verify-calibrationnet
-           - lotus-build-containers
+           - build-containers-mainnet
       - start-bootstrap-mainnet-eu-central-1-eks:
           type: approval
           requires:
@@ -352,6 +356,7 @@ workflows:
            - lotus-build-containers
       # deploy bootstrappers one DC at a time
       - helm-deploy:
+          name: helm-deploy-bootstrap-mainnet-us-east-1-eks
           context: sentinel-staging-deploy
           cluster: mainnet-us-east-1-eks
           region: us-east-1
@@ -370,6 +375,7 @@ workflows:
           requires:
            - start-bootstrap-mainnet-us-east-1
       - helm-deploy:
+          name: helm-deploy-bootstrap-mainnet-eu-central-1-eks
           context: sentinel-staging-deploy
           cluster: mainnet-eu-central-1-eks
           region: eu-central-1
@@ -387,11 +393,8 @@ workflows:
                 - bootstrap-5
           requires:
            - start-bootstrap-mainnet-us-east-1-eks
-      - verify-bootstrap-mainnet-eu-central-1-eks:
-          type: approval
-          requires:
-           - helm-deploy
       - helm-deploy:
+          name: helm-deploy-bootstrap-ap-southeast-1-eks
           context: sentinel-staging-deploy
           cluster: mainnet-ap-southeast-1-eks
           region: ap-southeast-1
@@ -409,7 +412,3 @@ workflows:
                 - bootstrap-8
           requires:
            - start-bootstrap-mainnet-eu-central-1-eks
-      - verify-bootstrap-ap-southeast-1-eks:
-          type: approval
-          requires:
-           - helm-deploy
