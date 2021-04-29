@@ -435,7 +435,7 @@ workflows:
       - start-fullnode-1:
           type: approval
           requires:
-           - build-containers-mainnet
+           - helm-deploy-fullnode-0
       - helm-deploy:
           name: helm-deploy-fullnode-1
           context: sentinel-staging-deploy
@@ -449,11 +449,11 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: fullnode-1
           requires:
-           - start-fullnode-mainnet-us-east-1-eks
+           - start-fullnode-1
       - start-fullnode-2:
           type: approval
           requires:
-           - build-containers-mainnet
+           - helm-deploy-fullnode-1
       - helm-deploy:
           name: helm-deploy-fullnode-2
           context: sentinel-staging-deploy
@@ -467,11 +467,11 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: fullnode-2
           requires:
-           - start-fullnode-mainnet-us-east-1-eks
+           - start-fullnode-2
       - start-fullnode-3:
           type: approval
           requires:
-           - build-containers-mainnet
+           - helm-deploy-fullnode-2
       - helm-deploy:
           name: helm-deploy-fullnode-3
           context: sentinel-staging-deploy
@@ -485,11 +485,11 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: fullnode-3
           requires:
-           - start-fullnode-mainnet-us-east-1-eks
+           - start-fullnode-3
       - start-fullnode-4:
           type: approval
           requires:
-           - build-containers-mainnet
+           - helm-deploy-fullnode-3
       - helm-deploy:
           name: helm-deploy-fullnode-4
           context: sentinel-staging-deploy
@@ -503,11 +503,11 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: fullnode-4
           requires:
-           - start-fullnode-mainnet-us-east-1-eks
+           - start-fullnode-4
       - start-fullnode-5:
           type: approval
           requires:
-           - build-containers-mainnet
+           - helm-deploy-fullnode-4
       - helm-deploy:
           name: helm-deploy-fullnode-5
           context: sentinel-staging-deploy
@@ -521,11 +521,11 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: fullnode-5
           requires:
-           - start-fullnode-mainnet-us-east-1-eks
+           - start-fullnode-5
       - start-fullnode-6:
           type: approval
           requires:
-           - build-containers-mainnet
+           - helm-deploy-fullnode-5
       - helm-deploy:
           name: helm-deploy-fullnode-6
           context: sentinel-staging-deploy
@@ -539,11 +539,11 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: fullnode-6
           requires:
-           - start-fullnode-mainnet-us-east-1-eks
+           - start-fullnode-6
       - start-fullnode-7:
           type: approval
           requires:
-           - build-containers-mainnet
+           - helm-deploy-fullnode-6
       - helm-deploy:
           name: helm-deploy-fullnode-7
           context: sentinel-staging-deploy
@@ -557,4 +557,4 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: fullnode-7
           requires:
-           - start-fullnode-mainnet-us-east-1-eks
+           - start-fullnode-7
