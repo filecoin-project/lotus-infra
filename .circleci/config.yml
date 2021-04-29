@@ -16,12 +16,16 @@ parameters:
     description: run different workflows depending on whether triggered through api or git push
   namespace:
     type: string
+    default: "error_this_namespace_definitely_does_not_exist"
   release:
     type: string
+    default: "lotus-infra_circleci_default_release_changeme"
   chart:
     type: string
+    default: "error_this_chart_is_required"
   chart_version:
     type: string
+    default: "error_this_chart_version_is_required"
   helm_append:
     type: string
     default: ""
@@ -191,7 +195,7 @@ jobs:
 workflows:
   butterfly-nightly:
     when:
-      equal: [ "none", << pipeline.parameters.api_workflow_requeted >>
+      equal: [ "none", << pipeline.parameters.api_workflow_requested >> ]
     triggers:
       - schedule:
           cron: "0 0 * * *"
