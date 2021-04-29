@@ -384,7 +384,7 @@ workflows:
                 - bootstrap-4
                 - bootstrap-5
           requires:
-           - start-bootstrap-mainnet-us-east-1-eks
+           - start-bootstrap-mainnet-eu-central-1-eks
       - helm-deploy:
           name: helm-deploy-bootstrap-ap-southeast-1-eks
           context: sentinel-staging-deploy
@@ -403,4 +403,4 @@ workflows:
                 - bootstrap-7
                 - bootstrap-8
           requires:
-           - start-bootstrap-mainnet-eu-central-1-eks
+           - start-bootstrap-mainnet-ap-southeast-1-eks
