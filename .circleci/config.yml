@@ -175,8 +175,8 @@ jobs:
       - attach_workspace:
           at: /tmp/circle
       - run:
-        name: fake helm deploy
-        command: echo fake helm deploy
+          name: fake helm deploy
+          command: echo fake helm deploy
       # - run:
       #     name: deploy << parameters.chart >>/<< parameters.release >> to << parameters.cluster >>/<< parameters.namespace >>
       #     environment:
@@ -223,8 +223,8 @@ jobs:
           repo: https://github.com/filecoin-project/lotus
           where: $HOME/lotus
       - run:
-        name: fake ansible deploy
-        command: echo fake ansible deploy
+          name: fake ansible deploy
+          command: echo fake ansible deploy
       # - run:
       #     name: ansible deploy << parameters.network >>
       #     command: |
