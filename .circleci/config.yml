@@ -231,7 +231,7 @@ workflows:
       equal: [ "helm-deploy", << pipeline.parameters.api_workflow_requested >> ]
     jobs:
       - helm-deploy:
-          context: sentinel-staging-context
+          context: sentinel-staging-deploy
           cluster: mainnet-us-east-2-dev-eks
           region: us-east-2
           namespace: << pipeline.parameters.namespace >>
