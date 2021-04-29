@@ -105,7 +105,7 @@ jobs:
           where: $HOME/lotus
       - run:
           name: fake build containers
-          command: sleep 30; echo fake build containers
+          command: sleep 10; echo fake build containers
       # - run:
       #     name: push docker << parameters.network >> << parameters.tag >> to << parameters.repo >>
       #     environment:
@@ -295,21 +295,15 @@ workflows:
           tag: << pipeline.parameters.override_tag >>
           repo: << pipeline.parameters.override_repository >>
           use_gitsha: false
-          matrix:
-            parameters:
-              network:
-                - butterflynet
-                - calibnet
-                - nerpanet
-                - mainnet
+          network: calibnet
       # calibrationnet on kubernetes
       - helm-deploy:
           context: sentinel-staging-deploy
           cluster: mainnet-us-east-2-dev-eks
           region: us-east-2
           namespace: ntwk-calibrationnet-fullnode
-          chart: << pipeline.parameters.chart >>
-          chart_version: << pipeline.parameters.chart_version >>
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
           override_repository: << pipeline.parameters.override_repository >>
           override_tag: << pipeline.parameters.override_tag >>
           helm_append: << pipeline.parameters.helm_append >>
@@ -330,8 +324,92 @@ workflows:
           build_flags: "-f"
           reset: false
           delay: "true"
-      - verify:
+      - verify-calibrationnet:
           type: approval
           requires:
            - ansible-deploy
+           - helm-deploy
+      # mainnet
+      - lotus-build-containers:
+          tag: << pipeline.parameters.override_tag >>
+          repo: << pipeline.parameters.override_repository >>
+          use_gitsha: false
+          network: mainnet
+      - start-bootstrap-mainnet-us-east-1-eks:
+          type: approval
+          requires:
+           - verify-calibrationnet
+           - lotus-build-containers
+      - start-bootstrap-mainnet-eu-central-1-eks:
+          type: approval
+          requires:
+           - verify-calibrationnet
+           - lotus-build-containers
+      - start-bootstrap-mainnet-ap-southeast-1-eks:
+          type: approval
+          requires:
+           - verify-calibrationnet
+           - lotus-build-containers
+      # deploy bootstrappers one DC at a time
+      - helm-deploy:
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          matrix:
+            parameters:
+              release:
+                - bootstrap-0
+                - bootstrap-1
+                - bootstrap-2
+          requires:
+           - start-bootstrap-mainnet-us-east-1
+      - helm-deploy:
+          context: sentinel-staging-deploy
+          cluster: mainnet-eu-central-1-eks
+          region: eu-central-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          matrix:
+            parameters:
+              release:
+                - bootstrap-3
+                - bootstrap-4
+                - bootstrap-5
+          requires:
+           - start-bootstrap-mainnet-us-east-1-eks
+      - verify-bootstrap-mainnet-eu-central-1-eks:
+          type: approval
+          requires:
+           - helm-deploy
+      - helm-deploy:
+          context: sentinel-staging-deploy
+          cluster: mainnet-ap-southeast-1-eks
+          region: ap-southeast-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          matrix:
+            parameters:
+              release:
+                - bootstrap-6
+                - bootstrap-7
+                - bootstrap-8
+          requires:
+           - start-bootstrap-mainnet-eu-central-1-eks
+      - verify-bootstrap-ap-southeast-1-eks:
+          type: approval
+          requires:
            - helm-deploy
