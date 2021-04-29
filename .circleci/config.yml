@@ -104,26 +104,29 @@ jobs:
           repo: https://github.com/filecoin-project/lotus
           where: $HOME/lotus
       - run:
-          name: push docker << parameters.network >> << parameters.tag >> to << parameters.repo >>
-          environment:
-            USE_GITSHA: << parameters.use_gitsha >>
-            DOCKER_TAG: << parameters.network >>-<< parameters.tag >>
-          command: |
-            echo "gitsha: $USE_GITSHA"
-            if [ $USE_GITSHA -eq 1 ]
-            then
-              echo "gitsha was true"
-              DOCKER_TAG=$DOCKER_TAG-$CIRCLE_SHA1
-            fi
-            scripts/build_containers.bash --src $HOME/lotus --network << parameters.network >> --tag << parameters.tag >> --docker-tag $DOCKER_TAG --repo << parameters.repo >>
-            mkdir -p /tmp/circle
-            echo -n $DOCKER_TAG > /tmp/circle/docker_tag
-            echo -n << parameters.repo >> > /tmp/circle/docker_repo
-      - persist_to_workspace:
-          root: /tmp/circle
-          paths:
-            - docker_tag
-            - docker_repo
+          name: fake build containers
+          command: sleep 30; echo fake build containers
+      # - run:
+      #     name: push docker << parameters.network >> << parameters.tag >> to << parameters.repo >>
+      #     environment:
+      #       USE_GITSHA: << parameters.use_gitsha >>
+      #       DOCKER_TAG: << parameters.network >>-<< parameters.tag >>
+      #     command: |
+      #       echo "gitsha: $USE_GITSHA"
+      #       if [ $USE_GITSHA -eq 1 ]
+      #       then
+      #         echo "gitsha was true"
+      #         DOCKER_TAG=$DOCKER_TAG-$CIRCLE_SHA1
+      #       fi
+      #       scripts/build_containers.bash --src $HOME/lotus --network << parameters.network >> --tag << parameters.tag >> --docker-tag $DOCKER_TAG --repo << parameters.repo >>
+      #       mkdir -p /tmp/circle
+      #       echo -n $DOCKER_TAG > /tmp/circle/docker_tag
+      #       echo -n << parameters.repo >> > /tmp/circle/docker_repo
+      # - persist_to_workspace:
+      #     root: /tmp/circle
+      #     paths:
+      #       - docker_tag
+      #       - docker_repo
 
   # This will deploy a helm chart with values stored in this repo.
   # Each release will have two helm values files -- "base.yaml" and <release_name>.yaml
