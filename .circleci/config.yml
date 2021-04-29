@@ -327,11 +327,6 @@ workflows:
           build_flags: "-f"
           reset: false
           delay: "true"
-      - verify-calibrationnet:
-          type: approval
-          requires:
-           - ansible-deploy-calibrationnet
-           - helm-deploy-calibrationnet
       # mainnet
       - lotus-build-containers:
           name: build-containers-mainnet
@@ -342,18 +337,15 @@ workflows:
       - start-bootstrap-mainnet-us-east-1-eks:
           type: approval
           requires:
-           - verify-calibrationnet
            - build-containers-mainnet
       - start-bootstrap-mainnet-eu-central-1-eks:
           type: approval
           requires:
-           - verify-calibrationnet
-           - lotus-build-containers
+           - build-containers-mainnet
       - start-bootstrap-mainnet-ap-southeast-1-eks:
           type: approval
           requires:
-           - verify-calibrationnet
-           - lotus-build-containers
+           - build-containers-mainnet
       # deploy bootstrappers one DC at a time
       - helm-deploy:
           name: helm-deploy-bootstrap-mainnet-us-east-1-eks
