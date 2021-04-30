@@ -383,7 +383,7 @@ workflows:
       # us-east-1 bootstrappers 0-2
       - helm-deploy:
           name: helm-deploy-bootstrap-0
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -397,7 +397,7 @@ workflows:
            - start-bootstrap-mainnet-us-east-1-eks
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-0
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -406,7 +406,7 @@ workflows:
            - helm-deploy-bootstrap-0
       - helm-deploy:
           name: helm-deploy-bootstrap-1
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -420,7 +420,7 @@ workflows:
            - lotus-sync-wait-bootstrap-0
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-1
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -429,7 +429,7 @@ workflows:
            - helm-deploy-bootstrap-1
       - helm-deploy:
           name: helm-deploy-bootstrap-2
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -443,7 +443,7 @@ workflows:
            - lotus-sync-wait-bootstrap-1
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-2
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -454,7 +454,7 @@ workflows:
       # eu-central-1 bootstrappers 3-5
       - helm-deploy:
           name: helm-deploy-bootstrap-3
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -468,7 +468,7 @@ workflows:
            - start-bootstrap-mainnet-eu-central-1-eks
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-3
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -477,7 +477,7 @@ workflows:
            - helm-deploy-bootstrap-3
       - helm-deploy:
           name: helm-deploy-bootstrap-4
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -491,7 +491,7 @@ workflows:
            - lotus-sync-wait-bootstrap-3
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-4
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -500,7 +500,7 @@ workflows:
            - helm-deploy-bootstrap-4
       - helm-deploy:
           name: helm-deploy-bootstrap-5
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -514,7 +514,7 @@ workflows:
            - lotus-sync-wait-bootstrap-4
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-5
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -525,7 +525,7 @@ workflows:
       # ap-southeast-1 bootstrappers 6-8
       - helm-deploy:
           name: helm-deploy-bootstrap-6
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -539,7 +539,7 @@ workflows:
            - start-bootstrap-mainnet-ap-southeast-1-eks
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-6
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -548,7 +548,7 @@ workflows:
            - helm-deploy-bootstrap-6
       - helm-deploy:
           name: helm-deploy-bootstrap-7
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -562,7 +562,7 @@ workflows:
            - lotus-sync-wait-bootstrap-6
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-7
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -571,7 +571,7 @@ workflows:
            - helm-deploy-bootstrap-7
       - helm-deploy:
           name: helm-deploy-bootstrap-8
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -585,7 +585,7 @@ workflows:
            - lotus-sync-wait-bootstrap-7
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-8
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-bootstrap
@@ -596,7 +596,7 @@ workflows:
       # fullnodes, one at a time.
       - helm-deploy:
           name: helm-deploy-fullnode-0
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-fullnode
@@ -614,7 +614,7 @@ workflows:
            - helm-deploy-fullnode-0
       - helm-deploy:
           name: helm-deploy-fullnode-1
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-fullnode
@@ -632,7 +632,7 @@ workflows:
            - helm-deploy-fullnode-1
       - helm-deploy:
           name: helm-deploy-fullnode-2
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-fullnode
@@ -650,7 +650,7 @@ workflows:
            - helm-deploy-fullnode-2
       - helm-deploy:
           name: helm-deploy-fullnode-3
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-fullnode
@@ -668,7 +668,7 @@ workflows:
            - helm-deploy-fullnode-3
       - helm-deploy:
           name: helm-deploy-fullnode-4
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-fullnode
@@ -686,7 +686,7 @@ workflows:
            - helm-deploy-fullnode-4
       - helm-deploy:
           name: helm-deploy-fullnode-5
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-fullnode
@@ -704,7 +704,7 @@ workflows:
            - helm-deploy-fullnode-5
       - helm-deploy:
           name: helm-deploy-fullnode-6
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-fullnode
@@ -722,7 +722,7 @@ workflows:
            - helm-deploy-fullnode-6
       - helm-deploy:
           name: helm-deploy-fullnode-7
-          context: sentinel-staging-deploy
+          context: filecoin-mainnet-aws
           cluster: mainnet-us-east-1-eks
           region: us-east-1
           namespace: ntwk-mainnet-fullnode
