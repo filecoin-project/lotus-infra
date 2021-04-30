@@ -417,7 +417,7 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: bootstrap-1
           requires:
-           - louts-sync-wait-bootstrap-0
+           - lotus-sync-wait-bootstrap-0
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-1
           context: sentinel-staging-deploy
