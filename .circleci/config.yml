@@ -128,6 +128,33 @@ jobs:
       #       - docker_tag
       #       - docker_repo
 
+  lotus-sync-wait:
+    parameters:
+      cluster:
+        type: string
+        description: eks cluster name
+      region:
+        type: string
+        description: aws region
+      namespace:
+        type: string
+        description: kubernetes namespace
+      pod:
+        type: string
+        description: kubernetes namespace
+    executor: aws-eks/python3
+    steps:
+      - setup-eks:
+          cluster: << parameters.cluster >>
+          region: << parameters.region >>
+      - run:
+          name: Wait until lotus is synced
+          command: |
+            kubectl -n << parameters.namespace >> wait --for=condition=ready pod << parameters.pod >>
+            sleep 10
+            kubectl -n << parameters.namespace >> exec << parameters.pod >> -- lotus sync wait
+
+
   # This will deploy a helm chart with values stored in this repo.
   # Each release will have two helm values files -- "base.yaml" and <release_name>.yaml
   # and they must be installed in the right directory in this repo.
@@ -351,9 +378,11 @@ workflows:
           type: approval
           requires:
            - build-containers-mainnet
+
       # deploy bootstrappers one DC at a time
+      # us-east-1 bootstrappers 0-2
       - helm-deploy:
-          name: helm-deploy-bootstrap-mainnet-us-east-1-eks
+          name: helm-deploy-bootstrap-0
           context: sentinel-staging-deploy
           cluster: mainnet-us-east-1-eks
           region: us-east-1
@@ -363,52 +392,207 @@ workflows:
           override_repository: << pipeline.parameters.override_repository >>
           override_tag: << pipeline.parameters.override_tag >>
           helm_append: << pipeline.parameters.helm_append >>
-          matrix:
-            parameters:
-              release:
-                - bootstrap-0
-                - bootstrap-1
-                - bootstrap-2
+          release: bootstrap-0
           requires:
            - start-bootstrap-mainnet-us-east-1-eks
-      - helm-deploy:
-          name: helm-deploy-bootstrap-mainnet-eu-central-1-eks
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-0
           context: sentinel-staging-deploy
-          cluster: mainnet-eu-central-1-eks
-          region: eu-central-1
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-0-lotus-0
+          requires:
+           - helm-deploy-bootstrap-0
+      - helm-deploy:
+          name: helm-deploy-bootstrap-1
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
           namespace: ntwk-mainnet-bootstrap
           chart: filecoin/lotus-fullnode
           chart_version: 0.3.1
           override_repository: << pipeline.parameters.override_repository >>
           override_tag: << pipeline.parameters.override_tag >>
           helm_append: << pipeline.parameters.helm_append >>
-          matrix:
-            parameters:
-              release:
-                - bootstrap-3
-                - bootstrap-4
-                - bootstrap-5
+          release: bootstrap-1
+          requires:
+           - louts-sync-wait-bootstrap-0
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-1
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-1-lotus-0
+          requires:
+           - helm-deploy-bootstrap-1
+      - helm-deploy:
+          name: helm-deploy-bootstrap-2
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-2
+          requires:
+           - louts-sync-wait-bootstrap-1
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-2
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-2-lotus-0
+          requires:
+           - helm-deploy-bootstrap-2
+
+      # eu-central-1 bootstrappers 3-5
+      - helm-deploy:
+          name: helm-deploy-bootstrap-3
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-3
           requires:
            - start-bootstrap-mainnet-eu-central-1-eks
-      - helm-deploy:
-          name: helm-deploy-bootstrap-ap-southeast-1-eks
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-3
           context: sentinel-staging-deploy
-          cluster: mainnet-ap-southeast-1-eks
-          region: ap-southeast-1
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-3-lotus-0
+          requires:
+           - helm-deploy-bootstrap-3
+      - helm-deploy:
+          name: helm-deploy-bootstrap-4
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
           namespace: ntwk-mainnet-bootstrap
           chart: filecoin/lotus-fullnode
           chart_version: 0.3.1
           override_repository: << pipeline.parameters.override_repository >>
           override_tag: << pipeline.parameters.override_tag >>
           helm_append: << pipeline.parameters.helm_append >>
-          matrix:
-            parameters:
-              release:
-                - bootstrap-6
-                - bootstrap-7
-                - bootstrap-8
+          release: bootstrap-4
+          requires:
+           - louts-sync-wait-bootstrap-3
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-4
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-4-lotus-0
+          requires:
+           - helm-deploy-bootstrap-4
+      - helm-deploy:
+          name: helm-deploy-bootstrap-5
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-5
+          requires:
+           - louts-sync-wait-bootstrap-4
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-5
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-5-lotus-0
+          requires:
+           - helm-deploy-bootstrap-5
+
+      # ap-southeast-1 bootstrappers 6-8
+      - helm-deploy:
+          name: helm-deploy-bootstrap-6
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-6
           requires:
            - start-bootstrap-mainnet-ap-southeast-1-eks
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-6
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-6-lotus-0
+          requires:
+           - helm-deploy-bootstrap-6
+      - helm-deploy:
+          name: helm-deploy-bootstrap-7
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-7
+          requires:
+           - louts-sync-wait-bootstrap-6
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-7
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-7-lotus-0
+          requires:
+           - helm-deploy-bootstrap-7
+      - helm-deploy:
+          name: helm-deploy-bootstrap-8
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-8
+          requires:
+           - louts-sync-wait-bootstrap-7
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-8
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-8-lotus-0
+          requires:
+           - helm-deploy-bootstrap-8
+
       # fullnodes, one at a time.
       - helm-deploy:
           name: helm-deploy-fullnode-0
