@@ -440,7 +440,7 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: bootstrap-2
           requires:
-           - louts-sync-wait-bootstrap-1
+           - lotus-sync-wait-bootstrap-1
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-2
           context: sentinel-staging-deploy
@@ -488,7 +488,7 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: bootstrap-4
           requires:
-           - louts-sync-wait-bootstrap-3
+           - lotus-sync-wait-bootstrap-3
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-4
           context: sentinel-staging-deploy
@@ -511,7 +511,7 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: bootstrap-5
           requires:
-           - louts-sync-wait-bootstrap-4
+           - lotus-sync-wait-bootstrap-4
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-5
           context: sentinel-staging-deploy
@@ -559,7 +559,7 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: bootstrap-7
           requires:
-           - louts-sync-wait-bootstrap-6
+           - lotus-sync-wait-bootstrap-6
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-7
           context: sentinel-staging-deploy
@@ -582,7 +582,7 @@ workflows:
           helm_append: << pipeline.parameters.helm_append >>
           release: bootstrap-8
           requires:
-           - louts-sync-wait-bootstrap-7
+           - lotus-sync-wait-bootstrap-7
       - lotus-sync-wait:
           name: lotus-sync-wait-bootstrap-8
           context: sentinel-staging-deploy
