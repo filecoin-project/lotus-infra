@@ -17,7 +17,7 @@ while [ "$1" != "" ]; do
                                 ;;
         --2k )                  smallsectors=true
                                 ;;
-        -f | --build-ffi )      ffi=false
+        -f | --build-ffi )      ffi=true
                                 ;;
         --network )             shift
                                 network="$1"
@@ -67,7 +67,9 @@ envflags+=(-e GOFLAGS="-tags=$tags")
 
 ffiargs=()
 if [ "$BUILD_FFI" = true ]; then
-  ffiargs=(-e RUSTFLAGS="-C target-cpu=native -g" -e FFI_BUILD_FROM_SOURCE=1)
+  # If you need to build from source, but also need portable blst, set
+  # FFI_USE_BLST_PORTABLE to 1
+  ffiargs=(-e FFI_USE_BLST_PORTABLE=0 -e FFI_BUILD_FROM_SOURCE=1)
 fi
 
 sha=$(git describe --always --match=NeVeRmAtCh --dirty 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)

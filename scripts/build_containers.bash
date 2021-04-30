@@ -80,7 +80,9 @@ goflags=(--build-arg=GOFLAGS="-tags='$NETWORK'")
 
 ffiargs=()
 if [ "$BUILD_FFI" = true ]; then
-  ffiargs=(--build-arg=RUSTFLAGS="-C target-cpu=native -g" --build-arg=FFI_BUILD_FROM_SOURCE="1")
+  # If you need to build from source, but also need portable blst, set
+  # FFI_USE_BLST_PORTABLE to 1
+  ffiargs=(--build-arg=FFI_USE_BLST_PORTABLE="0" --build-arg=FFI_BUILD_FROM_SOURCE="1")
 fi
 
 buildargs=()
