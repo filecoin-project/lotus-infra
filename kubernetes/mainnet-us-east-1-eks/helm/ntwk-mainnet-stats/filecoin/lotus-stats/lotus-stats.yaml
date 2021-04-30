@@ -1,5 +1,5 @@
 image:
-  tag: f4df58ed0
+  tag: mainnet-v1.8.0
 
 height: 258970
 lotusApiInfo: /dns/fullnode-1-lotus-daemon.ntwk-mainnet-fullnode.svc.cluster.local/tcp/1234
