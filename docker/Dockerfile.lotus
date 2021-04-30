@@ -34,6 +34,9 @@ MAINTAINER Lotus Development Team
 
 ARG RUSTFLAGS
 ARG FFI_BUILD_FROM_SOURCE
+ARG FFI_USE_BLST_PORTABLE
+ARG FFI_USE_GPU2
+ARG FFI_USE_BLST
 ARG GOFLAGS
 
 COPY ./lotus/ /opt/filecoin
@@ -52,6 +55,9 @@ ARG TAG=""
 
 ARG RUSTFLAGS
 ARG FFI_BUILD_FROM_SOURCE
+ARG FFI_USE_BLST_PORTABLE
+ARG FFI_USE_GPU2
+ARG FFI_USE_BLST
 ARG GOFLAGS
 
 RUN git clone $REPO --single-branch --branch $TAG /opt/filecoin
@@ -69,6 +75,9 @@ WORKDIR /opt/filecoin
 
 ARG RUSTFLAGS
 ARG FFI_BUILD_FROM_SOURCE
+ARG FFI_USE_BLST_PORTABLE
+ARG FFI_USE_GPU2
+ARG FFI_USE_BLST
 ARG GOFLAGS
 
 RUN make lotus lotus-miner lotus-worker lotus-shed lotus-chainwatch lotus-stats lotus-gateway
