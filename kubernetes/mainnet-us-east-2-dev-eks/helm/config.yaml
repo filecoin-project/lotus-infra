@@ -170,3 +170,9 @@ deployments:
     name: pgadmin
     values:
       - base
+ # tweety
+ - chart: filecoin/tweety
+   version: 0.0.1
+   namespace: canaries
+   values:
+     - base
