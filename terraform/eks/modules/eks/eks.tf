@@ -332,6 +332,7 @@ resource "aws_iam_policy" "elb_controller" {
 POLICY
 }
 
+/*
 resource "null_resource" "k8s_config" {
   triggers = {
     worker_asgs = join(",", module.eks.workers_asg_arns)
@@ -347,3 +348,4 @@ resource "null_resource" "k8s_config" {
     }
   }
 }
+*/
