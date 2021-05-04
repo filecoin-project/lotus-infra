@@ -136,6 +136,7 @@ deployments:
     name: dealbot-0
     values:
       - base
+      - dealbot-0
   - chart: runix/pgadmin4
     version: 1.6.1
     namespace: ntwk-mainnet-dealbot
@@ -162,6 +163,7 @@ deployments:
     name: dealbot-0
     values:
       - base
+      - dealbot-0
   - chart: runix/pgadmin4
     version: 1.6.1
     namespace: ntwk-nerpanet-dealbot

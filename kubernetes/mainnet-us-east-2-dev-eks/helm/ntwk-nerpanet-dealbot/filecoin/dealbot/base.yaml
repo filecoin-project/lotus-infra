@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 logLevel: info
 image:
-  repo: coryschwartz/dealbot
+  repo: filecoin/dealbot
   tag: "latest" # required
   pullPolicy: Always
 
@@ -28,68 +28,4 @@ jaeger:
     type: "probabilistic"
     param: 0.0001
 
-controller: 
-  enabled: true
-  postgres:
-    enabled: true
-  ingress:
-    enabled: true
-    annotations:
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-      nginx.ingress.kubernetes.io/auth-realm: Filecoin Infrastructure Team
-      nginx.ingress.kubernetes.io/auth-secret: basic-auth
-      nginx.ingress.kubernetes.io/auth-secret-type: auth-file
-      nginx.ingress.kubernetes.io/auth-type: basic
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/rewrite-target: /$2
-    hosts:
-      - host: lb.mainnet-us-east-2-dev.fildevops.net
-        paths:
-         - path: /nerpanet-dealbot-controller(/|$)(.*)
-  secrets:
-    keySecret: dealbot-controller-key
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 1000Mi
-    requests:
-      cpu: 500m
-      memory: 500Mi
 
-postgres:
-  enabled: true
-  instances: 1
-  version: 13
-  teamid: dealbotteam
-  user: dealbotuser
-  database: dealbotdb
-  volume: 100Gi
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 1000Mi
-    requests:
-      cpu: 500m
-      memory: 500Mi
-
-daemon:
-  enabled: true
-  replicas: 1
-  lotusAPI:
-    lotusAPITokenSecret: "fullnode-0-jwt-secrets"
-    lotusAPIMultiaddr: "/dns/dealbot-fullnode-0-lotus-daemon/tcp/1234/p2p/12D3KooWRYwgMKMFWYu7kc81s1puTJ91zidsJLsZfx6J6jGREuJp"
-    wallet: t3ubrfptbtiquvihchzyzt3xumcbkxj7clgggghomghwh4vmuc7bik7pazomk4qbp3twzj5xwljp4qurrjaluq
-  persistence:
-    enabled: true
-    claimName: chain-exports
-    mountPath: /efs
-    data: /efs/dealbot/nerpanet/data
-    nodedata: /efs/dealbot/nerpanet/nodedata
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 1000Mi
-    requests:
-      cpu: 500m
-      memory: 1000Mi
