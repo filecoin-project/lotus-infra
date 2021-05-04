@@ -1,0 +1,39 @@
+image:
+  tag: nerpanet-v1.6.0
+
+prometheusOperatorServiceMonitor: true
+
+resources:
+  requests:
+    memory: 96Gi
+    cpu: 8
+  limits:
+    memory: 112Gi
+    cpu: 12
+
+importSnapshot:
+  enabled: false
+  strategy: "url"
+
+daemonEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+  - name: GODEBUG
+    value: madvdontneed=1
+  - name: DISABLE_PRE_MIGRATIONS
+    value: "1"
+
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+
+additionalLabels:
+  network: nerpanet
+
+persistence:
+  datastore:
+    enabled: true
+    storageClassName: "ebs-csi"
+    size: "8000Gi"
