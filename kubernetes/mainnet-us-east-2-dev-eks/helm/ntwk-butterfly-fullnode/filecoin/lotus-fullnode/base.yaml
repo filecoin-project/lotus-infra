@@ -1,5 +1,7 @@
 image:
-  tag: mainnet-v1.8.0
+  tag: butterflynet-master
+
+prometheusOperatorServiceMonitor: true
 
 resources:
   requests:
@@ -7,14 +9,10 @@ resources:
     cpu: 8
   limits:
     memory: 112Gi
-    cpu: 16
+    cpu: 12
 
 importSnapshot:
   enabled: false
-  claimName: chain-exports
-  network: mainnet
-  exportRelease: export-full-archive
-  exitCodeOnMissing: 0
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
@@ -31,8 +29,7 @@ daemonConfig: |
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
 
 additionalLabels:
-  mode: open
-  network: mainnet
+  network: butterfly
 
 persistence:
   datastore:

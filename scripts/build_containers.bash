@@ -80,7 +80,9 @@ goflags=(--build-arg=GOFLAGS="-tags='$NETWORK'")
 
 ffiargs=()
 if [ "$BUILD_FFI" = true ]; then
-  ffiargs=(--build-arg=RUSTFLAGS="-C target-cpu=native -g" --build-arg=FFI_BUILD_FROM_SOURCE="1")
+  # If you need to build from source, but also need portable blst, set
+  # FFI_USE_BLST_PORTABLE to 1
+  ffiargs=(--build-arg=FFI_USE_BLST_PORTABLE="0" --build-arg=FFI_BUILD_FROM_SOURCE="1")
 fi
 
 buildargs=()
@@ -101,6 +103,7 @@ docker build --progress=plain $DOCKER_NOCACHE -t "lotus-shed:$docker_tag"       
 docker build --progress=plain $DOCKER_NOCACHE -t "lotus-stats:$docker_tag"      -f Dockerfile.lotus "${ffiargs[@]}" "${goflags[@]}" "${buildargs[@]}" --target=stats $(dirname $BUILD_SRC)
 docker build --progress=plain $DOCKER_NOCACHE -t "lotus-miner:$docker_tag"      -f Dockerfile.lotus "${ffiargs[@]}" "${goflags[@]}" "${buildargs[@]}" --target=miner $(dirname $BUILD_SRC)
 docker build --progress=plain $DOCKER_NOCACHE -t "lotus-worker:$docker_tag"     -f Dockerfile.lotus "${ffiargs[@]}" "${goflags[@]}" "${buildargs[@]}" --target=worker $(dirname $BUILD_SRC)
+docker build --progress=plain $DOCKER_NOCACHE -t "lotus-gateway:$docker_tag"    -f Dockerfile.lotus "${ffiargs[@]}" "${goflags[@]}" "${buildargs[@]}" --target=gateway $(dirname $BUILD_SRC)
 
 if [ ! -z "$BUILD_REPO" ]; then
   docker tag "lotus:$docker_tag"            "$BUILD_REPO/lotus:$docker_tag"
@@ -108,12 +111,14 @@ if [ ! -z "$BUILD_REPO" ]; then
   docker tag "lotus-stats:$docker_tag"      "$BUILD_REPO/lotus-stats:$docker_tag"
   docker tag "lotus-miner:$docker_tag"      "$BUILD_REPO/lotus-miner:$docker_tag"
   docker tag "lotus-worker:$docker_tag"     "$BUILD_REPO/lotus-worker:$docker_tag"
+  docker tag "lotus-gateway:$docker_tag"     "$BUILD_REPO/lotus-gateway:$docker_tag"
 
   docker push "$BUILD_REPO/lotus:$docker_tag"
   docker push "$BUILD_REPO/lotus-shed:$docker_tag"
   docker push "$BUILD_REPO/lotus-stats:$docker_tag"
   docker push "$BUILD_REPO/lotus-miner:$docker_tag"
   docker push "$BUILD_REPO/lotus-worker:$docker_tag"
+  docker push "$BUILD_REPO/lotus-gateway:$docker_tag"
 fi
 
 popd

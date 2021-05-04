@@ -1,0 +1,12 @@
+---
+image:
+  repository: coryschwartz/lotus-gateway
+  tag: mainnet-ad0fdd5ec
+
+ingress:
+  enabled: true
+  host: api.chain.love
+
+deployment:
+  replicas: 2
+
