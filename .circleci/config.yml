@@ -69,9 +69,13 @@ commands:
       where:
         type: string
         description: where to save
+      branch:
+        type: string
+        default: "master"
+        description: branch to checkout
     steps:
       - run:
-          command: git clone << parameters.repo >> << parameters.where >>
+          command: git clone --branch << parameters.branch >> << parameters.repo >> << parameters.where >>
   docker-login:
     steps:
       - run:
@@ -103,6 +107,7 @@ jobs:
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
           where: $HOME/lotus
+          branch: << parameters.tag >>
       - run:
           name: fake build containers
           command: sleep 10; echo fake build containers
@@ -245,6 +250,9 @@ jobs:
       delay:
         type: string
         default: "600"
+      branch:
+        type: string
+        default: "master"
     executor: ansible-playbook/default
     steps:
       - checkout
@@ -252,17 +260,21 @@ jobs:
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
           where: $HOME/lotus
+          branch: << parameters.branch >>
       - run:
-          name: fake ansible deploy
-          command: echo fake ansible deploy
-      # - run:
-      #     name: ansible deploy << parameters.network >>
-      #     command: |
-      #       cd ansible
-      #       test << parameters.preseal >> == 0 && PRESEAL="true" || PRESEAL="false"
-      #       test << parameters.create_cert >> == 0 && CREATECERT="true" || CREATECERT="false"
-      #       test << parameters.reset >> == 0 && RESET="true" || RESET="false"
-      #       ./setup_fildev_network.bash -n << parameters.network >> -s $HOME/lotus -p $PRESEAL -c $CREATECERT -b "<< parameters.build_flags >>" -r $RESET --delay << parameters.delay >>
+          name: setup secrets
+          command: |
+            cd ansible
+            echo $ANSIBLE_VAULT_PASSWORD > .vault_password
+            base64 -d <<<$SSH_PRIVATE_KEY_BASE64 > ~/.ssh/id_rsa
+      - run:
+          name: ansible deploy << parameters.network >>
+          command: |
+            cd ansible
+            test << parameters.preseal >> == 0 && PRESEAL="true" || PRESEAL="false"
+            test << parameters.create_cert >> == 0 && CREATECERT="true" || CREATECERT="false"
+            test << parameters.reset >> == 0 && RESET="true" || RESET="false"
+            ./setup_fildev_network.bash -n << parameters.network >> -s $HOME/lotus -p $PRESEAL -c $CREATECERT -b "<< parameters.build_flags >>" -r $RESET --delay << parameters.delay >>
 
 workflows:
   butterfly-nightly:
@@ -318,6 +330,16 @@ workflows:
     when:
       equal: [ "lotus-rollout", << pipeline.parameters.api_workflow_requested >> ]
     jobs:
+      # butterflynet ansible
+      - ansible-deploy:
+          name: ansible-deploy-butterflynet
+          network: butterflynet
+          preseal: false
+          create_cert: false
+          build_flags: "-f"
+          reset: false
+          delay: "true"
+          branch: << pipeline.parameters.override_tag >>
       - lotus-build-containers:
           name: build-containers-calibrationnet
           tag: << pipeline.parameters.override_tag >>
@@ -345,15 +367,14 @@ workflows:
           requires:
            - build-containers-calibrationnet
       # calibrationnet ansible
-      - ansible-deploy:
-          name: ansible-deploy-calibrationnet
-          context: sentinel-staging-deploy
-          network: calibration
-          preseal: false
-          create_cert: false
-          build_flags: "-f"
-          reset: false
-          delay: "true"
+      # - ansible-deploy:
+      #     name: ansible-deploy-calibrationnet
+      #     network: calibration
+      #     preseal: false
+      #     create_cert: false
+      #     build_flags: "-f"
+      #     reset: false
+      #     delay: "true"
       # mainnet
       - lotus-build-containers:
           name: build-containers-mainnet
