@@ -264,6 +264,8 @@ jobs:
       - run:
           name: install lotus software
           command: |
+            sudo apt-get update
+            sudo apt-get install libhwloc-dev ocl-icd-opencl-dev
             cd $HOME/lotus
             make << parameters.network >>
             sudo install -o root -g root -m 0755 ./lotus-seed ./lotus-shed /usr/local/bin
