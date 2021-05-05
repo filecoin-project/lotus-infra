@@ -342,7 +342,7 @@ workflows:
       # butterflynet ansible
       - ansible-deploy:
           name: ansible-deploy-butterflynet
-          network: butterflynet
+          network: butterfly
           preseal: false
           create_cert: false
           build_flags: "-f"
