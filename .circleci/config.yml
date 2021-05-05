@@ -265,7 +265,7 @@ jobs:
           name: install lotus software
           command: |
             cd $HOME/lotus
-            make << parameters.network>
+            make << parameters.network >>
             sudo install -o root -g root -m 0755 ./lotus-seed ./lotus-shed /usr/local/bin
       - run:
           name: setup secrets
