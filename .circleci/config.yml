@@ -230,7 +230,9 @@ jobs:
 
   ansible-deploy:
     parameters:
-      network:
+      install_network:
+        type: string
+      deploy_network:
         type: string
       preseal:
         type: boolean
@@ -268,7 +270,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install libhwloc-dev ocl-icd-opencl-dev
             cd $HOME/lotus
-            make << parameters.network >>
+            make << parameters.install_network >>
             sudo install -o root -g root -m 0755 ./lotus-seed ./lotus-shed /usr/local/bin
       - run:
           name: setup secrets
@@ -277,7 +279,7 @@ jobs:
             echo $ANSIBLE_VAULT_PASSWORD > .vault_password
             echo $SSH_PRIVATE_KEY_BASE64 | base64 -d > ~/.ssh/id_rsa
       - run:
-          name: ansible deploy << parameters.network >>
+          name: ansible deploy << parameters.deploy_network >>
           command: |
             cd ansible
             test << parameters.preseal >> == 0 && PRESEAL="true" || PRESEAL="false"
@@ -342,7 +344,8 @@ workflows:
       # butterflynet ansible
       - ansible-deploy:
           name: ansible-deploy-butterflynet
-          network: butterfly
+          deploy_network: butterfly
+          install_network: butterflynet
           preseal: false
           create_cert: false
           build_flags: "-f"
