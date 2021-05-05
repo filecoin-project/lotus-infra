@@ -282,9 +282,9 @@ jobs:
           name: ansible deploy << parameters.deploy_network >>
           command: |
             cd ansible
-            test << parameters.preseal >> == 0 && PRESEAL="true" || PRESEAL="false"
-            test << parameters.create_cert >> == 0 && CREATECERT="true" || CREATECERT="false"
-            test << parameters.reset >> == 0 && RESET="true" || RESET="false"
+            test << parameters.preseal >> == 0 && PRESEAL="false" || PRESEAL="true"
+            test << parameters.create_cert >> == 0 && CREATECERT="false" || CREATECERT="true"
+            test << parameters.reset >> == 0 && RESET="false" || RESET="true"
             ./setup_fildev_network.bash -n << parameters.deploy_network >> -s $HOME/lotus -p $PRESEAL -c $CREATECERT -b "<< parameters.build_flags >>" -r $RESET --delay << parameters.delay >>
 
 workflows:
