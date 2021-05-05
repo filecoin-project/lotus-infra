@@ -282,6 +282,8 @@ jobs:
           name: ansible deploy << parameters.deploy_network >>
           command: |
             cd ansible
+            echo here is what Im going to run
+            echo ./setup_fildev_network.bash -n << parameters.deploy_network >> -s $HOME/lotus -p << parameters.preseal >> -c << parameters.create_cert >> -b "<< parameters.build_flags >>" -r << parameters.reset >> --delay << parameters.delay >>
             ./setup_fildev_network.bash -n << parameters.deploy_network >> -s $HOME/lotus -p << parameters.preseal >> -c << parameters.create_cert >> -b "<< parameters.build_flags >>" -r << parameters.reset >> --delay << parameters.delay >>
 
 workflows:
@@ -347,7 +349,7 @@ workflows:
           create_cert: false
           build_flags: "-f"
           reset: false
-          delay: "true"
+          delay: "600"
           branch: << pipeline.parameters.override_tag >>
       - lotus-build-containers:
           name: build-containers-calibrationnet
