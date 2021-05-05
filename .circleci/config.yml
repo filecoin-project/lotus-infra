@@ -285,7 +285,11 @@ jobs:
             test << parameters.preseal >> == 0 && PRESEAL="false" || PRESEAL="true"
             test << parameters.create_cert >> == 0 && CREATECERT="false" || CREATECERT="true"
             test << parameters.reset >> == 0 && RESET="false" || RESET="true"
-            ./setup_fildev_network.bash -n << parameters.deploy_network >> -s $HOME/lotus -p $PRESEAL -c $CREATECERT -b "<< parameters.build_flags >>" -r $RESET --delay << parameters.delay >>
+            echo "test test test"
+            echo << parameters.preseal >> $PRESEAL
+            echo << parameters.create_cert >> $CREATECERT
+            echo << parameters.reset >> $RESET
+            #            ./setup_fildev_network.bash -n << parameters.deploy_network >> -s $HOME/lotus -p $PRESEAL -c $CREATECERT -b "<< parameters.build_flags >>" -r $RESET --delay << parameters.delay >>
 
 workflows:
   butterfly-nightly:
