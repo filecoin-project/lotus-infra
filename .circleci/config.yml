@@ -257,7 +257,7 @@ jobs:
       - rust/install
       - go/install:
           version: 1.16.3
-      - ansible/install
+      - ansible-playbook/install
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
           where: $HOME/lotus
