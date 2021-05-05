@@ -281,10 +281,17 @@ jobs:
       - run:
           name: ansible deploy << parameters.deploy_network >>
           command: |
+            args=(
+              "-n" "<< parameters.deploy_network >>"
+              "-s" "$HOME/lotus"
+              "-b" "<< parameters.build_flags"
+              "-d" "<< parameters.delay >>"
+            )
+            test << parameters.reset >> == "true" && args+=("-r")
+            test << parameters.preseal >> == "true" && args+=("-p")
+            test << parameters.create_cert >> == "true" && args+=("-c")
             cd ansible
-            echo here is what Im going to run
-            echo ./setup_fildev_network.bash -n << parameters.deploy_network >> -s $HOME/lotus -p << parameters.preseal >> -c << parameters.create_cert >> -b "<< parameters.build_flags >>" -r << parameters.reset >> --delay << parameters.delay >>
-            ./setup_fildev_network.bash -n << parameters.deploy_network >> -s $HOME/lotus -p << parameters.preseal >> -c << parameters.create_cert >> -b "<< parameters.build_flags >>" -r << parameters.reset >> --delay << parameters.delay >>
+            ./setup_fildev_network.bash "${args[@]}"
 
 workflows:
   butterfly-nightly:
