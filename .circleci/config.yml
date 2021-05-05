@@ -280,6 +280,10 @@ jobs:
             echo $SSH_PRIVATE_KEY_BASE64 | base64 -d > ~/.ssh/id_rsa
       - run:
           name: ansible deploy << parameters.deploy_network >>
+          environment:
+            RESET: << parameters.reset >>
+            PRESEAL: << parameters.preseal >>
+            CREATECERT: << parameters.create_cert >>
           command: |
             args=(
               "-n" "<< parameters.deploy_network >>"
@@ -287,9 +291,9 @@ jobs:
               "-b" "<< parameters.build_flags"
               "-d" "<< parameters.delay >>"
             )
-            test << parameters.reset >> == "true" && args+=("-r")
-            test << parameters.preseal >> == "true" && args+=("-p")
-            test << parameters.create_cert >> == "true" && args+=("-c")
+            test "$RESET" == "true" && args+=("-r")
+            test "$PRESEAL" == "true" && args+=("-p")
+            test "$CREATECERT" == "true" && args+=("-c")
             cd ansible
             ./setup_fildev_network.bash "${args[@]}"
 
