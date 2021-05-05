@@ -4,7 +4,8 @@ orbs:
   aws-eks: circleci/aws-eks@1.0.3
   helm: circleci/helm@1.2.0
   ansible-playbook: orbss/ansible-playbook@0.0.5
-
+  rust: circleci/rust@1.5.0
+  go: circleci/go@1.6.0
 
 # Some of the workflows in this CI config are intended to be triggered over the CircleCI API
 # The Circle v2 API allows API users to call a pipeline, and conditionally execute workflows.
@@ -80,7 +81,6 @@ commands:
     steps:
       - run:
           command: echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
-
 
 jobs:
   # build and push lotus.
@@ -257,6 +257,8 @@ jobs:
     steps:
       - checkout
       - aws-eks/install-aws-iam-authenticator
+      - rust/install
+      - go/install
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
           where: $HOME/lotus
