@@ -43,8 +43,6 @@ commands:
     steps:
       - helm/install-helm-client:
           version: v3.5.0
-  install-helm-repos:
-    steps:
       - run:
           command: |
             helm repo add filecoin https://filecoin-project.github.io/helm-charts
@@ -206,7 +204,6 @@ jobs:
           cluster: << parameters.cluster >>
           region: << parameters.region >>
       - install-helm
-      - install-helm-repos
       - attach_workspace:
           at: /tmp/circle
       - run:
@@ -258,7 +255,8 @@ jobs:
       - checkout
       - aws-eks/install-aws-iam-authenticator
       - rust/install
-      - go/install
+      - go/install:
+          version: 1.16.3
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
           where: $HOME/lotus
