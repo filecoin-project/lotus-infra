@@ -262,6 +262,12 @@ jobs:
           where: $HOME/lotus
           branch: << parameters.branch >>
       - run:
+          name: install lotus software
+          command: |
+            cd $HOME/lotus
+            make << parameters.network>
+            sudo install -o root -g root -m 0755 ./lotus-seed ./lotus-shed /usr/local/bin
+      - run:
           name: setup secrets
           command: |
             cd ansible
