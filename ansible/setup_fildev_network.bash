@@ -41,6 +41,14 @@ genesis_delay="${delay:-"600"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 verifreg_rootkey="t1q6eqszdqoqxevhoehil6jcl3ftbogghuwz4yqti"
 
+echo test test test
+echo $hostfile
+echo $generate_new_keys
+echo $create_certificate
+echo $build_flags
+echo $genesis_delay
+echo $lotus_src
+
 # gets a list of all the hostnames for the preminers
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
 
