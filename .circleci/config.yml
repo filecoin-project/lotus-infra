@@ -344,7 +344,7 @@ workflows:
       # butterflynet ansible
       - ansible-deploy:
           name: ansible-deploy-butterflynet
-          deploy_network: butterfly
+          deploy_network: butterfly.fildev.network
           install_network: butterflynet
           preseal: false
           create_cert: false
