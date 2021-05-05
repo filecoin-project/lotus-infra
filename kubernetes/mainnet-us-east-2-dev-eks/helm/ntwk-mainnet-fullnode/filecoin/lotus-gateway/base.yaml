@@ -1,0 +1,12 @@
+---
+image:
+  repository: travisperson/lotus-gateway
+  tag: mainnet-v1.8.0
+
+ingress:
+  enabled: true
+  host: apidev.chain.love
+
+deployment:
+  replicas: 2
+
