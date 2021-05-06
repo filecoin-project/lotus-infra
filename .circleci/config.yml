@@ -285,7 +285,7 @@ jobs:
           command: |
             args=(
               "-n" "<< parameters.deploy_network >>"
-              "-s" "$HOME/lotus"
+              "-s" "$LOTUSROOT"
               "-b" "<< parameters.build_flags >>"
               "-d" "<< parameters.delay >>"
             )
