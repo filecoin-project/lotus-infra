@@ -259,7 +259,7 @@ jobs:
       - aws-eks/install-aws-iam-authenticator
       - rust/install
       - go/install:
-          version: 1.16.3
+          version: 1.15.3
       - ansible-playbook/install
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
