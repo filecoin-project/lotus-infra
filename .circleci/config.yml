@@ -279,6 +279,8 @@ jobs:
             cd ansible
             echo $ANSIBLE_VAULT_PASSWORD > .vault_password
             echo $SSH_PRIVATE_KEY_BASE64 | base64 -d > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            rm ~/.ssh/id_rsa.pub
       - run:
           name: ansible deploy << parameters.deploy_network >>
           command: |
