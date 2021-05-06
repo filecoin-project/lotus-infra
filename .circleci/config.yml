@@ -254,6 +254,9 @@ jobs:
         default: "master"
     machine:
       image: ubuntu-2004:202010-01
+    environment:
+      GOPATH: /home/circleci/.go_workspace
+      LOTUSROOT: $GOPATH/src/github.com/filecoin-project/lotus
     steps:
       - checkout
       - aws-eks/install-aws-iam-authenticator
@@ -263,14 +266,14 @@ jobs:
       - ansible-playbook/install
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
-          where: $HOME/lotus
+          where: $LOTUSROOT
           branch: << parameters.branch >>
       - run:
           name: install lotus software
           command: |
             sudo apt-get update
             sudo apt-get install libhwloc-dev ocl-icd-opencl-dev
-            cd $HOME/lotus
+            cd $LOTUSROOT
             GOFLAGS+=-tags=<< parameters.install_network >> make lotus-shed lotus-seed
             sudo install -o root -g root -m 0755 ./lotus-seed ./lotus-shed /usr/local/bin
       - run:
@@ -278,9 +281,6 @@ jobs:
           command: |
             cd ansible
             echo $ANSIBLE_VAULT_PASSWORD > .vault_password
-            # echo $SSH_PRIVATE_KEY_BASE64 | base64 -d > ~/.ssh/id_rsa
-            # chmod 600 ~/.ssh/id_rsa
-            # rm ~/.ssh/id_rsa.pub
       - run:
           name: ansible deploy << parameters.deploy_network >>
           command: |

@@ -17,7 +17,7 @@ while [ "$1" != "" ]; do
                                 ;;
         --2k )                  smallsectors=true
                                 ;;
-        -f | --build-ffi )      ffi=false
+        -f | --build-ffi )      ffi=true
                                 ;;
         --network )             shift
                                 network="$1"
@@ -67,16 +67,30 @@ envflags+=(-e GOFLAGS="-tags=$tags")
 
 ffiargs=()
 if [ "$BUILD_FFI" = true ]; then
-  ffiargs=(-e RUSTFLAGS="-C target-cpu=native -g" -e FFI_BUILD_FROM_SOURCE=1)
+  # If you need to build from source, but also need portable blst, set
+  # FFI_USE_BLST_PORTABLE to 1
+  ffiargs=(-e FFI_USE_BLST_PORTABLE=0 -e FFI_BUILD_FROM_SOURCE=1)
 fi
 
 sha=$(git describe --always --match=NeVeRmAtCh --dirty 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
 
 docker build -t "lotus-binary-builder:$sha" -f Dockerfile.binarybuilder --build-arg UID="$(id -u)" .
 
+# if GOPATH is set we will mount it for pkg/mod cache
+# if GOPATH is not set, we'll check to see if the default exists, and set it
+if [ -z "$GOPATH" ]; then
+  if [ -d "$HOME/go/pkg/mod" ]; then
+    GOPATH="$HOME/go"
+  fi
+fi
+
 volumes=(-v "$BUILD_SRC":/opt/build)
-volumes+=(-v "lotusbinariesgomod:/go/pkg/mod")
-volumes+=(-v "lotusbinariesgosum:/go/pkg/sumdb")
+
+# if GOPATH is set, we'll mount it
+if [ ! -z "$GOPATH" ]; then
+  volumes+=(-v "$GOPATH/pkg/mod:/go/pkg/mod")
+  volumes+=(-v "$GOPATH/pkg/sumdb:/go/pkg/sumdb")
+fi
 
 if [ $# -eq 0 ]; then
   buildlist=(clean lotus lotus-miner lotus-worker lotus-seed lotus-shed lotus-fountain lotus-stats lotus-chainwatch lotus-pcr)
