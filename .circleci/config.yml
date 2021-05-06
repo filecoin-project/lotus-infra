@@ -248,6 +248,8 @@ jobs:
         default: "master"
     machine:
       image: ubuntu-2004:202010-01
+      docker_layer_caching: true
+    resource_class: 2xlarge
     environment:
       LOTUSROOT: /home/circleci/.go_workspace/src/github.com/filecoin-project/lotus
     steps:
@@ -292,6 +294,7 @@ jobs:
       - run:
           name: "restart machines"
           command: |
+            cd ansible
             ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
             ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m reboot all
 
