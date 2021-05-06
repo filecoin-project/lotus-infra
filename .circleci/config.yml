@@ -255,8 +255,7 @@ jobs:
     machine:
       image: ubuntu-2004:202010-01
     environment:
-      GOPATH: /home/circleci/.go_workspace
-      LOTUSROOT: $GOPATH/src/github.com/filecoin-project/lotus
+      LOTUSROOT: /home/circleci/.go_workspace/src/github.com/filecoin-project/lotus
     steps:
       - checkout
       - aws-eks/install-aws-iam-authenticator
@@ -294,7 +293,7 @@ jobs:
             test << parameters.preseal >> == "true" && args+=("-p")
             test << parameters.create_cert >> == "true" && args+=("-c")
             cd ansible
-            ./setup_fildev_network.bash "${args[@]}"
+            GOPATH=/home/circleci/.go_workspace ./setup_fildev_network.bash "${args[@]}"
 
 workflows:
   butterfly-nightly:
