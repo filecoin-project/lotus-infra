@@ -356,7 +356,7 @@ workflows:
           install_network: butterflynet
           preseal: false
           create_cert: false
-          build_flags: "--2k"
+          build_flags: ""
           reset: false
           delay: "1200"
           branch: << pipeline.parameters.override_tag >>
