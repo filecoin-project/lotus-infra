@@ -289,6 +289,11 @@ jobs:
             test << parameters.create_cert >> == "true" && args+=("-c")
             cd ansible
             GOPATH=/home/circleci/.go_workspace ./setup_fildev_network.bash "${args[@]}"
+      - run:
+          name: "restart faucet"
+          command: |
+            ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
+            ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m systemd -a 'name=nginx state=reloaded' faucet
 
 workflows:
   butterfly-nightly:
@@ -351,7 +356,7 @@ workflows:
           install_network: butterflynet
           preseal: false
           create_cert: false
-          build_flags: ""
+          build_flags: "-f"
           reset: false
           delay: "1200"
           branch: << pipeline.parameters.override_tag >>

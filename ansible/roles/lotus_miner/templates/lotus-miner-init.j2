@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# This script sets up an initial configuraiton for the lotus daemon and miner
+# It will only run once.
+
+GATE="$LOTUS_PATH"/date_initialized
+
+# Don't init if already initialized.
+if [ -f "$GATE" ]; then
+        echo lotus already initialized.
+        exit 0
+fi
+
+/usr/local/bin/lotus-miner init --actor="{{ lotus_miner_addr }}" --owner="{{ lotus_miner_wallet_address }}" --nosync
+
+date > "$GATE"
