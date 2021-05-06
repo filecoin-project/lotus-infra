@@ -74,21 +74,9 @@ sha=$(git describe --always --match=NeVeRmAtCh --dirty 2>/dev/null || git rev-pa
 
 docker build -t "lotus-binary-builder:$sha" -f Dockerfile.binarybuilder --build-arg UID="$(id -u)" .
 
-# if GOPATH is set we will mount it for pkg/mod cache
-# if GOPATH is not set, we'll check to see if the default exists, and set it
-if [ -z "$GOPATH" ]; then
-  if [ -d "$HOME/go/pkg/mod" ]; then
-    GOPATH="$HOME/go"
-  fi
-fi
-
 volumes=(-v "$BUILD_SRC":/opt/build)
-
-# if GOPATH is set, we'll mount it
-if [ ! -z "$GOPATH" ]; then
-  volumes+=(-v "$GOPATH/pkg/mod:/go/pkg/mod")
-  volumes+=(-v "$GOPATH/pkg/sumdb:/go/pkg/sumdb")
-fi
+volumes+=(-v "lotusbinariesgomod:/go/pkg/mod")
+volumes+=(-v "lotusbinariesgosum:/go/pkg/sumdb")
 
 if [ $# -eq 0 ]; then
   buildlist=(clean lotus lotus-miner lotus-worker lotus-seed lotus-shed lotus-fountain lotus-stats lotus-chainwatch lotus-pcr)
