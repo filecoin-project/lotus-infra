@@ -22,9 +22,9 @@
 - hosts: preminer
   become: true
   tasks:
-    - name: Ensure miner initialization started
+    - name: Ensure miner started
       service:
-        name: "lotus-miner-init"
+        name: "lotus-miner"
         state: started
 
 - hosts: stats
