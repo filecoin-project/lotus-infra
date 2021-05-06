@@ -293,7 +293,7 @@ jobs:
           name: "restart machines"
           command: |
             ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
-            ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m reboot
+            ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m reboot all
 
 workflows:
   butterfly-nightly:
