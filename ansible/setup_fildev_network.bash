@@ -266,18 +266,3 @@ ansible-playbook -i $hostfile lotus_devnet_start.yml                            
     -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/$network_flag.car"
 
 set +x
-
-echo "Monitor the initialization process on all miners (until a bug is fixed you will need to watch the /var/log/lotus-miner.log)"
-echo "When all have finished the process will exit with a message about 'run lotus-storage-miner run'"
-echo ""
-echo "    ansible -i $hostfile -b -m shell -a 'systemctl status lotus-miner-init' preminer"
-echo ""
-echo "Start the 'lotus-miner' serivce on all preminers"
-echo ""
-echo "    ansible -i $hostfile -b -m shell -a 'systemctl start lotus-miner' preminer"
-echo ""
-echo "Remove the faucet from maintenance mode, and reload nginx to pick up the new config"
-echo ""
-echo "    ansible -i $hostfile -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet"
-echo "    ansible -i $hostfile -b -m systemd -a 'name=nginx state=reloaded' faucet"
-echo ""
