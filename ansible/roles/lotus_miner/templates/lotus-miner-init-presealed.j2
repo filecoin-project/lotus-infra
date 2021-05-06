@@ -11,6 +11,4 @@ if [ -f "$GATE" ]; then
         exit 0
 fi
 
-/usr/local/bin/lotus-miner init --genesis-miner="{{ lotus_miner_genesis_miner | lower }}" --actor="{{ lotus_miner_addr }}" --pre-sealed-metadata="{{ lotus_miner_presealed_metadata }}" --nosync="true" --sector-size="{{ lotus_miner_sector_size }}" {{ lotus_miner_presealed_sectors | product(['--pre-sealed-sectors']) | map('reverse') | map('join', '=') | list | join(' ') }}
-
-date > "$GATE"
+/usr/local/bin/lotus-miner init --genesis-miner="{{ lotus_miner_genesis_miner | lower }}" --actor="{{ lotus_miner_addr }}" --pre-sealed-metadata="{{ lotus_miner_presealed_metadata }}" --nosync="true" --sector-size="{{ lotus_miner_sector_size }}" {{ lotus_miner_presealed_sectors | product(['--pre-sealed-sectors']) | map('reverse') | map('join', '=') | list | join(' ') }} && date > "$GATE"

@@ -11,6 +11,4 @@ if [ -f "$GATE" ]; then
         exit 0
 fi
 
-/usr/local/bin/lotus-miner init --actor="{{ lotus_miner_addr }}" --owner="{{ lotus_miner_wallet_address }}" --nosync
-
-date > "$GATE"
+/usr/local/bin/lotus-miner init --actor="{{ lotus_miner_addr }}" --owner="{{ lotus_miner_wallet_address }}" --nosync && date > "$GATE"
