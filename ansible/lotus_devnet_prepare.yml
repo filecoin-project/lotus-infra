@@ -2,7 +2,7 @@
 - hosts: preminer
   become: true
   vars:
-    lotus_miner_presealed_metadata: "/tmp/presealed-metadata.json"
+    lotus_miner_presealed_metadata: "{{ lotus_miner_data_root }}/presealed-metadata.json"
   module_defaults:
     package:
       force_apt_get: yes
