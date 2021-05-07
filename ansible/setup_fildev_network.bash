@@ -55,6 +55,7 @@ miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] a
 faucet_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ faucet_initial_balance }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
 miners_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ miners_initial_balance }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 network_flag=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ network_flag }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
+prepare_tmp=$(basename $(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_miner_data_root }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg' ))
 
 if [ "$generate_new_keys" = true ]; then
   # get a list of all hosts which have a lotus_libp2p_address defined somewhere in their group / hosts vars.
@@ -79,8 +80,7 @@ EOF
     p2p_keyinfo=$(cat libp2p-host-${p2p_address}.keyinfo)
     rm "libp2p-host-${p2p_address}.keyinfo"
 
-    cat > "$(dirname $hostfile)/host_vars/$bootstrapper/libp2p.vault.yml" <<EOF
-libp2p_keyinfo: $p2p_keyinfo
+    cat > "$(dirname $hostfile)/host_vars/$bootstrapper/libp2p.vault.yml" <<EOF libp2p_keyinfo: $p2p_keyinfo
 libp2p_address: $p2p_address
 EOF
   done
@@ -203,7 +203,7 @@ pushd "$lotus_src"
   ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
 
   for m in "${miners[@]}"; do
-    ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/tmp/presealed-metadata.json"
+    ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/${prepare_tmp}/presealed-metadata.json"
   done
 
   jq --arg MinerBalance ${miners_balance}  '.Accounts[].Balance = $MinerBalance ' < "${genpath}/genesis.json" > ${genesistmp}
