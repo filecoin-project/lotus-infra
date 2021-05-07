@@ -10,43 +10,43 @@
         group: "{{ lotus_user }}"
         mode: "0644"
       when: lotus_genesis_src is defined
-    - name: Ensure lotus daemon started
-      service:
-        name: "lotus-daemon"
-        state: started
-    - name: Ensure telegraf started
-      service:
-        name: "telegraf"
-        state: started
+    # - name: Ensure lotus daemon started
+    #   service:
+    #     name: "lotus-daemon"
+    #     state: started
+    # - name: Ensure telegraf started
+    #   service:
+    #     name: "telegraf"
+    #     state: started
 
-- hosts: preminer
-  become: true
-  tasks:
-    - name: Ensure miner started
-      service:
-        name: "lotus-miner"
-        state: started
+# - hosts: preminer
+  # become: true
+  # tasks:
+    # - name: Ensure miner started
+    #   service:
+    #     name: "lotus-miner"
+    #     state: started
 
-- hosts: stats
-  become: true
-  tasks:
-    - name: Ensure stats started
-      service:
-        name: "stats"
-        state: started
+# - hosts: stats
+  # become: true
+  # tasks:
+    # - name: Ensure stats started
+    #   service:
+    #     name: "stats"
+    #     state: started
 
-- hosts: chainwatch
-  become: true
-  tasks:
-    - name: Ensure chainwatch started
-      service:
-        name: "chainwatch"
-        state: started
+# - hosts: chainwatch
+  # become: true
+  # tasks:
+    # - name: Ensure chainwatch started
+    #   service:
+    #     name: "chainwatch"
+    #     state: started
 
-- hosts: faucet
-  become: true
-  tasks:
-    - name: Ensure fountain started
-      service:
-        name: "lotus-fountain"
-        state: started
+# - hosts: faucet
+  # become: true
+  # tasks:
+    # - name: Ensure fountain started
+    #   service:
+    #     name: "lotus-fountain"
+    #     state: started

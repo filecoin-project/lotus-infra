@@ -169,7 +169,7 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes -e lotus_pcr_reset=yes          \
     -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
     -e certbot_create_certificate=${create_certificate}                                            \
-    --diff
+    --diff -v
 
 # runs all the roles
 # ansible-playbook -i $hostfile lotus_devnet_provision2.yml                                           \
@@ -187,7 +187,7 @@ preseal_metadata=$(mktemp -d)
 
 # pulls down all the pre-sealed sectors from s3, hydrates the sectors, merges all the metadata, updates addresses everywhere
 # and then downloads the final sector metadata for each preminer
-ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata}
+ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata} --diff -v
 
 
 genpath=$(mktemp -d)
