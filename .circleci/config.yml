@@ -202,7 +202,7 @@ jobs:
     steps:
       - slack/notify:
           event: always
-          channek: << pipeline.parameters.slack_channel >>
+          channel: << pipeline.parameters.slack_channel >>
           custom: |
             {
               "blocks": [
