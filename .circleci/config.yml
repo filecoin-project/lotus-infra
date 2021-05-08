@@ -210,7 +210,7 @@ jobs:
                     "type": "mrkdwn",
                     "text": "*helm deployment*\n\nmaybe everything will be fine?\n\n*release:* << parameters.release >>\n*chart:* << parameters.chart >>/<< parameters.chart_version >>\n*cluster:* << parameters.cluster >>\n*namespace:* << parameters.namespace >>"
                   }
-		},
+                },
                 {
                   "type": "actions",
                   "elements": [
