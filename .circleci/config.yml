@@ -207,10 +207,15 @@ jobs:
             {
               "blocks": [
                 {
+                  "type": "header",
+                  "text": "HELM DEPLOYMENT :shipitparrot: :rocket:",
+                  "emoji": true
+                }
+                {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*helm deployment*\n\nmaybe everything will be fine?\n\n*release:* << parameters.release >>\n*chart:* << parameters.chart >>/<< parameters.chart_version >>\n*cluster:* << parameters.cluster >>\n*namespace:* << parameters.namespace >>"
+                    "text": "This looks like a real winner if you ask me.\n\n*release:* << parameters.release >>\n*chart:* << parameters.chart >>/<< parameters.chart_version >>\n*cluster:* << parameters.cluster >>\n*namespace:* << parameters.namespace >>"
                   }
                 },
                 {
