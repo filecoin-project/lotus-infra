@@ -200,6 +200,32 @@ jobs:
         description: override image.repository and image.tag using the workspace.
     executor: aws-eks/python3
     steps:
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*helm deployment*\n\nmaybe everything will be fine?\n\n*release:* << parameters.release >>\n*chart:* << parameters.chart >>/<< parameters.chart_version >>\n*cluster:* << parameters.cluster >>\n*namespace:* << parameters.namespace >>"
+                  },
+                  {
+                    "type": "actions",
+                    "elements": [
+                      {
+                        "type": "button",
+                        "url": "${CIRCLE_BUILD_URL}",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "View on CircleCI",
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
       - checkout
       - setup-eks:
           cluster: << parameters.cluster >>
