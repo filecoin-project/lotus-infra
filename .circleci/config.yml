@@ -210,7 +210,7 @@ jobs:
                   "type": "header",
                   "text": "HELM DEPLOYMENT :shipitparrot: :rocket:",
                   "emoji": true
-                }
+                },
                 {
                   "type": "section",
                   "text": {
