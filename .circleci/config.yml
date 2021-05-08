@@ -453,7 +453,45 @@ workflows:
       - slack/on-hold:
           name: butterfly-slack-on-hold
           channel: << pipeline.parameters.slack_channel >>
-      - start-butterfly-deploy:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "LOTUS ROLLOUT",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "woah, woah, woah!\nThis marks the start of a lotus rollout.\nFor safety, this doesn't start by default. Go to CircleCI and click the approval buttons to move this thing along.\n\n*lotus branch:* << pipeline.parameters.override_tag >>"
+                  },
+                  "accessory": {
+                    "type": "image",
+                    "image_url": "https://gist.githubusercontent.com/coryschwartz/69939cdc09bbc032e71099d4a679247d/raw/a1685f215311c0d1e37e879ad63a5336f619f1b4/slow.jpg",
+                    "alt_text": "slow it down"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+      - start-rollout:
           type: approval
           requires:
             - butterfly-slack-on-hold
@@ -468,7 +506,7 @@ workflows:
           delay: "1200"
           branch: << pipeline.parameters.override_tag >>
           requires:
-            - start-butterfly-deploy
+            - start-rollout
       # # Manual approval for calibrationnet
       # - start-calibrationnet:
       #     type: approval
