@@ -201,6 +201,7 @@ jobs:
     executor: aws-eks/python3
     steps:
       - slack/notify:
+          event: always
           custom: |
             {
               "blocks": [
