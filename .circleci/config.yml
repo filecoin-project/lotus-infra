@@ -543,7 +543,8 @@ workflows:
       # calibrationnet ansible
       - lotus-ansible-deploy:
           name: ansible-deploy-calibrationnet
-          network: calibration
+          deploy_network: calibration.fildev.network
+          install_network: calibnet
           preseal: false
           create_cert: false
           build_flags: "-f"
