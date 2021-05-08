@@ -208,8 +208,11 @@ jobs:
               "blocks": [
                 {
                   "type": "header",
-                  "text": "HELM DEPLOYMENT :shipitparrot: :rocket:",
-                  "emoji": true
+                  "text": {
+                    "type": "plain_text",
+                    "text": "HELM DEPLOYMENT :shipitparrot: :rocket:",
+                    "emoji": true
+                  }
                 },
                 {
                   "type": "section",
