@@ -6,6 +6,7 @@ orbs:
   ansible-playbook: orbss/ansible-playbook@0.0.5
   rust: circleci/rust@1.5.0
   go: circleci/go@1.6.0
+  slack: circleci/slack@4.4.2
 
 # Some of the workflows in this CI config are intended to be triggered over the CircleCI API
 # The Circle v2 API allows API users to call a pipeline, and conditionally execute workflows.
@@ -37,6 +38,9 @@ parameters:
   override_tag:
     type: string
     default: ""
+  slack_channel:
+    type: string
+    default: "netops-circleci-test"
 
 commands:
   install-helm:
@@ -353,6 +357,13 @@ workflows:
       equal: [ "lotus-rollout", << pipeline.parameters.api_workflow_requested >> ]
     jobs:
       # butterflynet ansible
+      - slack/on-hold:
+          name: butterfly-slack-on-hold
+          channel: << pipeline.parameters.slack_channel >>
+      - start-butterfly-deploy:
+          type: approval
+          requires:
+            - butterfly-slack-on-hold
       - lotus-ansible-deploy:
           name: ansible-deploy-butterflynet
           deploy_network: butterfly.fildev.network
@@ -363,6 +374,8 @@ workflows:
           reset: false
           delay: "1200"
           branch: << pipeline.parameters.override_tag >>
+          requires:
+            - start-butterfly-deploy
       # # Manual approval for calibrationnet
       # - start-calibrationnet:
       #     type: approval
