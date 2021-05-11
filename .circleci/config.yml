@@ -453,6 +453,11 @@ jobs:
           where: $LOTUSROOT
           branch: << parameters.branch >>
       - run:
+          name: setup secrets
+          command: |
+            cd ansible
+            echo $ANSIBLE_VAULT_PASSWORD > .vault_password
+      - run:
           name: ansible upgrade << parameters.deploy_network >>
           command: |
             args=(
