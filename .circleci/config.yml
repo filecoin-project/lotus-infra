@@ -453,11 +453,6 @@ jobs:
           where: $LOTUSROOT
           branch: << parameters.branch >>
       - run:
-          name: prepare go workspace
-          command: |
-            cd $LOTUSROOT
-            go get -v ./...
-      - run:
           name: ansible upgrade << parameters.deploy_network >>
           command: |
             args=(
@@ -466,7 +461,8 @@ jobs:
               "-b" "<< parameters.build_flags >>"
             )
             cd ansible
-            GOPATH=/home/circleci/.go_workspace ./upgrade_fildev_network_binaries.bash "${args[@]}"
+            unset GOPATH
+            ./upgrade_fildev_network_binaries.bash "${args[@]}"
 
 workflows:
   butterfly-nightly:
