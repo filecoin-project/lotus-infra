@@ -361,7 +361,7 @@ jobs:
             cd ansible
             echo $ANSIBLE_VAULT_PASSWORD > .vault_password
       - run:
-          name: ansible deploy << parameters.deploy_network >>
+          name: ansible reset << parameters.deploy_network >>
           command: |
             args=(
               "-n" "<< parameters.deploy_network >>"
@@ -453,7 +453,12 @@ jobs:
           where: $LOTUSROOT
           branch: << parameters.branch >>
       - run:
-          name: ansible deploy << parameters.deploy_network >>
+          name: prepare go workspace
+          command: |
+            cd $LOTUSROOT
+            go get -v
+      - run:
+          name: ansible upgrade << parameters.deploy_network >>
           command: |
             args=(
               "-n" "<< parameters.deploy_network >>"
