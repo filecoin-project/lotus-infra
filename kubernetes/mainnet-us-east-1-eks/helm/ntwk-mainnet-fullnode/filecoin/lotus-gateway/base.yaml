@@ -1,11 +1,19 @@
 ---
 image:
   repository: coryschwartz/lotus-gateway
-  tag: mainnet-ad0fdd5ec
+  tag: mainnet-7e25a811c
 
 ingress:
-  enabled: true
+  enabled: false
   host: api.chain.love
+
+loadBalancer:
+  enabled: true
+  rpcPort: 80
+
+gatewayEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
 
 deployment:
   replicas: 2
