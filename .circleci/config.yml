@@ -86,7 +86,7 @@ commands:
         description: branch to checkout
     steps:
       - run:
-          command: git clone --branch << parameters.branch >> << parameters.repo >> << parameters.where >>
+          command: git clone --recurse-submodules --branch << parameters.branch >> << parameters.repo >> << parameters.where >>
   docker-login:
     steps:
       - run:
