@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   aws-eks: circleci/aws-eks@1.0.3
+  aws-cli: circleci/aws-cli@2.0.0
   helm: circleci/helm@1.2.0
   ansible-playbook: orbss/ansible-playbook@0.0.5
   rust: circleci/rust@1.5.0
@@ -165,7 +166,6 @@ jobs:
             sleep 10
             kubectl -n << parameters.namespace >> exec << parameters.pod >> -- lotus sync wait
 
-
   # This will deploy a helm chart with values stored in this repo.
   # Each release will have two helm values files -- "base.yaml" and <release_name>.yaml
   # and they must be installed in the right directory in this repo.
@@ -269,7 +269,7 @@ jobs:
             echo $HELM_APPEND
             helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
 
-  lotus-ansible-deploy:
+  lotus-ansible-reset:
     parameters:
       install_network:
         type: string
@@ -318,7 +318,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "The network will be re-deployed in about 30 mintues.\nplease check functionality manually once this is complete\n\n*network:* << parameters.deploy_network >>\n*branch:* << parameters.branch >>"
+                    "text": "The network will be reset in about 30 mintues.\nplease check functionality manually once this is complete\n\n*network:* << parameters.deploy_network >>\n*branch:* << parameters.branch >>"
                   }
                 },
                 {
@@ -337,7 +337,7 @@ jobs:
               ]
             }
       - checkout
-      - aws-eks/install-aws-iam-authenticator
+      - aws-cli/install
       - rust/install
       - go/install:
           version: 1.15.5
@@ -380,6 +380,88 @@ jobs:
             cd ansible
             ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
             ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m reboot all
+      # - run:
+      #     name: "upload genesis"
+      #     command:
+      #       cd $LOTUSROOT
+      #       git config --global user.name "filecoin"
+      #       git config --global user.email "noreply@filecoin.io"
+      #       git commit -am "automated genesis build"
+      #       git push origin HEAD:new-genesis-$(date +%d%h%y-%H%M)
+
+  lotus-ansible-upgrade:
+    parameters:
+      deploy_network:
+        type: string
+      build_flags:
+        type: string
+        default: "-f"
+      branch:
+        type: string
+        default: "master"
+    machine:
+      image: ubuntu-2004:202010-01
+      docker_layer_caching: true
+    resource_class: 2xlarge
+    environment:
+      LOTUSROOT: /home/circleci/.go_workspace/src/github.com/filecoin-project/lotus
+    steps:
+      - slack/notify:
+          event: always
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "DEVNET ANSIBLE UPGRADE :filecoin-new:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "network binaries will be upgraded in about 10 mintues.\nplease check functionality manually once this is complete\n\n*network:* << parameters.deploy_network >>\n*branch:* << parameters.branch >>"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+      - checkout
+      - aws-cli/install
+      - rust/install
+      - go/install:
+          version: 1.15.5
+      - ansible-playbook/install
+      - git-clone:
+          repo: https://github.com/filecoin-project/lotus
+          where: $LOTUSROOT
+          branch: << parameters.branch >>
+      - run:
+          name: ansible deploy << parameters.deploy_network >>
+          command: |
+            args=(
+              "-n" "<< parameters.deploy_network >>"
+              "-s" "$LOTUSROOT"
+              "-b" "<< parameters.build_flags >>"
+            )
+            cd ansible
+            GOPATH=/home/circleci/.go_workspace ./upgrade_fildev_network_binaries.bash "${args[@]}"
 
 workflows:
   butterfly-nightly:
@@ -431,11 +513,11 @@ workflows:
           release: << pipeline.parameters.release >>
           helm_append: << pipeline.parameters.helm_append >>
 
-  api-lotus-ansible:
+  api-lotus-ansible-reset:
     when:
-      equal: [ "lotus-devnet-ansible", << pipeline.parameters.api_workflow_requested >> ]
+      equal: [ "lotus-devnet-ansible-reset", << pipeline.parameters.api_workflow_requested >> ]
     jobs:
-      - lotus-ansible-deploy:
+      - lotus-ansible-reset:
           deploy_network: << pipeline.parameters.lotus_deploy_network >>
           install_network: << pipeline.parameters.lotus_install_network >>
           preseal: false
@@ -443,6 +525,15 @@ workflows:
           build_flags: ""
           reset: false
           delay: "1200"
+          branch: << pipeline.parameters.override_tag >>
+
+  api-lotus-ansible-upgrade:
+    when:
+      equal: [ "lotus-devnet-ansible-upgrade", << pipeline.parameters.api_workflow_requested >> ]
+    jobs:
+      - lotus-ansible-upgrade:
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          build_flags: ""
           branch: << pipeline.parameters.override_tag >>
 
   api-lotus-rollout:
@@ -495,7 +586,7 @@ workflows:
           type: approval
           requires:
             - butterfly-slack-on-hold
-      - lotus-ansible-deploy:
+      - lotus-ansible-reset:
           name: ansible-deploy-butterflynet
           deploy_network: butterfly.fildev.network
           install_network: butterflynet
@@ -541,7 +632,7 @@ workflows:
           requires:
            - build-containers-calibrationnet
       # calibrationnet ansible
-      - lotus-ansible-deploy:
+      - lotus-ansible-reset:
           name: ansible-deploy-calibrationnet
           deploy_network: calibration.fildev.network
           install_network: calibnet

@@ -11,7 +11,7 @@ curl --request POST \
   --data '{
     "branch": "master",
     "parameters":{
-      "api_workflow_requested": "lotus-devnet-ansible",
+      "api_workflow_requested": "lotus-devnet-ansible-reset",
       "lotus_deploy_network": "butterfly.fildev.network",
       "lotus_install_network": "butterflynet",
       "override_tag": "v1.8.0"
