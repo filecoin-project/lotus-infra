@@ -456,7 +456,7 @@ jobs:
           name: prepare go workspace
           command: |
             cd $LOTUSROOT
-            go get -v
+            go get -v ./...
       - run:
           name: ansible upgrade << parameters.deploy_network >>
           command: |
