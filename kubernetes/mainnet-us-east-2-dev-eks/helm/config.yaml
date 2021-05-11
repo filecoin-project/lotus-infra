@@ -171,8 +171,16 @@ deployments:
     values:
       - base
  # tweety
- - chart: filecoin/tweety
-   version: 0.0.1
-   namespace: canaries
-   values:
-     - base
+  - chart: filecoin/tweety
+    version: 0.0.1
+    namespace: canaries
+    values:
+      - base
+  # gateway
+  - chart: filecoin/lotus-gateway
+    version: 0.1.4
+    namespace: ntwk-mainnet-fullnode
+    name: gateway-0
+    values:
+      - base
+      - gateway-0
