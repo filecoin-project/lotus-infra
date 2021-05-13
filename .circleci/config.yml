@@ -375,11 +375,17 @@ jobs:
             cd ansible
             GOPATH=/home/circleci/.go_workspace ./setup_fildev_network.bash "${args[@]}"
       - run:
+          name: "remove faucet maintenance"
+          command: |
+            cd ansible
+            ansible -i $hostfile -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
+      - run:
           name: "restart machines"
           command: |
             cd ansible
             ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
             ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m reboot all
+
       # - run:
       #     name: "upload genesis"
       #     command:
