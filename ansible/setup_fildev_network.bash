@@ -72,7 +72,8 @@ EOF
     p2p_keyinfo=$(cat libp2p-host-${p2p_address}.keyinfo)
     rm "libp2p-host-${p2p_address}.keyinfo"
 
-    cat > "$(dirname $hostfile)/host_vars/$bootstrapper/libp2p.vault.yml" <<EOF libp2p_keyinfo: $p2p_keyinfo
+    cat > "$(dirname $hostfile)/host_vars/$bootstrapper/libp2p.vault.yml" <<EOF
+libp2p_keyinfo: $p2p_keyinfo
 libp2p_address: $p2p_address
 EOF
   done
