@@ -259,3 +259,14 @@ ansible-playbook -i $hostfile lotus_devnet_start.yml                            
     -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/$network_flag.car"
 
 set +x
+
+echo "If everything is working correctly, miners will spend several minutes initializing."
+echo "During the initialization phase, the systemd status for the lotus-miners will be $(tput smso)activating$(tput sgr0)."
+echo "Once the initialization is complete, the status will transition to $(tput smso)active$(tput sgr0)."
+echo "Wait for the transition, then take the faucet out of maintenance mode using the following line:"
+echo
+echo "    ansible -i $hostfile -b -m shell -a 'systemctl is-active lotus-miner' preminer"
+echo
+echo "    ansible -i $hostfile -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet"
+echo "    ansible -i $hostfile -b -m systemd -a 'name=nginx state=reloaded' faucet"
+echo
