@@ -289,7 +289,7 @@ jobs:
         default: true
       delay:
         type: string
-        default: "600"
+        default: "300"
       branch:
         type: string
         default: "master"
@@ -536,7 +536,7 @@ workflows:
           create_cert: false
           build_flags: ""
           reset: false
-          delay: "1200"
+          delay: "300"
           branch: << pipeline.parameters.override_tag >>
 
   api-lotus-ansible-upgrade:
@@ -606,7 +606,7 @@ workflows:
           create_cert: false
           build_flags: ""
           reset: false
-          delay: "1200"
+          delay: "300"
           branch: << pipeline.parameters.override_tag >>
           requires:
             - start-rollout
@@ -652,7 +652,7 @@ workflows:
           create_cert: false
           build_flags: "-f"
           reset: false
-          delay: "1200"
+          delay: "300"
           requires:
             - start-calibrationnet
       # mainnet
