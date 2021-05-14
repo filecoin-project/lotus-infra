@@ -1,6 +1,8 @@
 ---
 - hosts: lotus_daemon
   become: true
+  vars:
+    start_services: true
   tasks:
     - name: Copy genesis
       copy:
@@ -15,40 +17,54 @@
       service:
         name: "lotus-daemon"
         state: started
+      when: start_services is true
 
     - name: Ensure telegraf started
       service:
         name: "telegraf"
         state: started
+      when: start_services is true
 
 - hosts: preminer
   become: true
+  vars:
+    start_services: true
   tasks:
     - name: Ensure miner started
       service:
         name: "lotus-miner"
         state: restarted
+      when: start_services is true
 
 - hosts: stats
   become: true
+  vars:
+    start_services: true
   tasks:
     - name: Ensure stats started
       service:
         name: "stats"
         state: started
+      when: start_services is true
 
 - hosts: chainwatch
   become: true
+  vars:
+    start_services: true
   tasks:
     - name: Ensure chainwatch started
       service:
         name: "chainwatch"
         state: started
+      when: start_services is true
 
 - hosts: faucet
   become: true
+  vars:
+    start_services: true
   tasks:
     - name: Ensure fountain started
       service:
         name: "lotus-fountain"
         state: started
+      when: start_services is true

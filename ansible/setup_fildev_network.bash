@@ -24,6 +24,8 @@ while [ "$1" != "" ]; do
                                 ;;
         -h | --help )           usage
                                 exit
+        --start-services )      shift
+                                start_services="$1"
                                 ;;
         -- )                    shift; break
                                 ;;
@@ -40,6 +42,7 @@ genesis_delay="${delay:-"600"}"
 #genesis_timestamp="2020-08-24T22:00:00Z"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 verifreg_rootkey="t1q6eqszdqoqxevhoehil6jcl3ftbogghuwz4yqti"
+start_services="${start_services:-"true"}"
 
 # gets a list of all the hostnames for the preminers
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
@@ -255,8 +258,9 @@ pushd "$lotus_src"
 popd
 
 # copy the genesis and start up all the services
-ansible-playbook -i $hostfile lotus_devnet_start.yml                                            \
-    -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/$network_flag.car"
+ansible-playbook -i $hostfile lotus_devnet_start.yml                                                     \
+    -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/$network_flag.car" \
+		-e start_services="${start_services}"
 
 set +x
 
