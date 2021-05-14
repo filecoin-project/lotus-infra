@@ -362,6 +362,7 @@ jobs:
             echo $ANSIBLE_VAULT_PASSWORD > .vault_password
       - run:
           name: ansible reset << parameters.deploy_network >>
+          no_output_timeout: 30m
           command: |
             args=(
               "-n" "<< parameters.deploy_network >>"
