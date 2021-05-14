@@ -27,7 +27,7 @@
     - name: Ensure miner started
       service:
         name: "lotus-miner"
-        state: started
+        state: restarted
 
 - hosts: stats
   become: true
