@@ -22,11 +22,12 @@ while [ "$1" != "" ]; do
         --delay )               shift
                                 delay="$1"
                                 ;;
-        -h | --help )           usage
-                                exit
         --start-services )      shift
                                 start_services="$1"
                                 ;;
+        -h | --help )           usage
+                                exit
+																;;
         -- )                    shift; break
                                 ;;
     esac
