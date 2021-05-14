@@ -379,13 +379,12 @@ jobs:
           name: "remove faucet maintenance"
           command: |
             cd ansible
-            ansible -i $hostfile -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
+            ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
       - run:
           name: "restart machines"
           command: |
             cd ansible
-            ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
-            ansible -i inventories/butterfly.fildev.network/hosts.yml -b -m reboot all
+            ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
 
       # - run:
       #     name: "upload genesis"
@@ -475,6 +474,11 @@ jobs:
             cd ansible
             unset GOPATH
             ./upgrade_fildev_network_binaries.bash "${args[@]}"
+      - run:
+          name: "restart machines"
+          command: |
+            cd ansible
+            ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
 
 workflows:
   butterfly-nightly:
