@@ -9,6 +9,7 @@ lotus_miner_systemd_extras:
 
 lotus_miner_verified_deals: true
 lotus_miner_data_root: "/fildev-network"
+lotus_miner_presealed_metadata: "{{ lotus_miner_data_root }}/presealed-metadata.json"
 
 lotus_miner_presealed_sectors:
   - "{{ lotus_miner_data_root }}/pre-seal/{{ proof_type }}/{{ proof_version }}/{{ sector_size }}/{{ lotus_miner_addr }}/000"

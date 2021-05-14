@@ -4,4 +4,4 @@ required_vars:
   - lotus_miner_addr
   - lotus_miner_golog_file
   - lotus_miner_presealed_sectors
-lotus_miner_presealed_metadata: "/tmp/presealed-metadata.json"
+  - lotus_miner_presealed_metadata

@@ -7,6 +7,7 @@ PartOf=lotus-daemon.service
 [Service]
 User={{ lotus_user }}
 Group={{ lotus_user }}
+ExecStartPre=/usr/local/bin/lotus-miner-init
 ExecStart=/usr/local/bin/lotus-miner run --nosync
 Environment=LOTUS_PATH="{{ lotus_path }}"
 Environment=LOTUS_MINER_PATH="{{ lotus_miner_path }}"
@@ -21,6 +22,7 @@ Environment={{ item.key }}="{{ item.value }}"
 {{ item.key }}={{ item.value }}
 {% endfor -%}
 
+TimeoutSec=10000
 Restart=always
 RestartSec=30
 
