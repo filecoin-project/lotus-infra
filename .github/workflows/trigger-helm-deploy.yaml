@@ -4,19 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       namespace:
-        description: "for helm jobs, the kubernetes namespace"
+        description: "kubernetes namespace"
       release:
-        description: "for helm jobs, the helm release"
+        description: "helm release"
       chart:
-        description: "for helm jobs, the helm chart"
+        description: "the helm chart"
       chart_version:
-        description: "for helm jobs, the helm chart version"
+        description: "the helm chart version"
       helm_append:
-        description: "for helm jobs, append this to the end of the helm command (i.e to add more -set's)"
+        description: "append this to the end of the helm command (i.e to add more -set's)"
       override_repository:
-        description: "for helm jobs, change image.repository"
+        description: "helm chart image.repository"
       override_tag:
-        description: "for helm jobs, change image.tag"
+        description: "helm chart image.tag"
       slack_channel:
         description: "the slack channel where notifications are sent"
         default: "netops-circleci-test"

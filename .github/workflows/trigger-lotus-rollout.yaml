@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       override_tag:
-        description: "for helm jobs, change image.tag"
+        description: "lotus tag"
       slack_channel:
         description: "the slack channel where notifications are sent"
         default: "netops-circleci-test"

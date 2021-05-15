@@ -4,11 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       override_tag:
-        description: "for helm jobs, change image.tag"
+        description: "lotus tag"
       lotus_install_network:
-        description: "for devnet reset, install this version of lotus."
+        description: "network to build lotus tools"
+        default: "butterflynet"
       lotus_deploy_network:
-        description: "for devnet jobs, network name used for finding the ansible hosts file"
+        description: "network to find ansible host"
+        default: "butterfly.fildev.network"
       slack_channel:
         description: "the slack channel where notifications are sent"
         default: "netops-circleci-test"
