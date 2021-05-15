@@ -1,0 +1,58 @@
+---
+name: trigger-circle
+on:
+  workflow_dispatch:
+    inputs:
+      api_workflow_requested:
+        default: none
+        description: "helm-deploy lotus-rollout lotus-devnet-ansible-upgrade lotus-devnet-ansible-reset"
+        required: true
+      namespace:
+        description: "for helm jobs, the kubernetes namespace"
+      release:
+        description: "for helm jobs, the helm release"
+      chart:
+        description: "for helm jobs, the helm chart"
+      chart_version:
+        description: "for helm jobs, the helm chart version"
+      helm_append:
+        description: "for helm jobs, append this to the end of the helm command (i.e to add more -set's)"
+      override_repository:
+        description: "for helm jobs, change image.repository"
+      override_tag:
+        description: "for helm jobs, change image.tag"
+      lotus_install_network:
+        description: "for devnet reset, install this version of lotus."
+      lotus_deploy_network:
+        description: "for devnet jobs, network name used for finding the ansible hosts file"
+      slack_channel:
+        description: "the slack channel where notifications are sent"
+        default: "netops-circleci-test"
+      circle_branch:
+        description: "circleci branch (used for testing new lotus-infra deploy code)"
+        default: master
+
+jobs:
+  trigger-circleci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: trigger
+        uses: promiseofcake/circleci-trigger-action@v1
+        with:
+          user-token: ${{ secrets.CIRCLE_TOKEN }}
+          project-slug: filecoin-project/lotus-infra
+          branch: ${{ github.event.inputs.circle_branch }}
+          payload: |
+            {
+              "api_workflow_requested": "${{ github.event.inputs.api_workflow_requested }}",
+              "namespace": "${{ github.event.inputs.namespace }}",
+              "release": "${{ github.event.inputs.release }}",
+              "chart": "${{ github.event.inputs.chart }}",
+              "chart_version": "${{ github.event.inputs.chart_version }}",
+              "helm_append": "${{ github.event.inputs.helm_append }}",
+              "override_repository": "${{ github.event.inputs.override_repository }}",
+              "override_tag": "${{ github.event.inputs.override_tag }}",
+              "lotus_install_network": "${{ github.event.inputs.lotus_install_network }}",
+              "lotus_deploy_network": "${{ github.event.inputs.lotus_deploy_network }}",
+              "slack_channel": "${{ github.event.inputs.slack_channel }}"
+            }
