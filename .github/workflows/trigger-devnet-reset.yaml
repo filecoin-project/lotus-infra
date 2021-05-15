@@ -1,24 +1,8 @@
 ---
-name: trigger-circle
+name: trigger-devnet-reset
 on:
   workflow_dispatch:
     inputs:
-      api_workflow_requested:
-        default: none
-        description: "helm-deploy lotus-rollout lotus-devnet-ansible-upgrade lotus-devnet-ansible-reset"
-        required: true
-      namespace:
-        description: "for helm jobs, the kubernetes namespace"
-      release:
-        description: "for helm jobs, the helm release"
-      chart:
-        description: "for helm jobs, the helm chart"
-      chart_version:
-        description: "for helm jobs, the helm chart version"
-      helm_append:
-        description: "for helm jobs, append this to the end of the helm command (i.e to add more -set's)"
-      override_repository:
-        description: "for helm jobs, change image.repository"
       override_tag:
         description: "for helm jobs, change image.tag"
       lotus_install_network:
@@ -44,13 +28,7 @@ jobs:
           branch: ${{ github.event.inputs.circle_branch }}
           payload: |
             {
-              "api_workflow_requested": "${{ github.event.inputs.api_workflow_requested }}",
-              "namespace": "${{ github.event.inputs.namespace }}",
-              "release": "${{ github.event.inputs.release }}",
-              "chart": "${{ github.event.inputs.chart }}",
-              "chart_version": "${{ github.event.inputs.chart_version }}",
-              "helm_append": "${{ github.event.inputs.helm_append }}",
-              "override_repository": "${{ github.event.inputs.override_repository }}",
+              "api_workflow_requested": "lotus-devnet-ansible-reset",
               "override_tag": "${{ github.event.inputs.override_tag }}",
               "lotus_install_network": "${{ github.event.inputs.lotus_install_network }}",
               "lotus_deploy_network": "${{ github.event.inputs.lotus_deploy_network }}",
