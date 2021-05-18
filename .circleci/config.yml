@@ -392,7 +392,10 @@ jobs:
           name: "restart machines"
           command: |
             cd ansible
-            ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
+            if [ ! << parameters.check >> ]
+            then
+              ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
+            fi
 
       # - run:
       #     name: "upload genesis"
@@ -491,7 +494,10 @@ jobs:
           name: "restart machines"
           command: |
             cd ansible
-            ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
+            if [ ! << parameters.check >> ]
+            then
+              ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
+            fi
 
 workflows:
   butterfly-nightly:

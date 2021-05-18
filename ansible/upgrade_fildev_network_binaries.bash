@@ -27,6 +27,7 @@ hostfile="inventories/${network}/hosts.yml"
 network_name="${network%%.*}net"
 build_flags="${buildflags:-""}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
+network_flag=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ network_flag }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 
 
 ../scripts/build_binaries.bash --src "$lotus_src" ${build_flags} --network $network_flag --build-ffi
