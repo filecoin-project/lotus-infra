@@ -543,9 +543,13 @@ workflows:
           release: << pipeline.parameters.release >>
           helm_append: << pipeline.parameters.helm_append >>
 
-  api-lotus-ansible-reset:
+  api-lotus-ansible-reset-careful:
     when:
-      equal: [ "lotus-devnet-ansible-reset", << pipeline.parameters.api_workflow_requested >> ]
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-reset"
+            - << pipeline.parameters.api_workflow_requested >>
+        - << pipeline.parameters.be_careful >>
     jobs:
       - lotus-ansible-reset:
           name: ansible-reset-careful-check
@@ -558,7 +562,6 @@ workflows:
           delay: "0"
           branch: << pipeline.parameters.override_tag >>
           check: true
-          when: << pipeline.parameters.be_careful >>
       - reset-approval:
           type: approval
           requires:
@@ -575,9 +578,17 @@ workflows:
           delay: "0"
           branch: << pipeline.parameters.override_tag >>
           check: false
-          when: << pipeline.parameters.be_careful >>
+
+  api-lotus-ansible-reset-nocareful:
+    when:
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-reset"
+            - << pipeline.parameters.api_workflow_requested >>
+        - not: << pipeline.parameters.be_careful >>
+    jobs:
       - lotus-ansible-reset:
-          name: ansible-reset-careful
+          name: ansible-reset-nocareful
           deploy_network: << pipeline.parameters.lotus_deploy_network >>
           install_network: << pipeline.parameters.lotus_install_network >>
           preseal: true
@@ -587,11 +598,14 @@ workflows:
           delay: "0"
           branch: << pipeline.parameters.override_tag >>
           check: false
-          unless: << pipeline.parameters.be_careful >>
 
-  api-lotus-ansible-upgrade:
+  api-lotus-ansible-upgrade-careful:
     when:
-      equal: [ "lotus-devnet-ansible-upgrade", << pipeline.parameters.api_workflow_requested >> ]
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-upgrade"
+            - << pipeline.parameters.api_workflow_requested >>
+        - << pipeline.parameters.be_careful >>
     jobs:
       - lotus-ansible-upgrade:
           name: ansible-upgrade-careful-check
@@ -599,28 +613,33 @@ workflows:
           build_flags: ""
           branch: << pipeline.parameters.override_tag >>
           check: true
-          when: << pipeline.parameters.be_careful >>
       - upgrade-approval:
           type: approval
           requires:
             - ansible-upgrade-careful-check
-          when: << pipeline.parameters.be_careful >>
       - lotus-ansible-upgrade:
           name: ansible-upgrade-careful
           deploy_network: << pipeline.parameters.lotus_deploy_network >>
           build_flags: ""
           branch: << pipeline.parameters.override_tag >>
-          check: flase
+          check: false
           requires:
             - upgrade-approval
-          when: << pipeline.parameters.be_careful >>
+
+  api-lotus-ansible-upgrade-nocareful:
+    when:
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-upgrade"
+            - << pipeline.parameters.api_workflow_requested >>
+        - not: << pipeline.parameters.be_careful >>
+    jobs:
       - lotus-ansible-upgrade:
-          name: ansible-upgrade-nocheck
+          name: ansible-upgrade-nocareful
           deploy_network: << pipeline.parameters.lotus_deploy_network >>
           build_flags: ""
           branch: << pipeline.parameters.override_tag >>
-          check: flase
-          unless: << pipeline.parameters.be_careful >>
+          check: false
 
   api-lotus-rollout:
     when:
