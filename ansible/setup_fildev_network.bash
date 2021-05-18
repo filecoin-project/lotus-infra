@@ -25,9 +25,13 @@ while [ "$1" != "" ]; do
         --start-services )      shift
                                 start_services="$1"
                                 ;;
+        --check )               ansible_args+=("--check")
+                                ;;
+        --verbose)              ansible_args+=("-v")
+                                ;;
         -h | --help )           usage
                                 exit
-																;;
+                                ;;
         -- )                    shift; break
                                 ;;
     esac
@@ -166,7 +170,7 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes -e lotus_pcr_reset=yes          \
     -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
     -e certbot_create_certificate=${create_certificate}                                            \
-    --diff -v
+    --diff "${ansible_args[@]}"
 
 # runs all the roles
 # ansible-playbook -i $hostfile lotus_devnet_provision2.yml                                           \
@@ -184,7 +188,7 @@ preseal_metadata=$(mktemp -d)
 
 # pulls down all the pre-sealed sectors from s3, hydrates the sectors, merges all the metadata, updates addresses everywhere
 # and then downloads the final sector metadata for each preminer
-ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata} --diff -v
+ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata} --diff "${ansible_args[@]}"
 
 
 genpath=$(mktemp -d)
@@ -261,7 +265,7 @@ popd
 # copy the genesis and start up all the services
 ansible-playbook -i $hostfile lotus_devnet_start.yml                                                     \
     -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/$network_flag.car" \
-		-e start_services="${start_services}"
+    -e start_services="${start_services}" "${ansible_args[@]}"
 
 set +x
 
