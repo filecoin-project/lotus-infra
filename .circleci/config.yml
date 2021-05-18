@@ -566,7 +566,6 @@ workflows:
           type: approval
           requires:
             - ansible-reset-careful-check
-          when: << pipeline.parameters.be_careful >>
       - lotus-ansible-reset:
           name: ansible-reset-careful
           deploy_network: << pipeline.parameters.lotus_deploy_network >>
