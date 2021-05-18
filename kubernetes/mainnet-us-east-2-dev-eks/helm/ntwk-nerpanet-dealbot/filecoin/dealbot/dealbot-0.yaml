@@ -17,6 +17,12 @@ controller:
       - host: lb.mainnet-us-east-2-dev.fildevops.net
         paths:
          - path: /nerpanet-dealbot-controller(/|$)(.*)
+  services:
+    api:
+      annotations: {}
+    graphql:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: dealbot-nerpanet.mainnet-us-east-2-dev.fildevops.net
   secrets:
     keySecret: dealbot-controller-key
   resources:
