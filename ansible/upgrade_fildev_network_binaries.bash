@@ -33,5 +33,6 @@ lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_update.yml \
-    -e binary_src="$lotus_src"                      \
+    -e binary_src="$lotus_src"                 \
+    --vault-password-file .vault_password      \
     --diff "${ansible_args[@]}"

@@ -23,6 +23,7 @@
         group: "{{ lotus_user }}"
         mode: "0600"
         dest: "{{ lotus_path }}/keystore/{{ lotus_jwt_keyname }}"
+      ignore_errors: "{{ ansible_check_mode }}"
     - name: Ensure token exists
       copy:
         content: "{{ lotus_jwt_token }}"
