@@ -32,6 +32,6 @@ lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 ../scripts/build_binaries.bash --src "$lotus_src" ${build_flags} --network $network_flag --build-ffi
 
 # runs all the roles
-echo ansible-playbook -i $hostfile lotus_update.yml \
+ansible-playbook -i $hostfile lotus_update.yml \
     -e binary_src="$lotus_src"                      \
     --diff "${ansible_args[@]}"
