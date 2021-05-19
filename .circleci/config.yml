@@ -488,6 +488,11 @@ jobs:
             unset GOPATH
             ./upgrade_fildev_network_binaries.bash "${args[@]}"
       - run:
+          name: "remove faucet maintenance"
+          command: |
+            cd ansible
+            ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
+      - run:
           name: "restart machines"
           command: |
             cd ansible
