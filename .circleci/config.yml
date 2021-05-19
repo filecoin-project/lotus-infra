@@ -380,7 +380,7 @@ jobs:
             << parameters.reset >> && args+=("-r")
             << parameters.preseal >> && args+=("-p")
             << parameters.create_cert >> && args+=("-c")
-            << parameters.check >> == && args+=("--check")
+            << parameters.check >> && args+=("--check")
             cd ansible
             GOPATH=/home/circleci/.go_workspace ./setup_fildev_network.bash --start-services=false "${args[@]}"
       - run:
