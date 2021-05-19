@@ -155,7 +155,7 @@ additional_accounts=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ additional
 #scp ubuntu@192.168.1.240:/home/ubuntu/src/github.com/filecoin-project/lotus/lotus-shed .
 #popd
 
-../scripts/build_binaries.bash --src "$lotus_src" ${build_flags} --network $network_flag --build-ffi
+../scripts/build_binaries.bash --src "$lotus_src" ${build_flags} --network $network_flag
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
