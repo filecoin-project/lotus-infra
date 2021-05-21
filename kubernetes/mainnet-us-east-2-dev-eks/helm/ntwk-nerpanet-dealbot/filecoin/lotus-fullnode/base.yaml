@@ -1,5 +1,5 @@
 image:
-  tag: nerpanet-v1.6.0
+  tag: nerpanet-v1.8.0
 
 prometheusOperatorServiceMonitor: true
 
