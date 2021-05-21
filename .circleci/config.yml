@@ -39,6 +39,9 @@ parameters:
   override_tag:
     type: string
     default: ""
+  be_careful:
+    type: boolean
+    default: true
   lotus_install_network:
     type: string
     default: ""
@@ -293,6 +296,9 @@ jobs:
       branch:
         type: string
         default: "master"
+      check:
+        type: boolean
+        default: true
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
@@ -369,10 +375,12 @@ jobs:
               "-s" "$LOTUSROOT"
               "-b" "<< parameters.build_flags >>"
               "-d" "<< parameters.delay >>"
+              "--verbose"
             )
-            test << parameters.reset >> == "true" && args+=("-r")
-            test << parameters.preseal >> == "true" && args+=("-p")
-            test << parameters.create_cert >> == "true" && args+=("-c")
+            << parameters.reset >> && args+=("-r")
+            << parameters.preseal >> && args+=("-p")
+            << parameters.create_cert >> && args+=("-c")
+            << parameters.check >> && args+=("--check")
             cd ansible
             GOPATH=/home/circleci/.go_workspace ./setup_fildev_network.bash --start-services=false "${args[@]}"
       - run:
@@ -384,7 +392,7 @@ jobs:
           name: "restart machines"
           command: |
             cd ansible
-            ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
+            << parameters.check >> || ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
 
       # - run:
       #     name: "upload genesis"
@@ -405,6 +413,9 @@ jobs:
       branch:
         type: string
         default: "master"
+      check:
+        type: boolean
+        default: true
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
@@ -470,15 +481,22 @@ jobs:
               "-n" "<< parameters.deploy_network >>"
               "-s" "$LOTUSROOT"
               "-b" "<< parameters.build_flags >>"
+              "--verbose"
             )
+            << parameters.check >> && args+=("--check")
             cd ansible
             unset GOPATH
             ./upgrade_fildev_network_binaries.bash "${args[@]}"
       - run:
+          name: "remove faucet maintenance"
+          command: |
+            cd ansible
+            ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
+      - run:
           name: "restart machines"
           command: |
             cd ansible
-            ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
+            << parameters.check >> || ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
 
 workflows:
   butterfly-nightly:
@@ -530,28 +548,102 @@ workflows:
           release: << pipeline.parameters.release >>
           helm_append: << pipeline.parameters.helm_append >>
 
-  api-lotus-ansible-reset:
+  api-lotus-ansible-reset-careful:
     when:
-      equal: [ "lotus-devnet-ansible-reset", << pipeline.parameters.api_workflow_requested >> ]
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-reset"
+            - << pipeline.parameters.api_workflow_requested >>
+        - << pipeline.parameters.be_careful >>
     jobs:
       - lotus-ansible-reset:
+          name: ansible-reset-careful-check
           deploy_network: << pipeline.parameters.lotus_deploy_network >>
           install_network: << pipeline.parameters.lotus_install_network >>
-          preseal: false
-          create_cert: false
+          preseal: true
+          create_cert: true
           build_flags: ""
-          reset: false
+          reset: true
           delay: "0"
           branch: << pipeline.parameters.override_tag >>
+          check: true
+      - reset-approval:
+          type: approval
+          requires:
+            - ansible-reset-careful-check
+      - lotus-ansible-reset:
+          name: ansible-reset-careful
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          install_network: << pipeline.parameters.lotus_install_network >>
+          preseal: true
+          create_cert: true
+          build_flags: ""
+          reset: true
+          delay: "0"
+          branch: << pipeline.parameters.override_tag >>
+          check: false
 
-  api-lotus-ansible-upgrade:
+  api-lotus-ansible-reset-nocareful:
     when:
-      equal: [ "lotus-devnet-ansible-upgrade", << pipeline.parameters.api_workflow_requested >> ]
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-reset"
+            - << pipeline.parameters.api_workflow_requested >>
+        - not: << pipeline.parameters.be_careful >>
+    jobs:
+      - lotus-ansible-reset:
+          name: ansible-reset-nocareful
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          install_network: << pipeline.parameters.lotus_install_network >>
+          preseal: true
+          create_cert: true
+          build_flags: ""
+          reset: true
+          delay: "0"
+          branch: << pipeline.parameters.override_tag >>
+          check: false
+
+  api-lotus-ansible-upgrade-careful:
+    when:
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-upgrade"
+            - << pipeline.parameters.api_workflow_requested >>
+        - << pipeline.parameters.be_careful >>
     jobs:
       - lotus-ansible-upgrade:
+          name: ansible-upgrade-careful-check
           deploy_network: << pipeline.parameters.lotus_deploy_network >>
           build_flags: ""
           branch: << pipeline.parameters.override_tag >>
+          check: true
+      - upgrade-approval:
+          type: approval
+          requires:
+            - ansible-upgrade-careful-check
+      - lotus-ansible-upgrade:
+          name: ansible-upgrade-careful
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          build_flags: ""
+          branch: << pipeline.parameters.override_tag >>
+          check: false
+          requires:
+            - upgrade-approval
+
+  api-lotus-ansible-upgrade-nocareful:
+    when:
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-upgrade"
+            - << pipeline.parameters.api_workflow_requested >>
+        - not: << pipeline.parameters.be_careful >>
+    jobs:
+      - lotus-ansible-upgrade:
+          name: ansible-upgrade-nocareful
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          build_flags: ""
+          branch: << pipeline.parameters.override_tag >>
+          check: false
 
   api-lotus-rollout:
     when:

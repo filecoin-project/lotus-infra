@@ -13,6 +13,10 @@ while [ "$1" != "" ]; do
         -b | --build-flags )    shift
                                 buildflags="$1"
                                 ;;
+        --check )               ansible_args+=("--check")
+                                ;;
+        --verbose )             ansible_args+=("-v")
+                                ;;
         -- )                    shift; break
                                 ;;
     esac
@@ -23,21 +27,13 @@ hostfile="inventories/${network}/hosts.yml"
 network_name="${network%%.*}net"
 build_flags="${buildflags:-""}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
+network_flag=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ network_flag }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 
 
-../scripts/build_binaries.bash --src "$lotus_src" ${build_flags} --network $network_flag --build-ffi
+../scripts/build_binaries.bash --src "$lotus_src" ${build_flags} --network $network_flag
 
 # runs all the roles
-ansible-playbook -i $hostfile lotus_devnet_provision.yml                              \
-    -e lotus_binary_src="$lotus_src/lotus"                                            \
-    -e lotus_miner_binary_src="$lotus_src/lotus-miner"                                \
-    -e lotus_shed_binary_src="$lotus_src/lotus-shed"                                  \
-    -e lotus_seed_binary_src="$lotus_src/lotus-seed"                                  \
-    -e lotus_pcr_binary_src="$lotus_src/lotus-pcr"                                    \
-    -e lotus_fountain_binary_src="$lotus_src/lotus-fountain"                          \
-    -e stats_binary_src="$lotus_src/lotus-stats"                                      \
-    -e chainwatch_binary_src="$lotus_src/lotus-chainwatch"                            \
-    -e lotus_reset=no -e lotus_miner_reset=no -e stats_reset=no -e lotus_pcr_reset=no \
-    -e chainwatch_db_reset=no -e chainwatch_reset=no                                  \
-    -e certbot_create_certificate=${create_certificate}                               \
-    --diff -v
+ansible-playbook -i $hostfile lotus_update.yml \
+    -e binary_src="$lotus_src"                 \
+    --vault-password-file .vault_password      \
+    --diff "${ansible_args[@]}"
