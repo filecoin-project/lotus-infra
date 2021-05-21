@@ -4,6 +4,11 @@
   apt:
     update_cache: true
 
+- name: prevent kernel updates
+  dpkg_selections:
+    name: linux-image-aws
+    selection: hold
+
 - name: Install tools
   package:
     name:
