@@ -14,6 +14,13 @@ loadBalancer:
 gatewayEnvs:
   - name: GOLOG_LOG_FMT
     value: json
+  - name: LOTUS_JAEGER_AGENT_HOST
+    valueFrom:
+      fieldRef:
+        apiVersion: v1
+        fieldPath: status.hostIP
+  - name: LOTUS_JAEGER_AGENT_PORT
+    value: "6831"
 
 deployment:
   replicas: 2
