@@ -18,6 +18,18 @@ parameters:
     type: string
     default: "none"
     description: run different workflows depending on whether triggered through api or git push
+  circle_context:
+    type: string
+    default: sentinel-staging-deploy
+    description: circleci context (environment variables, etc) to use
+  kubernetes_cluster:
+    type: string
+    default: mainnet-us-east-2-dev-eks
+    description: kubernetes cluster
+  aws_region:
+    type: string
+    default: us-east-2
+    description: aws region. should be the region where the kubernetes cluster is running.
   namespace:
     type: string
     default: "error_this_namespace_definitely_does_not_exist"
@@ -545,9 +557,9 @@ workflows:
       equal: [ "helm-deploy", << pipeline.parameters.api_workflow_requested >> ]
     jobs:
       - helm-deploy:
-          context: sentinel-staging-deploy
-          cluster: mainnet-us-east-2-dev-eks
-          region: us-east-2
+          context: << pipeline.parameters.circle_context >>
+          cluster: << pipeline.parameters.kubernetes_cluster >>
+          region: << pipeline.parameters.aws_region >>
           namespace: << pipeline.parameters.namespace >>
           chart: << pipeline.parameters.chart >>
           chart_version: << pipeline.parameters.chart_version >>
