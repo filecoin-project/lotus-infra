@@ -86,7 +86,7 @@ ingress:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     # nginx.ingress.kubernetes.io/rewrite-target: /$2
   hosts:
-    - host: lb.mainnet-us-east-2-dev.fildevops.net
+    - host: lb.mainnet-us-east-1.filops.net
       paths:
         - path: /mainnet-dealbotdb(/|$)(.*)
           backend:
