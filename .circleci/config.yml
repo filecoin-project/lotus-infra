@@ -394,6 +394,14 @@ jobs:
             cd ansible
             << parameters.check >> || ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
 
+      - run:
+          name: "capture new genesis"
+          command: |
+            mkdir /tmp/reset
+            cp -a "${LOTUSROOT}/build" /tmp/reset
+            cp -a ansible/inventories /tmp/reset
+      - store_artifacts:
+          path: /tmp/reset
       # - run:
       #     name: "upload genesis"
       #     command:
