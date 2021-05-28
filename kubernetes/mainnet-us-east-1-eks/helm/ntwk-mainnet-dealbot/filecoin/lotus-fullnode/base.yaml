@@ -30,7 +30,7 @@ daemonConfig: |
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
 
 additionalLabels:
-  network: nerpanet
+  network: mainnet
 
 persistence:
   datastore:
