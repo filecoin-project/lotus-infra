@@ -149,3 +149,11 @@ deployments:
     namespace: canaries
     values:
       - base
+  # gateway
+  - chart: filecoin/lotus-gateway
+    version: 0.1.4
+    namespace: ntwk-mainnet-fullnode
+    name: gateway-0
+    values:
+      - base
+      - gateway-0
