@@ -27,4 +27,3 @@ jaeger:
   sampler:
     type: "probabilistic"
     param: 0.0001
-

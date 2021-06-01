@@ -79,26 +79,22 @@
     group: "{{ lotus_user }}"
     mode: "0644"
 
-- name: Ensure init service file
+- name: Ensure pre-script (presealed)
   template:
-    src: ../templates/lotus-miner-init-presealed.service.j2
-    dest: /etc/systemd/system/lotus-miner-init.service
+    src: ../templates/lotus-miner-init-presealed.j2
+    dest: /usr/local/bin/lotus-miner-init
     owner: root
     group: root
-    mode: "0644"
-  notify:
-    - systemd-daemon-reload
+    mode: "0755"
   when: lotus_miner_presealed == "yes"
 
-- name: Ensure init service file
+- name: Ensure pre-script (not presealed)
   template:
-    src: ../templates/lotus-miner-init.service.j2
-    dest: /etc/systemd/system/lotus-miner-init.service
+    src: ../templates/lotus-miner-init.j2
+    dest: /usr/local/bin/lotus-miner-init
     owner: root
     group: root
-    mode: "0644"
-  notify:
-    - systemd-daemon-reload
+    mode: "0755"
   when: lotus_miner_presealed == "no"
 
 - name: Ensure parameters are download

@@ -2,8 +2,12 @@ version: 2.1
 
 orbs:
   aws-eks: circleci/aws-eks@1.0.3
+  aws-cli: circleci/aws-cli@2.0.0
   helm: circleci/helm@1.2.0
-
+  ansible-playbook: orbss/ansible-playbook@0.0.5
+  rust: circleci/rust@1.5.0
+  go: circleci/go@1.6.0
+  slack: circleci/slack@4.4.2
 
 # Some of the workflows in this CI config are intended to be triggered over the CircleCI API
 # The Circle v2 API allows API users to call a pipeline, and conditionally execute workflows.
@@ -14,6 +18,18 @@ parameters:
     type: string
     default: "none"
     description: run different workflows depending on whether triggered through api or git push
+  circle_context:
+    type: string
+    default: sentinel-staging-deploy
+    description: circleci context (environment variables, etc) to use
+  kubernetes_cluster:
+    type: string
+    default: mainnet-us-east-2-dev-eks
+    description: kubernetes cluster
+  aws_region:
+    type: string
+    default: us-east-2
+    description: aws region. should be the region where the kubernetes cluster is running.
   namespace:
     type: string
     default: "error_this_namespace_definitely_does_not_exist"
@@ -35,14 +51,25 @@ parameters:
   override_tag:
     type: string
     default: ""
+  be_careful:
+    type: boolean
+    default: true
+  lotus_install_network:
+    type: string
+    default: ""
+  lotus_deploy_network:
+    type: string
+    default: ""
+  slack_channel:
+    type: string
+    default: "netops-circleci-test"
+
 
 commands:
   install-helm:
     steps:
       - helm/install-helm-client:
           version: v3.5.0
-  install-helm-repos:
-    steps:
       - run:
           command: |
             helm repo add filecoin https://filecoin-project.github.io/helm-charts
@@ -68,14 +95,17 @@ commands:
       where:
         type: string
         description: where to save
+      branch:
+        type: string
+        default: "master"
+        description: branch to checkout
     steps:
       - run:
-          command: git clone << parameters.repo >> << parameters.where >>
+          command: git clone --recurse-submodules --branch << parameters.branch >> << parameters.repo >> << parameters.where >>
   docker-login:
     steps:
       - run:
           command: echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
-
 
 jobs:
   # build and push lotus.
@@ -102,6 +132,7 @@ jobs:
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
           where: $HOME/lotus
+          branch: << parameters.tag >>
       - run:
           name: push docker << parameters.network >> << parameters.tag >> to << parameters.repo >>
           environment:
@@ -123,6 +154,32 @@ jobs:
           paths:
             - docker_tag
             - docker_repo
+
+  lotus-sync-wait:
+    parameters:
+      cluster:
+        type: string
+        description: eks cluster name
+      region:
+        type: string
+        description: aws region
+      namespace:
+        type: string
+        description: kubernetes namespace
+      pod:
+        type: string
+        description: kubernetes namespace
+    executor: aws-eks/python3
+    steps:
+      - setup-eks:
+          cluster: << parameters.cluster >>
+          region: << parameters.region >>
+      - run:
+          name: Wait until lotus is synced
+          command: |
+            kubectl -n << parameters.namespace >> wait --for=condition=ready pod << parameters.pod >>
+            sleep 10
+            kubectl -n << parameters.namespace >> exec << parameters.pod >> -- lotus sync wait
 
   # This will deploy a helm chart with values stored in this repo.
   # Each release will have two helm values files -- "base.yaml" and <release_name>.yaml
@@ -165,12 +222,47 @@ jobs:
         description: override image.repository and image.tag using the workspace.
     executor: aws-eks/python3
     steps:
+      - slack/notify:
+          event: always
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "HELM DEPLOYMENT :shipitparrot: :rocket:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "This looks like a real winner if you ask me.\n\n*release:* << parameters.release >>\n*chart:* << parameters.chart >>/<< parameters.chart_version >>\n*cluster:* << parameters.cluster >>\n*namespace:* << parameters.namespace >>"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
       - checkout
       - setup-eks:
           cluster: << parameters.cluster >>
           region: << parameters.region >>
       - install-helm
-      - install-helm-repos
       - attach_workspace:
           at: /tmp/circle
       - run:
@@ -191,6 +283,240 @@ jobs:
             echo "all helm overrides being applied:"
             echo $HELM_APPEND
             helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
+
+  lotus-ansible-reset:
+    parameters:
+      install_network:
+        type: string
+      deploy_network:
+        type: string
+      preseal:
+        type: boolean
+        default: true
+      create_cert:
+        type: boolean
+        default: true
+      build_flags:
+        type: string
+        default: "-f"
+      reset:
+        type: boolean
+        default: true
+      delay:
+        type: string
+        default: "0"
+      branch:
+        type: string
+        default: "master"
+      check:
+        type: boolean
+        default: true
+    machine:
+      image: ubuntu-2004:202010-01
+      docker_layer_caching: true
+    resource_class: 2xlarge
+    environment:
+      LOTUSROOT: /home/circleci/.go_workspace/src/github.com/filecoin-project/lotus
+    steps:
+      - slack/notify:
+          event: always
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "DEVNET ANSIBLE DEPLOYMENT :filecoin-new:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "The network will be reset in about 30 mintues.\nplease check functionality manually once this is complete\n\n*network:* << parameters.deploy_network >>\n*branch:* << parameters.branch >>"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+      - checkout
+      - aws-cli/install
+      - rust/install
+      - go/install:
+          version: 1.15.5
+      - ansible-playbook/install
+      - git-clone:
+          repo: https://github.com/filecoin-project/lotus
+          where: $LOTUSROOT
+          branch: << parameters.branch >>
+      - run:
+          name: install lotus software
+          command: |
+            sudo apt-get update
+            sudo apt-get install libhwloc-dev ocl-icd-opencl-dev
+            sudo ln -s /usr/lib/x86_64-linux-gnu/libhwloc.so.15 /usr/lib/x86_64-linux-gnu/libhwloc.so.5
+            cd $LOTUSROOT
+            GOFLAGS+=-tags=<< parameters.install_network >> make lotus-shed lotus-seed
+            sudo install -o root -g root -m 0755 ./lotus-seed ./lotus-shed /usr/local/bin
+      - run:
+          name: setup secrets
+          command: |
+            cd ansible
+            echo $ANSIBLE_VAULT_PASSWORD > .vault_password
+      - run:
+          name: ansible reset << parameters.deploy_network >>
+          no_output_timeout: 30m
+          command: |
+            args=(
+              "-n" "<< parameters.deploy_network >>"
+              "-s" "$LOTUSROOT"
+              "-b" "<< parameters.build_flags >>"
+              "-d" "<< parameters.delay >>"
+              "--verbose"
+            )
+            << parameters.reset >> && args+=("-r")
+            << parameters.preseal >> && args+=("-p")
+            << parameters.create_cert >> && args+=("-c")
+            << parameters.check >> && args+=("--check")
+            cd ansible
+            GOPATH=/home/circleci/.go_workspace ./setup_fildev_network.bash --start-services=false "${args[@]}"
+      - run:
+          name: "remove faucet maintenance"
+          command: |
+            cd ansible
+            ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
+      - run:
+          name: "restart machines"
+          command: |
+            cd ansible
+            << parameters.check >> || ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
+
+      - run:
+          name: "capture new genesis"
+          command: |
+            mkdir /tmp/reset
+            cp -a "${LOTUSROOT}/build" /tmp/reset
+            cp -a ansible/inventories /tmp/reset
+      - store_artifacts:
+          path: /tmp/reset
+      # - run:
+      #     name: "upload genesis"
+      #     command:
+      #       cd $LOTUSROOT
+      #       git config --global user.name "filecoin"
+      #       git config --global user.email "noreply@filecoin.io"
+      #       git commit -am "automated genesis build"
+      #       git push origin HEAD:new-genesis-$(date +%d%h%y-%H%M)
+
+  lotus-ansible-upgrade:
+    parameters:
+      deploy_network:
+        type: string
+      build_flags:
+        type: string
+        default: "-f"
+      branch:
+        type: string
+        default: "master"
+      check:
+        type: boolean
+        default: true
+    machine:
+      image: ubuntu-2004:202010-01
+      docker_layer_caching: true
+    resource_class: 2xlarge
+    environment:
+      LOTUSROOT: /home/circleci/.go_workspace/src/github.com/filecoin-project/lotus
+    steps:
+      - slack/notify:
+          event: always
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "DEVNET ANSIBLE UPGRADE :filecoin-new:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "network binaries will be upgraded in about 10 mintues.\nplease check functionality manually once this is complete\n\n*network:* << parameters.deploy_network >>\n*branch:* << parameters.branch >>"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+      - checkout
+      - aws-cli/install
+      - rust/install
+      - go/install:
+          version: 1.15.5
+      - ansible-playbook/install
+      - git-clone:
+          repo: https://github.com/filecoin-project/lotus
+          where: $LOTUSROOT
+          branch: << parameters.branch >>
+      - run:
+          name: setup secrets
+          command: |
+            cd ansible
+            echo $ANSIBLE_VAULT_PASSWORD > .vault_password
+      - run:
+          name: ansible upgrade << parameters.deploy_network >>
+          command: |
+            args=(
+              "-n" "<< parameters.deploy_network >>"
+              "-s" "$LOTUSROOT"
+              "-b" "<< parameters.build_flags >>"
+              "--verbose"
+            )
+            << parameters.check >> && args+=("--check")
+            cd ansible
+            unset GOPATH
+            ./upgrade_fildev_network_binaries.bash "${args[@]}"
+      - run:
+          name: "remove faucet maintenance"
+          command: |
+            cd ansible
+            ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
+      - run:
+          name: "restart machines"
+          command: |
+            cd ansible
+            << parameters.check >> || ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
 
 workflows:
   butterfly-nightly:
@@ -231,9 +557,9 @@ workflows:
       equal: [ "helm-deploy", << pipeline.parameters.api_workflow_requested >> ]
     jobs:
       - helm-deploy:
-          context: sentinel-staging-deploy
-          cluster: mainnet-us-east-2-dev-eks
-          region: us-east-2
+          context: << pipeline.parameters.circle_context >>
+          cluster: << pipeline.parameters.kubernetes_cluster >>
+          region: << pipeline.parameters.aws_region >>
           namespace: << pipeline.parameters.namespace >>
           chart: << pipeline.parameters.chart >>
           chart_version: << pipeline.parameters.chart_version >>
@@ -241,3 +567,588 @@ workflows:
           override_tag: << pipeline.parameters.override_tag >>
           release: << pipeline.parameters.release >>
           helm_append: << pipeline.parameters.helm_append >>
+
+  api-lotus-ansible-reset-careful:
+    when:
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-reset"
+            - << pipeline.parameters.api_workflow_requested >>
+        - << pipeline.parameters.be_careful >>
+    jobs:
+      - lotus-ansible-reset:
+          name: ansible-reset-careful-check
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          install_network: << pipeline.parameters.lotus_install_network >>
+          preseal: true
+          create_cert: true
+          build_flags: ""
+          reset: true
+          delay: "0"
+          branch: << pipeline.parameters.override_tag >>
+          check: true
+      - reset-approval:
+          type: approval
+          requires:
+            - ansible-reset-careful-check
+      - lotus-ansible-reset:
+          name: ansible-reset-careful
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          install_network: << pipeline.parameters.lotus_install_network >>
+          preseal: true
+          create_cert: true
+          build_flags: ""
+          reset: true
+          delay: "0"
+          branch: << pipeline.parameters.override_tag >>
+          check: false
+
+  api-lotus-ansible-reset-nocareful:
+    when:
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-reset"
+            - << pipeline.parameters.api_workflow_requested >>
+        - not: << pipeline.parameters.be_careful >>
+    jobs:
+      - lotus-ansible-reset:
+          name: ansible-reset-nocareful
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          install_network: << pipeline.parameters.lotus_install_network >>
+          preseal: true
+          create_cert: true
+          build_flags: ""
+          reset: true
+          delay: "0"
+          branch: << pipeline.parameters.override_tag >>
+          check: false
+
+  api-lotus-ansible-upgrade-careful:
+    when:
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-upgrade"
+            - << pipeline.parameters.api_workflow_requested >>
+        - << pipeline.parameters.be_careful >>
+    jobs:
+      - lotus-ansible-upgrade:
+          name: ansible-upgrade-careful-check
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          build_flags: ""
+          branch: << pipeline.parameters.override_tag >>
+          check: true
+      - upgrade-approval:
+          type: approval
+          requires:
+            - ansible-upgrade-careful-check
+      - lotus-ansible-upgrade:
+          name: ansible-upgrade-careful
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          build_flags: ""
+          branch: << pipeline.parameters.override_tag >>
+          check: false
+          requires:
+            - upgrade-approval
+
+  api-lotus-ansible-upgrade-nocareful:
+    when:
+      and:
+        - equal: 
+            - "lotus-devnet-ansible-upgrade"
+            - << pipeline.parameters.api_workflow_requested >>
+        - not: << pipeline.parameters.be_careful >>
+    jobs:
+      - lotus-ansible-upgrade:
+          name: ansible-upgrade-nocareful
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          build_flags: ""
+          branch: << pipeline.parameters.override_tag >>
+          check: false
+
+  api-lotus-rollout:
+    when:
+      equal: [ "lotus-rollout", << pipeline.parameters.api_workflow_requested >> ]
+    jobs:
+      # butterflynet ansible
+      - slack/on-hold:
+          name: butterfly-slack-on-hold
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "LOTUS ROLLOUT",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "woah, woah, woah!\nThis marks the start of a lotus rollout.\nFor safety, this doesn't start by default. Go to CircleCI and click the approval buttons to move this thing along.\n\n*lotus branch:* << pipeline.parameters.override_tag >>"
+                  },
+                  "accessory": {
+                    "type": "image",
+                    "image_url": "https://gist.githubusercontent.com/coryschwartz/69939cdc09bbc032e71099d4a679247d/raw/a1685f215311c0d1e37e879ad63a5336f619f1b4/slow.jpg",
+                    "alt_text": "slow it down"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+      - start-rollout:
+          type: approval
+          requires:
+            - butterfly-slack-on-hold
+      - lotus-ansible-reset:
+          name: ansible-deploy-butterflynet
+          deploy_network: butterfly.fildev.network
+          install_network: butterflynet
+          preseal: false
+          create_cert: false
+          build_flags: ""
+          reset: false
+          delay: "0"
+          branch: << pipeline.parameters.override_tag >>
+          requires:
+            - start-rollout
+      # Manual approval for calibrationnet
+      - start-calibrationnet:
+          type: approval
+          requires:
+           - ansible-deploy-butterflynet
+      - lotus-build-containers:
+          name: build-containers-calibrationnet
+          tag: << pipeline.parameters.override_tag >>
+          repo: << pipeline.parameters.override_repository >>
+          use_gitsha: false
+          network: calibnet
+          requires:
+            - start-calibrationnet
+      # calibrationnet on kubernetes
+      - helm-deploy:
+          name: helm-deploy-calibrationnet
+          context: sentinel-staging-deploy
+          cluster: mainnet-us-east-2-dev-eks
+          region: us-east-2
+          namespace: ntwk-calibrationnet-fullnode
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          matrix:
+            parameters:
+              release:
+                - fullnode-0
+                - fullnode-1
+                - fullnode-2
+          requires:
+           - build-containers-calibrationnet
+      # calibrationnet ansible
+      - lotus-ansible-reset:
+          name: ansible-deploy-calibrationnet
+          deploy_network: calibration.fildev.network
+          install_network: calibnet
+          preseal: false
+          create_cert: false
+          build_flags: "-f"
+          reset: false
+          delay: "0"
+          requires:
+            - start-calibrationnet
+      # mainnet
+      - lotus-build-containers:
+          name: build-containers-mainnet
+          tag: << pipeline.parameters.override_tag >>
+          repo: << pipeline.parameters.override_repository >>
+          use_gitsha: false
+          network: mainnet
+      # Manual approvals for mainnet
+      - start-bootstrap-mainnet-us-east-1-eks:
+          type: approval
+          requires:
+           - build-containers-mainnet
+      - start-bootstrap-mainnet-eu-central-1-eks:
+          type: approval
+          requires:
+           - build-containers-mainnet
+      - start-bootstrap-mainnet-ap-southeast-1-eks:
+          type: approval
+          requires:
+           - build-containers-mainnet
+      - start-fullnode-mainnet-us-east-1-eks:
+          type: approval
+          requires:
+           - build-containers-mainnet
+
+      # deploy bootstrappers one DC at a time
+      # us-east-1 bootstrappers 0-2
+      - helm-deploy:
+          name: helm-deploy-bootstrap-0
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-0
+          requires:
+           - start-bootstrap-mainnet-us-east-1-eks
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-0
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-0-lotus-0
+          requires:
+           - helm-deploy-bootstrap-0
+      - helm-deploy:
+          name: helm-deploy-bootstrap-1
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-1
+          requires:
+           - lotus-sync-wait-bootstrap-0
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-1
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-1-lotus-0
+          requires:
+           - helm-deploy-bootstrap-1
+      - helm-deploy:
+          name: helm-deploy-bootstrap-2
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-2
+          requires:
+           - lotus-sync-wait-bootstrap-1
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-2
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-2-lotus-0
+          requires:
+           - helm-deploy-bootstrap-2
+
+      # eu-central-1 bootstrappers 3-5
+      - helm-deploy:
+          name: helm-deploy-bootstrap-3
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-3
+          requires:
+           - start-bootstrap-mainnet-eu-central-1-eks
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-3
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-3-lotus-0
+          requires:
+           - helm-deploy-bootstrap-3
+      - helm-deploy:
+          name: helm-deploy-bootstrap-4
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-4
+          requires:
+           - lotus-sync-wait-bootstrap-3
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-4
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-4-lotus-0
+          requires:
+           - helm-deploy-bootstrap-4
+      - helm-deploy:
+          name: helm-deploy-bootstrap-5
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-5
+          requires:
+           - lotus-sync-wait-bootstrap-4
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-5
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-5-lotus-0
+          requires:
+           - helm-deploy-bootstrap-5
+
+      # ap-southeast-1 bootstrappers 6-8
+      - helm-deploy:
+          name: helm-deploy-bootstrap-6
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-6
+          requires:
+           - start-bootstrap-mainnet-ap-southeast-1-eks
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-6
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-6-lotus-0
+          requires:
+           - helm-deploy-bootstrap-6
+      - helm-deploy:
+          name: helm-deploy-bootstrap-7
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-7
+          requires:
+           - lotus-sync-wait-bootstrap-6
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-7
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-7-lotus-0
+          requires:
+           - helm-deploy-bootstrap-7
+      - helm-deploy:
+          name: helm-deploy-bootstrap-8
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: bootstrap-8
+          requires:
+           - lotus-sync-wait-bootstrap-7
+      - lotus-sync-wait:
+          name: lotus-sync-wait-bootstrap-8
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-bootstrap
+          pod: bootstrap-8-lotus-0
+          requires:
+           - helm-deploy-bootstrap-8
+
+      # fullnodes, one at a time.
+      - helm-deploy:
+          name: helm-deploy-fullnode-0
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-fullnode
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: fullnode-0
+          requires:
+           - start-fullnode-mainnet-us-east-1-eks
+      - start-fullnode-1:
+          type: approval
+          requires:
+           - helm-deploy-fullnode-0
+      - helm-deploy:
+          name: helm-deploy-fullnode-1
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-fullnode
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: fullnode-1
+          requires:
+           - start-fullnode-1
+      - start-fullnode-2:
+          type: approval
+          requires:
+           - helm-deploy-fullnode-1
+      - helm-deploy:
+          name: helm-deploy-fullnode-2
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-fullnode
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: fullnode-2
+          requires:
+           - start-fullnode-2
+      - start-fullnode-3:
+          type: approval
+          requires:
+           - helm-deploy-fullnode-2
+      - helm-deploy:
+          name: helm-deploy-fullnode-3
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-fullnode
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: fullnode-3
+          requires:
+           - start-fullnode-3
+      - start-fullnode-4:
+          type: approval
+          requires:
+           - helm-deploy-fullnode-3
+      - helm-deploy:
+          name: helm-deploy-fullnode-4
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-fullnode
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: fullnode-4
+          requires:
+           - start-fullnode-4
+      - start-fullnode-5:
+          type: approval
+          requires:
+           - helm-deploy-fullnode-4
+      - helm-deploy:
+          name: helm-deploy-fullnode-5
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-fullnode
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: fullnode-5
+          requires:
+           - start-fullnode-5
+      - start-fullnode-6:
+          type: approval
+          requires:
+           - helm-deploy-fullnode-5
+      - helm-deploy:
+          name: helm-deploy-fullnode-6
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-fullnode
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: fullnode-6
+          requires:
+           - start-fullnode-6
+      - start-fullnode-7:
+          type: approval
+          requires:
+           - helm-deploy-fullnode-6
+      - helm-deploy:
+          name: helm-deploy-fullnode-7
+          context: filecoin-mainnet-aws
+          cluster: mainnet-us-east-1-eks
+          region: us-east-1
+          namespace: ntwk-mainnet-fullnode
+          chart: filecoin/lotus-fullnode
+          chart_version: 0.3.1
+          override_repository: << pipeline.parameters.override_repository >>
+          override_tag: << pipeline.parameters.override_tag >>
+          helm_append: << pipeline.parameters.helm_append >>
+          release: fullnode-7
+          requires:
+           - start-fullnode-7

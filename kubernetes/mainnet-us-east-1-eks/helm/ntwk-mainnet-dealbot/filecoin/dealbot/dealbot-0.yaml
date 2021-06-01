@@ -11,12 +11,18 @@ controller:
       nginx.ingress.kubernetes.io/auth-secret: basic-auth
       nginx.ingress.kubernetes.io/auth-secret-type: auth-file
       nginx.ingress.kubernetes.io/auth-type: basic
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
       nginx.ingress.kubernetes.io/rewrite-target: /$2
     hosts:
-      - host: lb.mainnet-us-east-2-dev.fildevops.net
+      - host: lb.mainnet-us-east-1.filops.net
         paths:
          - path: /mainnet-dealbot-controller(/|$)(.*)
+  services:
+    api:
+      annotations: {}
+    graphql:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: dealbot-mainnet.mainnet-us-east-1.filops.net
   secrets:
     keySecret: dealbot-controller-key
   resources:
@@ -48,8 +54,8 @@ daemon:
   replicas: 1
   lotusAPI:
     lotusAPITokenSecret: "fullnode-0-jwt-secrets"
-    lotusAPIMultiaddr: "/dns/dealbot-fullnode-0-lotus-daemon/tcp/1234/p2p/12D3KooWDxZrDEfnPq3CEWfXL8W5xG6yr2nZcwE1yShv3KatZXt6"
-    wallet: f3xg5otbsfffe7zvj45wyn6qxwbw3m4eghwj77c72hkqg7pzzgzbwoiskasnmumar553zcl5rxdrp7ec7rm4fa
+    lotusAPIMultiaddr: "/dns/dealbot-fullnode-0-lotus-daemon/tcp/1234/p2p/12D3KooWFX36AfFhL6949FDDjHDW7VJsr1f19brTrZxHBCz28ks2"
+    wallet: f3u4pyw72l6q47uzg5y3f7pj3f5flby6rvnpx3j3lir2lu5rgxixictslilxj3yggejuaqmg2lui3uvb4r4rvq
   persistence:
     enabled: true
     claimName: chain-exports

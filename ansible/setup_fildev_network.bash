@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 set -xe
 
@@ -22,6 +22,13 @@ while [ "$1" != "" ]; do
         --delay )               shift
                                 delay="$1"
                                 ;;
+        --start-services )      shift
+                                start_services="$1"
+                                ;;
+        --check )               ansible_args+=("--check")
+                                ;;
+        --verbose)              ansible_args+=("-v")
+                                ;;
         -h | --help )           usage
                                 exit
                                 ;;
@@ -35,11 +42,12 @@ hostfile="inventories/${network}/hosts.yml"
 generate_new_keys="${reset:-"false"}"
 network_name="${network%%.*}net"
 create_certificate="${cert:-"false"}"
-build_flags="${buildflags:-"-f"}"
+build_flags="${buildflags:-""}"
 genesis_delay="${delay:-"600"}"
 #genesis_timestamp="2020-08-24T22:00:00Z"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 verifreg_rootkey="t1q6eqszdqoqxevhoehil6jcl3ftbogghuwz4yqti"
+start_services="${start_services:-"true"}"
 
 # gets a list of all the hostnames for the preminers
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
@@ -47,6 +55,7 @@ miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] a
 faucet_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ faucet_initial_balance }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
 miners_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ miners_initial_balance }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 network_flag=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ network_flag }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
+prepare_tmp=$(basename $(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_miner_data_root }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg' ))
 
 if [ "$generate_new_keys" = true ]; then
   # get a list of all hosts which have a lotus_libp2p_address defined somewhere in their group / hosts vars.
@@ -146,7 +155,7 @@ additional_accounts=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ additional
 #scp ubuntu@192.168.1.240:/home/ubuntu/src/github.com/filecoin-project/lotus/lotus-shed .
 #popd
 
-../scripts/build_binaries.bash --src "$lotus_src" ${build_flags} --network $network_flag --build-ffi
+../scripts/build_binaries.bash --src "$lotus_src" ${build_flags} --network $network_flag
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
@@ -161,7 +170,7 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes -e lotus_pcr_reset=yes          \
     -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
     -e certbot_create_certificate=${create_certificate}                                            \
-    --diff
+    --diff "${ansible_args[@]}"
 
 # runs all the roles
 # ansible-playbook -i $hostfile lotus_devnet_provision2.yml                                           \
@@ -179,7 +188,7 @@ preseal_metadata=$(mktemp -d)
 
 # pulls down all the pre-sealed sectors from s3, hydrates the sectors, merges all the metadata, updates addresses everywhere
 # and then downloads the final sector metadata for each preminer
-ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata}
+ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata} --diff "${ansible_args[@]}"
 
 
 genpath=$(mktemp -d)
@@ -195,7 +204,7 @@ pushd "$lotus_src"
   ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
 
   for m in "${miners[@]}"; do
-    ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/tmp/presealed-metadata.json"
+    ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/${prepare_tmp}/presealed-metadata.json"
   done
 
   jq --arg MinerBalance ${miners_balance}  '.Accounts[].Balance = $MinerBalance ' < "${genpath}/genesis.json" > ${genesistmp}
@@ -254,22 +263,19 @@ pushd "$lotus_src"
 popd
 
 # copy the genesis and start up all the services
-ansible-playbook -i $hostfile lotus_devnet_start.yml                                            \
-    -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/$network_flag.car"
+ansible-playbook -i $hostfile lotus_devnet_start.yml                                                     \
+    -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/$network_flag.car" \
+    -e start_services="${start_services}" "${ansible_args[@]}"
 
 set +x
 
-echo "Monitor the initialization process on all miners (until a bug is fixed you will need to watch the /var/log/lotus-miner.log)"
-echo "When all have finished the process will exit with a message about 'run lotus-storage-miner run'"
-echo ""
-echo "    ansible -i $hostfile -b -m shell -a 'systemctl status lotus-miner-init' preminer"
-echo ""
-echo "Start the 'lotus-miner' serivce on all preminers"
-echo ""
-echo "    ansible -i $hostfile -b -m shell -a 'systemctl start lotus-miner' preminer"
-echo ""
-echo "Remove the faucet from maintenance mode, and reload nginx to pick up the new config"
-echo ""
+echo "If everything is working correctly, miners will spend several minutes initializing."
+echo "During the initialization phase, the systemd status for the lotus-miners will be $(tput smso)activating$(tput sgr0)."
+echo "Once the initialization is complete, the status will transition to $(tput smso)active$(tput sgr0)."
+echo "Wait for the transition, then take the faucet out of maintenance mode using the following line:"
+echo
+echo "    ansible -i $hostfile -b -m shell -a 'systemctl is-active lotus-miner' preminer"
+echo
 echo "    ansible -i $hostfile -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet"
 echo "    ansible -i $hostfile -b -m systemd -a 'name=nginx state=reloaded' faucet"
-echo ""
+echo
