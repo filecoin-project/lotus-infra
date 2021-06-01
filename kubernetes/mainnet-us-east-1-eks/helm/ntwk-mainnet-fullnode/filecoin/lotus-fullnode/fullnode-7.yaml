@@ -11,12 +11,6 @@ secrets:
     enabled: true
     secretName: fullnode-7-jwt-secrets
 
-daemonEnvs:
-  - name: GOLOG_LOG_FMT
-    value: json
-  - name: GODEBUG
-    value: madvdontneed=1
-
 importSnapshot:
   enabled: true
   claimName: chain-exports
