@@ -55,7 +55,7 @@ daemon:
   lotusAPI:
     lotusAPITokenSecret: "fullnode-0-jwt-secrets"
     lotusAPIMultiaddr: "/dns/dealbot-fullnode-0-lotus-daemon/tcp/1234/p2p/12D3KooWFX36AfFhL6949FDDjHDW7VJsr1f19brTrZxHBCz28ks2"
-    wallet: f3u4pyw72l6q47uzg5y3f7pj3f5flby6rvnpx3j3lir2lu5rgxixictslilxj3yggejuaqmg2lui3uvb4r4rvq
+    wallet: f1wdxdpqh3hirrhp353i4o6ld7bsw6evh3v7i5jtq
   persistence:
     enabled: true
     claimName: chain-exports
