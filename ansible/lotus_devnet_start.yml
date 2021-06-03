@@ -17,13 +17,13 @@
       service:
         name: "lotus-daemon"
         state: started
-      when: start_services is true
+      when: start_services|bool
 
     - name: Ensure telegraf started
       service:
         name: "telegraf"
         state: started
-      when: start_services is true
+      when: start_services|bool
 
 - hosts: preminer
   become: true
@@ -34,7 +34,7 @@
       service:
         name: "lotus-miner"
         state: restarted
-      when: start_services is true
+      when: start_services|bool
 
 - hosts: stats
   become: true
@@ -45,7 +45,7 @@
       service:
         name: "stats"
         state: started
-      when: start_services is true
+      when: start_services|bool
 
 - hosts: chainwatch
   become: true
@@ -56,7 +56,7 @@
       service:
         name: "chainwatch"
         state: started
-      when: start_services is true
+      when: start_services|bool
 
 - hosts: faucet
   become: true
@@ -67,4 +67,4 @@
       service:
         name: "lotus-fountain"
         state: started
-      when: start_services is true
+      when: start_services|bool
