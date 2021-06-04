@@ -604,6 +604,8 @@ workflows:
           delay: "0"
           branch: << pipeline.parameters.override_tag >>
           check: false
+          requires:
+            - reset-approval
 
   api-lotus-ansible-reset-nocareful:
     when:
