@@ -394,7 +394,8 @@ jobs:
             << parameters.create_cert >> && args+=("-c")
             << parameters.check >> && args+=("--check")
             cd ansible
-            GOPATH=/home/circleci/.go_workspace yes | ./setup_fildev_network.bash --start-services=false "${args[@]}"
+            unset GOPATH
+            yes | ./setup_fildev_network.bash --start-services=false "${args[@]}"
       - run:
           name: "remove faucet maintenance"
           command: |
