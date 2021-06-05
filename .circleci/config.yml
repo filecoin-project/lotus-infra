@@ -394,7 +394,9 @@ jobs:
             << parameters.create_cert >> && args+=("-c")
             << parameters.check >> && args+=("--check")
             cd ansible
-            GOPATH=/home/circleci/.go_workspace ./setup_fildev_network.bash --start-services=false "${args[@]}"
+            export GOPATH=/home/circleci/.go_workspace
+            export TERM=xterm
+            echo | ./setup_fildev_network.bash --start-services=false "${args[@]}"
       - run:
           name: "remove faucet maintenance"
           command: |
@@ -602,6 +604,8 @@ workflows:
           delay: "0"
           branch: << pipeline.parameters.override_tag >>
           check: false
+          requires:
+            - reset-approval
 
   api-lotus-ansible-reset-nocareful:
     when:
