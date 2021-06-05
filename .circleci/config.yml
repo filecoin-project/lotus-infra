@@ -396,7 +396,7 @@ jobs:
             cd ansible
             export GOPATH=/home/circleci/.go_workspace
             export TERM=xterm
-            yes | ./setup_fildev_network.bash --start-services=false "${args[@]}"
+            echo | ./setup_fildev_network.bash --start-services=false "${args[@]}"
       - run:
           name: "remove faucet maintenance"
           command: |
