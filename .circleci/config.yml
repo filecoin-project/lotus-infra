@@ -358,7 +358,7 @@ jobs:
       - aws-cli/install
       - rust/install
       - go/install:
-          version: 1.15.5
+          version: 1.16.4
       - ansible-playbook/install
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
@@ -485,7 +485,7 @@ jobs:
       - aws-cli/install
       - rust/install
       - go/install:
-          version: 1.15.5
+          version: 1.16.4
       - ansible-playbook/install
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
