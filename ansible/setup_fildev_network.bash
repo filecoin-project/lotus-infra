@@ -25,7 +25,8 @@ while [ "$1" != "" ]; do
         --start-services )      shift
                                 start_services="$1"
                                 ;;
-        --check )               ansible_args+=("--check")
+        --check )               check=true
+                                ansible_args+=("--check")
                                 ;;
         --verbose)              ansible_args+=("-v")
                                 ;;
@@ -48,6 +49,7 @@ genesis_delay="${delay:-"600"}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
 verifreg_rootkey="t1q6eqszdqoqxevhoehil6jcl3ftbogghuwz4yqti"
 start_services="${start_services:-"true"}"
+check_mode="${check:-"false"}"
 
 # gets a list of all the hostnames for the preminers
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
@@ -172,17 +174,10 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e certbot_create_certificate=${create_certificate}                                            \
     --diff "${ansible_args[@]}"
 
-# runs all the roles
-# ansible-playbook -i $hostfile lotus_devnet_provision2.yml                                           \
-#    -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/intel/lotus"                      \
-#    -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/intel/lotus-miner"          \
-#    -e lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/intel/lotus-shed"            \
-#    -e lotus_seed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/intel/lotus-seed"            \
-#    -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes -e lotus_pcr_reset=yes          \
-#    -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
-#    -e certbot_create_certificate=${create_certificate}                                            \
-#    --diff
-
+if [ "$check_mode" = true ]; then
+  # Nothing after this point will work when running a check
+  exit 0
+fi
 
 preseal_metadata=$(mktemp -d)
 
