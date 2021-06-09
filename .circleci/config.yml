@@ -363,8 +363,8 @@ jobs:
           # entire go directory when updating the install golang version.
           # https://golang.org/doc/install
           # https://github.com/CircleCI-Public/go-orb/issues/46
-          version: 1.16.4
-          cache-key: v1.16.4
+          version: 1.16.5
+          cache-key: v1.16.5
       - ansible-playbook/install
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
@@ -491,7 +491,8 @@ jobs:
       - aws-cli/install
       - rust/install
       - go/install:
-          version: 1.16.4
+          version: 1.16.5
+          cache-key: v1.16.5
       - ansible-playbook/install
       - git-clone:
           repo: https://github.com/filecoin-project/lotus
