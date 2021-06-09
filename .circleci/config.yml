@@ -361,7 +361,7 @@ jobs:
           name: install golang
           command: |
             curl -LOs https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
-            rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
+            sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
       # - go/install:
       #   # ensure that the cache key matches the go version to clean up lingering source files
       #   # that may not be compatable across versions. Golang recommend to always uninstall the
@@ -499,7 +499,7 @@ jobs:
           name: install golang
           command: |
             curl -LOs https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
-            rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
+            sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
       # - go/install:
       #     version: 1.16.5
       #     cache-key: v1.16.5
