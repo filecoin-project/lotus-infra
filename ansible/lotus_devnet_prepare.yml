@@ -25,6 +25,7 @@
         - name: Truncate sectors to size
           shell: "truncate -s {{ sector_size }} {{ item }}"
           loop: "{{ sectors.stdout_lines }}"
+          when: not ansible_check_mode
     - name: Merge preminer metadata
       become_user: "{{ lotus_user }}"
       shell:
