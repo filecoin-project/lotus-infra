@@ -15,7 +15,6 @@ locals {
 /*****************
  * us-west-2
  *****************/
-/*
 module "interopnet" {
   source                      = "../../modules/devnet"
   providers = {
@@ -27,24 +26,24 @@ module "interopnet" {
   key_name                    = "filecoin"
   vpc_id                      = module.fildev_network_vpc.vpc_id
   environment                 = "prod"
-  toolshed_count              = 0
-  bootstrapper_count          = 0
-  preminer_count              = 0
-  scratch_count               = 0
+  toolshed_count              = 2
+  bootstrapper_count          = 2
+  preminer_count              = 3
+  scratch_count               = 2
   toolshed_instance_type      = "m5a.xlarge"
   chainwatch_db_instance_type = "db.m5.large"
   chainwatch_password         = var.nerpanet_chainwatch_password
   preminer_instance_type      = "m5a.4xlarge"
+  preminer_volume_size        = 384
   bootstrapper_instance_type  = "m5a.xlarge"
   scratch_instance_type       = "m5a.xlarge"
   preminer_iam_profile        = aws_iam_instance_profile.sectors.id
   database_subnet_group       = module.fildev_network_vpc.database_subnet_group
-  public_subnet_id            = module.fildev_network_vpc.public_subnets[0]
-  public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[0]
-  private_subnet_id           = module.fildev_network_vpc.database_subnets[0]
-  private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[0]
+  public_subnet_id            = module.fildev_network_vpc.public_subnets[1]
+  public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[1]
+  private_subnet_id           = module.fildev_network_vpc.database_subnets[1]
+  private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[1]
 }
-*/
 
 module "butterflynet" {
   source                      = "../../modules/devnet"
