@@ -60,7 +60,7 @@ daemon:
     enabled: true
     claimName: chain-exports
     mountPath: /efs
-    data: /efs/dealbot/mainnet/data
+    data: /efs/dealbot/mainnet/nodedata
     nodedata: /efs/dealbot/mainnet/nodedata
   resources:
     limits:
