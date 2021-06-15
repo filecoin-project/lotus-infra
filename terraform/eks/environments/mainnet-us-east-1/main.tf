@@ -48,8 +48,20 @@ locals {
       min_capacity     = "3"
       max_capacity     = "50"
     },
+    // Remove group 3 after new workers are online and cordon / drain to move fullnodes to larger sizes
     "3" = {
       instance_type    = "r5.4xlarge"
+      key_name         = var.key_name
+      desired_capacity = 5
+      min_capacity     = "3"
+      max_capacity     = "50"
+      subnets = [
+        for subnet in aws_subnet.workers :
+        subnet.id
+      ]
+    },
+    "4" = {
+      instance_type    = "r5.8xlarge"
       key_name         = var.key_name
       desired_capacity = 5
       min_capacity     = "3"
