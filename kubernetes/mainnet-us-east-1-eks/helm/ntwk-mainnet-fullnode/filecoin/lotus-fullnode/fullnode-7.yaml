@@ -17,3 +17,7 @@ importSnapshot:
   network: mainnet
   exportRelease: finality-stateroots
   exitCodeOnMissing: 1
+
+resources:
+  requests:
+    memory: 100Gi
