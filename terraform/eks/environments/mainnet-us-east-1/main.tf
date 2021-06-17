@@ -48,10 +48,10 @@ locals {
       min_capacity     = "3"
       max_capacity     = "50"
     },
-    "3" = {
-      instance_type    = "r5.4xlarge"
+    "4" = {
+      instance_type    = "r5.8xlarge"
       key_name         = var.key_name
-      desired_capacity = 5
+      desired_capacity = 6
       min_capacity     = "3"
       max_capacity     = "50"
       subnets = [
