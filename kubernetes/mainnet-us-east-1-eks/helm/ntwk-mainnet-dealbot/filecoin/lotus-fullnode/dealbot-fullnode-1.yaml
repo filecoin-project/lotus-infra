@@ -1,0 +1,18 @@
+secrets:
+  libp2p:
+    enabled: true
+    secretName: fullnode-1-libp2p-secrets
+    libp2p_key: libp2p-host
+  jwt:
+    enabled: true
+    secretName: fullnode-1-jwt-secrets
+  wallets:
+    enabled: true
+    secretName: fullnode-1-wallets
+
+additionalVolumes:
+  enabled: true
+  pvcs:
+    - name: dealbot-deals
+      claimName: chain-exports
+      mountPath: /efs

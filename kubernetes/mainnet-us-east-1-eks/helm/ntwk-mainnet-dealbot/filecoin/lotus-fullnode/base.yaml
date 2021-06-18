@@ -43,4 +43,4 @@ persistence:
   datastore:
     enabled: true
     storageClassName: "ebs-csi"
-    size: "8000Gi"
+    size: "2000Gi"
