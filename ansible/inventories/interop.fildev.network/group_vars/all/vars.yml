@@ -4,6 +4,7 @@ network_name: interopnet
 network_flag: interopnet
 faucet_initial_balance: "50000000000000000000000000"
 miners_initial_balance: "1000000000000000000000000"
+verifreg_rootkey: "t1pehlxigrr7binkqfy6tdyav77wiipm6mfpf6nxy"
 
 additional_account_balance: []
 

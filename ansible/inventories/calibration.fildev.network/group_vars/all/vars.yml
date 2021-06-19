@@ -3,7 +3,8 @@ logz_io_shared_token: "{{ vault_logz_io_shared_token }}"
 network_name: calibrationnet
 network_flag: calibnet
 faucet_initial_balance: "250000000000000000000000000"
-miners_initial_balance: "1000000000000000000000000"
+miners_initial_balance: "75000000000000000000000"
+verifreg_rootkey: "t1dtu5wnljecifn4iaeatmnsfrvc5skgkitwauocq"
 
 additional_account_balance: {}
 

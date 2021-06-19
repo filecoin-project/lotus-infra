@@ -6,7 +6,7 @@ lotus_miner_env:
   BELLMAN_CUSTOM_GPU: "Tesla V100-SXM2-16GB:5120"
 
 lotus_miner_verified_deals: true
-lotus_miner_ensure_params: false
+lotus_miner_ensure_params: true
 lotus_miner_data_root: "/fildev-network"
 lotus_miner_presealed_metadata: "{{ lotus_miner_data_root }}/presealed-metadata.json"
 

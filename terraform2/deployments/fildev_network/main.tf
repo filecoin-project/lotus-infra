@@ -108,7 +108,7 @@ module "calibrationnet" {
   bootstrapper_count          = 4
   preminer_count              = 3
   scratch_count               = 2
-  toolshed_instance_type      = "m5a.large"
+  toolshed_instance_type      = "m5a.xlarge"
   chainwatch_db_instance_type = "db.m5.large"
   chainwatch_password         = var.nerpanet_chainwatch_password
   preminer_instance_type      = "p3.2xlarge"
@@ -116,8 +116,8 @@ module "calibrationnet" {
   bootstrapper_volume_size    = 1000
   scratch_volume_size         = 1000
   toolshed_volume_size        = 1000
-  bootstrapper_instance_type  = "m5a.large"
-  scratch_instance_type       = "m5a.large"
+  bootstrapper_instance_type  = "m5a.xlarge"
+  scratch_instance_type       = "m5a.xlarge"
   preminer_iam_profile        = aws_iam_instance_profile.sectors.id
   database_subnet_group       = module.fildev_network_vpc.database_subnet_group
   public_subnet_id            = module.fildev_network_vpc.public_subnets[3]
