@@ -1,15 +1,11 @@
 image:
-  tag: calibnet-v1.5.3-rc2
+  tag: calibnet-c11a32cf6
 
 prometheusOperatorServiceMonitor: true
 
 resources:
   requests:
     memory: 32Gi
-    cpu: 4
-  limits:
-    memory: 64Gi
-    cpu: 6
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
