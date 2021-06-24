@@ -69,3 +69,6 @@ daemon:
     requests:
       cpu: 500m
       memory: 1000Mi
+  env:
+    - name: DEALBOT_TAGS
+      value: verified
