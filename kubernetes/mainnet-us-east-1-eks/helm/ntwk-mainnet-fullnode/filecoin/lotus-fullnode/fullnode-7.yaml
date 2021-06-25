@@ -1,7 +1,3 @@
-image:
-  repository: coryschwartz/lotus
-  tag: mainnet-7e25a811c
-
 secrets:
   libp2p:
     enabled: true

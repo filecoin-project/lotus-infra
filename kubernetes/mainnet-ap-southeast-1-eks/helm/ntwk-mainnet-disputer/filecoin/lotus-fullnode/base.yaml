@@ -1,5 +1,5 @@
 image:
-  tag: mainnet-v1.8.0
+  tag: mainnet-v1.10.0
 
 prometheusOperatorServiceMonitor: true
 
