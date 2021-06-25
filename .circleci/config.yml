@@ -692,7 +692,7 @@ workflows:
     jobs:
       # butterflynet ansible
       - slack/on-hold:
-          name: butterfly-slack-on-hold
+          name: slack-on-hold
           channel: << pipeline.parameters.slack_channel >>
           custom: |
             {
@@ -735,24 +735,7 @@ workflows:
       - start-rollout:
           type: approval
           requires:
-            - butterfly-slack-on-hold
-      - lotus-ansible-reset:
-          name: ansible-deploy-butterflynet
-          deploy_network: butterfly.fildev.network
-          install_network: butterflynet
-          preseal: false
-          create_cert: false
-          build_flags: ""
-          reset: false
-          delay: "0"
-          branch: << pipeline.parameters.override_tag >>
-          requires:
-            - start-rollout
-      # Manual approval for calibrationnet
-      - start-calibrationnet:
-          type: approval
-          requires:
-           - ansible-deploy-butterflynet
+            - slack-on-hold
       - lotus-build-containers:
           name: build-containers-calibrationnet
           tag: << pipeline.parameters.override_tag >>
@@ -760,14 +743,14 @@ workflows:
           use_gitsha: false
           network: calibnet
           requires:
-            - start-calibrationnet
+            - start-rollout
       # calibrationnet on kubernetes
       - helm-deploy:
           name: helm-deploy-calibrationnet
           context: sentinel-staging-deploy
           cluster: mainnet-us-east-2-dev-eks
           region: us-east-2
-          namespace: ntwk-calibrationnet-fullnode
+          namespace: ntwk-calibnet-fullnode
           chart: filecoin/lotus-fullnode
           chart_version: 0.3.1
           override_repository: << pipeline.parameters.override_repository >>
@@ -1040,7 +1023,7 @@ workflows:
           region: us-east-1
           namespace: ntwk-mainnet-fullnode
           chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
+          chart_version: 0.2.0
           override_repository: << pipeline.parameters.override_repository >>
           override_tag: << pipeline.parameters.override_tag >>
           helm_append: << pipeline.parameters.helm_append >>
@@ -1058,7 +1041,7 @@ workflows:
           region: us-east-1
           namespace: ntwk-mainnet-fullnode
           chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
+          chart_version: 0.2.0
           override_repository: << pipeline.parameters.override_repository >>
           override_tag: << pipeline.parameters.override_tag >>
           helm_append: << pipeline.parameters.helm_append >>
@@ -1076,71 +1059,17 @@ workflows:
           region: us-east-1
           namespace: ntwk-mainnet-fullnode
           chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
+          chart_version: 0.2.0
           override_repository: << pipeline.parameters.override_repository >>
           override_tag: << pipeline.parameters.override_tag >>
           helm_append: << pipeline.parameters.helm_append >>
           release: fullnode-2
           requires:
            - start-fullnode-2
-      - start-fullnode-3:
-          type: approval
-          requires:
-           - helm-deploy-fullnode-2
-      - helm-deploy:
-          name: helm-deploy-fullnode-3
-          context: filecoin-mainnet-aws
-          cluster: mainnet-us-east-1-eks
-          region: us-east-1
-          namespace: ntwk-mainnet-fullnode
-          chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
-          override_repository: << pipeline.parameters.override_repository >>
-          override_tag: << pipeline.parameters.override_tag >>
-          helm_append: << pipeline.parameters.helm_append >>
-          release: fullnode-3
-          requires:
-           - start-fullnode-3
-      - start-fullnode-4:
-          type: approval
-          requires:
-           - helm-deploy-fullnode-3
-      - helm-deploy:
-          name: helm-deploy-fullnode-4
-          context: filecoin-mainnet-aws
-          cluster: mainnet-us-east-1-eks
-          region: us-east-1
-          namespace: ntwk-mainnet-fullnode
-          chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
-          override_repository: << pipeline.parameters.override_repository >>
-          override_tag: << pipeline.parameters.override_tag >>
-          helm_append: << pipeline.parameters.helm_append >>
-          release: fullnode-4
-          requires:
-           - start-fullnode-4
-      - start-fullnode-5:
-          type: approval
-          requires:
-           - helm-deploy-fullnode-4
-      - helm-deploy:
-          name: helm-deploy-fullnode-5
-          context: filecoin-mainnet-aws
-          cluster: mainnet-us-east-1-eks
-          region: us-east-1
-          namespace: ntwk-mainnet-fullnode
-          chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
-          override_repository: << pipeline.parameters.override_repository >>
-          override_tag: << pipeline.parameters.override_tag >>
-          helm_append: << pipeline.parameters.helm_append >>
-          release: fullnode-5
-          requires:
-           - start-fullnode-5
       - start-fullnode-6:
           type: approval
           requires:
-           - helm-deploy-fullnode-5
+           - helm-deploy-fullnode-2
       - helm-deploy:
           name: helm-deploy-fullnode-6
           context: filecoin-mainnet-aws
