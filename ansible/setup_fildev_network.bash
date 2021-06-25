@@ -45,9 +45,8 @@ network_name="${network%%.*}net"
 create_certificate="${cert:-"false"}"
 build_flags="${buildflags:-""}"
 genesis_delay="${delay:-"600"}"
-#genesis_timestamp="2020-08-24T22:00:00Z"
+# genesis_timestamp="2021-06-19T00:00:00Z"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
-verifreg_rootkey="t1q6eqszdqoqxevhoehil6jcl3ftbogghuwz4yqti"
 start_services="${start_services:-"true"}"
 check_mode="${check:-"false"}"
 
@@ -55,6 +54,7 @@ check_mode="${check:-"false"}"
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
 
 faucet_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ faucet_initial_balance }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
+verifreg_rootkey=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ verifreg_rootkey }}"' faucet | sed 's/.*=>//' | jq -r '.msg')
 miners_balance=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ miners_initial_balance }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 network_flag=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ network_flag }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 prepare_tmp=$(basename $(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_miner_data_root }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg' ))

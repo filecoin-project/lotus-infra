@@ -4,6 +4,8 @@ network_name: butterflynet
 network_flag: butterflynet
 faucet_initial_balance: "50000000000000000000000000"
 miners_initial_balance: "1000000000000000000000000"
+verifreg_rootkey: "t1hktflxdrwtyyqfe7sf4irqcd2w7u3wjlqx2ihwi"
+
 
 additional_account_balance: []
 

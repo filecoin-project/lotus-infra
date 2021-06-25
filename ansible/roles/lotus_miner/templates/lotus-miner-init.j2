@@ -3,6 +3,8 @@
 # This script sets up an initial configuraiton for the lotus daemon and miner
 # It will only run once.
 
+/usr/local/bin/lotus wait-api
+
 GATE="$LOTUS_MINER_PATH"/date_initialized
 
 # Don't init if already initialized.
