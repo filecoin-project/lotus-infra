@@ -1,7 +1,12 @@
 ---
 image:
   repository: travisperson/lotus-gateway
-  tag: mainnet-v1.10.0
+  # This is a cherry-pick of b4b38788efcddceb87ee1677a5aa53a8380f2e6e onto v1.10.0
+  tag: mainnet-88107a49a
+
+runArgs:
+  - --api-max-lookback=100h
+  - --api-wait-lookback-limit=10000
 
 ingress:
   enabled: false
