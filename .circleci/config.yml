@@ -775,7 +775,7 @@ workflows:
           reset: false
           delay: "0"
           requires:
-            - start-calibrationnet
+            - start-rollout
       # mainnet
       - lotus-build-containers:
           name: build-containers-mainnet
