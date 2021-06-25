@@ -24,6 +24,8 @@ jobs:
           branch: ${{ github.event.inputs.circle_branch }}
           payload: |
             {
+              "api_workflow_requested": "lotus-rollout",
               "override_tag": "${{ github.event.inputs.override_tag }}",
-              "slack_channel": "${{ github.event.inputs.slack_channel }}"
+              "slack_channel": "${{ github.event.inputs.slack_channel }}",
+              "override_repository": "travisperson"
             }
