@@ -1,5 +1,5 @@
 image:
-  tag: v1.2.0
+  tag: mainnet-v1.10.0
 
 schedule: "*/15 * * * *"
 lookback: 30

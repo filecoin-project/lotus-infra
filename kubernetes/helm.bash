@@ -50,7 +50,7 @@ done
 
 cmd="upgrade --install"
 if [ "$diff" == "true" ]; then
-  cmd="diff upgrade"
+  cmd="diff upgrade --context 5"
 fi
 
 for deployment in $(yq -c ' .deployments[] ' ./$cluster/helm/config.yaml); do

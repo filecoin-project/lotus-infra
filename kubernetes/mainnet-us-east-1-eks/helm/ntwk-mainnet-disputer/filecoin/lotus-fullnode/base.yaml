@@ -1,6 +1,5 @@
 image:
-  # https://github.com/filecoin-project/lotus-infra/issues/336
-  tag: mainnet-10927daa5
+  tag: mainnet-v1.10.0
 
 prometheusOperatorServiceMonitor: true
 

@@ -1,7 +1,8 @@
 ---
 image:
-  repository: coryschwartz/lotus-gateway
-  tag: mainnet-7e25a811c
+  repository: travisperson/lotus-gateway
+  tag: mainnet-v1.10.0
+
 
 ingress:
   enabled: false

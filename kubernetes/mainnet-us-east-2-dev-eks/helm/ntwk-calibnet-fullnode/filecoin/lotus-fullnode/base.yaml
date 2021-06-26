@@ -1,5 +1,5 @@
 image:
-  tag: calibnet-c11a32cf6
+  tag: calibnet-v1.10.0
 
 prometheusOperatorServiceMonitor: true
 
