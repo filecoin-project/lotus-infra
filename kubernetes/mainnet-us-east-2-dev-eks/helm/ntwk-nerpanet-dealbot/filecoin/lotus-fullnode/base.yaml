@@ -1,5 +1,7 @@
 image:
-  tag: nerpanet-v1.8.0
+  repository: coryschwartz/lotus
+  tag: netpanet-june242021
+  pullPolicy: Always
 
 prometheusOperatorServiceMonitor: true
 
