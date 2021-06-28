@@ -48,6 +48,13 @@ postgres:
     requests:
       cpu: 500m
       memory: 500Mi
+  env:
+    - name: DEALBOT_BASICAUTH
+      valueFrom:
+        secretKeyRef:
+          name: basic-auth-plain
+          key: auth
+
 
 daemon:
   enabled: true
