@@ -38,6 +38,8 @@ variable "eks_iam_usernames" {
     "frrst",
     "iand",
     "lanzafame",
+    "hannah.howard",
+    "willscott",
   ]
 }
 
