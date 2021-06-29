@@ -175,21 +175,21 @@ deployments:
     values:
       - base
   - chart: filecoin/lotus-bundle
-    version: 0.0.1
+    version: 0.0.2
     namespace: ntwk-mainnet-dealbot
     name: dealbot-daemon-bundle-0
     values:
       - base
       - dealbot-daemon-bundle-0
   - chart: filecoin/lotus-bundle
-    version: 0.0.1
+    version: 0.0.2
     namespace: ntwk-mainnet-dealbot
     name: dealbot-daemon-bundle-1
     values:
       - base
       - dealbot-daemon-bundle-1
   - chart: filecoin/lotus-bundle
-    version: 0.0.1
+    version: 0.0.2
     namespace: ntwk-mainnet-dealbot
     name: dealbot-daemon-bundle-2
     values:
