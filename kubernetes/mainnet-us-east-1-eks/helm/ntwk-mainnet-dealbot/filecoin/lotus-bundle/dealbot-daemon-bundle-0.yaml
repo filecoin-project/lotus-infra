@@ -1,13 +1,16 @@
 # required:
 # Your application. Replace with your own details.
+image:
+  repository: filecoin/dealbot
+  tag: latest
+  pullPolicy: Always
+
 application:
   name: "dealbot-daemon"
   labels: []
   replicas: 
   container:
     name: application
-    image: "filecoin/dealbot:d9f6c400e3061da3199995b96c5f255d313367fa"
-    imagePullPolicy: IfNotPresent
     command: [ "sh" ]
     args: 
       - "-c"
