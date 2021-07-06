@@ -40,11 +40,6 @@ locals {
       groups   = ["system:masters"]
     },
     {
-      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/lanzafame"
-      username = "lanzafame"
-      groups   = ["system:masters"]
-    },
-    {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/hsanjuan"
       username = "hsanjuan"
       groups   = ["system:masters"]
