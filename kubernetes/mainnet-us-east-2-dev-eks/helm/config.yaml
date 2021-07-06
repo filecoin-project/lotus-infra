@@ -109,6 +109,14 @@ deployments:
     values:
       - base
       - fullnode-1
+  # fullnodes-calibnet
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.3
+    namespace: ntwk-calibnet-fullnode
+    name: disputer-0
+    values:
+      - base
+      - disputer-0
   # dealbot nerpanet
   - chart: filecoin/efs-access
     version: 0.1.0
