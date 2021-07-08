@@ -65,18 +65,6 @@ locals {
   node_groups = {
     // These nodes are dedicated to running the fullnode daemons that provide api access to
     // other services running in the cluster
-    "0" = {
-      instance_type    = "r5.4xlarge"
-      key_name         = "filecoin-mainnet"
-      desired_capacity = 3
-      min_capacity     = "3"
-      max_capacity     = "50"
-      k8s_labels       = {}
-      subnets = [
-        for subnet in aws_subnet.workers :
-        subnet.id
-      ]
-    },
     "1" = {
       instance_type    = "r5.4xlarge"
       key_name         = "filecoin-mainnet"
