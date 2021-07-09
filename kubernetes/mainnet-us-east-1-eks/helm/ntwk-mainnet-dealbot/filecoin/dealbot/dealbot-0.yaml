@@ -77,5 +77,7 @@ daemon:
       cpu: 500m
       memory: 1000Mi
   env:
+    - name: DEALBOT_ID
+      value: daemon-verified-0
     - name: DEALBOT_TAGS
       value: verified
