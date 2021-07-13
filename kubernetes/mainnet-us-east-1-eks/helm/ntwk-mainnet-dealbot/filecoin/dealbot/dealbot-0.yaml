@@ -25,6 +25,7 @@ controller:
         external-dns.alpha.kubernetes.io/hostname: dealbot-mainnet.mainnet-us-east-1.filops.net
   secrets:
     keySecret: dealbot-controller-key
+    awsKeysSecret: dealbot-controller-aws-keys
   resources:
     limits:
       cpu: 1000m
