@@ -4,6 +4,7 @@ AWS_PROFILE="${1:-}"
 K8S_VERSION="${2}"
 CLUSTER_NAME="${3}"
 REGION="${4}"
+DOMAIN_FILTER="${5}"
 AWS_PROFILE_FLAG=""
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 if [[ ! -z "${AWS_PROFILE}" ]]; then
@@ -29,7 +30,7 @@ install_external_dns() {
   helm upgrade --namespace=kube-system --install public-dns \
     --set aws.region="${REGION}"  \
     --set aws.zoneType="public" \
-    --set domainFilters="{fildevops.net}" \
+    --set domainFilters="{${DOMAIN_FILTER}}" \
     --set logLevel="debug" \
     --set txtOwnerId="${CLUSTER_NAME}" \
     bitnami/external-dns
@@ -40,13 +41,13 @@ install_efs_csi() {
 }
 
 install_ebs_csi() {
-  kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/alpha/?ref=master"
+  kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/alpha/?ref=4c58e81c4fd2bff9b6aab1537a67ca3933dd0350"
 }
 
 install_snapshot_crd() {
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/master/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/master/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/master/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/24a2aa84366248fbdfae9660dd3a768c57971605/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/24a2aa84366248fbdfae9660dd3a768c57971605/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/24a2aa84366248fbdfae9660dd3a768c57971605/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
 }
 
 install_calico() {

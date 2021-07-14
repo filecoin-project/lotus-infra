@@ -332,7 +332,6 @@ resource "aws_iam_policy" "elb_controller" {
 POLICY
 }
 
-/*
 resource "null_resource" "k8s_config" {
   triggers = {
     worker_asgs = join(",", module.eks.workers_asg_arns)
@@ -341,11 +340,10 @@ resource "null_resource" "k8s_config" {
 
   provisioner "local-exec" {
     command = <<-EOT
-    ${path.module}/files/postinstall.sh "${var.aws_profile}" "${var.k8s_version}" "${local.name}" "${var.region}"
+    ${path.module}/files/postinstall.sh "${var.aws_profile}" "${var.k8s_version}" "${local.name}" "${var.region}" "${var.external_dns_fqdn}"
     EOT
     environment = {
       KUBECONFIG = "${local.kubeconfig_path}"
     }
   }
 }
-*/
