@@ -25,6 +25,8 @@ controller:
         external-dns.alpha.kubernetes.io/hostname: dealbot-nerpanet.mainnet-us-east-2-dev.fildevops.net
   secrets:
     keySecret: dealbot-controller-key
+    awsKeysSecret: dealbot-controller-aws-keys
+    selfServeConfigSecret: dealbot-selfserve
   resources:
     limits:
       cpu: 1000m
