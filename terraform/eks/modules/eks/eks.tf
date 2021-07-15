@@ -58,15 +58,15 @@ module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "v2.11.0"
 
-  domain_name = var.external_dns_fqdn
+  domain_name = "${var.prefix}.${var.external_dns_fqdn}"
   zone_id     = var.external_dns_zone_id
 
   subject_alternative_names = [
-    "*.${var.external_dns_fqdn}",
+    "*.${var.prefix}.${var.external_dns_fqdn}",
   ]
 
   tags = {
-    Name = var.external_dns_fqdn
+    Name = "${var.prefix}.${var.external_dns_fqdn}"
   }
 }
 
