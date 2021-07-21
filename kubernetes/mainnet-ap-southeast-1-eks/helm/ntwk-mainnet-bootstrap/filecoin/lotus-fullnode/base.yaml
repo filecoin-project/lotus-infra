@@ -3,6 +3,13 @@ image:
 
 prometheusOperatorServiceMonitor: true
 
+resources:
+  requests:
+    memory: 32Gi
+    cpu: 6
+  limits:
+    memory: 48Gi
+
 importSnapshot:
   enabled: true
   claimName: chain-exports

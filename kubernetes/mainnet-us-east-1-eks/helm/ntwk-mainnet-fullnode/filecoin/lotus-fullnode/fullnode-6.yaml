@@ -17,3 +17,9 @@ importSnapshot:
 resources:
   requests:
     memory: 100Gi
+
+persistence:
+  datastore:
+    enabled: true
+    storageClassName: "ebs-csi"
+    size: "8000Gi"
