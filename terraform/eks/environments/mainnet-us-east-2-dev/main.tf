@@ -22,7 +22,7 @@ module "vpc" {
 
 
 resource "aws_subnet" "workers" {
-  for_each                = var.public_subnets_workers
+  for_each                = toset(var.public_subnets_workers)
   vpc_id                  = module.vpc.vpc_id
   cidr_block              = each.value
   tags                    = local.subnet_tags
@@ -35,23 +35,61 @@ resource "aws_route_table_association" "workers" {
   route_table_id = module.vpc.public_route_table_ids[0]
 }
 
+variable "public_subnets_workers2" {
+  description = "CIDR for public subnets in the VPC for kubernetes workers (must be within var.cidr)"
+  type        = list(string)
+
+  default = [
+    "10.0.112.0/20",
+    "10.0.128.0/20",
+    "10.0.144.0/20",
+  ]
+}
+
+resource "aws_subnet" "workers2" {
+  for_each                = toset(var.public_subnets_workers2)
+  availability_zone       = var.azs[index(var.public_subnets_workers2, each.value)]
+  vpc_id                  = module.vpc.vpc_id
+  cidr_block              = each.value
+  tags                    = local.subnet_tags
+  map_public_ip_on_launch = true
+}
+
+resource "aws_route_table_association" "workers2" {
+  for_each       = aws_subnet.workers2
+  subnet_id      = each.value.id
+  route_table_id = module.vpc.public_route_table_ids[0]
+}
+
 locals {
-  node_groups = [
+  node_groups = {
     // These nodes are dedicated to running the fullnode daemons that provide api access to
     // other services running in the cluster
-    {
+    "1" = {
       instance_type    = "r5.4xlarge"
-      key_name         = var.key_name
+      key_name         = "filecoin-mainnet"
       desired_capacity = 3
       min_capacity     = "3"
       max_capacity     = "50"
       k8s_labels       = {}
       subnets = [
-        for subnet in aws_subnet.workers :
+        for subnet in aws_subnet.workers2 :
         subnet.id
       ]
     },
-  ]
+    "2" = {
+      instance_type    = "r5.8xlarge"
+      key_name         = "filecoin-mainnet"
+      desired_capacity = 3
+      min_capacity     = "3"
+      max_capacity     = "50"
+      k8s_labels       = {}
+      subnets = [
+        for subnet in aws_subnet.workers2 :
+        subnet.id
+      ]
+    },
+  }
   acm_enabled = 1
   subnet_tags = {
     "kubernetes.io/role/alb-ingress"          = "1"
@@ -77,7 +115,7 @@ module "eks" {
   worker_count_open                          = var.worker_count_open
   worker_count_restricted                    = var.worker_count_restricted
   external_dns_zone_id                       = var.external_dns_zone_id
-  external_dns_fqdn                          = var.external_dns_fqdn
+  external_dns_fqdn                          = "${var.external_dns_fqdn}"
   node_groups                                = local.node_groups
   security_group_ids                         = module.vpc.security_group_ids
 }

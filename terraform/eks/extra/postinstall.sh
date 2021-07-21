@@ -29,7 +29,7 @@ install_external_dns() {
   helm upgrade --namespace=kube-system --install public-dns \
     --set aws.region="${REGION}"  \
     --set aws.zoneType="public" \
-    --set domainFilters="{filops.net}" \
+    --set domainFilters="{fildevops.net}" \
     --set logLevel="debug" \
     --set txtOwnerId="${CLUSTER_NAME}" \
     bitnami/external-dns

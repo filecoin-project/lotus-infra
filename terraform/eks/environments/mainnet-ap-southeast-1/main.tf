@@ -75,7 +75,7 @@ module "eks" {
   worker_count_open                          = var.worker_count_open
   worker_count_restricted                    = var.worker_count_restricted
   external_dns_zone_id                       = var.external_dns_zone_id
-  external_dns_fqdn                          = "${var.prefix}.${var.external_dns_fqdn}"
+  external_dns_fqdn                          = "${var.external_dns_fqdn}"
   node_groups                                = local.node_groups
   security_group_ids                         = module.vpc.security_group_ids
 }
