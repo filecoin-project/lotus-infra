@@ -23,3 +23,9 @@ apiLoadBalancer:
     external-dns.alpha.kubernetes.io/hostname: api-cc40e0-fullnode-7.mainnet.fildevops.net
     external-dns.alpha.kubernetes.io/alias: "true"
     external-dns.alpha.kubernetes.io/ttl: "60"
+
+persistence:
+  datastore:
+    enabled: true
+    storageClassName: "ebs-csi"
+    size: "9000Gi"
