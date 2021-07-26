@@ -73,6 +73,7 @@ variable "eks_iam_usernames" {
     "iand",
     "lanzafame",
     "hannah.howard",
+    "raulk",
     "willscott",
   ]
 }
