@@ -89,6 +89,24 @@ locals {
         subnet.id
       ]
     },
+    "3" = {
+      instance_type    = "r5.8xlarge"
+      key_name         = "filecoin-mainnet"
+      desired_capacity = 3
+      min_capacity     = "3"
+      max_capacity     = "10"
+      k8s_labels       = {
+        role = "w3dt-apps"
+      }
+      subnets = [
+        for subnet in aws_subnet.workers2 :
+        subnet.id
+      ],
+      additional_tags = {
+        "k8s.io/cluster-autoscaler/filecoin-mainnet-eks-us-east-2-dev" = "owned"
+        "k8s.io/cluster-autoscaler/enabled" = "TRUE"
+      }
+    },
   }
   acm_enabled = 1
   subnet_tags = {

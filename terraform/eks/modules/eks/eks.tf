@@ -49,6 +49,7 @@ module "eks" {
     aws_iam_policy.external_dns.arn,
     aws_iam_policy.ebs_cni.arn,
     aws_iam_policy.elb_controller.arn,
+    aws_iam_policy.worker_autoscaler.arn,
   ]
 
   node_groups = var.node_groups
@@ -331,6 +332,32 @@ resource "aws_iam_policy" "elb_controller" {
 }
 POLICY
 }
+
+resource "aws_iam_policy" "worker_autoscaler" {
+  name = "worker-autoscaler-${local.name}"
+
+  policy = <<POLICY
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeLaunchConfigurations",
+                "autoscaling:DescribeTags",
+                "autoscaling:SetDesiredCapacity",
+                "autoscaling:TerminateInstanceInAutoScalingGroup",
+                "ec2:DescribeLaunchTemplateVersions"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        }
+    ]
+}
+POLICY
+}
+
 
 resource "null_resource" "k8s_config" {
   triggers = {
