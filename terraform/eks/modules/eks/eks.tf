@@ -38,6 +38,7 @@ module "eks" {
   subnets                                    = flatten([var.public_subnets])
   tags                                       = local.tags
   map_users                                  = local.map_users
+  map_roles                                  = local.map_roles
   kubeconfig_aws_authenticator_env_variables = var.kubeconfig_aws_authenticator_env_variables
   #kubeconfig_aws_authenticator_command       = "/usr/local/bin/aws eks --region ${var.region} update-kubeconfig --name ${local.name}"
   config_output_path                   = local.config_path

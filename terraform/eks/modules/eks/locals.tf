@@ -71,6 +71,59 @@ locals {
     },
   ]
 
+  map_roles = [
+    {
+      rolearn = ""
+      username = "ntwk-mainnet-fullnode-admin"
+      groups = ["ntwk-mainnet-fullnode-admin"]
+    },
+    {
+      rolearn = ""
+      username = "ntwk-mainnet-fullnode-exec"
+      groups = ["ntwk-mainnet-fullnode-exec"]
+    },
+    {
+      rolearn = ""
+      username = "ntwk-butterfly-fullnode-admin"
+      groups = ["ntwk-butterfly-fullnode-admin"]
+    },
+    {
+      rolearn = ""
+      username = "ntwk-butterfly-fullnode-exec"
+      groups = ["ntwk-butterfly-fullnode-exec"]
+    },
+    {
+      rolearn = ""
+      username = "ntwk-calibnet-fullnode-admin"
+      groups = ["ntwk-calibnet-fullnode-admin"]
+    },
+    {
+      rolearn = ""
+      username = "ntwk-calibnet-fullnode-exec"
+      groups = ["ntwk-calibnet-fullnode-exec"]
+    },
+    {
+      rolearn = ""
+      username = "ntwk-mainnet-dealbot-admin"
+      groups = ["ntwk-mainnet-dealbot-admin"]
+    },
+    {
+      rolearn = ""
+      username = "ntwk-mainnet-dealbot-exec"
+      groups = ["ntwk-mainnet-dealbot-exec"]
+    },
+    {
+      rolearn = ""
+      username = "ntwk-nerpanet-dealbot-admin"
+      groups = ["ntwk-nerpanet-dealbot-admin"]
+    },
+    {
+      rolearn = ""
+      username = "ntwk-nerpanet-dealbot-exec"
+      groups = ["ntwk-nerpanet-dealbot-exec"]
+    },
+  ]
+
   tags = {
     "Environment" = "${local.name}"
     "Terraform"   = "yes"
