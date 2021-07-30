@@ -103,7 +103,7 @@ locals {
         subnet.id
       ],
       additional_tags = {
-        "k8s.io/cluster-autoscaler/filecoin-mainnet-eks-us-east-2-dev" = "owned"
+        "k8s.io/cluster-autoscaler/mainnet-us-east-2-dev-eks" = "owned"
         "k8s.io/cluster-autoscaler/enabled" = "TRUE"
       }
     },
