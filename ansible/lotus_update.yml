@@ -51,3 +51,14 @@
       force_apt_get: yes
   tasks:
     - include_role: name=lotus_fullnode
+
+- hosts: lotus_daemon
+  become: true
+  vars:
+    upgrade_reboot_daemon: "no"
+  tasks:
+    - name: reboot lotus daemon
+      service:
+        name: lotus-daemon
+        state: restarted
+      when: upgrade_reboot_daemon == "yes"
