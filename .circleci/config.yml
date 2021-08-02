@@ -436,6 +436,92 @@ jobs:
       #       git commit -am "automated genesis build"
       #       git push origin HEAD:new-genesis-$(date +%d%h%y-%H%M)
 
+  lotus-release-update-calibration:
+    parameters:
+      # This can be any git ref (eg: branch, tag, commit)
+      branch:
+        type: string
+        default: "NeVeRmAtCh"
+      group:
+        type: string
+        default: "NeVeRmAtCh"
+    machine:
+      image: ubuntu-2004:202010-01
+      docker_layer_caching: true
+    resource_class: 2xlarge
+    environment:
+      LOTUSROOT: /home/circleci/.go_workspace/src/github.com/filecoin-project/lotus
+    steps:
+      - slack/notify:
+          event: always
+          channel: "#netops-circleci-test"
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "LOTUS RELEASE TESTNET UPDATE :filecoin-new:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "A lotus release has triggered an update to the calibration network.\n\n*release*: << parameters.branch >>\n*group*: << parameters.group >>\n\n"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+      - checkout
+      - aws-cli/install
+      - rust/install
+      - run:
+          name: install golang
+          command: |
+            curl -LOs https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
+            sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
+      # - go/install:
+      #     version: 1.16.5
+      #     cache-key: v1.16.5
+      - ansible-playbook/install
+      - git-clone:
+          repo: https://github.com/filecoin-project/lotus
+          where: $LOTUSROOT
+          branch: << parameters.branch >>
+      - run:
+          name: setup vault secrets
+          command: |
+            cd ansible
+            echo $ANSIBLE_VAULT_PASSWORD > .vault_password
+      - run:
+          name: update << parameters.group >>
+          command: |
+            args=(
+              "--network" "calibration.fildev.network"
+              "--src" "$LOTUSROOT"
+              "--reboot-daemon"
+              "--" "--limit" "<< parameters.group >>"
+            )
+            cd ansible
+            unset GOPATH
+            ./upgrade_fildev_network_binaries.bash "${args[@]}"
+
   lotus-ansible-upgrade:
     parameters:
       deploy_network:
@@ -685,6 +771,30 @@ workflows:
           build_flags: ""
           branch: << pipeline.parameters.override_tag >>
           check: false
+
+  # workflow to trigger when lotus creates a release
+
+  api-lotus-release-automation:
+    when:
+      and:
+        - equal:
+            - "api-lotus-release-automation"
+            - << pipeline.parameters.api_workflow_requested >>
+    jobs:
+      - lotus-release-update-calibration:
+          name: update-canary
+          branch: << pipeline.parameters.release >>
+          group: canary
+      - hold-for-approval:
+          type: approval
+          requires:
+            - update-canary
+      - lotus-release-update-calibration:
+          name: update-all
+          branch: << pipeline.parameters.release >>
+          group: all
+          requires:
+            - hold-for-approval
 
   api-lotus-rollout:
     when:
