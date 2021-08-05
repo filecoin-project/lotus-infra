@@ -13,6 +13,8 @@ while [ "$1" != "" ]; do
         -b | --build-flags )    shift
                                 buildflags="$1"
                                 ;;
+        -r | --reboot-daemon)   rebootdaemon=true
+                                ;;
         --check )               ansible_args+=("--check")
                                 ;;
         --verbose )             ansible_args+=("-v")
@@ -24,6 +26,7 @@ while [ "$1" != "" ]; do
 done
 
 hostfile="inventories/${network}/hosts.yml"
+reboot_daemon="${rebootdaemon:-"false"}"
 network_name="${network%%.*}net"
 build_flags="${buildflags:-""}"
 lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
@@ -35,5 +38,6 @@ network_flag=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ network_flag }}"'
 # runs all the roles
 ansible-playbook -i $hostfile lotus_update.yml \
     -e binary_src="$lotus_src"                 \
+    -e upgrade_reboot_daemon="no"              \
     --vault-password-file .vault_password      \
-    --diff "${ansible_args[@]}"
+    --diff "${ansible_args[@]}" "${@}"
