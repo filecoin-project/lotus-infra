@@ -1,0 +1,21 @@
+image:
+  tag: mainnet-0dfafb284
+
+prometheusOperatorServiceMonitor: true
+
+persistence:
+  datastore:
+    enabled: true
+    storageClassName: "ebs-csi"
+    size: "3000Gi"
+
+importSnapshot:
+  enabled: true
+  strategy: url
+
+daemonEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+
+additionalLabels:
+  network: mainnet
