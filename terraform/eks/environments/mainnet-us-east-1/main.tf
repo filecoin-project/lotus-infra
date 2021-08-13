@@ -44,14 +44,14 @@ locals {
     "2" = {
       instance_type    = "r5.4xlarge"
       key_name         = var.key_name
-      desired_capacity = 7
+      desired_capacity = 6
       min_capacity     = "3"
       max_capacity     = "50"
     },
     "4" = {
       instance_type    = "r5.8xlarge"
       key_name         = var.key_name
-      desired_capacity = 6
+      desired_capacity = 18
       min_capacity     = "3"
       max_capacity     = "50"
       subnets = [
