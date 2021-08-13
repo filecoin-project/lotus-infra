@@ -68,7 +68,7 @@ locals {
     "1" = {
       instance_type    = "r5.4xlarge"
       key_name         = "filecoin-mainnet"
-      desired_capacity = 3
+      desired_capacity = 15
       min_capacity     = "3"
       max_capacity     = "50"
       k8s_labels       = {}
@@ -80,8 +80,8 @@ locals {
     "2" = {
       instance_type    = "r5.8xlarge"
       key_name         = "filecoin-mainnet"
-      desired_capacity = 3
-      min_capacity     = "3"
+      desired_capacity = 6
+      min_capacity     = "6"
       max_capacity     = "50"
       k8s_labels       = {}
       subnets = [
