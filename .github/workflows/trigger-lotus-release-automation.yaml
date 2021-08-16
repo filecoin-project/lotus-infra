@@ -18,6 +18,6 @@ jobs:
           branch: master
           payload: |
             {
-              "api_workflow_requested": "lotus-devnet-ansible-upgrade",
-              "release": "${{ github.event.inputs.release }}",
+              "api_workflow_requested": "api-lotus-release-automation",
+              "release": "${{ github.event.inputs.release }}"
             }
