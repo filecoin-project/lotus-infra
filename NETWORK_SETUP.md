@@ -10,8 +10,7 @@ gives the most flexibility and outlines the way we setup networks.
 
 Starting a Filecoin network requires some special setup. To produce blocks on the Filecoin network, and therefore process
 messages, a miner on the network must exist with power. For the start of the network this power is given to a miner during
-the creation of the genesis. The power given to the miner isn't just a number, the miner is still required to
-submit Window PoSt proofs as well as Winning PoSts for block production, there is no special casing for these miners.
+the creation of the genesis. 
 
 ## Basic steps
 
@@ -29,8 +28,6 @@ Binaries required:
 - lotus
 - lotus-miner
 
-# Building Binaries
-@TODO add instructions relevant to editing Lotus source, build configuration and make commands for building proper binaries
 
 ## Creating a new Network
 
@@ -91,7 +88,11 @@ A minimally viable Lotus network is comprised of:
 
 ## Lotus Shed
 
-The `lotus-shed` binary is where lotus keeps all of our tool programs.
+The `lotus-shed` binary is where lotus keeps all of our tool programs. It can be compiled from lotus source code by running the following:
+```
+make clean deps lotus-shed
+
+```
 
 ### Generating bls keys for pre-sealing sectors
 
@@ -129,12 +130,18 @@ lotus-shed fetch-params --proving-params <sector-size>
 
 ## Lotus Seed
 
-(The sectors can be special in one way though, because we can freely construct the genesis there is no pre-commit process).
-This requires that sectors exist. The process of creating these sectors before the network is created is called pre-sealing,
+Creating a genesis file to start a new network requires that sectors exist for genesis miners. 
+The process of creating these sectors before the network is created is called pre-sealing,
 and is done through the `lotus-seed` tool.
 
 The `lotus-seed` binary is used to generate pre-sealed sectors for network bootstrap, as well as
 constructing the network json configuration use to generate the genesis.
+
+It can be compiled from lotus source code by running the following:
+```
+make clean deps lotus-seed
+
+```
 
 Note: As long as the replication construct of proofs do not change, keys stay secret, and the pre-sealed sectors
 meet the minimum `ConsensusMinerMinMiners` value, pre-sealed sectors can be reused between networks.
@@ -144,15 +151,10 @@ meet the minimum `ConsensusMinerMinMiners` value, pre-sealed sectors can be reus
 For each miner wanted during the initial setup of a new network, sectors need to be pre-sealed.
 
 ```
-lotus-seed pre-seal --miner-addr t01000 --key ./pre-seal-t01000.key --sector-size <sector-size> --num-sectors 4 --sector-offset 0
+lotus-seed pre-seal --miner-addr t01000 --sector-size <sector-size> --num-sectors 4 --sector-offset 0
 ```
 
-
-Note: Specifying a key is not required during lotus-seed (a key will be generated). When running parallel pre-sealing
-using the `--sector-offset` flag keys should be generated beforehand and pass it into the `lotus-seed` process. However,
-the sectors are not tied to any particilar key till the genesis is created. The key can be modified at anytime prior by
-editing the `pre-seal-<miner>.json` files, or better yet, waiting till after running the `aggregate-manifests` command which
-will produce a single file making it easier to edit the owner and worker keys.
+This will produce a file that looks something like:
 
 ```
 cat pre-seal-t01000.json
@@ -168,6 +170,13 @@ cat pre-seal-t01000.json
     "Sectors": [...]
 }
 ```
+
+Note: Specifying a key is not required during lotus-seed (a key will be generated). When running parallel pre-sealing
+using the `--sector-offset` flag keys should be generated beforehand and pass it into the `lotus-seed` process. However,
+the sectors are not tied to any particilar key till the genesis is created. The key can be modified at anytime prior by
+editing the `pre-seal-<miner>.json` files, or better yet, waiting till after running the `aggregate-manifests` command which
+will produce a single file making it easier to edit the owner and worker keys.
+
 
 [TODO]: <> (There should be a command to change owner and work addresses at some point in the process, probably on the genesis network config?)
 
