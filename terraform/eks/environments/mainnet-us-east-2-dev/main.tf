@@ -90,7 +90,7 @@ locals {
       ]
     },
     "3" = {
-      instance_type    = "r5.8xlarge"
+      instance_type    = "t3.small"
       key_name         = "filecoin-mainnet"
       desired_capacity = 3
       min_capacity     = "3"
