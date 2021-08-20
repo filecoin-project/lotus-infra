@@ -119,3 +119,7 @@ module "eks" {
   node_groups                                = local.node_groups
   security_group_ids                         = module.vpc.security_group_ids
 }
+
+module "roles" {
+  source = "../../modules/roles"
+}

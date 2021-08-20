@@ -1,0 +1,58 @@
+variable "aws_iam_roles" {
+  description = "List of IAM roles"
+  type        = set(string)
+
+  default = [
+    "ntwk-butterfly-bootstrap-admin",
+    "ntwk-butterfly-bootstrap-exec",
+    "ntwk-butterfly-dealbot-admin",
+    "ntwk-butterfly-dealbot-exec",
+    "ntwk-butterfly-disputer-admin",
+    "ntwk-butterfly-disputer-exec",
+    "ntwk-butterfly-fullnode-admin",
+    "ntwk-butterfly-fullnode-exec",
+    "ntwk-butterfly-sentinel-admin",
+    "ntwk-butterfly-sentinel-exec",
+    "ntwk-butterfly-stats-admin",
+    "ntwk-butterfly-stats-exec",
+
+    "ntwk-calibnet-bootstrap-admin",
+    "ntwk-calibnet-bootstrap-exec",
+    "ntwk-calibnet-dealbot-admin",
+    "ntwk-calibnet-dealbot-exec",
+    "ntwk-calibnet-disputer-admin",
+    "ntwk-calibnet-disputer-exec",
+    "ntwk-calibnet-fullnode-admin",
+    "ntwk-calibnet-fullnode-exec",
+    "ntwk-calibnet-sentinel-admin",
+    "ntwk-calibnet-sentinel-exec",
+    "ntwk-calibnet-stats-admin",
+    "ntwk-calibnet-stats-exec",
+
+    "ntwk-mainnet-bootstrap-admin",
+    "ntwk-mainnet-bootstrap-exec",
+    "ntwk-mainnet-dealbot-admin",
+    "ntwk-mainnet-dealbot-exec",
+    "ntwk-mainnet-disputer-admin",
+    "ntwk-mainnet-disputer-exec",
+    "ntwk-mainnet-fullnode-admin",
+    "ntwk-mainnet-fullnode-exec",
+    "ntwk-mainnet-sentinel-admin",
+    "ntwk-mainnet-sentinel-exec",
+    "ntwk-mainnet-stats-admin",
+    "ntwk-mainnet-stats-exec",
+
+    "ntwk-nerpanet-bootstrap-admin",
+    "ntwk-nerpanet-bootstrap-exec",
+    "ntwk-nerpanet-dealbot-admin",
+    "ntwk-nerpanet-dealbot-exec",
+    "ntwk-nerpanet-disputer-admin",
+    "ntwk-nerpanet-disputer-exec",
+    "ntwk-nerpanet-fullnode-admin",
+    "ntwk-nerpanet-fullnode-exec",
+    "ntwk-nerpanet-sentinel-admin",
+    "ntwk-nerpanet-sentinel-exec",
+    "ntwk-nerpanet-stats-admin",
+    "ntwk-nerpanet-stats-exec",
+  ]
+}
