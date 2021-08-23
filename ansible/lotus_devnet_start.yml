@@ -47,17 +47,6 @@
         state: started
       when: start_services|bool
 
-- hosts: chainwatch
-  become: true
-  vars:
-    start_services: true
-  tasks:
-    - name: Ensure chainwatch started
-      service:
-        name: "chainwatch"
-        state: started
-      when: start_services|bool
-
 - hosts: faucet
   become: true
   vars:

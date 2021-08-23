@@ -168,9 +168,7 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e lotus_pcr_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-pcr"              \
     -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-fountain"    \
     -e stats_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-stats"                \
-    -e chainwatch_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-chainwatch"      \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e stats_reset=yes -e lotus_pcr_reset=yes          \
-    -e chainwatch_db_reset=no -e chainwatch_reset=yes                                              \
     -e certbot_create_certificate=${create_certificate}                                            \
     --diff "${ansible_args[@]}"
 

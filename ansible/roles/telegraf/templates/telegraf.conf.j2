@@ -31,9 +31,6 @@
 {% if 'stats' in group_names %}
   lotus_stats = "true"
 {% endif %}
-{% if 'chainwatch' in group_names %}
-  lotus_chainwatch = "true"
-{% endif %}
 {% if 'pcr' in group_names %}
   lotus_pcr = "true"
 {% endif %}
@@ -258,10 +255,6 @@
 {% if 'stats' in group_names %}
 [[inputs.procstat]]
   systemd_unit = "stats.service"
-{% endif %}
-{% if 'chainwatch' in group_names %}
-[[inputs.procstat]]
-  systemd_unit = "chainwatch.service"
 {% endif %}
 {% if 'pcr' in group_names %}
 [[inputs.procstat]]
