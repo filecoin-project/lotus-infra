@@ -1,20 +1,6 @@
 ############################# Filebeat #####################################
 
 filebeat.inputs:
-{% if 'chainwatch' in group_names %}
-- encoding: utf-8
-  type: log
-  fields:
-    logzio_codec: plain
-    token: "{{ logz_io_shared_token }}"
-    type: lotus-chainwatch
-  paths:
-    - "{{ chainwatch_golog_file }}"
-  fields_under_root: true
-  json.keys_under_root: true
-  json.message_key: msg
-  ignore_older: 3h
-{% endif %}
 {% if 'pcr' in group_names %}
 - encoding: utf-8
   type: log
