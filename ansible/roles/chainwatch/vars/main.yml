@@ -1,3 +1,0 @@
-required_vars:
-  - chainwatch_golog_file
-  - chainwatch_db

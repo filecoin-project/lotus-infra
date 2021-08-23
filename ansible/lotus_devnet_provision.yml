@@ -47,8 +47,6 @@
       when: "'faucet' in group_names"
     - include_role: name=stats
       when: "'stats' in group_names"
-    - include_role: name=chainwatch
-      when: "'chainwatch' in group_names"
     - include_role: name=lotus_pcr
       when: "'pcr' in group_names"
 

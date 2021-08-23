@@ -1,2 +1,0 @@
-chainwatch_golog_file: "/var/log/chainwatch.log"
-chainwatch_db: "{{ vault_timescale_conn }}"
