@@ -409,6 +409,10 @@ jobs:
             export TERM=xterm
             echo | ./setup_fildev_network.bash --start-services=false "${args[@]}"
       - run:
+          name: "halt if check-mode"
+          command: |
+            << parameters.check >> && circleci-agent step halt
+      - run:
           name: "remove faucet maintenance"
           command: |
             cd ansible
@@ -418,13 +422,13 @@ jobs:
           command: |
             cd ansible
             << parameters.check >> || ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
-
       - run:
           name: "capture new genesis"
           command: |
             mkdir /tmp/reset
-            cp -a "${LOTUSROOT}/build" /tmp/reset
-            cp -a ansible/inventories /tmp/reset
+            ./scripts/encrypt_vault_files.bash
+            ./scripts/bundle_changes.bash . /tmp/reset/lotus-infra
+            ./scripts/bundle_changes.bash ${LOTUSROOT} /tmp/reset/lotus
       - store_artifacts:
           path: /tmp/reset
       # - run:
