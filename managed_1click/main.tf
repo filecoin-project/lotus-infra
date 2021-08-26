@@ -1,7 +1,9 @@
 // Map between user and their SSH key.
 // https://github.com/willscott.keys
 // https://github.com/acruikshank.keys
+// https://github.com/gammazero.keys
 
+// Dealbot oneclick users
 variable "oneclickusers" {
   description = "one-click instances we manage for people"
   default = {
@@ -11,6 +13,13 @@ variable "oneclickusers" {
   }
 }
 
+variable "index-oneclickusers" {
+  description = "one-click instances we manage for people"
+  default = {
+    "gammazero" = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGPyPk3rcm9fFyRak9EtV0XEPLih4jyyRP0UiIxJoCTG"
+    "cory" = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDiwx4Vw4oVp/WaxHFqd85KdvQ03E78mUcjD7wr6XRl7xFssVg+NQAoBc1UVKpavrDFcbYHAcEWQbvY//izmloGql1CbhNBEp9pHNHe1QJLChPZDJ0J4ljCHCtWTYQqYXhF5j7qefQjZ/chwbJJIV/47koUKXjJUFW7ohtF07WGr8SGXn3oSrP+8lynj9I7JHRX5XbzcID7qlQ5pX52mCzNkrESrhUi+KIMo0d9i0EyhJKNT+qDVwLBoaqDb5vtLSixNE4LLlsC6xp/YnE3dEY2vLyapfiBddsDxfFQJaqjZ7qlQgsWOuwwDNJOrzOSmLTqZ5wgTG2ViVv32Ngen16bLTH4V2E3h5M6meHFpgZT0lhU8wGP/qmvFmwOvsTMmGu+kmtvs3Pov5B3li7AgOOneYs7/PP74WZL74kg63cZ7yUMAZo7FcTTWwyQhdphCmwDH7ymVIQEUPlfyh85jt2Q2mkBMQc+7f6NhxZVMGc7WYcIDRXmXwyJlDai7xNtTQs= cory@nemesis"
+  }
+}
 
 provider "aws" {
   region = "us-east-1"
@@ -80,6 +89,12 @@ resource "aws_security_group" "alltraffic" {
 resource "aws_key_pair" "oneclickkeys" {
   for_each = var.oneclickusers
   key_name = format("oneclick-%s", each.key)
+  public_key = each.value
+}
+
+resource "aws_key_pair" "index-oneclickkeys" {
+  for_each = var.index-oneclickusers
+  key_name = format("index-oneclick-%s", each.key)
   public_key = each.value
 }
 
@@ -175,4 +190,35 @@ resource "aws_volume_attachment" "oneclicknerpanetattachment" {
   device_name = "/dev/sdf"
   volume_id = aws_ebs_volume.oneclicknerpanetvolume[each.key].id
   instance_id = aws_instance.oneclicknerpanetinstance[each.key].id
+}
+
+// index Calibrationnet
+resource "aws_instance" "index-oneclickcalibrationnetinstance" {
+  for_each = var.index-oneclickusers
+  ami = data.aws_ami.calibrationnet.id
+  instance_type = "r5.2xlarge"
+  key_name = aws_key_pair.index-oneclickkeys[each.key].key_name
+  tags = {
+    Name = format("index-oneclick-calibrationnet-%s", each.key)
+    Lotus-network = "calibrationnet"
+    Owner = each.key
+  }
+  security_groups = [ aws_security_group.alltraffic.name ]
+  user_data = file("user_data.sh")
+  availability_zone = "us-east-1f"
+}
+
+resource "aws_ebs_volume" "index-oneclickcalibrationnetvolume" {
+  for_each = var.index-oneclickusers
+  /* availability_zone = aws_instance.index-oneclickcalibrationnetinstance[each.key].availability_zone */
+  availability_zone = "us-east-1f"
+  size = 1000
+  type = "gp2"
+}
+
+resource "aws_volume_attachment" "index-oneclickcalibrationnetattachment" {
+  for_each = var.index-oneclickusers
+  device_name = "/dev/sdf"
+  volume_id = aws_ebs_volume.index-oneclickcalibrationnetvolume[each.key].id
+  instance_id = aws_instance.index-oneclickcalibrationnetinstance[each.key].id
 }
