@@ -75,6 +75,7 @@ variable "eks_iam_usernames" {
     "hannah.howard",
     "raulk",
     "willscott",
+    "aarsh.shah",
   ]
 }
 
