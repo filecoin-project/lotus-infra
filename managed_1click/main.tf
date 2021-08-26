@@ -215,3 +215,10 @@ resource "aws_ebs_volume" "index-oneclickcalibrationnetvolume" {
   size = 1000
   type = "gp2"
 }
+
+resource "aws_volume_attachment" "index-oneclickcalibrationnetattachment" {
+  for_each = var.index-oneclickusers
+  device_name = "/dev/sdf"
+  volume_id = aws_ebs_volume.index-oneclickcalibrationnetvolume[each.key].id
+  instance_id = aws_instance.index-oneclickcalibrationnetinstance[each.key].id
+}
