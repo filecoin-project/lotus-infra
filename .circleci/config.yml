@@ -282,7 +282,7 @@ jobs:
             if [ ! -z "$DOCKER_REPO" ]; then HELM_APPEND=" --set image.repository=${DOCKER_REPO} ${HELM_APPEND}"; fi
             echo "all helm overrides being applied:"
             echo $HELM_APPEND
-            helm --wait --wait-for-jobs --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
+            helm --namespace << parameters.namespace >> upgrade --wait --install --timeout 30m0s << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
       - slack/notify:
           event: fail
           channel: << pipeline.parameters.slack_channel >>
