@@ -1,7 +1,0 @@
-chainwatch_reset: no
-chainwatch_db_reset: no
-chainwatch_batch_size: 100
-chainwatch_golog_log_fmt: json
-chainwatch_golog_log_level: info
-chainwatch_env: {}
-chainwatch_systemd_extras: {}

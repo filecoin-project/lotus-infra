@@ -80,7 +80,7 @@ ARG FFI_USE_GPU2
 ARG FFI_USE_BLST
 ARG GOFLAGS
 
-RUN make lotus lotus-miner lotus-worker lotus-shed lotus-chainwatch lotus-stats lotus-gateway
+RUN make lotus lotus-miner lotus-worker lotus-shed lotus-stats lotus-gateway
 
 # ---------------------
 # base
@@ -140,22 +140,6 @@ RUN mkdir /var/lib/lotus /var/tmp/filecoin-proof-parameters && chown fc /var/lib
 USER fc
 
 ENTRYPOINT ["/usr/local/bin/lotus"]
-
-CMD ["-help"]
-
-# ---------------------
-# chainwatch
-# ---------------------
-
-FROM base AS chainwatch
-MAINTAINER Lotus Development Team
-
-COPY --from=builder /opt/filecoin/lotus-chainwatch /usr/local/bin/
-COPY --from=builder /opt/filecoin/lotus-shed       /usr/local/bin/
-
-USER fc
-
-ENTRYPOINT ["/usr/local/bin/lotus-chainwatch"]
 
 CMD ["-help"]
 
