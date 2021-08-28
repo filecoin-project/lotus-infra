@@ -1,0 +1,326 @@
+# butterfly
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-butterfly-fullnode
+  name: ntwk-butterfly-fullnode-edit
+subjects:
+  - kind: Group
+    name: ntwk-butterfly-fullnode-edit
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-butterfly-fullnode
+  name: ntwk-butterfly-fullnode-view
+subjects:
+  - kind: Group
+    name: ntwk-butterfly-fullnode-exec
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-butterfly-fullnode
+  name: ntwk-butterfly-fullnode-exec
+subjects:
+  - kind: Group
+    name: ntwk-butterfly-fullnode-exec
+roleRef:
+  kind: Role
+  name: ntwk-butterfly-fullnode-exec
+  apiGroup: rbac.authorization.k8s.io
+
+
+# calibration
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-calibnet-fullnode
+  name: ntwk-calibnet-fullnode-edit
+subjects:
+  - kind: Group
+    name: ntwk-calibnet-fullnode-edit
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-calibnet-fullnode
+  name: ntwk-calibnet-fullnode-view
+subjects:
+  - kind: Group
+    name: ntwk-calibnet-fullnode-exec
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-calibnet-fullnode
+  name: ntwk-calibnet-fullnode-exec
+subjects:
+  - kind: Group
+    name: ntwk-calibnet-fullnode-exec
+roleRef:
+  kind: Role
+  name: ntwk-calibnet-fullnode-exec
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-calibnet-sentinel
+  name: ntwk-calibnet-sentinel-edit
+subjects:
+  - kind: Group
+    name: ntwk-calibnet-sentinel-edit
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-calibnet-sentinel
+  name: ntwk-calibnet-sentinel-view
+subjects:
+  - kind: Group
+    name: ntwk-calibnet-sentinel-exec
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-calibnet-sentinel
+  name: ntwk-calibnet-sentinel-exec
+subjects:
+  - kind: Group
+    name: ntwk-calibnet-sentinel-exec
+roleRef:
+  kind: Role
+  name: ntwk-calibnet-sentinel-exec
+  apiGroup: rbac.authorization.k8s.io
+
+
+# mainnet
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-audits
+  name: ntwk-mainnet-audits-edit
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-audits-edit
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-audits
+  name: ntwk-mainnet-audits-view
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-audits-exec
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-audits
+  name: ntwk-mainnet-audits-exec
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-audits-exec
+roleRef:
+  kind: Role
+  name: ntwk-mainnet-audits-exec
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-dealbot
+  name: ntwk-mainnet-dealbot-edit
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-dealbot-edit
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-dealbot
+  name: ntwk-mainnet-dealbot-view
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-dealbot-exec
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-dealbot
+  name: ntwk-mainnet-dealbot-exec
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-dealbot-exec
+roleRef:
+  kind: Role
+  name: ntwk-mainnet-dealbot-exec
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-fullnode
+  name: ntwk-mainnet-fullnode-edit
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-fullnode-edit
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-fullnode
+  name: ntwk-mainnet-fullnode-view
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-fullnode-exec
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-fullnode
+  name: ntwk-mainnet-fullnode-exec
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-fullnode-exec
+roleRef:
+  kind: Role
+  name: ntwk-mainnet-fullnode-exec
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-sentinel
+  name: ntwk-mainnet-sentinel-edit
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-sentinel-edit
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-sentinel
+  name: ntwk-mainnet-sentinel-view
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-sentinel-exec
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-mainnet-sentinel
+  name: ntwk-mainnet-sentinel-exec
+subjects:
+  - kind: Group
+    name: ntwk-mainnet-sentinel-exec
+roleRef:
+  kind: Role
+  name: ntwk-mainnet-sentinel-exec
+  apiGroup: rbac.authorization.k8s.io
+
+
+# nerpanet
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-nerpanet-dealbot
+  name: ntwk-nerpanet-dealbot-edit
+subjects:
+  - kind: Group
+    name: ntwk-nerpanet-dealbot-edit
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-nerpanet-dealbot
+  name: ntwk-nerpanet-dealbot-view
+subjects:
+  - kind: Group
+    name: ntwk-nerpanet-dealbot-exec
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: ntwk-nerpanet-dealbot
+  name: ntwk-nerpanet-dealbot-exec
+subjects:
+  - kind: Group
+    name: ntwk-nerpanet-dealbot-exec
+roleRef:
+  kind: Role
+  name: ntwk-nerpanet-dealbot-exec
+  apiGroup: rbac.authorization.k8s.io
