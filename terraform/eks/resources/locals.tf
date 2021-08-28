@@ -15,6 +15,11 @@ locals {
       groups   = ["system:masters"]
     },
     {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/travisperson"
+      username = "travisperson"
+      groups   = ["system:masters"]
+    },
+    {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/cory"
       username = "cory"
       groups   = ["system:masters"]
@@ -35,31 +40,54 @@ locals {
       groups   = ["system:masters"]
     },
     {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/hsanjuan"
+      username = "hsanjuan"
+      groups   = ["system:masters"]
+    },
+    {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/circleci-lotus"
       username = "circleci-lotus"
       groups   = ["system:masters"]
     },
     {
-      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/hannah.howard"
-      username = "hannah.howard"
-      groups   = ["system:masters"]
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/dealbot-controller"
+      username = "dealbot-controller"
+      groups   = [
+        "ntwk-mainnet-dealbot-edit",
+        "ntwk-nerpanet-dealbot-edit",
+      ]
     },
     {
-      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/raulk"
-      username = "raulk"
-      groups   = ["system:masters"]
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/hannah.howard"
+      username = "hannah.howard"
+      groups   = [
+        "ntwk-mainnet-dealbot-edit",
+        "ntwk-nerpanet-dealbot-edit",
+      ]
     },
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/willscott"
       username = "willscott"
-      groups   = ["system:masters"]
+      groups   = [
+        "ntwk-mainnet-dealbot-edit",
+        "ntwk-nerpanet-dealbot-edit",
+      ]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/raulk"
+      username = "raulk"
+      groups   = ["ntwk-mainnet-dealbot-exec"]
     },
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/aarsh.shah"
       username = "aarsh.shah"
+      groups   = ["ntwk-mainnet-dealbot-exec"]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/circleci-sentinel-infra"
+      username = "circleci-sentinel-infra"
       groups   = ["system:masters"]
     },
-
   ]
 
   tags = {
