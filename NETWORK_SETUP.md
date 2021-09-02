@@ -10,7 +10,7 @@ gives the most flexibility and outlines the way we setup networks.
 
 Starting a Filecoin network requires some special setup. To produce blocks on the Filecoin network, and therefore process
 messages, a miner on the network must exist with power. For the start of the network this power is given to a miner during
-the creation of the genesis. 
+the creation of the genesis.
 
 ## Basic steps
 
@@ -29,70 +29,78 @@ Binaries required:
 - lotus-miner
 
 
-## Creating a new Network
-
-The network configuration for lotus are defined at build. This means to add a new network, some source code configuration is required.
-Network parameters are stored in the `./build` folder of lotus, with the convention of `params_<network>.go`. The default configration
-for mainnet is in `params_mainnet.go`.
-
-Adding a new network requires naming the network, and creating a new network configuration files. It's best to use another network configuration as
-a template as there is no complete documenation of all the configuration that is required to be set.
-
-Some of the things can are configured for networks include
-- drand network configuration
-- network upgrade epochs
-- supported sector sizes
-- minimum miner size
-- block production delay
-
-Note: The network parameters is also where to define the `BootstrapPeerThreshold`, which is covered with more detail in another section.
-
-[TODO]: <> (mainnet and testnet params should be fully documented param files)
-
-
-- `./build/params_<network>.go`
-- `./build/bootstrap/<network>.pi`
-
-In the network parameters file (`params_<network>.go`), there are two important constants that must be set, `BootstrappersFile`, and `GenesisFile`, these
-describe the names of the files that will be built into the the binary. The `BootstrappersFile` points to a file of multiaddrs that will be used for bootstrap configuration, and the `GenesisFile` points to the genesis file that will be built in to the binary if present.
-
-_params_&lt;network&gt;.go
-```
-// +build <network>
-package build
-
-const BootstrappersFile = "<network>.pi"
-const GenesisFile = "<network>.car"
-```
-
-Important! For each network created a build configuration needs to be added to mainnet configuration to disable it when building a different network. You must had a `// +build !<network>` to `params_mainnet.go`.
-
-## Adding make targets
-
-To make it easier to build the binaries for the new network, make targets can be added to the `Makefile`.
-
-```
-<network>: GOFLAGS+=-tags=<network>
-<network>: build-devnets
-```
-
 # Simple Example
 
-This example documents how to set up the Nerpa Network with a simple network configuration.
+This example documents how to set up a Filecoin Network called `demonet` with a simple network configuration.
 
 A minimally viable Lotus network is comprised of:
 * Lotus "miner" with presealed sectors
-* Lotus "bootstrap" node
+* Lotus "bootstrap" node(s)
 * Genesis block
 * Faucet
 
+## Compiling Binaries
+
+At this time, there are several [lotus](https://github.com/filecoin-project/lotus) files that need edited to create a new network.
+
+For this example we'll start by copying and editing network parameters from a pre-defined network - `butterflynet`.
+
+```
+cp buid/params_butterfly.go build/params_demo.go
+```
+
+We'll need to replace the top two lines with our new network name and some others basic parameters by editing `build/params_demo.go`
+```
+//go:build demonet
+// +build demonet
+...
+const BootstrappersFile = "demonet.pi"
+const GenesisFile = "demonet.car"
+...
+BuildType = BuildDemonet
+...
+const BootstrapPeerThreshold = 1
+
+```
+
+Configuration and explanation of all parameters is outside the scope of this document.
+
+We'll also need to add a new constant and `BuildType` case in `build/version.go`
+```
+// +build demonet
+
+const(
+  ...
+  BuildDemonet      = 0x8
+)
+...
+  case BuildDemonet:
+    return "+demonet"
+```
+
+Also we need to make sure mainnet params aren't used for demonet. In `build/params_mainnet` add
+
+```
+// +build !demonet
+```
+
+Finally we should add a `make` target in `Makefile`
+
+```
+demonet: GOFLAGS+=-tags=demonet
+demonet: build-devnets
+```
+
+Once we've done all this, we can finally compile our binaries
+```
+make clean deps demonet install
+```
+
+Optionally move `lotus-seed` and `lotus-shed` to your executable path.
+
 ## Lotus Shed
 
-The `lotus-shed` binary is where lotus keeps all of our tool programs. It can be compiled from lotus source code by running the following:
-```
-make clean deps lotus-shed
-
-```
+The `lotus-shed` binary is where lotus keeps all of our tool programs.
 
 ### Generating bls keys for pre-sealing sectors
 
@@ -107,7 +115,7 @@ lotus-shed keyinfo new bls
 This will create a file called `libp2p-host-<address>.keyinfo` which will contain a keyinfo json object.
 
 ```
-lotus-shed keyinfo new libp2p
+lotus-shed keyinfo new libp2p-host
 ```
 
 ### Importing keys to lotus repository
@@ -115,7 +123,7 @@ lotus-shed keyinfo new libp2p
 Note: Be sure to set the `LOTUS_PATH` before running the command if using a non standard location.
 
 ```
-lotus-shed keyinfo import <filename>.keyinfo
+lotus-shed keyinfo import bls-<filename>.keyinfo
 ```
 
 ### Downloading proof params
@@ -130,18 +138,12 @@ lotus-shed fetch-params --proving-params <sector-size>
 
 ## Lotus Seed
 
-Creating a genesis file to start a new network requires that sectors exist for genesis miners. 
+Creating a genesis file to start a new network requires that sectors exist for genesis miners.
 The process of creating these sectors before the network is created is called pre-sealing,
 and is done through the `lotus-seed` tool.
 
 The `lotus-seed` binary is used to generate pre-sealed sectors for network bootstrap, as well as
 constructing the network json configuration use to generate the genesis.
-
-It can be compiled from lotus source code by running the following:
-```
-make clean deps lotus-seed
-
-```
 
 Note: As long as the replication construct of proofs do not change, keys stay secret, and the pre-sealed sectors
 meet the minimum `ConsensusMinerMinMiners` value, pre-sealed sectors can be reused between networks.
@@ -151,7 +153,7 @@ meet the minimum `ConsensusMinerMinMiners` value, pre-sealed sectors can be reus
 For each miner wanted during the initial setup of a new network, sectors need to be pre-sealed.
 
 ```
-lotus-seed pre-seal --miner-addr t01000 --sector-size <sector-size> --num-sectors 4 --sector-offset 0
+lotus-seed pre-seal --miner-addr t01000 --sector-size 512MiB --num-sectors 4 --sector-offset 0
 ```
 
 This will produce a file that looks something like:
@@ -174,7 +176,7 @@ cat pre-seal-t01000.json
 Note: Specifying a key is not required during lotus-seed (a key will be generated). When running parallel pre-sealing
 using the `--sector-offset` flag keys should be generated beforehand and pass it into the `lotus-seed` process. However,
 the sectors are not tied to any particilar key till the genesis is created. The key can be modified at anytime prior by
-editing the `pre-seal-<miner>.json` files, or better yet, waiting till after running the `aggregate-manifests` command which
+editing the `pre-seal-<miner>.json` files. If performing concurrent sector pre-sealing, you can wail until after running the `aggregate-manifests` command which
 will produce a single file making it easier to edit the owner and worker keys.
 
 
@@ -190,7 +192,7 @@ Every network requires a genesis file to initialize from. This section will cove
 which will later be used to generate the `genesis.car` file itself.
 
 ```
-lotus-seed genesis new --network-name <network> /storage/<network>/genesis.json
+lotus-seed genesis new --network-name demonet genesis.json
 ```
 
 #### Setting a network start time
@@ -220,66 +222,19 @@ mv ${GENESISTMP} "/storage/<network>/genesis.json"
 
 For each miner with pre-sealed sectors that should be included in the network will need to have their metadata file
 added to the genesis.
+In our case we'll just include a single miner.
 
 ```
-lotus-seed genesis add-miner /storage/<network>/genesis.json /storage/<maddr>/pre-seal-<maddr>.json
+lotus-seed genesis add-miner genesis.json ~/.genesis-sectors/pre-seal-t01000.json
 ```
 
 ### Generating the genesis.car
 
 To generate the genesis car file, starting a lotus daemon is required. The `genesis.car` file will be created along side
-the `genesis.json` file at `/storage/<network>/genesis.car` (this is a detail of this script).
+the `genesis.json` file at `genesis.car` (this is a detail of this script).
 
 ```
-GENESIS_JSON="/storage/<network>/genesis.json"
-GENPATH=$(mktemp --suffix=genesis -d)
-
-cp "${GENESIS_JSON}" "${GENPATH}/genesis.json"
-
-lotus-seed genesis car              \
-      --out="${GENPATH}/devnet.car" \
-      "${GENPATH}/genesis.json"
-
-cp ${GENPATH}/devnet.car $(dirname $GENESIS_JSON)/genesis.car
-rm -rf ${GENPATH}
-```
-
-## Running bootstrap nodes
-
-It's a good idea to run dedicated bootstrap nodes that are not the pre-sealed miners themselves. This is less important
-on smaller networks, but on larger ones the bootstrap peers received so many connections that they cycle through peer
-lists rather quickly which may affect block / message propagation to and from the miners.
-
-Bootstrap nodes are just lotus daemons, ideally with a pre-generated libp2p host key so that redeployment is possible
-without having to distribute new multiaddrs. Bootstrap nodes must all be publicly dial-able and have a static port, as
-lotus by default uses a random port assigned by the kernel.
-
-To compile bootstrap multiaddrs into the `lotus` binary, place the multiaddrs in `./build/bootstrap/bootstrappers.pi`.
-
-Bootstrap nodes should also run the bootstrap profile by specifying it on the daemon commands.
-
-```
-lotus daemon --profile=bootstrapper
-```
-
-Optimally you may want to increase the `ConnMgrLow` and `ConnMgrHigh` values.
-
-The `config.toml` should be located under `$LOTUS_PATH/config.toml`.
-
-```
-[Libp2p]
-ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
-# ConnMgrLow =
-# ConnMgrHigh =
-```
-
-Be sure to open any firewall rules. Here is an example ufw profile:
-
-```
-[Lotus Daemon]
-title=Lotus Daemon
-description=Lotus daemon firewall rules
-ports=1347/tcp
+lotus-seed genesis car --out demonet.car genesis.json
 ```
 
 ## Initializing pre-sealed miners
@@ -308,12 +263,70 @@ After initialization the only thing requires is to start the storage miners them
 Note: There is nothing special about the `t01000` address here. It has just become practice to make it the genesis miner
 
 ```
-lotus-storage-miner init --actor t01000                                             \
+lotus daemon --genesis demonet.car &
+lotus-miner init --actor t01000                                             \
                          --sector-size <sector-size>                                \
                          --pre-sealed-metadata /storage/t01000/pre-seal-t01000.json \
                          --pre-sealed-sectors  /storage/t01000/pre-seal-0           \
                          --nosync --genesis-miner
 ```
+
+## Running bootstrap nodes
+
+It's a good idea to run dedicated bootstrap nodes that are not the pre-sealed miners themselves. This is less important
+on smaller networks, but on larger ones the bootstrap peers received so many connections that they cycle through peer
+lists rather quickly which may affect block / message propagation to and from the miners.
+
+Bootstrap nodes are just lotus daemons, ideally with a pre-generated libp2p host key so that redeployment is possible
+without having to distribute new multiaddrs. Bootstrap nodes must all be publicly dial-able and have a static port, as
+lotus by default uses a random port assigned by the kernel.
+
+### Start bootstrap daemon
+
+Start the bootstrap daemon with a profile.
+
+```
+lotus daemon --profile=bootstrapper
+```
+
+Optimally you may want to increase the `ConnMgrLow` and `ConnMgrHigh` values.
+
+The `config.toml` should be located under `$LOTUS_PATH/config.toml`.
+
+```
+[Libp2p]
+ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+# ConnMgrLow =
+# ConnMgrHigh =
+```
+
+Be sure to open any firewall rules. Here is an example ufw profile:
+
+```
+[Lotus Daemon]
+title=Lotus Daemon
+description=Lotus daemon firewall rules
+ports=1347/tcp
+```
+
+### Update bootstrap list
+
+Get the bootstrap node's id
+
+```
+lotus net id
+```
+
+Let's create a bootstrap node list at `build/bootstrap.demonet.pi`
+with a single `localhost` multiaddr using the libp2p key we created
+```
+/dns4/localhost/tcp/1347/p2p/<id>
+```
+
+Once you've done this, you need to rebuild lotus again and distribute as needed.
+
+As mentioned, using pre-generated keys is recommended outside of this demo.
+
 
 # Advanced Usage
 
