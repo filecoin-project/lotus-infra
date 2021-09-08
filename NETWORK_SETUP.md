@@ -39,6 +39,12 @@ A minimally viable Lotus network is comprised of:
 * Genesis block
 * Faucet
 
+## Getting Ready
+
+To follow this demo, you should be on a Linux or Mac computer with at least 16GB memory.
+
+We'll need
+
 ## Compiling Binaries
 
 At this time, there are several [lotus](https://github.com/filecoin-project/lotus) files that need edited to create a new network.
@@ -123,7 +129,7 @@ lotus-shed keyinfo new libp2p-host
 Note: Be sure to set the `LOTUS_PATH` before running the command if using a non standard location.
 
 ```
-lotus-shed keyinfo import bls-<filename>.keyinfo
+lotus-shed keyinfo import <filename>.keyinfo
 ```
 
 ### Downloading proof params
@@ -153,7 +159,7 @@ meet the minimum `ConsensusMinerMinMiners` value, pre-sealed sectors can be reus
 For each miner wanted during the initial setup of a new network, sectors need to be pre-sealed.
 
 ```
-lotus-seed pre-seal --miner-addr t01000 --sector-size 512MiB --num-sectors 4 --sector-offset 0
+lotus-seed pre-seal --miner-addr t01000 --sector-size 512MiB --num-sectors 4 --sector-offset 0 --key bls-<filename>.keyinfo --network-version 5
 ```
 
 This will produce a file that looks something like:
@@ -228,10 +234,7 @@ In our case we'll just include a single miner.
 lotus-seed genesis add-miner genesis.json ~/.genesis-sectors/pre-seal-t01000.json
 ```
 
-### Generating the genesis.car
-
-To generate the genesis car file, starting a lotus daemon is required. The `genesis.car` file will be created along side
-the `genesis.json` file at `genesis.car` (this is a detail of this script).
+### Generating the genesis car file
 
 ```
 lotus-seed genesis car --out demonet.car genesis.json
@@ -254,7 +257,7 @@ directory.
 
 Note: All pre-sealed miner daemons must be connected, this can be done by manually connecting them by running a
 `lotus net connect` from all miners to the genesis miner's daemon. However, we recommend that you setup proper bootstrap
-nodes and compile their addresses into the lotus daemon using the `build/bootstrap/bootstrappers.pi`.
+nodes and compile their addresses into the lotus daemon using the `build/bootstrap/demonet.pi`.
 
 After initialization the only thing requires is to start the storage miners themselves by running `lotus-storage-miner run`.
 
@@ -263,11 +266,11 @@ After initialization the only thing requires is to start the storage miners them
 Note: There is nothing special about the `t01000` address here. It has just become practice to make it the genesis miner
 
 ```
-lotus daemon --genesis demonet.car &
-lotus-miner init --actor t01000                                             \
-                         --sector-size <sector-size>                                \
-                         --pre-sealed-metadata /storage/t01000/pre-seal-t01000.json \
-                         --pre-sealed-sectors  /storage/t01000/pre-seal-0           \
+lotus daemon --genesis=demonet.car --bootstrap=false &
+lotus-miner init --actor t01000                                                        \
+                         --sector-size=512MiB                                          \
+                         --pre-sealed-metadata=~/.genesis-sectors/pre-seal-t01000.json \
+                         --pre-sealed-sectors =~/.genesis-sectors                      \
                          --nosync --genesis-miner
 ```
 
@@ -317,7 +320,7 @@ Get the bootstrap node's id
 lotus net id
 ```
 
-Let's create a bootstrap node list at `build/bootstrap.demonet.pi`
+Let's create a bootstrap node list at `build/bootstrap/demonet.pi`
 with a single `localhost` multiaddr using the libp2p key we created
 ```
 /dns4/localhost/tcp/1347/p2p/<id>
