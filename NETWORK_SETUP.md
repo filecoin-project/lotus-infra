@@ -56,12 +56,33 @@ cp buid/params_butterfly.go build/params_demo.go
 ```
 
 We'll need to replace the top two lines with our new network name and some others basic parameters by editing `build/params_demo.go`
+Network upgrade epochs get set to negative integers which will signal all upgrades to be skipped and the network will start at the latest network version.
 ```
-//go:build demonet
 // +build demonet
 ...
 const BootstrappersFile = "demonet.pi"
 const GenesisFile = "demonet.car"
+
+const UpgradeBreezeHeight = -1
+const BreezeGasTampingDuration = -2
+const UpgradeSmokeHeight = -2
+const UpgradeIgnitionHeight = -3
+const UpgradeRefuelHeight = -4
+
+var UpgradeAssemblyHeight = abi.ChainEpoch(-5)
+
+const UpgradeTapeHeight = -6
+const UpgradeLiftoffHeight = -7
+const UpgradeKumquatHeight = -8
+const UpgradeCalicoHeight = -9
+const UpgradePersianHeight = -10
+const UpgradeClausHeight = -11
+const UpgradeOrangeHeight = -12
+const UpgradeTrustHeight = -13
+const UpgradeNorwegianHeight = -14
+const UpgradeTurboHeight = -15
+const UpgradeHyperdriveHeight = -16
+
 ...
 BuildType = BuildDemonet
 ...
@@ -159,7 +180,7 @@ meet the minimum `ConsensusMinerMinMiners` value, pre-sealed sectors can be reus
 For each miner wanted during the initial setup of a new network, sectors need to be pre-sealed.
 
 ```
-lotus-seed pre-seal --miner-addr t01000 --sector-size 512MiB --num-sectors 4 --sector-offset 0 --key bls-<filename>.keyinfo --network-version 5
+lotus-seed pre-seal --miner-addr t01000 --sector-size 512MiB --num-sectors 4 --sector-offset 0 --key bls-<filename>.keyinfo
 ```
 
 This will produce a file that looks something like:
@@ -240,6 +261,8 @@ lotus-seed genesis add-miner genesis.json ~/.genesis-sectors/pre-seal-t01000.jso
 lotus-seed genesis car --out demonet.car genesis.json
 ```
 
+Optionally copy `demonet.car` to `build/genesis/` and rebuild lotus, lotus-miner and lotus-worker to distribute to others.
+
 ## Initializing pre-sealed miners
 
 Initializing requires running both the lotus daemon and a storage miner. Only a single miner is required to start
@@ -270,7 +293,7 @@ lotus daemon --genesis=demonet.car --bootstrap=false &
 lotus-miner init --actor t01000                                                        \
                          --sector-size=512MiB                                          \
                          --pre-sealed-metadata=~/.genesis-sectors/pre-seal-t01000.json \
-                         --pre-sealed-sectors =~/.genesis-sectors                      \
+                         --pre-sealed-sectors=~/.genesis-sectors                      \
                          --nosync --genesis-miner
 ```
 
