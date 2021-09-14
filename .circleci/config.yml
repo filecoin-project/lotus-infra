@@ -629,11 +629,12 @@ workflows:
       equal: [ "none", << pipeline.parameters.api_workflow_requested >> ]
     triggers:
       - schedule:
-          cron: "0 * * * *"
-          # filters:
-          #   branches:
-          #     only:
-          #       - /^(main|master)$/
+          cron: "10 * * * *"
+          filters:
+            branches:
+              only:
+                # - /^(main|master)$/
+                - /^(fix/lotus-build-containers-lotus)$/
     jobs:
       - lotus-build-containers:
           tag: master
