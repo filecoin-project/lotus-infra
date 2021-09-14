@@ -148,7 +148,7 @@ jobs:
             scripts/build_containers.bash --src $HOME/lotus --network << parameters.network >> --tag << parameters.tag >> --docker-tag $DOCKER_TAG --repo << parameters.repo >>
             mkdir -p /tmp/circle
             echo -n $DOCKER_TAG > /tmp/circle/docker_tag
-            echo -n << parameters.repo >> > /tmp/circle/docker_repo
+            echo -n << parameters.repo >>/lotus > /tmp/circle/docker_repo
       - persist_to_workspace:
           root: /tmp/circle
           paths:
