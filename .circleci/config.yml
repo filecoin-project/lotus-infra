@@ -282,7 +282,43 @@ jobs:
             if [ ! -z "$DOCKER_REPO" ]; then HELM_APPEND=" --set image.repository=${DOCKER_REPO} ${HELM_APPEND}"; fi
             echo "all helm overrides being applied:"
             echo $HELM_APPEND
-            helm --namespace << parameters.namespace >> upgrade --install << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
+            helm --namespace << parameters.namespace >> upgrade --wait --install --timeout 30m0s << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
+      - slack/notify:
+          event: fail
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                 {
+                   "type": "header",
+                   "text": {
+                     "type": "plain_text",
+                     "text": ":alert: :fire: HELM DEPLOYMENT FAILURE :dumpster_fire: :alert:",
+                     "emoji": true
+                    }
+                 },
+                 {
+                   "type": "section",
+                   "text": {
+                     "type": "mrkdwn",
+                     "text": "Sound the alarm, captain! This ship is going down!\n\nhelm encountered a failure while deploying this code.\n\n*release:* << parameters.release >>\n*chart:* << parameters.chart >>/<< parameters.chart_version >>\n*cluster:* << parameters.cluster >>"
+                   }
+                 },
+                 {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
 
   lotus-ansible-reset:
     parameters:
@@ -409,6 +445,10 @@ jobs:
             export TERM=xterm
             echo | ./setup_fildev_network.bash --start-services=false "${args[@]}"
       - run:
+          name: "halt if check-mode"
+          command: |
+            << parameters.check >> && circleci-agent step halt
+      - run:
           name: "remove faucet maintenance"
           command: |
             cd ansible
@@ -418,13 +458,13 @@ jobs:
           command: |
             cd ansible
             << parameters.check >> || ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
-
       - run:
           name: "capture new genesis"
           command: |
             mkdir /tmp/reset
-            cp -a "${LOTUSROOT}/build" /tmp/reset
-            cp -a ansible/inventories /tmp/reset
+            ./scripts/encrypt_vault_files.bash
+            ./scripts/bundle_changes.bash . /tmp/reset/lotus-infra
+            ./scripts/bundle_changes.bash ${LOTUSROOT} /tmp/reset/lotus
       - store_artifacts:
           path: /tmp/reset
       # - run:

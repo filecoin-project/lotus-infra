@@ -65,15 +65,16 @@ variable "eks_iam_usernames" {
   type        = list(string)
 
   default = [
-    "marcus",
-    "travisperson",
+    "aarsh.shah",
     "cory",
-    "mg",
     "frrst",
+    "hannah.howard",
     "iand",
     "lanzafame",
-    "hannah.howard",
+    "marcus",
+    "mg",
     "raulk",
+    "travisperson",
     "willscott",
   ]
 }

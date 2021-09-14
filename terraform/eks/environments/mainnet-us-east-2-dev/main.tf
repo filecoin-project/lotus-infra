@@ -89,6 +89,40 @@ locals {
         subnet.id
       ]
     },
+    "3" = {
+      instance_type    = "r5.2xlarge"
+      key_name         = "filecoin-mainnet"
+      min_capacity     = "1"
+      max_capacity     = "12"
+      k8s_labels       = {
+        "fil-infra.protocol.ai/node-type" = "lotus-standard"
+      }
+      subnets = [
+        for subnet in aws_subnet.workers2 :
+        subnet.id
+      ],
+      additional_tags = {
+        "k8s.io/cluster-autoscaler/mainnet-us-east-2-dev-eks" = "owned"
+        "k8s.io/cluster-autoscaler/enabled" = "TRUE"
+      }
+    },
+    "4" = {
+      instance_type    = "r5.8xlarge"
+      key_name         = "filecoin-mainnet"
+      min_capacity     = "1"
+      max_capacity     = "12"
+      k8s_labels       = {
+        "fil-infra.protocol.ai/node-type" = "lotus-high-memory"
+      }
+      subnets = [
+        for subnet in aws_subnet.workers2 :
+        subnet.id
+      ],
+      additional_tags = {
+        "k8s.io/cluster-autoscaler/mainnet-us-east-2-dev-eks" = "owned"
+        "k8s.io/cluster-autoscaler/enabled" = "TRUE"
+      }
+    },
   }
   acm_enabled = 1
   subnet_tags = {

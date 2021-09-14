@@ -25,14 +25,28 @@ check_kubectl_version() {
   fi
 }
 
+install_autoscaler() {
+  helm repo add autoscaler https://kubernetes.github.io/autoscaler
+  helm repo update
+  helm upgrade --namespace=kube-system --install autoscaling \
+    --set 'autoDiscovery.clusterName'="${CLUSTER_NAME}" \
+    --set cloudProvider=aws \
+    --set awsRegion="${REGION}" \
+    --set 'extraArgs.balance-similar-node-groups'=true \
+    --version "9.10.4" \
+    autoscaler/cluster-autoscaler
+}
+
 install_external_dns() {
   helm repo add bitnami https://charts.bitnami.com/bitnami
+  helm repo update
   helm upgrade --namespace=kube-system --install public-dns \
     --set aws.region="${REGION}"  \
     --set aws.zoneType="public" \
     --set domainFilters="{${DOMAIN_FILTER}}" \
     --set logLevel="debug" \
     --set txtOwnerId="${CLUSTER_NAME}" \
+    --version "5.1.3" \
     bitnami/external-dns
 }
 
@@ -60,6 +74,7 @@ install_storage_classes() {
 }
 
 check_kubectl_version
+install_autoscaler
 install_external_dns
 install_efs_csi
 install_ebs_csi
