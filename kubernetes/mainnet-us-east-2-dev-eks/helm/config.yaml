@@ -110,3 +110,49 @@ deployments:
     values:
       - base
       - gateway-0
+  # splitstore testing
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.3
+    namespace: ntwk-mainnet-splitstore-test
+    name: standard-16g
+    values:
+      - base
+      - limits-16G
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.3
+    namespace: ntwk-mainnet-splitstore-test
+    name: standard-32g
+    values:
+      - base
+      - limits-32G
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.3
+    namespace: ntwk-mainnet-splitstore-test
+    name: standard-48g
+    values:
+      - base
+      - limits-48G
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.3
+    namespace: ntwk-mainnet-splitstore-test
+    name: splitstore-16g
+    values:
+      - base
+      - coldstore-discard
+      - limits-16G
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.3
+    namespace: ntwk-mainnet-splitstore-test
+    name: splitstore-32g
+    values:
+      - base
+      - coldstore-discard
+      - limits-32G
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.3
+    namespace: ntwk-mainnet-splitstore-test
+    name: splitstore-48g
+    values:
+      - base
+      - coldstore-discard
+      - limits-48G
