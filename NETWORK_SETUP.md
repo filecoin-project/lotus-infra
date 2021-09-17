@@ -147,7 +147,12 @@ lotus-shed keyinfo new libp2p-host
 
 ### Importing keys to lotus repository
 
-Note: Be sure to set the `LOTUS_PATH` before running the command if using a non standard location.
+Note: Be sure to set the `LOTUS_PATH` before running the command if using a non standard location, if the
+directory does not exists, you will also need to create a keystore folder with proper permissions.
+
+```
+mkdir -p $LOTUS_PATH/keystore && chmod 0600 $LOTUS_PATH/keystore
+```
 
 ```
 lotus-shed keyinfo import <filename>.keyinfo
