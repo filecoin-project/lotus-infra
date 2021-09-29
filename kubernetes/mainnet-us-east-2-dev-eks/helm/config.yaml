@@ -156,3 +156,9 @@ deployments:
       - base
       - coldstore-discard
       - limits-48G
+  - chart: filecoin/lotus-bundle
+    namespace: ntwk-mainnet-storetheindex
+    name: storetheindex-0
+    values:
+      - base
+      - storetheindex-0

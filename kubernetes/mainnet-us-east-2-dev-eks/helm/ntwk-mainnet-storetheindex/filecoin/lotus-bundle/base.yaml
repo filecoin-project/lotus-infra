@@ -1,0 +1,14 @@
+image:
+  repository: coryschwartz/storetheindex
+  tag: latest
+  pullPolicy: Always
+
+
+lotus:
+  enabled: false
+
+
+prometheus:
+  serviceMonitor: false
+  path: /metrics
+  port: ""
