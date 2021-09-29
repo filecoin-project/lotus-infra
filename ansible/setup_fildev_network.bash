@@ -234,22 +234,7 @@ pushd "$lotus_src"
     mv ${genesistmp} "${genpath}/genesis.json"
   done <<<$(echo $additional_accounts | jq -rc '.[] | [.address, .balance] | @tsv' )
 
-  ./lotus --repo="${genpath}" daemon --api 0 --lotus-make-genesis="${genpath}/testnet.car" --genesis-template="${genpath}/genesis.json" --bootstrap=false &
-  ldpid=$!
-
-  while true; do
-    if [ ! -f "${genpath}/testnet.car" ]; then
-      sleep 5
-    else
-      break
-    fi
-  done
-
-  sleep 30
-
-  kill "$ldpid"
-
-  wait
+  ./lotus-seed genesis car --out="${genpath}/testnet.car" "${genpath}/genesis.json"
 
   cp "${genpath}/testnet.car" build/genesis/$network_flag.car
 
