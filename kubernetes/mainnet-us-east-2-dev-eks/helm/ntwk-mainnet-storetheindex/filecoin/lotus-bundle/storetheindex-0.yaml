@@ -39,13 +39,13 @@ application:
     annotations: {}
     httpRules:
       - host: lb.mainnet-us-east-2-dev.fildevops.net
-        path: /cory/storetheindex/ingest
+        path: /storetheindex-mainnet/ingest
         servicePort: ingest
       - host: lb.mainnet-us-east-2-dev.fildevops.net
-        path: /cory/storetheindex/admin
+        path: /storetheindex-mainnet/admin
         servicePort: admin
       - host: lb.mainnet-us-east-2-dev.fildevops.net
-        path: /cory/storetheindex/finder
+        path: /storetheindex-mainnet/finder
         servicePort: finder
   storage:
     - mount: /data/storetheindex
