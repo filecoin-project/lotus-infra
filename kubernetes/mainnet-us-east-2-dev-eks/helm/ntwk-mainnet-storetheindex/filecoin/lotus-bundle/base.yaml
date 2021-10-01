@@ -1,5 +1,5 @@
 image:
-  repository: coryschwartz/storetheindex
+  repository: filecoin/storetheindex
   tag: latest
   pullPolicy: Always
 
@@ -9,6 +9,6 @@ lotus:
 
 
 prometheus:
-  serviceMonitor: false
+  serviceMonitor: true
   path: /metrics
-  port: ""
+  port: "admin"

@@ -17,36 +17,23 @@ application:
         name: finder
   secrets: []
   configMaps: []
-  service:
-    enabled: true
-    type: ClusterIP
-    ports:
-      - protocol: TCP
-        port: 3001
-        targetPort: 3001
-        name: ingest
-      # - protocol: TCP
-      #   port: 3002
-      #   targetPort: 3002
-      #   name: admin
-      - protocol: TCP
-        port: 3003
-        targetPort: 3003
-        name: finder
-  ingress:
-    enabled: true
-    class: nginx
-    annotations: {}
-    httpRules:
-      - host: lb.mainnet-us-east-2-dev.fildevops.net
-        path: /storetheindex-mainnet/ingest
-        servicePort: ingest
-      # - host: lb.mainnet-us-east-2-dev.fildevops.net
-      #   path: /storetheindex-mainnet/admin
-      #   servicePort: admin
-      - host: lb.mainnet-us-east-2-dev.fildevops.net
-        path: /storetheindex-mainnet/finder
-        servicePort: finder
+  services:
+    - type: ClusterIP
+      ports:
+        - protocol: TCP
+          port: 3002
+          targetPort: 3002
+          name: admin
+    - type: LoadBalancer
+      ports:
+        - protocol: TCP
+          port: 3001
+          targetPort: 3001
+          name: ingest
+        - protocol: TCP
+          port: 3003
+          targetPort: 3003
+          name: finder
   storage:
     - mount: /data/storetheindex
       chownLotus: false
