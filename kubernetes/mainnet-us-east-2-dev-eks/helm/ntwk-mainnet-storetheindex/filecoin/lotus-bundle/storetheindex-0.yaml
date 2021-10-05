@@ -9,31 +9,35 @@ application:
     env: []
     resources: {}
     ports:
+      - containerPort: 3000
+        name: finder
       - containerPort: 3001
         name: ingest
       - containerPort: 3002
         name: admin
-      - containerPort: 3003
-        name: finder
   secrets: []
   configMaps: []
   services:
     - type: ClusterIP
+      app: storetheindex
+      release: storetheindex-0
       ports:
         - protocol: TCP
           port: 3002
           targetPort: 3002
           name: admin
     - type: LoadBalancer
+      app: storetheindex
+      release: storetheindex-0
       ports:
+        - protocol: TCP
+          port: 3000
+          targetPort: 3000
+          name: finder
         - protocol: TCP
           port: 3001
           targetPort: 3001
           name: ingest
-        - protocol: TCP
-          port: 3003
-          targetPort: 3003
-          name: finder
   storage:
     - mount: /data/storetheindex
       chownLotus: false
