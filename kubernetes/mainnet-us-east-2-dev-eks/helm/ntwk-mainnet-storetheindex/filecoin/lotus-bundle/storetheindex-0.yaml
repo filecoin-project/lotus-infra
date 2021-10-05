@@ -6,7 +6,9 @@ application:
     name: application
     args: 
       - daemon
-    env: []
+    env: 
+      - name: STORETHEINDEX_LISTEN_ADMIN
+        value: /ip4/0.0.0.0/tcp/3002
     resources: {}
     ports:
       - containerPort: 3000
@@ -19,16 +21,18 @@ application:
   configMaps: []
   services:
     - type: ClusterIP
-      app: storetheindex
-      release: storetheindex-0
+      selector:
+        app: storetheindex
+        release: storetheindex-0
       ports:
         - protocol: TCP
           port: 3002
           targetPort: 3002
           name: admin
     - type: LoadBalancer
-      app: storetheindex
-      release: storetheindex-0
+      selector:
+        app: storetheindex
+        release: storetheindex-0
       ports:
         - protocol: TCP
           port: 3000
@@ -41,6 +45,7 @@ application:
   storage:
     - mount: /data/storetheindex
       chownLotus: false
+      subdirPerRelease: true
       volume:
         - name: shared-volume
           persistentVolumeClaim:
