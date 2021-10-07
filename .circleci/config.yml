@@ -8,6 +8,7 @@ orbs:
   rust: circleci/rust@1.5.0
   go: circleci/go@1.6.0
   slack: circleci/slack@4.4.2
+  terraform: circleci/terraform@3.0.0
 
 # Some of the workflows in this CI config are intended to be triggered over the CircleCI API
 # The Circle v2 API allows API users to call a pipeline, and conditionally execute workflows.
@@ -662,8 +663,27 @@ jobs:
           command: |
             cd ansible
             << parameters.check >> || ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
+  terraform-lotus-dev-boxes:
+    machine:
+      image: ubuntu-2004:202010-01
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - terraform/install:
+          arch: amd64
+          os: linux
+          terraform_version: 1.0.8
+      - terraform/validate:
+          path: terraform/lotus-dev-boxes
+      - terraform/init:
+          path: terraform/lotus-dev-boxes
+      - terraform/plan:
+          path: terraform/lotus-dev-boxes
 
 workflows:
+  terraform-lotus-dev-boxes:
+    jobs:
+      - terraform-lotus-dev-boxes
   butterfly-nightly:
     when:
       equal: [ "none", << pipeline.parameters.api_workflow_requested >> ]
@@ -716,7 +736,7 @@ workflows:
   api-lotus-ansible-reset-careful:
     when:
       and:
-        - equal: 
+        - equal:
             - "lotus-devnet-ansible-reset"
             - << pipeline.parameters.api_workflow_requested >>
         - << pipeline.parameters.be_careful >>
@@ -753,7 +773,7 @@ workflows:
   api-lotus-ansible-reset-nocareful:
     when:
       and:
-        - equal: 
+        - equal:
             - "lotus-devnet-ansible-reset"
             - << pipeline.parameters.api_workflow_requested >>
         - not: << pipeline.parameters.be_careful >>
@@ -773,7 +793,7 @@ workflows:
   api-lotus-ansible-upgrade-careful:
     when:
       and:
-        - equal: 
+        - equal:
             - "lotus-devnet-ansible-upgrade"
             - << pipeline.parameters.api_workflow_requested >>
         - << pipeline.parameters.be_careful >>
@@ -800,7 +820,7 @@ workflows:
   api-lotus-ansible-upgrade-nocareful:
     when:
       and:
-        - equal: 
+        - equal:
             - "lotus-devnet-ansible-upgrade"
             - << pipeline.parameters.api_workflow_requested >>
         - not: << pipeline.parameters.be_careful >>
