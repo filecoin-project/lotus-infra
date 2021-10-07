@@ -11,13 +11,13 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-2"
+  region = "us-east-2"
 }
 
 module "lotus_dev_boxes" {
-  source = "../modules/lotus_dev_boxes"
-  boxes  = local.machines
-  subnet_id = data.terraform_remote_state.vpc.outputs.public_subnet_ids[0]
+  source             = "../modules/lotus_dev_boxes"
+  boxes              = local.machines
+  subnet_id          = data.terraform_remote_state.vpc.outputs.public_subnet_ids[0]
   security_group_ids = [aws_security_group.mod.id]
 }
 
@@ -34,9 +34,9 @@ resource "aws_security_group" "mod" {
       protocol         = "tcp"
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = ["::/0"]
-      self = false
-      prefix_list_ids = []
-      security_groups = []
+      self             = false
+      prefix_list_ids  = []
+      security_groups  = []
     },
     {
       description      = "Range of ports for lotus"
@@ -45,9 +45,9 @@ resource "aws_security_group" "mod" {
       protocol         = "tcp"
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = ["::/0"]
-      self = false
-      prefix_list_ids = []
-      security_groups = []
+      self             = false
+      prefix_list_ids  = []
+      security_groups  = []
     }
   ]
 
@@ -59,9 +59,9 @@ resource "aws_security_group" "mod" {
       protocol         = "-1"
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = ["::/0"]
-      self = false
-      prefix_list_ids = []
-      security_groups = []
+      self             = false
+      prefix_list_ids  = []
+      security_groups  = []
     }
   ]
 
