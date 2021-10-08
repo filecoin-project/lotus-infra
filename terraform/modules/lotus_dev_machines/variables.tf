@@ -1,8 +1,8 @@
-variable "boxes" {
+variable "machines" {
   type = list
 }
 
-variable "boxes_default" {
+variable "machines_default" {
   type = map
   default = {
     #ec2_type = "r5.2xlarge"

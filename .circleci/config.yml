@@ -61,6 +61,12 @@ parameters:
   lotus_deploy_network:
     type: string
     default: ""
+  provision_dev_machines:
+    type: boolean
+    default: false
+  dev_machines:
+    type: string
+    default: ""
   slack_channel:
     type: string
     default: "netops-circleci-test"
@@ -663,27 +669,47 @@ jobs:
           command: |
             cd ansible
             << parameters.check >> || ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
-  terraform-lotus-dev-boxes:
+
+  terraform-lotus-dev-machines:
+    parameters:
+      dev_machines:
+        type: string
+      aws_region:
+        type: string
+        default: us-east-2
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
+    environment:
+      AWS_REGION: << parameters.aws_region >>
     steps:
       - checkout
+      - run:
+          name: write machines json to file
+          command: |
+            echo '<< parameters.dev_machines >>' > terraform/lotus-dev-machines/<< parameters.aws_region >>/machines.tfvars.json
       - terraform/install:
           arch: amd64
           os: linux
           terraform_version: 1.0.8
       - terraform/validate:
-          path: terraform/lotus-dev-boxes
+          path: terraform/lotus-dev-machines/<< parameters.aws_region >>
       - terraform/init:
-          path: terraform/lotus-dev-boxes
+          path: terraform/lotus-dev-machines/<< parameters.aws_region >>
       - terraform/plan:
-          path: terraform/lotus-dev-boxes
+          path: terraform/lotus-dev-machines/<< parameters.aws_region >>
+          var_file: machines.tfvars.json
 
 workflows:
-  terraform-lotus-dev-boxes:
+  terraform-lotus-dev-machines:
+    when:  << pipeline.parameters.provision_dev_machines >>
     jobs:
-      - terraform-lotus-dev-boxes
+      - terraform-lotus-dev-machines:
+          dev_machines: << pipeline.parameters.dev_machines >>
+          aws_region: << pipeline.parameters.aws_region >>
+          context:
+            - filecoin-dev-aws-ec2
+
   butterfly-nightly:
     when:
       equal: [ "none", << pipeline.parameters.api_workflow_requested >> ]
