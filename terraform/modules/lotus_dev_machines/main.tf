@@ -1,13 +1,13 @@
 locals {
-  boxes_default = {
+  machines_default = {
     #ec2_type = "r5.2xlarge"
     github_username = ""
     ec2_type        = "t3.micro"
     volume_size     = 2000
     region          = "us-east-2"
   }
-  boxes = tomap({
-    for b in var.boxes : b.github_username => merge(local.boxes_default, b)
+  machines = tomap({
+    for b in var.machines : b.github_username => merge(local.machines_default, b)
   })
 }
 
@@ -28,7 +28,7 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "mod" {
-  for_each      = local.boxes
+  for_each      = local.machines
   ami           = data.aws_ami.ubuntu.id
   instance_type = each.value.ec2_type
   key_name      = var.key_name

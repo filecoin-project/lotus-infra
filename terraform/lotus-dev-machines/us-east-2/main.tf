@@ -4,7 +4,7 @@
 terraform {
   backend "s3" {
     bucket         = "filecoin-terraform-state"
-    key            = "filecoin-lotus-dev-boxes.tfstate"
+    key            = "filecoin-lotus-dev-machines.tfstate"
     dynamodb_table = "filecoin-terraform-state"
     region         = "us-east-1"
   }
@@ -14,9 +14,9 @@ provider "aws" {
   region = "us-east-2"
 }
 
-module "lotus_dev_boxes" {
-  source             = "../modules/lotus_dev_boxes"
-  boxes              = local.machines
+module "lotus_dev_machines" {
+  source             = "../../modules/lotus_dev_machines"
+  machines           = var.machines
   subnet_id          = data.terraform_remote_state.vpc.outputs.public_subnet_ids[0]
   security_group_ids = [aws_security_group.mod.id]
 }
