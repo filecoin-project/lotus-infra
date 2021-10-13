@@ -677,12 +677,51 @@ jobs:
       aws_region:
         type: string
         default: us-east-2
+      slack_channel:
+        type: string
+        default: "#netops-circleci-test"
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
     environment:
       AWS_REGION: << parameters.aws_region >>
     steps:
+      - slack/notify:
+          event: always
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Lotus Dev Machines DEPLOYMENT :shipitparrot: :rocket:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Lotus Dev Machines are being deployed. Check the last step (terraform apply) for SSH connection strings"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
       - checkout
       - run:
           name: write machines json to file
@@ -697,6 +736,9 @@ jobs:
       - terraform/init:
           path: terraform/lotus-dev-machines/<< parameters.aws_region >>
       - terraform/plan:
+          path: terraform/lotus-dev-machines/<< parameters.aws_region >>
+          var_file: machines.tfvars.json
+      - terraform/apply:
           path: terraform/lotus-dev-machines/<< parameters.aws_region >>
           var_file: machines.tfvars.json
 
