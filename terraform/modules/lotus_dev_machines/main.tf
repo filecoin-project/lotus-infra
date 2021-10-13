@@ -1,8 +1,7 @@
 locals {
   machines_default = {
-    #ec2_type = "r5.2xlarge"
     github_username = ""
-    ec2_type        = "t3.micro"
+    ec2_type        = "r5.2xlarge"
     volume_size     = 2000
     region          = "us-east-2"
   }
