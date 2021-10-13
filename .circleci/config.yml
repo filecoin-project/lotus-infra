@@ -741,6 +741,11 @@ jobs:
       - terraform/apply:
           path: terraform/lotus-dev-machines/<< parameters.aws_region >>
           var_file: machines.tfvars.json
+      - run:
+          name: SSH Connection Strings
+          command: |
+            cd terraform/lotus-dev-machines/<< parameters.aws_region >>
+            terraform output | sed 's@\\@@g'
 
 workflows:
   terraform-lotus-dev-machines:
