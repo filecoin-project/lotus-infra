@@ -169,3 +169,11 @@ deployments:
     name: efs-access
     values:
       - efs-access
+  # ipfs gateway monitor
+  - chart: filecoin/lotus-bundle
+    version: 0.0.12
+    namespace: ipfs-gateway-monitor
+    name: gateway-monitor
+    values:
+      - base
+      - gateway-monitor-0

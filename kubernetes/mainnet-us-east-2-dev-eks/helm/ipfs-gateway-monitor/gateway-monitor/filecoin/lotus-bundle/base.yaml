@@ -1,0 +1,15 @@
+image:
+  repository: coryschwartz/gateway-monitor
+  tag: latest
+  pullPolicy: Always
+
+lotus:
+  enabled: false
+
+ipfs:
+  enabled: true
+
+prometheus:
+  serviceMonitor: true
+  path: /metrics
+  port: "monitor"
