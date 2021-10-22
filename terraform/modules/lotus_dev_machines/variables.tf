@@ -2,16 +2,6 @@ variable "machines" {
   type = list
 }
 
-variable "machines_default" {
-  type = map
-  default = {
-    #ec2_type = "r5.2xlarge"
-    github_username = ""
-    ec2_type        = "t3.micro"
-    volume_size     = 2000
-  }
-}
-
 variable "key_name" {
   type    = string
   default = "filecoin"
