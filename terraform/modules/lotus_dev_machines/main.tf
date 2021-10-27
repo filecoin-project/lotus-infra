@@ -4,6 +4,7 @@ locals {
     ec2_type        = "r5.2xlarge"
     volume_size     = 2000
     region          = "us-east-2"
+    ami             = ""
   }
   machines = tomap({
     for b in var.machines : b.github_username => merge(local.machines_default, b)
@@ -28,7 +29,7 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_instance" "mod" {
   for_each      = local.machines
-  ami           = data.aws_ami.ubuntu.id
+  ami           = each.value.ami != "" ? each.value.ami : data.aws_ami.ubuntu.id
   instance_type = each.value.ec2_type
   key_name      = var.key_name
   root_block_device {
