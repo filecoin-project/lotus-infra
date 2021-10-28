@@ -126,6 +126,24 @@ locals {
       }
     }
   })
+  node_groups_lotus_xl_high_memory = tomap({
+    for k, v in aws_subnet.workers2 : format("lotus-xl-high-memory-%s", v.id) => {
+      instance_type = "r5.12xlarge"
+      key_name      = "filecoin-mainnet"
+      min_capacity  = "1"
+      max_capacity  = "12"
+      k8s_labels = {
+        "fil-infra.protocol.ai/node-type" = "lotus-xl-high-memory"
+      }
+      subnets = [
+        v.id
+      ],
+      additional_tags = {
+        "k8s.io/cluster-autoscaler/mainnet-us-east-2-dev-eks" = "owned"
+        "k8s.io/cluster-autoscaler/enabled"                   = "TRUE"
+      }
+    }
+  })
   acm_enabled = 1
   subnet_tags = {
     "kubernetes.io/role/alb-ingress"          = "1"
@@ -155,6 +173,7 @@ module "eks" {
   node_groups = merge(
     local.node_groups_lotus_standard,
     local.node_groups_lotus_high_memory,
+    local.node_groups_lotus_xl_high_memory,
     local.node_groups
   )
 

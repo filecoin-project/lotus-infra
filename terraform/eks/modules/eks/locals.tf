@@ -35,6 +35,11 @@ locals {
       groups   = ["system:masters"]
     },
     {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/frrst"
+      username = "frrst"
+      groups   = ["system:masters"]
+    },
+    {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/mg"
       username = "mg"
       groups   = ["system:masters"]
@@ -52,7 +57,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/dealbot-controller"
       username = "dealbot-controller"
-      groups   = [
+      groups = [
         "ntwk-mainnet-dealbot-edit",
         "ntwk-nerpanet-dealbot-edit",
       ]
@@ -60,7 +65,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/hannah.howard"
       username = "hannah.howard"
-      groups   = [
+      groups = [
         "ntwk-mainnet-dealbot-edit",
         "ntwk-nerpanet-dealbot-edit",
       ]
@@ -68,7 +73,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/willscott"
       username = "willscott"
-      groups   = [
+      groups = [
         "ntwk-mainnet-dealbot-edit",
         "ntwk-nerpanet-dealbot-edit",
       ]
