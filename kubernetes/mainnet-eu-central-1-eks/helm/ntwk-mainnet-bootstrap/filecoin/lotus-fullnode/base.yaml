@@ -3,27 +3,6 @@ image:
 
 prometheusOperatorServiceMonitor: true
 
-resources:
-  requests:
-    memory: 32Gi
-    cpu: 6
-  limits:
-    memory: 48Gi
-
-importSnapshot:
-  enabled: true
-  claimName: chain-exports
-  network: mainnet
-  exportRelease: finality-stateroots
-  exitCodeOnMissing: 1
-
-persistence:
-  datastore:
-    enabled: true
-    easyReset: true
-    size: "2000Gi"
-    storageClassName: "gp2"
-
 daemonConfig: |
   [API]
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
@@ -36,11 +15,27 @@ daemonConfig: |
     IPColocationWhitelist = ["10.0.0.0/8"]
     Bootstrapper = true
 
+resources:
+  requests:
+    memory: 60Gi
+
+nodeSelector:
+  "fil-infra.protocol.ai/node-type": "lotus-standard"
+
+importSnapshot:
+  enabled: true
+  strategy: url
+
+persistence:
+  datastore:
+    enabled: true
+    easyReset: true
+    size: "2000Gi"
+    storageClassName: "gp2"
+
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
-  - name: GODEBUG
-    value: madvdontneed=1
 
 additionalLabels:
   network: mainnet

@@ -5,18 +5,14 @@ prometheusOperatorServiceMonitor: true
 
 resources:
   requests:
-    memory: 32Gi
-    cpu: 4
-  limits:
-    memory: 48Gi
-    cpu: 6
+    memory: 60Gi
+
+nodeSelector:
+  "fil-infra.protocol.ai/node-type": "lotus-standard"
 
 importSnapshot:
   enabled: true
-  claimName: chain-exports
-  network: mainnet
-  exportRelease: finality-stateroots
-  exitCodeOnMissing: 1
+  strategy: url
 
 persistence:
   datastore:
@@ -28,13 +24,10 @@ persistence:
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
-  - name: GODEBUG
-    value: madvdontneed=1
 
 disputer:
   enabled: true
   walletAddr: f1vkujr5ecab5t6nkstqukbt2vv2ams55pwl3crki
-  # maxFee:
   env:
     - name: GOLOG_LOG_FMT
       value: json
