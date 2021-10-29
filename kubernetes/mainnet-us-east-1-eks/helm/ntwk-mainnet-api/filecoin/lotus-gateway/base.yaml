@@ -1,0 +1,24 @@
+---
+image:
+  repository: travisperson/lotus-gateway
+  tag: mainnet-v1.13.0
+
+loadBalancer:
+  enabled: true
+  rpcPort: 80
+
+gatewayEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+
+deployment:
+  replicas: 3
+
+secrets:
+  jwt:
+    enabled: true
+    secretName: lotus-jwt-secrets
+    token_key: jwt-rw-privs-token
+
+lotus:
+  fullnodeApiMultiaddr: "/dns/api-lotus-daemon/tcp/1234"
