@@ -91,7 +91,8 @@ locals {
     },
   }
   node_groups_lotus_standard = tomap({
-    for k, v in aws_subnet.workers2 : format("lotus-standard-%s", v.id) => {
+    for k, v in aws_subnet.workers2 : format("ls-%s", substr(v.id, 8, 16)) => {
+      name_prefix   = k
       instance_type = "r5.2xlarge"
       key_name      = "filecoin-mainnet"
       min_capacity  = "1"
@@ -109,7 +110,8 @@ locals {
     }
   })
   node_groups_lotus_high_memory = tomap({
-    for k, v in aws_subnet.workers2 : format("lotus-high-memory-%s", v.id) => {
+    for k, v in aws_subnet.workers2 : format("lhm-%s", substr(v.id, 8, 16)) => {
+      name_prefix   = k
       instance_type = "r5.8xlarge"
       key_name      = "filecoin-mainnet"
       min_capacity  = "1"
@@ -127,7 +129,8 @@ locals {
     }
   })
   node_groups_lotus_xl_high_memory = tomap({
-    for k, v in aws_subnet.workers2 : format("lotus-xl-high-memory-%s", v.id) => {
+    for k, v in aws_subnet.workers2 : format("lxhm-%s", substr(v.id, 8, 16)) => {
+      name_prefix   = k
       instance_type = "r5.12xlarge"
       key_name      = "filecoin-mainnet"
       min_capacity  = "1"
