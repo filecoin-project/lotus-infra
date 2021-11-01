@@ -63,6 +63,7 @@ locals {
       groups   = [
         "ntwk-mainnet-dealbot-edit",
         "ntwk-nerpanet-dealbot-edit",
+        "ntwk-mainnet-storetheindex-edit",
       ]
     },
     {
@@ -71,6 +72,7 @@ locals {
       groups   = [
         "ntwk-mainnet-dealbot-edit",
         "ntwk-nerpanet-dealbot-edit",
+        "ntwk-mainnet-storetheindex-edit",
       ]
     },
     {
@@ -81,7 +83,42 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/aarsh.shah"
       username = "aarsh.shah"
-      groups   = ["ntwk-mainnet-dealbot-exec"]
+      groups   = [
+        "ntwk-mainnet-dealbot-exec",
+        "ntwk-mainnet-storetheindex-exec",
+      ]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/masih"
+      username = "masih"
+      groups   = [
+        "ntwk-mainnet-dealbot-exec",
+        "ntwk-mainnet-storetheindex-exec",
+      ]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/gammazero"
+      username = "gammazero"
+      groups   = [
+        "ntwk-mainnet-dealbot-exec",
+        "ntwk-mainnet-storetheindex-exec",
+      ]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/adlrocha"
+      username = "adlrocha"
+      groups   = [
+        "ntwk-mainnet-dealbot-exec",
+        "ntwk-mainnet-storetheindex-exec",
+      ]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/mvdan"
+      username = "mvdan"
+      groups   = [
+        "ntwk-mainnet-dealbot-exec",
+        "ntwk-mainnet-storetheindex-exec",
+      ]
     },
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/circleci-sentinel-infra"
