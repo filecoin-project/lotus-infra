@@ -134,7 +134,7 @@ deployments:
       - disputer-0
   # gateway
   - chart: filecoin/lotus-gateway
-    version: 0.1.4
+    version: 0.1.5
     namespace: ntwk-mainnet-fullnode
     name: gateway-0
     values:
