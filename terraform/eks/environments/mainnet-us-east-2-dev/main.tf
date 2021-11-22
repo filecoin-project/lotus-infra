@@ -76,6 +76,7 @@ locals {
         for subnet in aws_subnet.workers2 :
         subnet.id
       ]
+      version = var.k8s_version
     },
     "2" = {
       instance_type    = "r5.8xlarge"
@@ -88,6 +89,7 @@ locals {
         for subnet in aws_subnet.workers2 :
         subnet.id
       ]
+      version = var.k8s_version
     },
   }
   node_groups_lotus_standard = tomap({
@@ -107,6 +109,7 @@ locals {
         "k8s.io/cluster-autoscaler/mainnet-us-east-2-dev-eks" = "owned"
         "k8s.io/cluster-autoscaler/enabled"                   = "TRUE"
       }
+      version = var.k8s_version
     }
   })
   node_groups_lotus_high_memory = tomap({
@@ -126,6 +129,7 @@ locals {
         "k8s.io/cluster-autoscaler/mainnet-us-east-2-dev-eks" = "owned"
         "k8s.io/cluster-autoscaler/enabled"                   = "TRUE"
       }
+      version = var.k8s_version
     }
   })
   node_groups_lotus_xl_high_memory = tomap({
@@ -145,6 +149,7 @@ locals {
         "k8s.io/cluster-autoscaler/mainnet-us-east-2-dev-eks" = "owned"
         "k8s.io/cluster-autoscaler/enabled"                   = "TRUE"
       }
+      version = var.k8s_version
     }
   })
   acm_enabled = 1
