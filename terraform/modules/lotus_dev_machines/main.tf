@@ -11,25 +11,9 @@ locals {
   })
 }
 
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
-}
-
 resource "aws_instance" "mod" {
   for_each      = local.machines
-  ami           = each.value.ami != "" ? each.value.ami : data.aws_ami.ubuntu.id
+  ami           = each.value.ami != "" ? each.value.ami : var.ami
   instance_type = each.value.ec2_type
   key_name      = var.key_name
   root_block_device {
