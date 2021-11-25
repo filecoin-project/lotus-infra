@@ -14,3 +14,8 @@ variable "subnet_id" {
 variable "security_group_ids" {
   type = list(string)
 }
+
+variable "ami" {
+  type    = string
+  default = "ami-03f4121463e28151e"
+}
