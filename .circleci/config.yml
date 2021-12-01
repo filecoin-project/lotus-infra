@@ -482,22 +482,76 @@ jobs:
       #       git config --global user.email "noreply@filecoin.io"
       #       git commit -am "automated genesis build"
       #       git push origin HEAD:new-genesis-$(date +%d%h%y-%H%M)
-
-  lotus-release-update-calibration:
+  lotus-build-binaries:
     parameters:
-      # This can be any git ref (eg: branch, tag, commit)
-      branch:
+      # this can be any git ref (eg: branch, tag, commit)
+      gitref:
         type: string
         default: "NeVeRmAtCh"
-      group:
+      # lotus uses build flags, a network to build is required
+      network:
         type: string
         default: "NeVeRmAtCh"
+      repository:
+        type: string
+        default: "lotus"
+    # binary building is done via a docker build image with a mounted filesystem
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
     resource_class: 2xlarge
     environment:
-      LOTUSROOT: /home/circleci/.go_workspace/src/github.com/filecoin-project/lotus
+      LOTUS_SRC: /home/circleci/lotus
+    steps:
+      - checkout
+      - git-clone:
+          repo: https://github.com/filecoin-project/<< parameters.repository >>
+          where: $LOTUS_SRC
+          branch: << parameters.gitref >>
+      - run:
+          name: Build binaries
+          command: |
+            args=(
+              "--network" "<< parameters.network >>"
+              "--src" "$LOTUS_SRC"
+            )
+            unset GOPATH
+            ./scripts/build_binaries.bash "${args[@]}"
+      - run:
+          name: Prepare binaries
+          command: |
+              bin="/tmp/circle/lotus/<< parameters.network >>/bin/"
+              mkdir -p $bin
+              pushd $LOTUS_SRC
+              cp lotus            \
+                 lotus-worker     \
+                 lotus-miner      \
+                 lotus-shed       \
+                 lotus-seed       \
+                 lotus-fountain   \
+                 lotus-stats      \
+                 $bin
+      - persist_to_workspace:
+          root: /tmp/circle
+          paths:
+            - lotus/<< parameters.network >>/bin
+
+  lotus-release-update-calibration:
+    parameters:
+      # This can be any git ref (eg: branch, tag, commit)
+      gitref:
+        type: string
+        default: "NeVeRmAtCh"
+      group:
+        type: string
+        default: "NeVeRmAtCh"
+      network:
+        type: string
+        default: "calibration.fildev.network"
+    executor:
+      name: ansible-playbook/default
+      python-version: "3.8"
+      debian-release: "buster"
     steps:
       - slack/notify:
           event: always
@@ -517,7 +571,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "A lotus release has triggered an update to the calibration network.\n\n*release*: << parameters.branch >>\n*group*: << parameters.group >>\n\n"
+                    "text": "A lotus release has triggered an update to the calibration network.\n\n*release*: << parameters.gitref >>\n*group*: << parameters.group >>\n\n"
                   }
                 },
                 {
@@ -536,21 +590,9 @@ jobs:
               ]
             }
       - checkout
-      - aws-cli/install
-      - rust/install
-      - run:
-          name: install golang
-          command: |
-            curl -LOs https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
-            sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
-      # - go/install:
-      #     version: 1.16.5
-      #     cache-key: v1.16.5
       - ansible-playbook/install
-      - git-clone:
-          repo: https://github.com/filecoin-project/lotus
-          where: $LOTUSROOT
-          branch: << parameters.branch >>
+      - attach_workspace:
+          at: /tmp/circle
       - run:
           name: setup vault secrets
           command: |
@@ -558,16 +600,16 @@ jobs:
             echo $ANSIBLE_VAULT_PASSWORD > .vault_password
       - run:
           name: update << parameters.group >>
+          environment:
+            ANSIBLE_HOST_KEY_CHECKING: false
           command: |
-            args=(
-              "--network" "calibration.fildev.network"
-              "--src" "$LOTUSROOT"
-              "--reboot-daemon"
-              "--" "--limit" "<< parameters.group >>"
-            )
             cd ansible
-            unset GOPATH
-            ./upgrade_fildev_network_binaries.bash "${args[@]}"
+            hostfile="inventories/<< parameters.network >>/hosts.yml"
+            network_flag=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ network_flag }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
+            ansible-playbook -i $hostfile lotus_update.yml                     \
+            -e binary_src="/tmp/circle/lotus/$network_flag/bin"                \
+            -e upgrade_reboot_daemon="true"                                    \
+            --diff --limit "<< parameters.group >>"
 
   lotus-ansible-upgrade:
     parameters:
@@ -914,17 +956,29 @@ workflows:
             - "api-lotus-release-automation"
             - << pipeline.parameters.api_workflow_requested >>
     jobs:
+      - lotus-build-binaries:
+          name: build-binaries-mainnet
+          gitref: << pipeline.parameters.release >>
+          network: mainnet
+          repository: lotus
+      - lotus-build-binaries:
+          name: build-binaries-calibnet
+          gitref: << pipeline.parameters.release >>
+          network: calibnet
+          repository: lotus
       - lotus-release-update-calibration:
           name: update-canary
-          branch: << pipeline.parameters.release >>
+          gitref: << pipeline.parameters.release >>
           group: canary
+          requires:
+            - build-binaries-calibnet
       - hold-for-approval:
           type: approval
           requires:
             - update-canary
       - lotus-release-update-calibration:
           name: update-all
-          branch: << pipeline.parameters.release >>
+          gitref: << pipeline.parameters.release >>
           group: all
           requires:
             - hold-for-approval
