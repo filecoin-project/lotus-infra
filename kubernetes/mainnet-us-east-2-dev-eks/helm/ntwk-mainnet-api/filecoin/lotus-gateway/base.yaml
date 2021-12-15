@@ -1,11 +1,15 @@
 ---
 image:
   repository: travisperson/lotus-gateway
-  tag: mainnet-v1.13.2-rc1
+  tag: mainnet-v1.13.2-rc4
 
 loadBalancer:
   enabled: true
   rpcPort: 80
+
+runArgs:
+  - --api-max-lookback=24h
+  - --api-wait-lookback-limit=2880
 
 gatewayEnvs:
   - name: GOLOG_LOG_FMT
