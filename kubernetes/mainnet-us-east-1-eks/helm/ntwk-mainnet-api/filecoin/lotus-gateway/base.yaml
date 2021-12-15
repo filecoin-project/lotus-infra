@@ -7,6 +7,10 @@ loadBalancer:
   enabled: true
   rpcPort: 80
 
+runArgs:
+  - --api-max-lookback=24h
+  - --api-wait-lookback-limit=2880
+
 gatewayEnvs:
   - name: GOLOG_LOG_FMT
     value: json
