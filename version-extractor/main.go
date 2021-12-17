@@ -1,8 +1,11 @@
 package main
 
-import "github.com/filecoin-project/lotus/build"
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/filecoin-project/lotus/build"
+)
 
 func main() {
-	fmt.Printf("%s\n", build.BuildVersion)
+	fmt.Printf("%s", build.BuildVersion)
 }
