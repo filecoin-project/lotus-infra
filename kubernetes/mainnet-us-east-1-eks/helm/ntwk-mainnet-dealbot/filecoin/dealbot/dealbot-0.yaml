@@ -45,11 +45,11 @@ postgres:
   volume: 100Gi
   resources:
     limits:
-      cpu: 1000m
-      memory: 1000Mi
+      cpu: 4000m
+      memory: 4000Mi
     requests:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 2000m
+      memory: 2000Mi
   env:
     - name: DEALBOT_BASICAUTH
       valueFrom:
