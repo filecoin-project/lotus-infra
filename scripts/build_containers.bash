@@ -90,17 +90,8 @@ if [ ! -z "$BUILD_TAG" ]; then
   buildargs=(--build-arg=BUILDER_BASE=builder-git --build-arg=TAG=$BUILD_TAG)
   tag="$NETWORK-$BUILD_TAG"
 else
-  cat > ../version-extractor/go.mod <<EOF
-module github.com/filecoin-project/lotus-infra/version-extractor
-
-go 1.16
-
-require github.com/filecoin-project/lotus v0.0.0
-replace github.com/filecoin-project/lotus => $BUILD_SRC
-EOF
-  pushd ../version-extractor
-  go mod download
-  lotus_version=$(go run main.go)
+  pushd "$SCRIPTDIR"
+  lotus_version=$(./extract_lotus_version.bash --src $BUILD_SRC)
   popd
   buildargs=(--build-arg=BUILDER_BASE=builder-local)
   tag="$NETWORK-$lotus_version-$(git -C $BUILD_SRC describe --always --match=NeVeRmAtCh --dirty 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)"
@@ -134,3 +125,6 @@ if [ ! -z "$BUILD_REPO" ]; then
 fi
 
 popd
+
+echo $BUILD_REPO > ./docker_repo
+echo $docker_Tag > ./docker_tag

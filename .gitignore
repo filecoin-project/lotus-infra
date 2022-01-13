@@ -14,3 +14,7 @@
 
 ansible/.vagrant/
 ansible/pre-seal/
+
+./docker_tag
+./docker_repo
+./lotus_version

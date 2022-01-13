@@ -118,44 +118,55 @@ jobs:
   # build and push lotus.
   lotus-build-containers:
     parameters:
-      tag:
+      is_release:
+        type: boolean
+        default: false
+        description: if the build is a release
+      # this can be any git ref (eg: branch, tag, commit)
+      gitref:
         type: string
-        description: lotus tag to checkout
-      repo:
+        default: "NeVeRmAtCh"
+      docker_repo:
         type: string
         description: docker repository
       network:
         type: string
         description: filecoin network
-      use_gitsha:
-        type: boolean
-        default: false
-        description: append gitsha to image tag (useful when tag is master)
+      githib_repo:
+        type: string
+        default: "lotus"
+        description: which filecoin-project lotus repo to build from
+      repository:
     machine:
       image: ubuntu-2004:202010-01
+    environment:
+      LOTUS_SRC: /home/circleci/lotus
     steps:
       - checkout
       - docker-login
+      - run:
+          name: install golang
+          command: |
+            curl -LOs https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
+            sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
       - git-clone:
-          repo: https://github.com/filecoin-project/lotus
-          where: $HOME/lotus
-          branch: << parameters.tag >>
+          repo: https://github.com/filecoin-project/<< parameters.repository >>
+          where: $LOTUS_SRC
+          branch: << parameters.gitref >>
       - run:
           name: push docker << parameters.network >> << parameters.tag >> to << parameters.repo >>
           environment:
-            USE_GITSHA: << parameters.use_gitsha >>
-            DOCKER_TAG: << parameters.network >>-<< parameters.tag >>
+            IS_RELEASE: << parameters.is_release >>
           command: |
-            echo "gitsha: $USE_GITSHA"
-            if [ $USE_GITSHA -eq 1 ]
+            if [ $IS_RELEASE -eq 1 ]
             then
-              echo "gitsha was true"
-              DOCKER_TAG=$DOCKER_TAG-$CIRCLE_SHA1
+              scripts/build_containers.bash --tag << parameters.gitref >> --network << parameters.network >> --repo << parameters.repo >>
+            else
+              scripts/build_containers.bash --src $HOME/lotus --network << parameters.network >> --repo << parameters.repo >>
             fi
-            scripts/build_containers.bash --src $HOME/lotus --network << parameters.network >> --tag << parameters.tag >> --docker-tag $DOCKER_TAG --repo << parameters.repo >>
             mkdir -p /tmp/circle
-            echo -n $DOCKER_TAG > /tmp/circle/docker_tag
-            echo -n << parameters.repo >>/lotus > /tmp/circle/docker_repo
+            mv ./docker_tag  /tmp/circle/docker_tag
+            mv ./docker_repo /tmp/circle/docker_repo
       - persist_to_workspace:
           root: /tmp/circle
           paths:
@@ -282,7 +293,7 @@ jobs:
           command: |
             if [ $OVERRIDE_FROM_WORKSPACE -eq 1 ]
             then
-              DOCKER_REPO=$(cat /tmp/circle/docker_repo)
+              DOCKER_REPO="$(cat /tmp/circle/docker_repo)/lotus"
               DOCKER_TAG=$(cat /tmp/circle/docker_tag)
             fi
             if [ ! -z "$DOCKER_TAG" ]; then HELM_APPEND=" --set image.tag=${DOCKER_TAG} ${HELM_APPEND}"; fi
@@ -812,7 +823,7 @@ workflows:
     jobs:
       - lotus-build-containers:
           tag: master
-          repo: coryschwartz
+          docker_repo: coryschwartz
           network: butterflynet
           use_gitsha: true
       - helm-deploy:
@@ -956,6 +967,14 @@ workflows:
             - "api-lotus-release-automation"
             - << pipeline.parameters.api_workflow_requested >>
     jobs:
+      - lotus-build-containers:
+          name: lotus-build-containers
+          docker_repo: travisperson
+          network: mainnet
+      - lotus-build-containers:
+          name: lotus-build-containers
+          docker_repo: travisperson
+          network: calibnet
       - lotus-build-binaries:
           name: build-binaries-mainnet
           gitref: << pipeline.parameters.release >>
@@ -1036,7 +1055,7 @@ workflows:
       - lotus-build-containers:
           name: build-containers-calibrationnet
           tag: << pipeline.parameters.override_tag >>
-          repo: << pipeline.parameters.override_repository >>
+          docker_repo: << pipeline.parameters.override_repository >>
           use_gitsha: false
           network: calibnet
           requires:
@@ -1077,7 +1096,7 @@ workflows:
       - lotus-build-containers:
           name: build-containers-mainnet
           tag: << pipeline.parameters.override_tag >>
-          repo: << pipeline.parameters.override_repository >>
+          docker_repo: << pipeline.parameters.override_repository >>
           use_gitsha: false
           network: mainnet
       # Manual approvals for mainnet
