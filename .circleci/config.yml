@@ -600,6 +600,7 @@ jobs:
             echo $ANSIBLE_VAULT_PASSWORD > .vault_password
       - run:
           name: update << parameters.group >>
+          no_output_timeout: 30m
           environment:
             ANSIBLE_HOST_KEY_CHECKING: false
           command: |
