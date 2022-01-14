@@ -1,0 +1,14 @@
+image:
+  repository: filecoin/storetheindex
+  tag: latest
+  pullPolicy: Always
+
+
+lotus:
+  enabled: false
+
+
+prometheus:
+  serviceMonitor: true
+  path: /metrics
+  port: "admin"
