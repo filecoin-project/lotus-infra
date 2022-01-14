@@ -609,7 +609,7 @@ jobs:
             network_flag=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ network_flag }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
             ansible-playbook -i $hostfile lotus_update.yml                     \
             -e binary_src="/tmp/circle/lotus/$network_flag/bin"                \
-            -e upgrade_reboot_daemon="true"                                    \
+            -e upgrade_reboot_daemon="yes"                                     \
             --diff --limit "<< parameters.group >>"
 
   lotus-ansible-upgrade:
