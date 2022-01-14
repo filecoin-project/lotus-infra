@@ -1,0 +1,52 @@
+application:
+  name: "storetheindex"
+  labels: []
+  replicas: 1
+  container:
+    name: application
+    args: 
+      - daemon
+    env: 
+      - name: STORETHEINDEX_LISTEN_ADMIN
+        value: /ip4/0.0.0.0/tcp/3002
+    resources: {}
+    ports:
+      - containerPort: 3000
+        name: finder
+      - containerPort: 3001
+        name: ingest
+      - containerPort: 3002
+        name: admin
+  secrets: []
+  configMaps: []
+  services:
+    - type: ClusterIP
+      selector:
+        app: storetheindex
+        release: storetheindex-0
+      ports:
+        - protocol: TCP
+          port: 3002
+          targetPort: 3002
+          name: admin
+    - type: LoadBalancer
+      selector:
+        app: storetheindex
+        release: storetheindex-0
+      ports:
+        - protocol: TCP
+          port: 3000
+          targetPort: 3000
+          name: finder
+        - protocol: TCP
+          port: 3001
+          targetPort: 3001
+          name: ingest
+  storage:
+    - mount: /data/storetheindex
+      chownLotus: false
+      subdirPerRelease: true
+      volume:
+        - name: shared-volume
+          persistentVolumeClaim:
+              claimName: chain-exports
