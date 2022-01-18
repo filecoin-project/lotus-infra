@@ -183,3 +183,18 @@ deployments:
     name: gateway
     values:
       - base
+
+  # dealbot butterfly
+  - chart: filecoin/efs-access
+    version: 0.1.0
+    namespace: ntwk-butterflynet-dealbot
+    name: efs-access
+    values:
+      - efs-access
+  - chart: filecoin/dealbot
+    version: 0.0.12
+    namespace: ntwk-butterflynet-dealbot
+    name: dealbot
+    values:
+      - base
+      - dealbot-0
