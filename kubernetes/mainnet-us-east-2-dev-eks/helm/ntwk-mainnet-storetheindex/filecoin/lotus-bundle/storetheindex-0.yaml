@@ -35,13 +35,24 @@ application:
         release: storetheindex-0
       ports:
         - protocol: TCP
-          port: 3000
-          targetPort: 3000
-          name: finder
-        - protocol: TCP
           port: 3001
           targetPort: 3001
           name: ingest
+  service:
+    enabled: true
+    type: ClusterIP
+    ports:
+      - protocol: TCP
+        port: 3000
+        targetPort: 3000
+        name: finder
+  ingress:
+    enabled: true
+    class: nginx
+    httpRules:
+      - host: dev.cid.contact
+        path: /
+        servicePort: finder
   storage:
     - mount: /data/storetheindex
       chownLotus: false
