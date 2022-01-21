@@ -50,7 +50,7 @@ application:
     enabled: true
     class: nginx
     httpRules:
-      - host: example.com
+      - host: dev.cid.contact
         path: /
         servicePort: finder
   storage:
