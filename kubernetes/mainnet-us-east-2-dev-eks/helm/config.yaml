@@ -114,47 +114,82 @@ deployments:
   - chart: filecoin/lotus-fullnode
     version: 0.3.3
     namespace: ntwk-mainnet-splitstore-test
-    name: standard-16g
+    name: markset-badger-16g
     values:
       - base
+      - markset-badger
       - limits-16G
   - chart: filecoin/lotus-fullnode
     version: 0.3.3
     namespace: ntwk-mainnet-splitstore-test
-    name: standard-32g
+    name: markset-badger-24g
     values:
       - base
+      - markset-badger
+      - limits-24G
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.3
+    namespace: ntwk-mainnet-splitstore-test
+    name: markset-badger-32g
+    values:
+      - base
+      - markset-badger
       - limits-32G
   - chart: filecoin/lotus-fullnode
     version: 0.3.3
     namespace: ntwk-mainnet-splitstore-test
-    name: standard-48g
+    name: markset-badger-40g
     values:
       - base
+      - markset-badger
+      - limits-40G
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.3
+    namespace: ntwk-mainnet-splitstore-test
+    name: markset-badger-48g
+    values:
+      - base
+      - markset-badger
       - limits-48G
   - chart: filecoin/lotus-fullnode
     version: 0.3.3
     namespace: ntwk-mainnet-splitstore-test
-    name: splitstore-16g
+    name: markset-map-16g
     values:
       - base
-      - coldstore-discard
+      - markset-map
       - limits-16G
   - chart: filecoin/lotus-fullnode
     version: 0.3.3
     namespace: ntwk-mainnet-splitstore-test
-    name: splitstore-32g
+    name: markset-map-24g
     values:
       - base
-      - coldstore-discard
+      - markset-map
+      - limits-24G
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.3
+    namespace: ntwk-mainnet-splitstore-test
+    name: markset-map-32g
+    values:
+      - base
+      - markset-map
       - limits-32G
   - chart: filecoin/lotus-fullnode
     version: 0.3.3
     namespace: ntwk-mainnet-splitstore-test
-    name: splitstore-48g
+    name: markset-map-40g
     values:
       - base
-      - coldstore-discard
+      - markset-map
+      - limits-40G
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.3
+    namespace: ntwk-mainnet-splitstore-test
+    name: markset-map-48g
+    values:
+      - base
+      - markset-map
       - limits-48G
   - chart: filecoin/lotus-bundle
     version: 0.0.11
