@@ -9,6 +9,16 @@ application:
     env: 
       - name: STORETHEINDEX_LISTEN_ADMIN
         value: /ip4/0.0.0.0/tcp/3002
+      - name: STORETHEINDEX_PEERID
+        valueFrom:
+          secretKeyRef:
+            name: storethedinex-identity
+            key: peerid
+      - name: STORETHEINDEX_PRIVKEY
+        valueFrom:
+          secretKeyRef:
+            name: storethedinex-identity
+            key: privkey
     resources: {}
     ports:
       - containerPort: 3000
@@ -17,8 +27,52 @@ application:
         name: ingest
       - containerPort: 3002
         name: admin
-  secrets: []
-  configMaps: []
+  secrets:
+    - name: storetheindex-identity
+      external: true
+      mountPath: /identity
+  configMaps:
+    - name: storetheindex-config
+      mountPath: /config
+      keys:
+        config: |
+          {
+            "Addresses": {
+              "Admin": "/ip4/0.0.0.0/tcp/3002",
+              "Finder": "/ip4/0.0.0.0/tcp/3000",
+              "Ingest": "/ip4/0.0.0.0/tcp/3001",
+              "DisableP2P": false,
+              "P2PAddr": "/ip4/0.0.0.0/tcp/3003"
+            },
+            "Datastore": {
+              "Type": "levelds",
+              "Dir": "datastore"
+            },
+            "Discovery": {
+              "Bootstrap": null,
+              "LotusGateway": "wss://api.chain.love",
+              "Peers": null,
+              "Policy": {
+                "Allow": true,
+                "Except": null,
+                "Trust": true,
+                "TrustExcept": null
+              },
+              "PollInterval": "24h0m0s",
+              "RediscoverWait": "5m0s",
+              "Timeout": "2m0s",
+              "Topic": "ContentIndex"
+            },
+            "Indexer": {
+              "CacheSize": 300000,
+              "ValueStoreDir": "valuestore",
+              "ValueStoreType": "sth"
+            },
+            "Ingest": {
+              "PubSubTopic": "indexer/ingest",
+              "PubSubPeer": ""
+            }
+          }
   services:
     - type: ClusterIP
       selector:
