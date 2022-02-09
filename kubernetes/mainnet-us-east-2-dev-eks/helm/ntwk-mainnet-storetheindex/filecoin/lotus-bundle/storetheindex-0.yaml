@@ -9,11 +9,6 @@ application:
     env: 
       - name: STORETHEINDEX_LISTEN_ADMIN
         value: /ip4/0.0.0.0/tcp/3002
-      - name: STORETHEINDEX_PEERID
-        valueFrom:
-          secretKeyRef:
-            name: storethedinex-identity
-            key: peerid
       - name: STORETHEINDEX_PRIVKEY
         valueFrom:
           secretKeyRef:
@@ -38,7 +33,7 @@ application:
         config: |
           {
             "Identity": {
-              "PeerID": "$PEER_ID",
+              "PeerID": "12D3KooWF25RdufQvegX8tACHsuaB1uVSxVuL2u76tYi21Kheuyf",
               "PrivKey": "$PRIVATE_KEY"
             },
             "Addresses": {
