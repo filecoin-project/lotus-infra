@@ -40,7 +40,7 @@ application:
           name: ingest
   service:
     enabled: true
-    type: ClusterIP
+    type: LoadBalancer
     ports:
       - protocol: TCP
         port: 3000
