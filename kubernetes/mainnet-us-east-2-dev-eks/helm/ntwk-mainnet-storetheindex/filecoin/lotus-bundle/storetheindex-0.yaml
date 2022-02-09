@@ -37,6 +37,10 @@ application:
       keys:
         config: |
           {
+            "Identity": {
+              "PeerID": "$PEER_ID",
+              "PrivKey": "$PRIVATE_KEY"
+            },
             "Addresses": {
               "Admin": "/ip4/0.0.0.0/tcp/3002",
               "Finder": "/ip4/0.0.0.0/tcp/3000",
