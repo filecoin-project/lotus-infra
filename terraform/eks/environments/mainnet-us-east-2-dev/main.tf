@@ -118,7 +118,7 @@ locals {
       instance_type = "r5.8xlarge"
       key_name      = "filecoin-mainnet"
       min_capacity  = "1"
-      max_capacity  = "12"
+      max_capacity  = "16"
       k8s_labels = {
         "fil-infra.protocol.ai/node-type" = "lotus-high-memory"
       }
