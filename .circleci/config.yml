@@ -115,28 +115,44 @@ commands:
           command: echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
 
 jobs:
-  # build and push lotus.
-  lotus-build-containers:
+  lotus-build-release-containers:
     parameters:
-      is_release:
-        type: boolean
-        default: false
-        description: if the build is a release
+      gittag:
+        type: string
+        default: "NeVeRmAtCh"
+      # lotus uses build flags, a network to build is required
+      network:
+        type: string
+        default: "NeVeRmAtCh"
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      LOTUS_SRC: /home/circleci/lotus
+    steps:
+      - checkout
+      - docker-login
+      - run:
+          name: install golang
+          command: |
+            curl -LOs https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
+            sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
+      - run:
+          name: docker image builds
+          command: |
+            scripts/build_containers.bash --tag << parameters.gittag >> --network << parameters.network >> --repo travisperson
+  lotus-build-src-containers:
+    parameters:
       # this can be any git ref (eg: branch, tag, commit)
       gitref:
         type: string
         default: "NeVeRmAtCh"
-      docker_repo:
-        type: string
-        description: docker repository
+      # lotus uses build flags, a network to build is required
       network:
         type: string
-        description: filecoin network
-      githib_repo:
+        default: "NeVeRmAtCh"
+      repository:
         type: string
         default: "lotus"
-        description: which filecoin-project lotus repo to build from
-      repository:
     machine:
       image: ubuntu-2004:202010-01
     environment:
@@ -154,15 +170,57 @@ jobs:
           where: $LOTUS_SRC
           branch: << parameters.gitref >>
       - run:
-          name: push docker << parameters.network >> << parameters.tag >> to << parameters.repo >>
+          name: docker image builds
+          command: |
+            scripts/build_containers.bash --src $LOTUS_SRC --network << parameters.network >> --repo travisperson
+
+  # build and push lotus.
+  lotus-build-containers:
+    parameters:
+      is_release:
+        type: boolean
+        default: false
+        description: if the build is a release
+      # this can be any git ref (eg: branch, tag, commit)
+      gitref:
+        type: string
+        default: "NeVeRmAtCh"
+      docker_repo:
+        type: string
+        description: docker repository
+      network:
+        type: string
+        description: filecoin network
+      github_repo:
+        type: string
+        default: "lotus"
+        description: which filecoin-project lotus repo to build from
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      LOTUS_SRC: /home/circleci/lotus
+    steps:
+      - checkout
+      - docker-login
+      - run:
+          name: install golang
+          command: |
+            curl -LOs https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
+            sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
+      - git-clone:
+          repo: https://github.com/filecoin-project/<< parameters.github_repo >>
+          where: $LOTUS_SRC
+          branch: << parameters.gitref >>
+      - run:
+          name: push docker << parameters.network >> << parameters.tag >> to << parameters.docker_repo >>
           environment:
             IS_RELEASE: << parameters.is_release >>
           command: |
             if [ $IS_RELEASE -eq 1 ]
             then
-              scripts/build_containers.bash --tag << parameters.gitref >> --network << parameters.network >> --repo << parameters.repo >>
+              scripts/build_containers.bash --tag << parameters.gitref >> --network << parameters.network >> --repo << parameters.docker_repo >>
             else
-              scripts/build_containers.bash --src $HOME/lotus --network << parameters.network >> --repo << parameters.repo >>
+              scripts/build_containers.bash --src $LOTUS_SRC --network << parameters.network >> --repo << parameters.docker_repo >>
             fi
             mkdir -p /tmp/circle
             mv ./docker_tag  /tmp/circle/docker_tag
@@ -822,10 +880,9 @@ workflows:
                 - /^(main|master)$/
     jobs:
       - lotus-build-containers:
-          tag: master
-          docker_repo: coryschwartz
+          gitref: master
+          docker_repo: travisperson
           network: butterflynet
-          use_gitsha: true
       - helm-deploy:
           context: sentinel-staging-deploy
           requires:
@@ -971,10 +1028,12 @@ workflows:
           name: lotus-build-containers
           docker_repo: travisperson
           network: mainnet
+          is_release: true
       - lotus-build-containers:
           name: lotus-build-containers
           docker_repo: travisperson
           network: calibnet
+          is_release: true
       - lotus-build-binaries:
           name: build-binaries-mainnet
           gitref: << pipeline.parameters.release >>
