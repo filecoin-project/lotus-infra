@@ -53,6 +53,12 @@ application:
       - host: cid.contact
         path: /
         servicePort: finder
+      - host: ingest.cid.contact
+        path: /
+        servicePort: ingest
+      - host: a190ab46c53bb433487ff687e39d34b6-795906228.us-east-1.elb.amazonaws.com
+        path: /
+        servicePort: finder
   storage:
     - mount: /data/storetheindex
       chownLotus: false
