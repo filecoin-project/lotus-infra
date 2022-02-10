@@ -1,3 +1,23 @@
+# https://github.com/filecoin-project/lotus/pull/8067
+# gammazero:release/v1.13.2
+
+image:
+  tag: mainnet-0cb3d0204
+
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+    ConnMgrLow = 400
+    ConnMgrHigh = 500
+    ConnMgrGrace = "5m0s"
+
+    ProtectedPeers = ["12D3KooWF25RdufQvegX8tACHsuaB1uVSxVuL2u76tYi21Kheuyf"]
+  [Pubsub]
+    IPColocationWhitelist = ["10.0.0.0/8"]
+    Bootstrapper = true
+
 secrets:
   libp2p:
     enabled: true
