@@ -26,7 +26,7 @@ application:
         config: |
           {
             "Identity": {
-              "PeerID": "$STORETHEINDEX_PEER_ID",
+              "PeerID": "12D3KooWF25RdufQvegX8tACHsuaB1uVSxVuL2u76tYi21Kheuyf",
               "PrivKey": "$STORETHEINDEX_PRIVATE_KEY"
             },
             "Addresses": {
