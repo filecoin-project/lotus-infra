@@ -307,3 +307,19 @@ roleRef:
   kind: ClusterRole
   name: edit
   apiGroup: rbac.authorization.k8s.io
+
+# fluxcd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  namespace: default
+  name: fluxcd-is-master
+subjects:
+  - kind: ServiceAccount
+    namespace: default
+    name: fluxcd
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
