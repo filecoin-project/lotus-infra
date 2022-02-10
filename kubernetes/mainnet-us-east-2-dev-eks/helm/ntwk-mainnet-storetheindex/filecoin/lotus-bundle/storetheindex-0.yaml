@@ -9,11 +9,6 @@ application:
     env: 
       - name: STORETHEINDEX_LISTEN_ADMIN
         value: /ip4/0.0.0.0/tcp/3002
-      - name: STORETHEINDEX_PRIVKEY
-        valueFrom:
-          secretKeyRef:
-            name: storethedinex-identity
-            key: privkey
     resources: {}
     ports:
       - containerPort: 3000
@@ -25,16 +20,14 @@ application:
   secrets:
     - name: storetheindex-identity
       external: true
-      mountPath: /identity
   configMaps:
     - name: storetheindex-config
-      mountPath: /config
       keys:
         config: |
           {
             "Identity": {
-              "PeerID": "12D3KooWF25RdufQvegX8tACHsuaB1uVSxVuL2u76tYi21Kheuyf",
-              "PrivKey": "$PRIVATE_KEY"
+              "PeerID": "$STORETHEINDEX_PEER_ID",
+              "PrivKey": "$STORETHEINDEX_PRIVATE_KEY"
             },
             "Addresses": {
               "Admin": "/ip4/0.0.0.0/tcp/3002",
@@ -136,4 +129,30 @@ application:
       volume:
         - name: shared-volume
           persistentVolumeClaim:
-              claimName: chain-exports
+            claimName: chain-exports
+
+initContainers:
+  - name: setupconfig
+    image: cmd.cat/gettext
+    command:
+      - bash
+    args:
+      - "-c"
+      - "envsubst </config/config >/data/storetheindex/config2"
+    env:
+      - name: STORETHEINDEX_PRIVATE_KEY
+        valueFrom:
+          secretKeyRef:
+            name: storetheindex-identity
+            key: privkey
+      - name: STORETHEINDEX_PEER_ID
+        valueFrom:
+          secretKeyRef:
+            name: storetheindex-identity
+            key: peerid
+    volumeMounts:
+      - name: shared-volume
+        mountPath: /data/storetheindex
+        subPath: ntwk-mainnet-storetheindex/storetheindex-0
+      - name: storetheindex-config-volume
+        mountPath: /config
