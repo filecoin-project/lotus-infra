@@ -138,7 +138,7 @@ initContainers:
       - bash
     args:
       - "-c"
-      - "envsubst </config/config >/data/storetheindex/config2"
+      - "envsubst </config/config >/data/storetheindex/config1"
     env:
       - name: STORETHEINDEX_PRIVATE_KEY
         valueFrom:
