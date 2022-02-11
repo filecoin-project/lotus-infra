@@ -13,7 +13,7 @@ daemonConfig: |
     ConnMgrHigh = 500
     ConnMgrGrace = "5m0s"
 
-    ProtectedPeers = ["12D3KooWF25RdufQvegX8tACHsuaB1uVSxVuL2u76tYi21Kheuyf"]
+    ProtectedPeers = ["12D3KooWF6pJZpWhcFRbVxAi9Py4PMPgQF5vXuw9zQp3J5yRxa7y"]
   [Pubsub]
     IPColocationWhitelist = ["10.0.0.0/8"]
     Bootstrapper = true
