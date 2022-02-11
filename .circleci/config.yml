@@ -8,6 +8,7 @@ orbs:
   rust: circleci/rust@1.5.0
   go: circleci/go@1.6.0
   slack: circleci/slack@4.4.2
+  terraform: circleci/terraform@3.0.0
 
 # Some of the workflows in this CI config are intended to be triggered over the CircleCI API
 # The Circle v2 API allows API users to call a pipeline, and conditionally execute workflows.
@@ -58,6 +59,12 @@ parameters:
     type: string
     default: ""
   lotus_deploy_network:
+    type: string
+    default: ""
+  provision_dev_machines:
+    type: boolean
+    default: false
+  dev_machines:
     type: string
     default: ""
   slack_channel:
@@ -475,22 +482,76 @@ jobs:
       #       git config --global user.email "noreply@filecoin.io"
       #       git commit -am "automated genesis build"
       #       git push origin HEAD:new-genesis-$(date +%d%h%y-%H%M)
-
-  lotus-release-update-calibration:
+  lotus-build-binaries:
     parameters:
-      # This can be any git ref (eg: branch, tag, commit)
-      branch:
+      # this can be any git ref (eg: branch, tag, commit)
+      gitref:
         type: string
         default: "NeVeRmAtCh"
-      group:
+      # lotus uses build flags, a network to build is required
+      network:
         type: string
         default: "NeVeRmAtCh"
+      repository:
+        type: string
+        default: "lotus"
+    # binary building is done via a docker build image with a mounted filesystem
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
     resource_class: 2xlarge
     environment:
-      LOTUSROOT: /home/circleci/.go_workspace/src/github.com/filecoin-project/lotus
+      LOTUS_SRC: /home/circleci/lotus
+    steps:
+      - checkout
+      - git-clone:
+          repo: https://github.com/filecoin-project/<< parameters.repository >>
+          where: $LOTUS_SRC
+          branch: << parameters.gitref >>
+      - run:
+          name: Build binaries
+          command: |
+            args=(
+              "--network" "<< parameters.network >>"
+              "--src" "$LOTUS_SRC"
+            )
+            unset GOPATH
+            ./scripts/build_binaries.bash "${args[@]}"
+      - run:
+          name: Prepare binaries
+          command: |
+              bin="/tmp/circle/lotus/<< parameters.network >>/bin/"
+              mkdir -p $bin
+              pushd $LOTUS_SRC
+              cp lotus            \
+                 lotus-worker     \
+                 lotus-miner      \
+                 lotus-shed       \
+                 lotus-seed       \
+                 lotus-fountain   \
+                 lotus-stats      \
+                 $bin
+      - persist_to_workspace:
+          root: /tmp/circle
+          paths:
+            - lotus/<< parameters.network >>/bin
+
+  lotus-release-update-calibration:
+    parameters:
+      # This can be any git ref (eg: branch, tag, commit)
+      gitref:
+        type: string
+        default: "NeVeRmAtCh"
+      group:
+        type: string
+        default: "NeVeRmAtCh"
+      network:
+        type: string
+        default: "calibration.fildev.network"
+    executor:
+      name: ansible-playbook/default
+      python-version: "3.8"
+      debian-release: "buster"
     steps:
       - slack/notify:
           event: always
@@ -510,7 +571,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "A lotus release has triggered an update to the calibration network.\n\n*release*: << parameters.branch >>\n*group*: << parameters.group >>\n\n"
+                    "text": "A lotus release has triggered an update to the calibration network.\n\n*release*: << parameters.gitref >>\n*group*: << parameters.group >>\n\n"
                   }
                 },
                 {
@@ -529,21 +590,9 @@ jobs:
               ]
             }
       - checkout
-      - aws-cli/install
-      - rust/install
-      - run:
-          name: install golang
-          command: |
-            curl -LOs https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
-            sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
-      # - go/install:
-      #     version: 1.16.5
-      #     cache-key: v1.16.5
       - ansible-playbook/install
-      - git-clone:
-          repo: https://github.com/filecoin-project/lotus
-          where: $LOTUSROOT
-          branch: << parameters.branch >>
+      - attach_workspace:
+          at: /tmp/circle
       - run:
           name: setup vault secrets
           command: |
@@ -551,16 +600,17 @@ jobs:
             echo $ANSIBLE_VAULT_PASSWORD > .vault_password
       - run:
           name: update << parameters.group >>
+          no_output_timeout: 30m
+          environment:
+            ANSIBLE_HOST_KEY_CHECKING: false
           command: |
-            args=(
-              "--network" "calibration.fildev.network"
-              "--src" "$LOTUSROOT"
-              "--reboot-daemon"
-              "--" "--limit" "<< parameters.group >>"
-            )
             cd ansible
-            unset GOPATH
-            ./upgrade_fildev_network_binaries.bash "${args[@]}"
+            hostfile="inventories/<< parameters.network >>/hosts.yml"
+            network_flag=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ network_flag }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
+            ansible-playbook -i $hostfile lotus_update.yml                     \
+            -e binary_src="/tmp/circle/lotus/$network_flag/bin"                \
+            -e upgrade_reboot_daemon="yes"                                     \
+            --diff --limit "<< parameters.group >>"
 
   lotus-ansible-upgrade:
     parameters:
@@ -641,6 +691,7 @@ jobs:
             echo $ANSIBLE_VAULT_PASSWORD > .vault_password
       - run:
           name: ansible upgrade << parameters.deploy_network >>
+          no_output_timeout: 30m
           command: |
             args=(
               "-n" "<< parameters.deploy_network >>"
@@ -663,7 +714,93 @@ jobs:
             cd ansible
             << parameters.check >> || ansible -i inventories/<< parameters.deploy_network >>/hosts.yml -b -m reboot all
 
+  terraform-lotus-dev-machines:
+    parameters:
+      dev_machines:
+        type: string
+      aws_region:
+        type: string
+        default: us-east-2
+      slack_channel:
+        type: string
+        default: "#netops-circleci-test"
+    machine:
+      image: ubuntu-2004:202010-01
+      docker_layer_caching: true
+    environment:
+      AWS_REGION: << parameters.aws_region >>
+    steps:
+      - slack/notify:
+          event: always
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Lotus Dev Machines DEPLOYMENT :shipitparrot: :rocket:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Lotus Dev Machines are being deployed. Check the last step (terraform apply) for SSH connection strings"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+      - checkout
+      - run:
+          name: write machines json to file
+          command: |
+            echo '<< parameters.dev_machines >>' > terraform/lotus-dev-machines/<< parameters.aws_region >>/machines.tfvars.json
+      - terraform/install:
+          arch: amd64
+          os: linux
+          terraform_version: 1.0.8
+      - terraform/validate:
+          path: terraform/lotus-dev-machines/<< parameters.aws_region >>
+      - terraform/init:
+          path: terraform/lotus-dev-machines/<< parameters.aws_region >>
+      - terraform/plan:
+          path: terraform/lotus-dev-machines/<< parameters.aws_region >>
+          var_file: machines.tfvars.json
+      - terraform/apply:
+          path: terraform/lotus-dev-machines/<< parameters.aws_region >>
+          var_file: machines.tfvars.json
+      - run:
+          name: SSH Connection Strings
+          command: |
+            cd terraform/lotus-dev-machines/<< parameters.aws_region >>
+            terraform output | sed 's@\\@@g'
+
 workflows:
+  terraform-lotus-dev-machines:
+    when:  << pipeline.parameters.provision_dev_machines >>
+    jobs:
+      - terraform-lotus-dev-machines:
+          dev_machines: << pipeline.parameters.dev_machines >>
+          aws_region: << pipeline.parameters.aws_region >>
+          context:
+            - filecoin-dev-aws-ec2
+
   butterfly-nightly:
     when:
       equal: [ "none", << pipeline.parameters.api_workflow_requested >> ]
@@ -716,7 +853,7 @@ workflows:
   api-lotus-ansible-reset-careful:
     when:
       and:
-        - equal: 
+        - equal:
             - "lotus-devnet-ansible-reset"
             - << pipeline.parameters.api_workflow_requested >>
         - << pipeline.parameters.be_careful >>
@@ -753,7 +890,7 @@ workflows:
   api-lotus-ansible-reset-nocareful:
     when:
       and:
-        - equal: 
+        - equal:
             - "lotus-devnet-ansible-reset"
             - << pipeline.parameters.api_workflow_requested >>
         - not: << pipeline.parameters.be_careful >>
@@ -773,7 +910,7 @@ workflows:
   api-lotus-ansible-upgrade-careful:
     when:
       and:
-        - equal: 
+        - equal:
             - "lotus-devnet-ansible-upgrade"
             - << pipeline.parameters.api_workflow_requested >>
         - << pipeline.parameters.be_careful >>
@@ -800,7 +937,7 @@ workflows:
   api-lotus-ansible-upgrade-nocareful:
     when:
       and:
-        - equal: 
+        - equal:
             - "lotus-devnet-ansible-upgrade"
             - << pipeline.parameters.api_workflow_requested >>
         - not: << pipeline.parameters.be_careful >>
@@ -821,17 +958,29 @@ workflows:
             - "api-lotus-release-automation"
             - << pipeline.parameters.api_workflow_requested >>
     jobs:
+      - lotus-build-binaries:
+          name: build-binaries-mainnet
+          gitref: << pipeline.parameters.release >>
+          network: mainnet
+          repository: lotus
+      - lotus-build-binaries:
+          name: build-binaries-calibnet
+          gitref: << pipeline.parameters.release >>
+          network: calibnet
+          repository: lotus
       - lotus-release-update-calibration:
           name: update-canary
-          branch: << pipeline.parameters.release >>
+          gitref: << pipeline.parameters.release >>
           group: canary
+          requires:
+            - build-binaries-calibnet
       - hold-for-approval:
           type: approval
           requires:
             - update-canary
       - lotus-release-update-calibration:
           name: update-all
-          branch: << pipeline.parameters.release >>
+          gitref: << pipeline.parameters.release >>
           group: all
           requires:
             - hold-for-approval

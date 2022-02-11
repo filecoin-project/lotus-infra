@@ -76,54 +76,82 @@ locals {
         for subnet in aws_subnet.workers2 :
         subnet.id
       ]
+      version = var.k8s_version
     },
     "2" = {
       instance_type    = "r5.8xlarge"
       key_name         = "filecoin-mainnet"
       desired_capacity = 6
-      min_capacity     = "6"
+      min_capacity     = "3"
       max_capacity     = "50"
       k8s_labels       = {}
       subnets = [
         for subnet in aws_subnet.workers2 :
         subnet.id
       ]
+      version = var.k8s_version
     },
-    "3" = {
-      instance_type    = "r5.2xlarge"
-      key_name         = "filecoin-mainnet"
-      min_capacity     = "1"
-      max_capacity     = "12"
-      k8s_labels       = {
+  }
+  node_groups_lotus_standard = tomap({
+    for k, v in aws_subnet.workers2 : format("ls-%s", substr(v.id, 8, 16)) => {
+      name_prefix   = k
+      instance_type = "r5.2xlarge"
+      key_name      = "filecoin-mainnet"
+      min_capacity  = "1"
+      max_capacity  = "12"
+      k8s_labels = {
         "fil-infra.protocol.ai/node-type" = "lotus-standard"
       }
       subnets = [
-        for subnet in aws_subnet.workers2 :
-        subnet.id
+        v.id
       ],
       additional_tags = {
         "k8s.io/cluster-autoscaler/mainnet-us-east-2-dev-eks" = "owned"
-        "k8s.io/cluster-autoscaler/enabled" = "TRUE"
+        "k8s.io/cluster-autoscaler/enabled"                   = "TRUE"
       }
-    },
-    "4" = {
-      instance_type    = "r5.8xlarge"
-      key_name         = "filecoin-mainnet"
-      min_capacity     = "1"
-      max_capacity     = "12"
-      k8s_labels       = {
+      version = var.k8s_version
+    }
+  })
+  node_groups_lotus_high_memory = tomap({
+    for k, v in aws_subnet.workers2 : format("lhm-%s", substr(v.id, 8, 16)) => {
+      name_prefix   = k
+      instance_type = "r5.8xlarge"
+      key_name      = "filecoin-mainnet"
+      min_capacity  = "1"
+      max_capacity  = "12"
+      k8s_labels = {
         "fil-infra.protocol.ai/node-type" = "lotus-high-memory"
       }
       subnets = [
-        for subnet in aws_subnet.workers2 :
-        subnet.id
+        v.id
       ],
       additional_tags = {
         "k8s.io/cluster-autoscaler/mainnet-us-east-2-dev-eks" = "owned"
-        "k8s.io/cluster-autoscaler/enabled" = "TRUE"
+        "k8s.io/cluster-autoscaler/enabled"                   = "TRUE"
       }
-    },
-  }
+      version = var.k8s_version
+    }
+  })
+  node_groups_lotus_xl_high_memory = tomap({
+    for k, v in aws_subnet.workers2 : format("lxhm-%s", substr(v.id, 8, 16)) => {
+      name_prefix   = k
+      instance_type = "r5.12xlarge"
+      key_name      = "filecoin-mainnet"
+      min_capacity  = "1"
+      max_capacity  = "12"
+      k8s_labels = {
+        "fil-infra.protocol.ai/node-type" = "lotus-xl-high-memory"
+      }
+      subnets = [
+        v.id
+      ],
+      additional_tags = {
+        "k8s.io/cluster-autoscaler/mainnet-us-east-2-dev-eks" = "owned"
+        "k8s.io/cluster-autoscaler/enabled"                   = "TRUE"
+      }
+      version = var.k8s_version
+    }
+  })
   acm_enabled = 1
   subnet_tags = {
     "kubernetes.io/role/alb-ingress"          = "1"
@@ -150,6 +178,12 @@ module "eks" {
   worker_count_restricted                    = var.worker_count_restricted
   external_dns_zone_id                       = var.external_dns_zone_id
   external_dns_fqdn                          = "${var.external_dns_fqdn}"
-  node_groups                                = local.node_groups
-  security_group_ids                         = module.vpc.security_group_ids
+  node_groups = merge(
+    local.node_groups_lotus_standard,
+    local.node_groups_lotus_high_memory,
+    local.node_groups_lotus_xl_high_memory,
+    local.node_groups
+  )
+
+  security_group_ids = module.vpc.security_group_ids
 }

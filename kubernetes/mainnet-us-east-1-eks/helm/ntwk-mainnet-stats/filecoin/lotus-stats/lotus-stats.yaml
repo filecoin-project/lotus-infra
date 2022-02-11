@@ -1,7 +1,7 @@
 image:
-  tag: mainnet-f292d188e
+  tag: mainnet-125769097
 
 height: 0
-lotusApiInfo: /dns/fullnode-1-lotus-daemon.ntwk-mainnet-fullnode.svc.cluster.local/tcp/1234
+lotusApiInfo: /dns/api-lotus-daemon.ntwk-mainnet-api.svc.cluster.local/tcp/1234
 
 influxDatabase: chainstats-ntwk-mainnet

@@ -1,0 +1,12 @@
+---
+- hosts: preminer
+  become: yes
+  vars:
+    nvidia_drivers_url: "https://us.download.nvidia.com/tesla/460.32.03/NVIDIA-Linux-x86_64-460.32.03.run"
+  tasks:
+    - apt:
+        update_cache: true
+    - include_tasks: includes/gpu_drivers.yml
+      when: nvidia_drivers_url is defined
+    - name: reboot-system
+      reboot:

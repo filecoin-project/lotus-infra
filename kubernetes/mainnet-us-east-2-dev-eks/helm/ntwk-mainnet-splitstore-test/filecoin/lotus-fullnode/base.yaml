@@ -1,5 +1,5 @@
 image:
-  tag: mainnet-0dfafb284
+  tag: mainnet-049b48928
 
 prometheusOperatorServiceMonitor: true
 
@@ -7,7 +7,7 @@ persistence:
   datastore:
     enabled: true
     storageClassName: "ebs-csi"
-    size: "3000Gi"
+    size: "1000Gi"
 
 importSnapshot:
   enabled: true

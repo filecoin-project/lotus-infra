@@ -9,3 +9,4 @@ kubeconfig_aws_authenticator_env_variables = {
   AWS_PROFILE = "filecoin"
 }
 aws_profile = "filecoin"
+k8s_version = "1.18"
