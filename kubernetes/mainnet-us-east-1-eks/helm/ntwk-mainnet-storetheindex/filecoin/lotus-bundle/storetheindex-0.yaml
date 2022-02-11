@@ -69,7 +69,7 @@ application:
               },
               "PollInterval": "24h0m0s",
               "RediscoverWait": "5m0s",
-              "Timeout": "2m0s",
+              "Timeout": "2m0s"
             },
             "Indexer": {
               "CacheSize": 300000,
@@ -138,7 +138,7 @@ initContainers:
       - bash
     args:
       - "-c"
-      - "envsubst </config/config >/data/storetheindex/config1"
+      - "envsubst </config/config >/data/storetheindex/config"
     env:
       - name: STORETHEINDEX_PRIVATE_KEY
         valueFrom:
