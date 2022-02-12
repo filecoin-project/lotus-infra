@@ -110,6 +110,22 @@ locals {
       ]
     },
     {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/marco"
+      username = "marco"
+      groups   = [
+        "ntwk-mainnet-dealbot-exec",
+        "ntwk-mainnet-storetheindex-exec",
+      ]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/dvd"
+      username = "dvd"
+      groups   = [
+        "ntwk-mainnet-dealbot-exec",
+        "ntwk-mainnet-storetheindex-exec",
+      ]
+    },
+    {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/adlrocha"
       username = "adlrocha"
       groups   = [
