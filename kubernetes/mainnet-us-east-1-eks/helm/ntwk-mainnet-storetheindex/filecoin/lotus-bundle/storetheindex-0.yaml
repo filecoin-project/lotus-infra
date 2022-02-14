@@ -119,7 +119,7 @@ application:
     enabled: true
     class: nginx
     httpRules:
-      - host: dev.cid.contact
+      - host: cid.contact
         path: /
         servicePort: finder
   storage:
