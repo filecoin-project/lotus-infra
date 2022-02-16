@@ -12,6 +12,20 @@
         owner: "{{ lotus_user }}"
         group: "{{ lotus_user }}"
         mode: "0755"
+    - name: Fetch sectors
+      become_user: "{{ lotus_user }}"
+      shell: "aws s3 cp s3:/{{ item }} {{ item }} --recursive"
+      loop: "{{ lotus_miner_presealed_sectors }}"
+      when: "'aws' in group_names"
+    - name: Hygrade sectors
+      block:
+        - name: Register sectors
+          shell: find "{{ lotus_miner_data_root }}" -type f  -name 's-{{ lotus_miner_addr }}-*'
+          register: sectors
+        - name: Truncate sectors to size
+          shell: "truncate -s {{ sector_size }} {{ item }}"
+          loop: "{{ sectors.stdout_lines }}"
+          when: not ansible_check_mode
     - name: Merge preminer metadata
       become_user: "{{ lotus_user }}"
       shell:
