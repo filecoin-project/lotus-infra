@@ -16,3 +16,4 @@ lotus_systemd_extras:
   LimitNOFILE: 32768
 lotus_env:
   LOTUS_SYNC_BOOTSTRAP_PEERS: 1
+  LOTUS_USE_FVM_DOESNT_WORK_YET: 1
