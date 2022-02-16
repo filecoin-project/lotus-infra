@@ -28,7 +28,7 @@ module "interopnet" {
   environment                 = "prod"
   toolshed_count              = 2
   bootstrapper_count          = 2
-  preminer_count              = 3
+  preminer_count              = 6
   scratch_count               = 2
   toolshed_instance_type      = "m5a.xlarge"
   chainwatch_db_instance_type = "db.m5.large"

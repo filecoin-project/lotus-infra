@@ -195,6 +195,7 @@ pushd "$lotus_src"
   genesistmp=$(mktemp --suffix "-${network_name}")
 
   ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
+  ./lotus-seed genesis set-network-version "${genpath}/genesis.json"
 
   for m in "${miners[@]}"; do
     ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/${prepare_tmp}/presealed-metadata.json"
