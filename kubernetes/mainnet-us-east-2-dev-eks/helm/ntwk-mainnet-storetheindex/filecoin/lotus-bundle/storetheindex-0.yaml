@@ -9,7 +9,13 @@ application:
     env: 
       - name: STORETHEINDEX_LISTEN_ADMIN
         value: /ip4/0.0.0.0/tcp/3002
-    resources: {}
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 3000Mi
+      requests:
+        cpu: 500m
+        memory: 2000Mi
     ports:
       - containerPort: 3000
         name: finder
