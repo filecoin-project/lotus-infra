@@ -1,0 +1,22 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: lotus-fullnode
+spec:
+  kubeConfig:
+    secretRef:
+      name: us-east-2-dev-kubeconfig
+  targetNamespace: cory-lotus-test
+  storageNamespace: cory-lotus-test
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: lotus-secrets-creator
+spec:
+  kubeConfig:
+    secretRef:
+      name: us-east-2-dev-kubeconfig
+  targetNamespace: cory-lotus-test
+  storageNamespace: cory-lotus-test

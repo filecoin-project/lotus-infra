@@ -1,0 +1,48 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: lotus-fullnode
+spec:
+  releaseName: lotus-fullnode
+  chart:
+    spec:
+      chart: lotus-fullnode
+      sourceRef:
+        kind: HelmRepository
+        name: filecoin
+  interval: 10m
+  install:
+    remediation:
+      retries: 3
+  values:
+    secrets:
+      jwt:
+        secretName: lotus-0-jwt-secrets
+      libp2p:
+        secretName: lotus-0-libp2p-secrets
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: lotus-secrets-creator
+spec:
+  releaseName: lotus-secrets-creator
+  chart:
+    spec:
+      chart: lotus-secrets-creator
+      sourceRef:
+        kind: HelmRepository
+        name: filecoin
+  interval: 10m
+  install:
+    remediation:
+      retries: 3
+  values:
+    secrets:
+      jwt:
+        enabled: true
+        secretName: lotus-0-jwt-secrets
+      libp2p:
+        enabled: true
+        secretName: lotus-0-libp2p-secrets
