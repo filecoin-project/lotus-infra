@@ -12,7 +12,7 @@ image:
   #name: foo
 
 # prometheus service monitor
-prometheusOperatorServiceMonitor: false
+prometheusOperatorServiceMonitor: true
 prometheusPort: ":9991"
 
 logLevel: error
