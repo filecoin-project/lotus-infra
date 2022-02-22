@@ -23,6 +23,9 @@ controller:
     graphql:
       annotations:
         external-dns.alpha.kubernetes.io/hostname: dealbot-nerpanet.mainnet-us-east-2-dev.fildevops.net
+    libp2p:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-type: nlb
   secrets:
     keySecret: dealbot-controller-key
     awsKeysSecret: dealbot-controller-aws-keys
