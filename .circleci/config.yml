@@ -115,65 +115,6 @@ commands:
           command: echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
 
 jobs:
-  lotus-build-release-containers:
-    parameters:
-      gittag:
-        type: string
-        default: "NeVeRmAtCh"
-      # lotus uses build flags, a network to build is required
-      network:
-        type: string
-        default: "NeVeRmAtCh"
-    machine:
-      image: ubuntu-2004:202010-01
-    environment:
-      LOTUS_SRC: /home/circleci/lotus
-    steps:
-      - checkout
-      - docker-login
-      - run:
-          name: install golang
-          command: |
-            curl -LOs https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
-            sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
-      - run:
-          name: docker image builds
-          command: |
-            scripts/build_containers.bash --tag << parameters.gittag >> --network << parameters.network >> --repo travisperson
-  lotus-build-src-containers:
-    parameters:
-      # this can be any git ref (eg: branch, tag, commit)
-      gitref:
-        type: string
-        default: "NeVeRmAtCh"
-      # lotus uses build flags, a network to build is required
-      network:
-        type: string
-        default: "NeVeRmAtCh"
-      repository:
-        type: string
-        default: "lotus"
-    machine:
-      image: ubuntu-2004:202010-01
-    environment:
-      LOTUS_SRC: /home/circleci/lotus
-    steps:
-      - checkout
-      - docker-login
-      - run:
-          name: install golang
-          command: |
-            curl -LOs https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
-            sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
-      - git-clone:
-          repo: https://github.com/filecoin-project/<< parameters.repository >>
-          where: $LOTUS_SRC
-          branch: << parameters.gitref >>
-      - run:
-          name: docker image builds
-          command: |
-            scripts/build_containers.bash --src $LOTUS_SRC --network << parameters.network >> --repo travisperson
-
   # build and push lotus.
   lotus-build-containers:
     parameters:
@@ -1015,8 +956,40 @@ workflows:
           branch: << pipeline.parameters.override_tag >>
           check: false
 
-  # workflow to trigger when lotus creates a release
+  # workflow to build all of lotus for scripting purposes
+  api-lotus-build:
+    when:
+      and:
+        - equal:
+            - "api-lotus-build"
+            - << pipeline.parameters.api_workflow_requested >>
+    jobs:
+      - lotus-build-containers:
+          name: lotus-build-containers
+          gitref: << pipeline.parameters.gitref >>
+          docker_repo: travisperson
+          network: mainnet
+          is_release: true
+      - lotus-build-containers:
+          name: lotus-build-containers
+          gitref: << pipeline.parameters.gitref >>
+          docker_repo: travisperson
+          docker_repo: travisperson
+          network: calibnet
+          is_release: true
+      - lotus-build-binaries:
+          name: build-binaries-mainnet
+          gitref: << pipeline.parameters.gitref >>
+          network: mainnet
+          repository: lotus
+      - lotus-build-binaries:
+          name: build-binaries-calibnet
+          gitref: << pipeline.parameters.gitref >>
+          network: calibnet
+          repository: lotus
 
+
+  # workflow to trigger when lotus creates a release
   api-lotus-release-automation:
     when:
       and:
@@ -1113,10 +1086,10 @@ workflows:
             - slack-on-hold
       - lotus-build-containers:
           name: build-containers-calibrationnet
-          tag: << pipeline.parameters.override_tag >>
+          gitref: << pipeline.parameters.override_tag >>
           docker_repo: << pipeline.parameters.override_repository >>
-          use_gitsha: false
           network: calibnet
+          is_release: true
           requires:
             - start-rollout
       # calibrationnet on kubernetes
@@ -1154,10 +1127,12 @@ workflows:
       # mainnet
       - lotus-build-containers:
           name: build-containers-mainnet
-          tag: << pipeline.parameters.override_tag >>
+          gitref: << pipeline.parameters.override_tag >>
           docker_repo: << pipeline.parameters.override_repository >>
-          use_gitsha: false
-          network: mainnet
+          network: calibnet
+          is_release: true
+          requires:
+            - start-rollout
       # Manual approvals for mainnet
       - start-bootstrap-mainnet-us-east-1-eks:
           type: approval
