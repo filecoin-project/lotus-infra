@@ -1,3 +1,9 @@
+persistence:
+  datastore:
+    enabled: true
+    storageClassName: "ebs-csi"
+    size: "500Gi"
+
 daemonConfig: |
   [API]
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
