@@ -30,15 +30,6 @@ controller:
     keySecret: dealbot-controller-key
     awsKeysSecret: dealbot-controller-aws-keys
     selfServeConfigSecret: dealbot-selfserve
-  env:
-    # Bootstrap with Pando service needed to propagate go-legs announcements over gossipsub.
-    # See: 
-    #  - http://pando-api.kencloud.com/pando/info
-    #  - https://github.com/kenlabs/pando
-    - name: DEALBOT_LIBP2P_BOOTSTRAP_ADDRINFO
-      value: "/ip4/52.14.211.248/tcp/9013/p2p/12D3KooWFC1cAXB7DJ71hafj8x6oLkGuATLMrqSauw4rp2fHFzoc"
-    - name: GOLOG_LOG_LEVEL
-      value: info
   resources:
     limits:
       cpu: 1000m

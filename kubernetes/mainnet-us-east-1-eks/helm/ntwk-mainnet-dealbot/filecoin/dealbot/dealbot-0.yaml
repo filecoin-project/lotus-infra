@@ -36,7 +36,7 @@ controller:
     #  - http://pando-api.kencloud.com/pando/info
     #  - https://github.com/kenlabs/pando
     - name: DEALBOT_LIBP2P_BOOTSTRAP_ADDRINFO
-      value: "/ip4/52.14.211.248/tcp/9013/p2p/12D3KooWFC1cAXB7DJ71hafj8x6oLkGuATLMrqSauw4rp2fHFzoc"
+      value: "/ip4/52.14.211.248/tcp/9013/p2p/12D3KooWNU48MUrPEoYh77k99RbskgftfmSm3CdkonijcM5VehS9"
     - name: GOLOG_LOG_LEVEL
       value: info
   resources:
