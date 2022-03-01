@@ -1,4 +1,4 @@
-controller: 
+controller:
   enabled: true
   postgres:
     enabled: true
@@ -16,16 +16,17 @@ controller:
     hosts:
       - host: lb.mainnet-us-east-1.filops.net
         paths:
-         - path: /mainnet-dealbot-controller(/|$)(.*)
+          - path: /mainnet-dealbot-controller(/|$)(.*)
   services:
     api:
-      annotations: {}
+      annotations: { }
     graphql:
       annotations:
         external-dns.alpha.kubernetes.io/hostname: dealbot-mainnet.mainnet-us-east-1.filops.net
     libp2p:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-type: nlb
+        external-dns.alpha.kubernetes.io/hostname: dealbot-mainnet-libp2p.mainnet-us-east-1.filops.net
   secrets:
     keySecret: dealbot-controller-key
     awsKeysSecret: dealbot-controller-aws-keys
@@ -37,6 +38,10 @@ controller:
     #  - https://github.com/kenlabs/pando
     - name: DEALBOT_LIBP2P_BOOTSTRAP_ADDRINFO
       value: "/ip4/52.14.211.248/tcp/9013/p2p/12D3KooWNU48MUrPEoYh77k99RbskgftfmSm3CdkonijcM5VehS9"
+    # The address to advertise as external address of dealbot libp2p host in legs gossip messages.
+    # Note, the DNS host name must matche the external-dns host name configured in lbp2p service. 
+    - name: DEALBOT_LEGS_ADDRS
+      value: "/dns/dealbot-mainnet-libp2p.mainnet-us-east-1.filops.net/tcp/8762"
     - name: GOLOG_LOG_LEVEL
       value: info
   resources:
