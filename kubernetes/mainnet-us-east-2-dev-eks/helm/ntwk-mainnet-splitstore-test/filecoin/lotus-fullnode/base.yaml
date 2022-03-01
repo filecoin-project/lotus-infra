@@ -1,13 +1,8 @@
 image:
-  tag: mainnet-049b48928
+  # master build (after v1.14.0 merge; v1.14.0 does not contain splitstore sort stuff)
+  tag: mainnet-949a04643
 
 prometheusOperatorServiceMonitor: true
-
-persistence:
-  datastore:
-    enabled: true
-    storageClassName: "ebs-csi"
-    size: "1000Gi"
 
 importSnapshot:
   enabled: true

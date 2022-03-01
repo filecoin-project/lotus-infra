@@ -2,7 +2,7 @@
 # gammazero:release/v1.13.2
 
 image:
-  tag: mainnet-0cb3d0204
+  tag: mainnet-0da49b9ef
 
 daemonConfig: |
   [API]
