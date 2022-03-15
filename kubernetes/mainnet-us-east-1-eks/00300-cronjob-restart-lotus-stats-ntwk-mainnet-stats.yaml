@@ -1,0 +1,56 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: restart-lotus-stats
+  namespace: ntwk-mainnet-stats
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: restart-lotus-stats
+  namespace: ntwk-mainnet-stats
+rules:
+  - apiGroups: ["apps", "extensions"]
+    resources: ["deployments"]
+    resourceNames: ["lotus-stats"]
+    verbs: ["get", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: restart-lotus-stats
+  namespace: ntwk-mainnet-stats
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: restart-lotus-stats
+subjects:
+  - kind: ServiceAccount
+    name: restart-lotus-stats
+    namespace: ntwk-mainnet-stats
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: restart-lotus-stats
+  namespace: ntwk-mainnet-stats
+roleRef:
+spec:
+  concurrencyPolicy: Forbid
+  schedule: '*/15 * * * *' # restart on every 15th minute
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 600
+      template:
+        spec:
+          serviceAccountName: restart-lotus-stats
+          restartPolicy: Never
+          containers:
+            - name: kubectl
+              image: bitnami/kubectl
+              command:
+                - 'kubectl'
+                - 'rollout'
+                - 'restart'
+                - 'deployment/lotus-stats'
