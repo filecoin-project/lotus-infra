@@ -81,7 +81,7 @@ application:
             },
             "Ingest": {
               "PubSubTopic": "/indexer/ingest/mainnet",
-              "StoreBatchSize": 256,
+              "StoreBatchSize": 4096,
               "SyncTimeout": "2h0m0s"
             }
           }
