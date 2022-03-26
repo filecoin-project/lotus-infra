@@ -192,7 +192,7 @@ deployments:
       - markset-map
       - limits-48G
   - chart: filecoin/lotus-bundle
-    version: 0.0.11
+    version: 0.0.14
     namespace: ntwk-mainnet-storetheindex
     name: storetheindex-0
     values:
