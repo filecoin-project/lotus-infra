@@ -141,6 +141,16 @@ locals {
       username = "circleci-sentinel-infra"
       groups   = ["system:masters"]
     },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/steve.fraser"
+      username = "steve.fraser"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/chris.harden"
+      username = "chris.harden"
+      groups   = ["system:masters"]
+    },
   ]
 
   tags = {
