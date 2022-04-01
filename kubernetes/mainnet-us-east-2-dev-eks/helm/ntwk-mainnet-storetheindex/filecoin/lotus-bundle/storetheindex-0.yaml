@@ -153,8 +153,8 @@ initContainers:
         ORDINAL=${HOSTNAME##*-}
         PEERIDVAR="STORETHEINDEX_PEER_ID${ORDINAL}"
         PRIVKEYVAR="STORETHEINDEX_PRIVATE_KEY${ORDINAL}"
-        export STORETHEINDEX_PEER_ID=$PEERIDVAR
-        export STORETHEINDEX_PRIVATE_KEY=$PRIVKEYVAR
+        export STORETHEINDEX_PEER_ID=${!PEERIDVAR}
+        export STORETHEINDEX_PRIVATE_KEY=${!PRIVKEYVAR}
         envsubst </config/config >/data/storetheindex/config
     env:
       - name: STORETHEINDEX_PRIVATE_KEY0
