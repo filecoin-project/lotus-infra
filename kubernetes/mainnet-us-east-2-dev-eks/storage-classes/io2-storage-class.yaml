@@ -10,3 +10,5 @@ reclaimPolicy: Delete
 allowVolumeExpansion: true
 parameters:
   type: io2
+  iopsPerGB: "500"
+  allowAutoIOPSPerGBIncrease: "true" 
