@@ -6,5 +6,7 @@ metadata:
   #   storageclass.kubernetes.io/is-default-class: "true"
 provisioner: ebs.csi.aws.com
 volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+allowVolumeExpansion: true
 parameters:
   type: io2
