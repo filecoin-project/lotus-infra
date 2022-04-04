@@ -1,12 +1,12 @@
 application:
   name: "storetheindex"
   labels: []
-  replicas: 1
+  replicas: 2
   container:
     name: application
-    args: 
+    args:
       - daemon
-    env: 
+    env:
       - name: STORETHEINDEX_LISTEN_ADMIN
         value: /ip4/0.0.0.0/tcp/3002
     resources: {}
@@ -26,7 +26,7 @@ application:
         config: |
           {
             "Identity": {
-              "PeerID": "12D3KooWF6pJZpWhcFRbVxAi9Py4PMPgQF5vXuw9zQp3J5yRxa7y",
+              "PeerID": "$STORETHEINDEX_PEER_ID",
               "PrivKey": "$STORETHEINDEX_PRIVATE_KEY"
             },
             "Addresses": {
@@ -117,7 +117,7 @@ application:
         targetPort: 3000
         name: finder
   ingress:
-    enabled: true
+    enabled: false
     class: nginx
     httpRules:
       - host: cid.contact
@@ -128,9 +128,20 @@ application:
       chownLotus: false
       subdirPerRelease: true
       volume:
-        - name: shared-volume
+        - name: storetheindex-repo
           persistentVolumeClaim:
-            claimName: chain-exports
+            claimName: storetheindex-repo
+
+volumeClaimTemplates:
+  - metadata:
+      name: storetheindex-repo
+    spec:
+      storageClassName: io2
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5000Gi
 
 initContainers:
   - name: setupconfig
@@ -139,20 +150,36 @@ initContainers:
       - bash
     args:
       - "-c"
-      - "envsubst </config/config >/data/storetheindex/config"
+      - |
+        ORDINAL=${HOSTNAME##*-}
+        PEERIDVAR="STORETHEINDEX_PEER_ID${ORDINAL}"
+        PRIVKEYVAR="STORETHEINDEX_PRIVATE_KEY${ORDINAL}"
+        export STORETHEINDEX_PEER_ID=${!PEERIDVAR}
+        export STORETHEINDEX_PRIVATE_KEY=${!PRIVKEYVAR}
+        envsubst </config/config >/data/storetheindex/config
     env:
-      - name: STORETHEINDEX_PRIVATE_KEY
+      - name: STORETHEINDEX_PRIVATE_KEY0
         valueFrom:
           secretKeyRef:
             name: storetheindex-identity
-            key: privkey
-      - name: STORETHEINDEX_PEER_ID
+            key: privkey0
+      - name: STORETHEINDEX_PEER_ID0
         valueFrom:
           secretKeyRef:
             name: storetheindex-identity
-            key: peerid
+            key: peerid0
+      - name: STORETHEINDEX_PRIVATE_KEY1
+        valueFrom:
+          secretKeyRef:
+            name: storetheindex-identity
+            key: privkey1
+      - name: STORETHEINDEX_PEER_ID1
+        valueFrom:
+          secretKeyRef:
+            name: storetheindex-identity
+            key: peerid1
     volumeMounts:
-      - name: shared-volume
+      - name: storetheindex-repo
         mountPath: /data/storetheindex
         subPath: ntwk-mainnet-storetheindex/storetheindex-0
       - name: storetheindex-config-volume
