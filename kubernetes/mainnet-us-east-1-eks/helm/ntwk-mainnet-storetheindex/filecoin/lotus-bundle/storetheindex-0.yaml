@@ -16,6 +16,15 @@ application:
       requests:
         cpu: 500m
         memory: 2000Mi
+    readinessProbe:
+      httpGet:
+        port: finder
+        path: /health
+      initialDelaySeconds: 10
+      failureThreshold: 3
+      successThreshold: 1
+      timeoutSeconds: 5
+      periodSeconds: 10
     ports:
       - containerPort: 3000
         name: finder
