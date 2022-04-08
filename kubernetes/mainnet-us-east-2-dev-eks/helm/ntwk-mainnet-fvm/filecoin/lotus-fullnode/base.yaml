@@ -1,0 +1,34 @@
+image:
+  tag: mainnet-v1.15.1-rc5
+
+prometheusOperatorServiceMonitor: true
+
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+
+resources:
+  requests:
+    memory: 32Gi
+    cpu: 8
+  limits:
+    memory: 32Gi
+
+persistence:
+  datastore:
+    enabled: true
+    storageClassName: "ebs-csi"
+    size: "2000Gi"
+
+importSnapshot:
+  enabled: true
+  strategy: url
+
+daemonEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+
+additionalLabels:
+  network: mainnet

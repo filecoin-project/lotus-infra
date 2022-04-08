@@ -1,0 +1,5 @@
+daemonEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+  - name: LOTUS_USE_FVM_EXPERIMENTAL
+    value: "1"
