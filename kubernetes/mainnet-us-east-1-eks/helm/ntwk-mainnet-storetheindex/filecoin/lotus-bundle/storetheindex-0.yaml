@@ -156,7 +156,7 @@ volumeClaimTemplates:
         - ReadWriteOnce
       resources:
         requests:
-          storage: 5000Gi
+          storage: 10000Gi
 
 initContainers:
   - name: setupconfig
