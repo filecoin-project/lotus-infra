@@ -12,7 +12,10 @@ nodeSelector:
 
 importSnapshot:
   enabled: true
-  strategy: url
+  claimName: chain-exports
+  network: mainnet
+  exportRelease: finality-stateroots
+  exitCodeOnMissing: 1
 
 persistence:
   datastore:
