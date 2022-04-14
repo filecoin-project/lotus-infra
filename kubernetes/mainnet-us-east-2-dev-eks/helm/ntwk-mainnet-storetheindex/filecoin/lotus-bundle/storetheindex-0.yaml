@@ -70,7 +70,7 @@ application:
                 "/dns4/lotus-bootstrap.ipfsforce.com/tcp/41778/p2p/12D3KooWGhufNmZHF3sv48aQeS13ng5XVJZ9E6qy2Ms4VzqeUsHk",
                 "/dns4/bootstrap-1.ipfsmain.cn/tcp/34723/p2p/12D3KooWMKxMkD5DMpSWsW7dBddKxKT7L2GgbNuckz9otxvkvByP"
               ],
-              "MinimumPeers": 15
+              "MinimumPeers": 4
             },
             "Datastore": {
               "Type": "levelds",
