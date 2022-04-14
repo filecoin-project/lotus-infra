@@ -40,6 +40,7 @@ application:
       keys:
         config: |
           {
+            "Version": 1,
             "Identity": {
               "PeerID": "$STORETHEINDEX_PEER_ID",
               "PrivKey": "$STORETHEINDEX_PRIVATE_KEY"
@@ -80,24 +81,29 @@ application:
               "Policy": {
                 "Allow": true,
                 "Except": null,
-                "Trust": true,
-                "TrustExcept": null
+                "Publish": true,
+                "PublishExcept": null,
+                "RateLimit": false,
+                "RateLimitExcept": null
               },
               "PollInterval": "24h0m0s",
               "PollRetryAfter": "5h0m0s",
               "PollStopAfter": "168h0m0s",
+              "PollOverrides": null,
               "RediscoverWait": "5m0s",
               "Timeout": "2m0s"
             },
             "Indexer": {
               "CacheSize": 300000,
               "ValueStoreDir": "valuestore",
-              "ValueStoreType": "sth"
+              "ValueStoreType": "sth",
+              "GCInterval": "30m0s"
             },
             "Ingest": {
               "PubSubTopic": "/indexer/ingest/mainnet",
               "StoreBatchSize": 4096,
-              "SyncTimeout": "2h0m0s"
+              "SyncTimeout": "2h0m0s",
+              "IngestWorkerCount": 10
             }
           }
   services:
