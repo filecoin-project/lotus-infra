@@ -12,10 +12,10 @@ application:
     resources:
       limits:
         cpu: 1000m
-        memory: 3000Mi
+        memory: 10Gi
       requests:
         cpu: 500m
-        memory: 2000Mi
+        memory: 10Gi
     readinessProbe:
       httpGet:
         port: finder
