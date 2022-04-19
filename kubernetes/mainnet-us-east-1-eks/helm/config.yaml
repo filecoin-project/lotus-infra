@@ -132,14 +132,6 @@ deployments:
     values:
       - base
       - disputer-0
-  # gateway
-  - chart: filecoin/lotus-gateway
-    version: 0.1.5
-    namespace: ntwk-mainnet-fullnode
-    name: gateway-0
-    values:
-      - base
-      - gateway-0
   # dealbot mainnet
   - chart: filecoin/efs-access
     version: 0.1.0
@@ -226,7 +218,7 @@ deployments:
     values:
       - base
   - chart: filecoin/lotus-gateway
-    version: 0.1.4
+    version: 0.1.5
     namespace: ntwk-mainnet-api
     name: gateway
     values:
