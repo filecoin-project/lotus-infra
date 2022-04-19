@@ -226,7 +226,7 @@ deployments:
     values:
       - base
   - chart: filecoin/lotus-gateway
-    version: 0.1.4
+    version: 0.1.5
     namespace: ntwk-mainnet-api
     name: gateway
     values:
