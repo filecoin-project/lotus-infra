@@ -1,5 +1,8 @@
 [Libp2p]
    ListenAddresses = ["/ip4/0.0.0.0/tcp/{{ lotus_miner_p2p_port }}"]
+
+[IndexProvider]
+   Enable = false
 {% if lotus_miner_presealed == "yes" %}
 [Dealmaking]
    ConsiderOnlineStorageDeals = false
