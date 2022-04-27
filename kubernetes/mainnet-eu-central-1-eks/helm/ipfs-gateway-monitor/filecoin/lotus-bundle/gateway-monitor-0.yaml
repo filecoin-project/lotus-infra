@@ -19,7 +19,7 @@ application:
     - type: ClusterIP
       selector:
         app: gateway-monitor
-        release: gateway-monitor
+        release: gateway-monitor-0
       ports:
         - protocol: TCP
           port: 2112
