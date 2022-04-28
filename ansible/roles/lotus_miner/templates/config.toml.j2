@@ -3,15 +3,13 @@
 
 [IndexProvider]
    Enable = false
+
 {% if lotus_miner_presealed == "yes" %}
 [Dealmaking]
    ConsiderOnlineStorageDeals = false
    ConsiderOfflineStorageDeals = false
    ConsiderOnlineRetrievalDeals = false
    ConsiderOfflineRetrievalDeals = false
-
-[IndexProvider]
-   Enabled = false
 {% endif %}
 
 {% if lotus_miner_pubsub_tracker is defined %}
