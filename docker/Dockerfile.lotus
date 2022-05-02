@@ -97,7 +97,7 @@ COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1      /lib/
 COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1       /lib/
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libltdl.so.7   /lib/
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libnuma.so.1   /lib/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libhwloc.so.5  /lib/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libhwloc.so.15 /lib/
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /lib/
 
 RUN useradd -r -u 532 -U fc
@@ -117,7 +117,7 @@ COPY --from=builder /lib/x86_64-linux-gnu/libgcc_s.so.1      /lib/
 COPY --from=builder /lib/x86_64-linux-gnu/libutil.so.1       /lib/
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libltdl.so.7   /lib/
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libnuma.so.1   /lib/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libhwloc.so.5  /lib/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libhwloc.so.15 /lib/
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL.so.1 /lib/
 
 RUN useradd -r -u 532 -U fc
