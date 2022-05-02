@@ -1,4 +1,4 @@
-FROM golang:1.16.4-stretch AS builder
+FROM golang:1.17.9-stretch AS builder
 MAINTAINER Filecoin Development Team
 
 RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1 libhwloc-dev
