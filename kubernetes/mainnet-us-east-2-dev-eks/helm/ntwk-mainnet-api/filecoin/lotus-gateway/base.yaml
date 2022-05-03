@@ -1,7 +1,7 @@
 ---
 image:
   repository: travisperson/lotus-gateway
-  tag: mainnet-v1.14.2
+  tag: mainnet-v1.15.1@sha256:b55cf052b05752f3bb0f227ccebbf68767b0dce93a31f33b0d1efcc0f54bd1d6
 
 loadBalancer:
   enabled: true
