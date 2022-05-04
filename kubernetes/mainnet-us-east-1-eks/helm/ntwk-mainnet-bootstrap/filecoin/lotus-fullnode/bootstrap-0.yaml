@@ -1,9 +1,3 @@
-# https://github.com/filecoin-project/lotus/pull/8067
-# gammazero:release/v1.13.2
-
-image:
-  tag: mainnet-0da49b9ef
-
 daemonConfig: |
   [API]
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"

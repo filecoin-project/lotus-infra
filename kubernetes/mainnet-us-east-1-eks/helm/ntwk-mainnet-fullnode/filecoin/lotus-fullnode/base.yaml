@@ -1,5 +1,5 @@
 image:
-  tag: mainnet-v1.14.2
+  tag: mainnet-v1.15.1@sha256:bc14d52ee5de4ab36897f3e0c0cba0dc55fa22a8bd5910ae5bc2ba826dcc1186
 
 resources:
   requests:
