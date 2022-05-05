@@ -12,7 +12,7 @@ main_dashboard_slug: chain
 grafana:
   image:
     repository: grafana/grafana
-    tag: v8.2.6
+    tag: 8.5.2
   sidecar:
     datasources:
       enabled: true
