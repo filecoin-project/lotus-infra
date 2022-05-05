@@ -11,8 +11,8 @@ main_dashboard_id: z6FtI92Zz
 main_dashboard_slug: chain
 grafana:
   image:
-    repository: 657871693752.dkr.ecr.us-east-1.amazonaws.com/lotus-grafana
-    tag: v1.11
+    repository: grafana/grafana
+    tag: 8.5.2
   sidecar:
     datasources:
       enabled: true
