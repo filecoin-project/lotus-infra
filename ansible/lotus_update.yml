@@ -62,3 +62,21 @@
         name: lotus-daemon
         state: restarted
       when: upgrade_reboot_daemon == "yes"
+
+- hosts: toolbox
+  become: true
+  module_defaults:
+    package:
+      force_apt_get: yes
+  tasks:
+  - name: Ensure faucet is enabled
+    file:
+      src: /etc/nginx/sites-available/faucet.conf
+      dest: /etc/nginx/sites-enabled/50-faucet.conf
+      state: link
+    when: "'faucet' in group_names"
+  - name: Ensure nginx reloaded
+    systemd:
+      name: nginx
+      state: reloaded
+    when: "'faucet' in group_names"
