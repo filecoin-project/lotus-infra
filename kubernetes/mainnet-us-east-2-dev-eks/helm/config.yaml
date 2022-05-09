@@ -252,3 +252,16 @@ deployments:
     values:
       - base
       - fvm
+
+  - chart: filecoin/lotus-fullnode
+    version: 0.3.4
+    namespace: ntwk-mainnet-snapshot-testing
+    name: lotus-a
+    values:
+      - base
+  - chart: filecoin/filsnap
+    version: 0.1.0
+    namespace: ntwk-mainnet-snapshot-testing
+    name: mainnet
+    values:
+      - base

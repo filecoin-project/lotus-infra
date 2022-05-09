@@ -1,0 +1,18 @@
+image:
+  tag: main@sha256:59ab06d8901f88c74d5223154302079214be28e41fd16ba297a126bada59c965
+
+snapshots:
+  nodes:
+  - /dns/lotus-a-lotus-daemon/tcp/1234
+
+  jwtTokens:
+    secretName: lotus-0-jwt-secrets
+
+  additionalEnv:
+  - name: "GOLOG_LOG_FMT"
+    value: "json"
+
+nodelocker:
+  additionalEnv:
+  - name: "GOLOG_LOG_FMT"
+    value: "json"
