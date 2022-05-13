@@ -265,7 +265,7 @@ deployments:
     name: lotus-b
     values:
       - base
-  - chart: filecoin/filsnap
+  - chart: filecoin/filecoin-chain-archiver
     version: 0.1.0
     namespace: ntwk-mainnet-snapshot-testing
     name: mainnet
