@@ -62,8 +62,13 @@ fi
 
 tags=$(join , ${gotags[@]})
 
+goflags=("-tags=$tags")
+if [ ! -z $NETWORK ]; then
+  goflags+=("-ldflags=-X=github.com/filecoin-project/lotus/build.NetworkBundle=${NETWORK}")
+fi
+
 envflags=()
-envflags+=(-e GOFLAGS="-tags=$tags")
+envflags+=(-e GOFLAGS="${goflags[@]}")
 
 ffiargs=()
 if [ "$BUILD_FFI" = true ]; then
