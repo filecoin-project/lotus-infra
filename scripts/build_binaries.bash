@@ -68,7 +68,7 @@ if [ ! -z $NETWORK ]; then
 fi
 
 envflags=()
-envflags+=(-e GOFLAGS="${goflags[@]}")
+# envflags+=(-e GOFLAGS="${goflags[@]}")
 
 ffiargs=()
 if [ "$BUILD_FFI" = true ]; then

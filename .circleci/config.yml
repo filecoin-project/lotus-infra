@@ -516,7 +516,7 @@ jobs:
               "--src" "$LOTUS_SRC"
             )
             unset GOPATH
-            ./scripts/build_binaries.bash "${args[@]}"
+            ./scripts/build_binaries.bash "${args[@]}" -- "<< parameters.network >>"
       - run:
           name: Prepare binaries
           command: |
