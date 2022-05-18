@@ -93,7 +93,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/aarsh.shah"
       username = "aarsh.shah"
-      groups   = [
+      groups = [
         "ntwk-mainnet-dealbot-exec",
         "ntwk-mainnet-storetheindex-exec",
       ]
@@ -101,7 +101,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/masih"
       username = "masih"
-      groups   = [
+      groups = [
         "ntwk-mainnet-dealbot-exec",
         "ntwk-mainnet-storetheindex-exec",
       ]
@@ -109,7 +109,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/gammazero"
       username = "gammazero"
-      groups   = [
+      groups = [
         "ntwk-mainnet-dealbot-exec",
         "ntwk-mainnet-storetheindex-exec",
       ]
@@ -117,7 +117,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/marco"
       username = "marco"
-      groups   = [
+      groups = [
         "ntwk-mainnet-dealbot-exec",
         "ntwk-mainnet-storetheindex-exec",
       ]
@@ -125,7 +125,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/dvd"
       username = "dvd"
-      groups   = [
+      groups = [
         "ntwk-mainnet-dealbot-exec",
         "ntwk-mainnet-storetheindex-exec",
       ]
@@ -133,7 +133,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/adlrocha"
       username = "adlrocha"
-      groups   = [
+      groups = [
         "ntwk-mainnet-dealbot-exec",
         "ntwk-mainnet-storetheindex-exec",
       ]
@@ -141,7 +141,7 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/mvdan"
       username = "mvdan"
-      groups   = [
+      groups = [
         "ntwk-mainnet-dealbot-exec",
         "ntwk-mainnet-storetheindex-exec",
       ]
@@ -159,6 +159,11 @@ locals {
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/chris.harden"
       username = "chris.harden"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/vinitkhandagle"
+      username = "vinitkhandagle"
       groups   = ["system:masters"]
     },
   ]
