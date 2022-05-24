@@ -76,7 +76,7 @@ export DOCKER_BUILDKIT=1
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 pushd "$SCRIPTDIR/../docker"
 
-goflags=(--build-arg=GOFLAGS="-tags='$NETWORK' -ldflags='-X=github.com/filecoin-project/lotus/build.NetworkBundle=$NETWORK'")
+goflags=(--build-arg=GOFLAGS="-tags='$NETWORK'")
 
 ffiargs=()
 if [ "$BUILD_FFI" = true ]; then
