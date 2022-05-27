@@ -6,6 +6,9 @@ image:
 loadBalancer:
   enabled: true
   rpcPort: 80
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
 
 runArgs:
   - --api-max-lookback=24h
