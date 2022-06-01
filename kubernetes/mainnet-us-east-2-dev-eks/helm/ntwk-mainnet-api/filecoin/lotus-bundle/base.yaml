@@ -1,0 +1,41 @@
+---
+image:
+  repository: coryschwartz/lotus-gateway
+  tag: rate-limiter
+  pullPolicy: Always
+
+application:
+  name: gwtest
+  labels: []
+  replicas: 3
+  container:
+    name: lotus-gateway
+    image: 
+    args:
+      - run
+    env:
+      - name: FULLNODE_API_INFO
+        value: /ip4/127.0.0.1/tcp/1234
+    ports:
+      - containerPort: 1234
+        name: lotus-gw
+    livenessProbe:
+      httpGet:
+        port: 1234
+        path: /health/livez
+    readinessProbe:
+      httpGet:
+        port: 1234
+        path: /health/readyz
+  secrets: []
+  configMaps: []
+  services:
+    - type: LoadBalancer
+      selector:
+        app: gwtest
+      ports:
+        - protocol: TCP
+          port: 1234
+          targetPort: 1234
+          name: lotus-gw
+  storage: []
