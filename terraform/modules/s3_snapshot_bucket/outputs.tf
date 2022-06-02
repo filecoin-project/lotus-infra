@@ -1,3 +1,8 @@
+output "iam_user" {
+  description = "The iam user created for the bucket"
+  value       = aws_iam_user.s3_user.name
+}
+
 output "s3_bucket_id" {
   description = "The name of the bucket."
   value       = module.s3_bucket.s3_bucket_id

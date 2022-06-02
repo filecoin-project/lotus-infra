@@ -1,20 +1,9 @@
-terraform {
-  backend "s3" {
-    bucket         = "filecoin-terraform-state"
-    key            = "filecoin-s3.tfstate"
-    dynamodb_table = "filecoin-terraform-state"
-    region         = "us-east-1"
-    profile        = "filecoin"
-  }
-}
-
-provider "aws" {
-  region = "us-east-1"
-  profile = "filecoin"
+variable "bucket_name" {
+  type = string
 }
 
 locals {
-  bucket_name = "filecoin-chain-archiver-development"
+  bucket_name = "${var.bucket_name}"
 }
 
 data "aws_iam_policy_document" "bucket_policy" {
@@ -26,7 +15,9 @@ data "aws_iam_policy_document" "bucket_policy" {
     }
 
     actions = [
-      "s3:ListBucket", "s3:GetObject", "s3:GetObjectVersion"
+      "s3:ListBucket",
+      "s3:GetObject",
+      "s3:GetObjectVersion"
     ]
 
     resources = [
@@ -57,20 +48,23 @@ module "s3_bucket" {
     {
       id      = "all"
       enabled = true
+      filter  = {
+        prefix = "minimal/"
+      }
       expiration = {
-        days = 1
+        days = 7
       }
     }
   ]
 }
 
 resource "aws_iam_user" "s3_user" {
-  name = "${local.bucket_name}-user"
+  name = "s3-user-${local.bucket_name}"
 }
 
 resource "aws_iam_policy" "policy" {
-  name        = "policy"
-  description = "policy"
+  name        = "${local.bucket_name}-bucket-policy"
+  description = "Provide basic operations to bucket user"
   policy      = <<EOF
 {
   "Version": "2012-10-17",
