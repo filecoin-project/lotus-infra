@@ -229,3 +229,9 @@ deployments:
     name: gateway-nlb
     values:
       - base
+  - chart: cloudflare-exporter/cloudflare-exporter
+    version: 0.1.8
+    namespace: cloudflare-exporter
+    name: cloudflare-exporter
+    values:
+      - base
