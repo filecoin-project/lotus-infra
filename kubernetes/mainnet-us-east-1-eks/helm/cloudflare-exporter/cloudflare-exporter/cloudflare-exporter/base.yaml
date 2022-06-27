@@ -1,0 +1,4 @@
+secretRef: cloudflare-apitoken
+
+serviceMonitor:
+  enabled: true
