@@ -4,6 +4,8 @@ kind: Kustomization
 resources:
 - ../../../../../../base/applications/fullnode/
 
+namePrefix: node-7-
+
 patches:
 - target:
     group: helm.toolkit.fluxcd.io
