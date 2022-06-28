@@ -4,25 +4,18 @@ kind: Kustomization
 resources:
 - ../../../../../../base/applications/fullnode/
 - ../../../base/fullnode
+- ../../../../../../base/applications/volume-snapshotter/
 
 namePrefix: node-0-
 
-# patches:
-# - target:
-#     group: helm.toolkit.fluxcd.io
-#     version: v2beta1
-#     kind: HelmRelease
-#   patch: |-
-#     - op: add
-#       path: /spec/valuesFrom/-
-#       value:
-#         kind: ConfigMap
-#         name: values
 
 patchesStrategicMerge:
   - helmrelease-patch.yaml
 
 configMapGenerator:
 - files:
-  - values.yaml=values.yaml
-  name: values
+  - values.yaml=fullnode-values.yaml
+  name: fullnode-values
+- files:
+  - values.yaml=volume-snapshotter-values.yaml
+  name: volume-snapshotter-values

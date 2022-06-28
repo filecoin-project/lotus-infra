@@ -1,0 +1,25 @@
+---
+image:
+  repository: travisperson/lotus-gateway
+  # This is a cherry-pick of b4b38788efcddceb87ee1677a5aa53a8380f2e6e onto v1.10.0
+  tag: mainnet-88107a49a
+
+runArgs:
+  - --api-max-lookback=100h
+  - --api-wait-lookback-limit=10000
+
+ingress:
+  enabled: false
+  host: api.chain.love
+
+loadBalancer:
+  enabled: true
+  rpcPort: 80
+
+gatewayEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+
+deployment:
+  replicas: 2
+
