@@ -7,7 +7,7 @@ resources:
 - ../../../../../../base/applications/volume-snapshotter/
 
 patchesStrategicMerge:
-  - helmrelease-patch.yaml
+  - fullnode-helmrelease-patch.yaml
 
 namePrefix: node-1-
 

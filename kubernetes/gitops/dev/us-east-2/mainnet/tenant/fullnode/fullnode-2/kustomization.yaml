@@ -9,7 +9,7 @@ resources:
 namePrefix: node-2-
 
 patchesStrategicMerge:
-  - helmrelease-patch.yaml
+  - fullnode-helmrelease-patch.yaml
 
 configMapGenerator:
 - files:

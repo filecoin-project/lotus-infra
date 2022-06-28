@@ -13,7 +13,7 @@ spec:
       retries: 100
   chart:
     spec:
-      chart: 
+      chart: volume-snapshotter
       sourceRef:
         apiVersion: source.toolkit.fluxcd.io/v1beta1
         kind: HelmRepository

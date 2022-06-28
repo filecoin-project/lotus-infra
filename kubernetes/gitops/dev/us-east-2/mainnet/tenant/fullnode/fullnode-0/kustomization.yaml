@@ -10,7 +10,7 @@ namePrefix: node-0-
 
 
 patchesStrategicMerge:
-  - helmrelease-patch.yaml
+  - fullnode-helmrelease-patch.yaml
 
 configMapGenerator:
 - files:
