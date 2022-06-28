@@ -1,8 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: ntwk-mainnet
+namespace: mainnet
+
 
 resources:
-- flux-tenant.yaml
-- ../tenant
+- fullnode-0
+- fullnode-1
+- fullnode-2
+- fullnode-7
