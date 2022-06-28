@@ -1,8 +1,1 @@
-secrets:
-  libp2p:
-    enabled: true
-    secretName: fullnode-2-libp2p-secrets
-    libp2p_key: libp2p-host
-  jwt:
-    enabled: true
-    secretName: fullnode-2-jwt-secrets
+pvc: datastore-volume-fullnode-2-lotus-0
