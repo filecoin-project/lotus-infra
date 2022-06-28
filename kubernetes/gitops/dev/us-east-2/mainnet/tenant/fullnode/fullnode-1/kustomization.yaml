@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../../../../base/applications/fullnode/
+
+patchesStrategicMerge:
+  - helmrelease-patch.yaml
+
+namePrefix: node-1-
+
+patches:
+- target:
+    group: helm.toolkit.fluxcd.io
+    version: v2beta1
+    kind: HelmRelease
+  patch: |-
+    - op: add
+      path: /spec/valuesFrom/-
+      value:
+        kind: ConfigMap
+        name: values
+
+configMapGenerator:
+- files:
+  - values.yaml=values.yaml
+  name: values
