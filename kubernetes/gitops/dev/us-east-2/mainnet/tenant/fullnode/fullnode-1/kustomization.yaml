@@ -3,23 +3,12 @@ kind: Kustomization
 
 resources:
 - ../../../../../../base/applications/fullnode/
+- ../../../base/fullnode
 
 patchesStrategicMerge:
   - helmrelease-patch.yaml
 
 namePrefix: node-1-
-
-patches:
-- target:
-    group: helm.toolkit.fluxcd.io
-    version: v2beta1
-    kind: HelmRelease
-  patch: |-
-    - op: add
-      path: /spec/valuesFrom/-
-      value:
-        kind: ConfigMap
-        name: values
 
 configMapGenerator:
 - files:

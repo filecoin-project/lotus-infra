@@ -6,10 +6,3 @@ secrets:
   jwt:
     enabled: true
     secretName: fullnode-2-jwt-secrets
-
-importSnapshot:
-  enabled: false
-  claimName: chain-exports
-  network: mainnet
-  exportRelease: export-full-archive
-  exitCodeOnMissing: 0
