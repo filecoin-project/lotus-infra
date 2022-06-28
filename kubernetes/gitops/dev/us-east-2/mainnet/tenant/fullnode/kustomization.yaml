@@ -7,5 +7,5 @@ namespace: mainnet
 resources:
 - fullnode-0
 - fullnode-1
-# - fullnode-2
-# - fullnode-7
+- fullnode-2
+- fullnode-7
