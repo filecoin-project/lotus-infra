@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../../../../../base/applications/fullnode/
+- ../../../base/fullnode
+
+namePrefix: bootstrap-node-2-
+
+patchesStrategicMerge:
+  - fullnode-helmrelease-patch.yaml
+
+configMapGenerator:
+- files:
+  - values.yaml=fullnode-values.yaml
+  name: fullnode-values
