@@ -25,6 +25,6 @@ spec:
   - kind: ConfigMap
     name: fullnode-common-values
   - kind: ConfigMap
-    name: network-common
+    name: fullnode-network-common
   - kind: ConfigMap
     name: fullnode-values

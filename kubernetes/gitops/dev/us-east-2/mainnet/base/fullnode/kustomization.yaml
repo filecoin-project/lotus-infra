@@ -4,4 +4,4 @@ kind: Kustomization
 configMapGenerator:
 - files:
   - values.yaml=values.yaml
-  name: network-common
+  name: fullnode-network-common
