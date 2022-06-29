@@ -1,7 +1,7 @@
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: io2
+  name: io2-low-throughput
   # annotations:
   #   storageclass.kubernetes.io/is-default-class: "true"
 provisioner: ebs.csi.aws.com
@@ -10,5 +10,5 @@ reclaimPolicy: Delete
 allowVolumeExpansion: true
 parameters:
   type: io2
-  iopsPerGB: "500"
+  iopsPerGB: "20"
   allowAutoIOPSPerGBIncrease: "true" 
