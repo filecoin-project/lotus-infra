@@ -5,7 +5,7 @@ resources:
 - ../../../../../../base/applications/fullnode/
 - ../../../base/disputer
 
-namePrefix: disputer-node-0-
+namePrefix: disputer-node-2-
 
 
 patchesStrategicMerge:
