@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
 - ../../../../../../base/applications/fullnode/
 - ../../../base/fullnode
-- ../../../../../../base/applications/volume-snapshotter/
 
 namePrefix: bootstrap-node-2-
 
