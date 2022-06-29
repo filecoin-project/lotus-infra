@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
 - ../../../../../../base/applications/fullnode/
-- ../../../base/fullnode
+- ../../../base/bootstrap
 
 namePrefix: bootstrap-node-0-
 
