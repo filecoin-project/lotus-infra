@@ -1,0 +1,21 @@
+name: Dev Auto-PR
+on:
+  push:
+    branches: ['cd/dev/mainnet']
+
+jobs:
+  pull-request:
+    name: Open PR to main
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: checkout
+
+    - uses: repo-sync/pull-request@v2
+      name: pull-request
+      with:
+        destination_branch: "main"
+        pr_title: "[Automated] Upgrade Application for mainnet in dev"
+        pr_body: "*An automated PR*"
+        pr_draft: false
+        github_token: ${{ secrets.GITHUB_TOKEN }}

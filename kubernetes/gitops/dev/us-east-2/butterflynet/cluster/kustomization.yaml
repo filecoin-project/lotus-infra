@@ -5,4 +5,6 @@ namespace: ntwk-butterflynet
 
 resources:
 - flux-tenant.yaml
-- ../tenant
+- flux-kustomization.yaml
+- flux-image-update-automation.yaml
+- flux-cd-lotus.yaml
