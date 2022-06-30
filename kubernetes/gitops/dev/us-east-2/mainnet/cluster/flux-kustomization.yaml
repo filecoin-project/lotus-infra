@@ -1,0 +1,31 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: mainnet
+  namespace: ntwk-mainnet
+spec:
+  interval: 1m0s
+  ref:
+    branch: gitops-poc
+  secretRef:
+    name: github-auth
+  url: https://github.com/filecoin-project/lotus-infra
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+kind: Kustomization
+metadata:
+  name: mainnet
+  namespace: ntwk-mainnet
+spec:
+  decryption:
+    provider: sops
+    secretRef:
+      name: fil-infra-sops-gpg
+  interval: 5m0s
+  path: ./kubernetes/gitops/dev/us-east-2/mainnet/tenant
+  prune: true
+  serviceAccountName: mainnet
+  sourceRef:
+    kind: GitRepository
+    name: mainnet
+  validation: client
