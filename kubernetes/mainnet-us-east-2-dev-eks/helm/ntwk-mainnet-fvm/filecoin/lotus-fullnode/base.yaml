@@ -1,5 +1,5 @@
 image:
-  tag: mainnet-v1.16.0-pre-rc
+  tag: mainnet-v1.16.0
 
 prometheusOperatorServiceMonitor: true
 
