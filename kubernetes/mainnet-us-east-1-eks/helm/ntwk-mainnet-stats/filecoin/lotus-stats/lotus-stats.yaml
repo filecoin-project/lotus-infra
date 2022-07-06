@@ -1,5 +1,6 @@
 image:
-  tag: mainnet-125769097
+  # https://github.com/filecoin-project/lotus/pull/8977
+  tag: mainnet-31e15e840
 
 height: 0
 lotusApiInfo: /dns/api-lotus-daemon.ntwk-mainnet-api.svc.cluster.local/tcp/1234
