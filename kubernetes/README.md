@@ -1,3 +1,42 @@
+------------------------------------
+
+#### What k8s infrastructure should be updated during lotus upgrades?
+
+us-east-1:
+	ntwk-mainnet-api:
+		* gateway
+		* api
+	ntwk-mainnet-fullnode
+		* all fullnode nodes
+	ntwk-mainnet-bootstrap
+		* all bootstrap nodes
+	ntwk-mainnet-disputer
+		* all disputer nodes
+
+us-east-2-dev:
+	ntwk-mainnet-api:
+		* gateway
+		* api
+	ntwk-mainnet-fullnode
+		* all fullnode nodes
+	ntwk-mainnet-bootstrap
+		* all bootstrap nodes
+	ntwk-mainnet-disputer
+		* all disputer nodes
+
+eu-central-1:
+	ntwk-mainnet-bootstrap
+		* all bootstrap nodes
+	ntwk-mainnet-disputer
+		* all disputer nodes
+
+ap-southeast-1:
+	ntwk-mainnet-bootstrap
+		* all bootstrap nodes
+	ntwk-mainnet-disputer
+		* all disputer nodes
+
+
 # Updating Mainnet Infra
 
 Each EKS cluster is broken out into their own folder, the top level of the folder contains k8s resources for the cluster.
@@ -22,7 +61,7 @@ Download from: https://github.com/databus23/helm-diff
 
 #### Updating lotus version
 
-_Note: when you run helm.bash, it will spit out a bunch of command, you will want to only run the commands you need to
+_Note: when you run helm.bash, it will spit out a bunch of commands. You will want to only run the commands you need to
 run to target the helm release you want to upgrade._
 
 1. Find the correct docker tag that you need to deploy
@@ -41,3 +80,47 @@ run to target the helm release you want to upgrade._
    ```
    $ kubectl delete pod <release>-lotus-0
    ```
+
+------------------------------------
+
+#### Verifying upgrades
+
+If you have only upgraded a single instance, you can verify the upgrade has occurred by looking at the pod that has been deployed.
+
+There are many ways to do this; here are a few ways to get straight to the point without having to sift through a whole lot of yaml.
+
+<p class=callout info>
+Regardless of whether you use a dashboard or kubectl commands to verify the upgrade, you should keep the dashboard open during upgrades.
+Keeping the dashboard open allows you to look for other issues, e.g. nodes falling out of sync.
+</p>
+
+##### using a dashboard.
+
+Go to this dashboard: https://protocollabs.grafana.net/d/QjaTQUKMk/lotus-namespaces?orgId=1
+
+1. At the top of the dashboard, make sure the namespace and datasource are set correctly.
+2. Find the section of the dashboard titled "Version"
+3. Verify the version has been upgraded as you expected it to.
+
+
+##### using kubectl commands 
+
+Get the image of a single pod
+
+```
+kubectl -n ntwk-mainnet-fullnode get pods fullnode-0-lotus-0 -o jsonpath="{.spec.containers[*].image}"
+```
+
+Get the images of the container in a single interesting namespace.
+
+```
+kubectl -n ntwk-mainnet-fullnode get pods -o jsonpath='{range .items[*]}{"\n"}{.metadata.name}{":\t"}{range .spec.containers[*]}{.image}{", "}{end}{end}' | column -t
+```
+
+Look at the images for all namespaces for the entire cluster.
+
+```
+kubectl  get pods -o jsonpath='{range .items[*]}{"\n"}{.metadata.namespace}{":\t"}{.metadata.name}{":\t"}{range .spec.containers[*]}{.image}{", "}{end}{end}' --all-namespaces -l app=lotus-fullnode-app | column -t
+```
+
+
