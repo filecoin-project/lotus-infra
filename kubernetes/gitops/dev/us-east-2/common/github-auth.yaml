@@ -1,40 +1,40 @@
 apiVersion: v1
 data:
-    password: ENC[AES256_GCM,data:eqq369/m4IlDvnf6wv+bWFHAX1k3LQxirA90JN4NjceTuJ+tqQCU6XIwq7QyHmRp3DpvqjZI820=,iv:wd7n8AfddNz8GsGIkxadWbdmqvsH+8wXX1LkFc/aDfw=,tag:Y70g1DG+sfap+VkZEHcY2w==,type:str]
-    username: ENC[AES256_GCM,data:8Hsb+sV+/CIOcLrasElUa08gEPM=,iv:sq4WFGmYNFBw8roMe1uw65Im6ix0ENI+z4k8iBFpMfA=,tag:AxG+O+smfjEnGVGsNqaP+A==,type:str]
+    password: ENC[AES256_GCM,data:LC5+SFqbNNNa5kBuLzUHj1FbL9kAUa+5pmaoMIrrVggkwHc+lFwk6WBzuVQmbKxGKdKzQJksq30=,iv:GfNTjiANrAOM/tnGbcIcDiK4WUcTQfjeWmMfPwkpSzI=,tag:UYUPDOZg+BTykGbb5g+vOQ==,type:str]
+    username: ENC[AES256_GCM,data:JhzIE+O+E8s7B/xR1LkCNSgKv+4=,iv:kjLazWPz5R6Rq8j5sD89HYzty6O4bNYqna3RW3T+Ce8=,tag:AFESX0sizjyNN/zW3xRs5Q==,type:str]
 kind: Secret
 metadata:
     creationTimestamp: null
     name: github-auth
-    namespace: default
+    namespace: flux-system
 sops:
     kms: []
     gcp_kms: []
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2022-07-19T18:22:27Z"
-    mac: ENC[AES256_GCM,data:dzncU7zO3yFPqwc3WJnTJdMcR5K2mfOphNE8rwXdmg/+oKvgGY30XDviZZOWQsQtjw59J9DmrJ5p/jGjA/TLWOffUabn/59i/JERXSjAvmpmocNHDxMzcEMEUplHQBHr5xLl7OyLYyoeo127y0Pvl8NSR+BrKMndfeej18h6A4o=,iv:cTW8fGaymBupwL/urIeNEFUNOXMxNV6BHzYna7qddKk=,tag:2s89gGiXpSMTPHvDzuwJRQ==,type:str]
+    lastmodified: "2022-07-19T18:29:14Z"
+    mac: ENC[AES256_GCM,data:ssZE8lHh8Lu/EVzHsau1HdXHi1b/4Sb8pvGI6MMPfwL244w9b2RlRqWO/DrPfwJCqXHnNesgP2iQ4NwHmYrquravR7ze55Lt1dA+BE1CXN1yCxMVCn+bOkap/somVARjNetLHRHqCpzRZjAcDUOjc7BCJeAhOe4xiICzeZd/bDA=,iv:QA/xIvh5k71fgQHD9jgFhZ7F/qlCoavRBTabagx2Uvg=,tag:69V7VN8GgqoAOMNRYEn/0Q==,type:str]
     pgp:
-        - created_at: "2022-07-19T18:22:26Z"
+        - created_at: "2022-07-19T18:29:13Z"
           enc: |
             -----BEGIN PGP MESSAGE-----
 
-            hQIMA0/wsdIQ6fOrARAApx31TnPzbzVqkZDUwdyljdePfAQL86oBDT6VM83xou6X
-            iebiq+QeQtVKOC7dePBxbrW+a3uZXw0WAYsB4RRXYQgyii3BwjLmRUzXCykQA7zN
-            ZzNNQqtTFxjOp548zI8H4FG51Kgj1+rBvjfbF4k6t8aYREEfoo275ZdZ7B3GsTTm
-            o9LdMLsC4jBErjFgC8ENNOivx4i8jo/mZH0h9r7uz28H3zCKvhsoLDJ4/aEci/nI
-            0ILmJ3xazc+DJMWAQS+p72BCxu/sGyPKbsZsAJFaiYXjoXKQDdfxz4jNPeNh0RCr
-            gKC/dm1bLpXCmwn0P+Jl3TkbE7dxOG5O6TXBiIUKwPMML0mylnUWK0fIPFLTBS7b
-            S2Etc7aegdJaeSbC9gM/IQFFtsRCocNXbx2It9hYLa4DcY38zSHJMiHkdgs4/IQl
-            kcIu80pS/F8ADFx41+Ie+1EkUx4+R4jAc4a32uBSbFEhs+2Q4R44JozLGGQUJAXF
-            sPTQ01paEcuXyRyFMZqCtxSn8hqK3P7v+UR/0jg4Giwbt9CHlxJ20H9iR/CSLSHg
-            Tso9gUavZghe/5J+saWYqQC+02vG1TiVFKrRZyG+a9381ticxOZ9i5Dg+pTqjvaZ
-            xykfjBS37FdGRoD/z+Ca+FKQoM/548a6cduhrhCK544QA+6Bj5FIwdjVyKye+7HU
-            ZgEJAhDdtXEJ+NUKjRJ6eim3Of/OXIGQsnuhk7dbildDHQRdahFS5uF4WskOvqyt
-            VQFpfY+O63TucGdrx18yhn+e+X3x7EN/Eicmn68tKOy4Xr4syZZ7SxMy3yS2rdH8
-            JzHW/SoDhA==
-            =Ovf6
+            hQIMA0/wsdIQ6fOrARAAlFqjjOuXIWRGJwsMz3hDC8BOLajtfey1ixX7HjC3ktPW
+            bHaCLWcyYshxR/rugX4a0F+ku92lGqYWNZdLJBJ5e+9rM0tJSP05Vv7g6RyJ3HRd
+            D+tGznj01wJXQUzzE4Td77cMxHEN9eYfhbQ176j475FoUNGnoLOpaLAx1ZplUpJL
+            yjTPoLpa+64OkXXxNXcPzphDCdC14yhc8NPYzCaDjJtQlhmUO557T1TSLDGvA+OS
+            q3Y62DqX3v5j02BwxZ39EmKCQ3XszATphfRRvtWBGqar/u4ZcKqnqdxxnI4bMic+
+            LxSADNFDAicQdHqWejlvLy6ii3+gCXyQFu9RU7ZvqZMgqc2VTUv9LDzYR9xQVq7C
+            Var+5ylHQlekwd5Fk7sqCqaTaIOTe6SG7/9fomrQkhlJg7bxryO6R4ud3udOKPRk
+            a9fdMx3xg2s0PXr/lotPpEPLlHZ6BSa5ZUIVPh+hznHrHroCajCaFVuhS13J4T6U
+            6mbLv30j6CP07zRCvvbNw6s98fb13LN8yyFCKt5sbAYiEc9wTNLXqahZ6eWjaoNW
+            UTkzD1F2Y2bET4QlXozeSMbjZ3Q6HuqJ7U4zSXF+6t9ceDFJlU2csAT1ol/i91RQ
+            vMRwxLzqEMrwNw8mh3/Pgn8OpP5jOIG/IbxNB6QKGpb70swpAqvsvSDTCkanJTrU
+            aAEJAhCWidaipVYtDRmqzjScmiTxIObVZc/wzhVdLQLArg99SuL4VNzNhmy6i3Hi
+            tY1VJ5WGrrA+JIMD4GAdaOGsnv0Xr3Ndc6j0/KnKRegTDbfGOZViInfbbDkuD+HI
+            1YE1pTcFuEmJ
+            =JufT
             -----END PGP MESSAGE-----
           fp: BFF6F3B5DBE7E1143CC98471BA014E8FC4D56CCB
     encrypted_regex: ^(data|stringData)$
