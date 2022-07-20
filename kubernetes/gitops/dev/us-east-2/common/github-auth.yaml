@@ -1,40 +1,43 @@
 apiVersion: v1
 data:
-    password: ENC[AES256_GCM,data:LC5+SFqbNNNa5kBuLzUHj1FbL9kAUa+5pmaoMIrrVggkwHc+lFwk6WBzuVQmbKxGKdKzQJksq30=,iv:GfNTjiANrAOM/tnGbcIcDiK4WUcTQfjeWmMfPwkpSzI=,tag:UYUPDOZg+BTykGbb5g+vOQ==,type:str]
-    username: ENC[AES256_GCM,data:JhzIE+O+E8s7B/xR1LkCNSgKv+4=,iv:kjLazWPz5R6Rq8j5sD89HYzty6O4bNYqna3RW3T+Ce8=,tag:AFESX0sizjyNN/zW3xRs5Q==,type:str]
+    password: ENC[AES256_GCM,data:i1SZe/4NUDgKccQCIKzBUBQieNGE7/daKtJWaiMIymTiS9Ag+7GbeQfc9DSjwBf00OiFG013774=,iv:Szk5mEUvbU80iO+EJQs5blYR0oe6f56dzounGOGkUiE=,tag:NyM7gazOzK9i11Q/wWeODg==,type:str]
+    username: ENC[AES256_GCM,data:3aJpiTAQKrBbYvoR8KaS20z8Vl0=,iv:fPYqzBSSOBexcrYWYUQpTIIA381dWKhfmBl8KS9RofU=,tag:dvsDvscuNgm9QJdC4y2T/A==,type:str]
 kind: Secret
 metadata:
-    creationTimestamp: null
+    creationTimestamp: "2022-07-19T18:31:36Z"
     name: github-auth
     namespace: flux-system
+    resourceVersion: "11513285"
+    uid: c599762f-27d4-4bb6-9983-4751ee4b3bdf
+type: Opaque
 sops:
     kms: []
     gcp_kms: []
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2022-07-19T18:29:14Z"
-    mac: ENC[AES256_GCM,data:ssZE8lHh8Lu/EVzHsau1HdXHi1b/4Sb8pvGI6MMPfwL244w9b2RlRqWO/DrPfwJCqXHnNesgP2iQ4NwHmYrquravR7ze55Lt1dA+BE1CXN1yCxMVCn+bOkap/somVARjNetLHRHqCpzRZjAcDUOjc7BCJeAhOe4xiICzeZd/bDA=,iv:QA/xIvh5k71fgQHD9jgFhZ7F/qlCoavRBTabagx2Uvg=,tag:69V7VN8GgqoAOMNRYEn/0Q==,type:str]
+    lastmodified: "2022-07-20T12:01:17Z"
+    mac: ENC[AES256_GCM,data:iZk/TEVBvXBgambTWE+j1wDuwlfqJc/++RVdz9h30BRUOtlRt36/s1wx5Lx/JHmt5nT7AYcz8rllr/E+HHgDy+x2iG7EDglEN6VQM5wypxlUUUCK7Q1W9gbZvn3rjy9wyYyLXoeXf8yT2cEYroRlY4VjCYV9fJX9wG09sMKal1E=,iv:NKIyqr2ioiqICmFsFXbGDeBX09cMaoW/Z30Ckn9U3/M=,tag:Ze7bMIeHvVGUNRe16cAlRg==,type:str]
     pgp:
-        - created_at: "2022-07-19T18:29:13Z"
+        - created_at: "2022-07-20T12:01:15Z"
           enc: |
             -----BEGIN PGP MESSAGE-----
 
-            hQIMA0/wsdIQ6fOrARAAlFqjjOuXIWRGJwsMz3hDC8BOLajtfey1ixX7HjC3ktPW
-            bHaCLWcyYshxR/rugX4a0F+ku92lGqYWNZdLJBJ5e+9rM0tJSP05Vv7g6RyJ3HRd
-            D+tGznj01wJXQUzzE4Td77cMxHEN9eYfhbQ176j475FoUNGnoLOpaLAx1ZplUpJL
-            yjTPoLpa+64OkXXxNXcPzphDCdC14yhc8NPYzCaDjJtQlhmUO557T1TSLDGvA+OS
-            q3Y62DqX3v5j02BwxZ39EmKCQ3XszATphfRRvtWBGqar/u4ZcKqnqdxxnI4bMic+
-            LxSADNFDAicQdHqWejlvLy6ii3+gCXyQFu9RU7ZvqZMgqc2VTUv9LDzYR9xQVq7C
-            Var+5ylHQlekwd5Fk7sqCqaTaIOTe6SG7/9fomrQkhlJg7bxryO6R4ud3udOKPRk
-            a9fdMx3xg2s0PXr/lotPpEPLlHZ6BSa5ZUIVPh+hznHrHroCajCaFVuhS13J4T6U
-            6mbLv30j6CP07zRCvvbNw6s98fb13LN8yyFCKt5sbAYiEc9wTNLXqahZ6eWjaoNW
-            UTkzD1F2Y2bET4QlXozeSMbjZ3Q6HuqJ7U4zSXF+6t9ceDFJlU2csAT1ol/i91RQ
-            vMRwxLzqEMrwNw8mh3/Pgn8OpP5jOIG/IbxNB6QKGpb70swpAqvsvSDTCkanJTrU
-            aAEJAhCWidaipVYtDRmqzjScmiTxIObVZc/wzhVdLQLArg99SuL4VNzNhmy6i3Hi
-            tY1VJ5WGrrA+JIMD4GAdaOGsnv0Xr3Ndc6j0/KnKRegTDbfGOZViInfbbDkuD+HI
-            1YE1pTcFuEmJ
-            =JufT
+            hQIMA0/wsdIQ6fOrAQ/+MDLCuuBU23hQTKwtkMA677CUtDbakzed1pPI68GcESMm
+            NNhNLp45wqibxS2s9jknmGiTkHs7xyLR0MyNZL62Rjnieotryy/vLT2Gwd7yiEj+
+            9RguHictzYhaH9Y7fPsycZsdZQ5EXBXxfbs2mAO+1OD1uYkoFVE4Ii3ok39HGk8Q
+            KXv64z8dORlx66Gni6RfWPfyPZwuw6XLdhQPmkV6vE7PRj4puFlZT0KpTR0s5YYj
+            wnLpE+WO5GFMxP13t+kbULaocRnWWKzHLqIrsMF6ectQ6CaGt1iwVMAkKWvKL8Pt
+            rYI1sHK36wKu0ocQFLosp4YOr+JzgMWWztw/FcKWp88lxs1sfAGi5SSDU3Ol2vZq
+            ymlG6Z/B3jBwx27GtEap4Iwjy3xnyAe9/iODgdp41ZoyPZKfhli+hYvaTWzntcKC
+            m2WLSsVuGvqlNC0nQR0Cv6b7ChIOuMLDxx7CQLn0Hd+fkyRLpvI/oP/PcwnQXAOr
+            zf6IhHLMRqXTW/VJEYng4D7RIBghYdn34Un8wdXftDQ76dEPHIN5xr74pkEb/bEB
+            JodB/v5pGMz/QW7OHOou7VXqOOc0FCAC1goiHt9wciI/cGyB81CzSAIOhZSJbrN6
+            N/loRuwm0o8eRRuTTle8Z+c2etcuggFnpsop3e3jMAlznJLh0op/kJHVIJYDZhTU
+            ZgEJAhDMzFPMnMUjMQHUSP1kxyPkwD6pisIU/t9dl191D5nH3SH6JUB8N4Kh+aa5
+            QVh6NA7SVSO6rDXgMn8Hztj0FcqOjWro/PaudsArdADGw8iAMGlpwuqghnVLisrO
+            35mQe/4WIw==
+            =yUP8
             -----END PGP MESSAGE-----
           fp: BFF6F3B5DBE7E1143CC98471BA014E8FC4D56CCB
     encrypted_regex: ^(data|stringData)$
