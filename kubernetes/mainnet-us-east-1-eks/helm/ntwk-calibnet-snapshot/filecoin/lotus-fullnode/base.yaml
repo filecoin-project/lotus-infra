@@ -15,7 +15,7 @@ resources:
 importSnapshot:
   enabled: true
   strategy: url
-  ur: https://snapshots.calibrationnet.fildevops.net/minimal/latest
+  url: https://snapshots.calibrationnet.fildevops.net/minimal/latest
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
