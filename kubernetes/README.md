@@ -12,6 +12,10 @@ us-east-1:
 		* all bootstrap nodes
 	ntwk-mainnet-disputer
 		* all disputer nodes
+	ntwk-mainnet-snapshot
+		* all lotus nodes
+	ntwk-calibnet-snapshot
+		* all lotus nodes
 
 us-east-2-dev:
 	ntwk-mainnet-api:
