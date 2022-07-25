@@ -28,12 +28,12 @@ snapshots:
   - /dns/lotus-b-lotus-daemon/tcp/1234
   - /dns/lotus-c-lotus-daemon/tcp/1234
 
-  schedule: "0 */1 * * *"
+  schedule: "0 */2 * * *"
 
-  interval: "120"
-  confidence: "15"
+  interval: "240"
+  confidence: "30"
 
-  activeDeadlineSeconds: 3600
+  activeDeadlineSeconds: 7200
 
   uploads:
     enabled: true
