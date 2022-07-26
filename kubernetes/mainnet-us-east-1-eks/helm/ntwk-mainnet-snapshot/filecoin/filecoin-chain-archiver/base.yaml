@@ -1,0 +1,58 @@
+image:
+  pullPolicy: Always
+  tag: "main"
+
+indexResolver:
+  replicas: 3
+  s3Resolver:
+    bucket: "filecoin-snapshots-mainnet"
+    endpoint: "https://s3.us-east-1.amazonaws.com"
+    secretName: s3-access
+  additionalEnv:
+  - name: "GOLOG_LOG_FMT"
+    value: "json"
+
+  loadBalancer:
+    enabled: true
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:759815798766:certificate/5e9eb742-7d50-4ac9-b1e2-4fe4c1f5f5a1
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+      external-dns.alpha.kubernetes.io/hostname: snapshots.mainnet.filops.net
+      external-dns.alpha.kubernetes.io/alias: "true"
+      external-dns.alpha.kubernetes.io/ttl: "60"
+
+snapshots:
+  nodes:
+  - /dns/lotus-a-lotus-daemon/tcp/1234
+  - /dns/lotus-b-lotus-daemon/tcp/1234
+  - /dns/lotus-c-lotus-daemon/tcp/1234
+
+  schedule: "0 */2 * * *"
+
+  interval: "240"
+  confidence: "30"
+
+  activeDeadlineSeconds: 7200
+
+  uploads:
+    enabled: true
+    secretName: s3-access
+    bucket: "filecoin-snapshots-mainnet"
+    endpoint: "https://s3.us-east-1.amazonaws.com"
+
+  jwtTokens:
+    secretName: lotus-jwt
+
+  additionalEnv:
+  - name: "GOLOG_LOG_FMT"
+    value: "json"
+  - name: "FCA_CREATE_PROGRESS_UPDATE"
+    value: "60s"
+  - name: "FCA_CREATE_NAME_PREFIX"
+    value: "minimal/"
+
+nodelocker:
+  additionalEnv:
+  - name: "GOLOG_LOG_FMT"
+    value: "json"
