@@ -10,7 +10,7 @@ secrets:
 
 resources:
   requests:
-    memory: 150Gi
+    memory: 240Gi
 
 nodeSelector:
   "fil-infra.protocol.ai/node-type": "lotus-high-memory"
