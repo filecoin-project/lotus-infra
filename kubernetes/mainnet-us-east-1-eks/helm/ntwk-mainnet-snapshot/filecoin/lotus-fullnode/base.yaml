@@ -18,7 +18,7 @@ nodeSelector:
 importSnapshot:
   enabled: true
   strategy: url
-  url: https://snapshots.mainnet.fildevops.net/minimal/latest
+  url: https://snapshots.mainnet.filops.net/minimal/latest
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
