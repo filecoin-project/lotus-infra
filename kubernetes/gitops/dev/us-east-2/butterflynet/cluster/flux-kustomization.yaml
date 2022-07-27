@@ -24,7 +24,7 @@ spec:
   interval: 5m0s
   path: ./kubernetes/gitops/dev/us-east-2/butterflynet/tenant
   prune: true
-  serviceAccountName: butterflynet
+  # serviceAccountName: butterflynet
   sourceRef:
     kind: GitRepository
     name: butterflynet

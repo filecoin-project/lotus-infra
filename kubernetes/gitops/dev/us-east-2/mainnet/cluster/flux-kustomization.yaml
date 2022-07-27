@@ -24,7 +24,7 @@ spec:
   interval: 5m0s
   path: ./kubernetes/gitops/dev/us-east-2/mainnet/tenant
   prune: true
-  serviceAccountName: mainnet
+  # serviceAccountName: mainnet
   sourceRef:
     kind: GitRepository
     name: mainnet
