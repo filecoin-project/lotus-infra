@@ -1,5 +1,5 @@
 image:
-  tag: butterflynet-master # {"$imagepolicy": "butterflynet:butterflynet-lotus:tag"}
+  tag: butterfly-v1.15.1 # {"$imagepolicy": "butterflynet:butterflynet-lotus:tag"}
 
 prometheusOperatorServiceMonitor: true
 
