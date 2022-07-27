@@ -18,7 +18,7 @@ spec:
         apiVersion: source.toolkit.fluxcd.io/v1beta1
         kind: HelmRepository
         name: filecoin-project-charts
-      version: 0.1.0
+      version: 0.1.1
   interval: 1m0s
   # The values are merged in the order given, with the later values overwriting earlier. These values always have a lower priority 
   valuesFrom:
