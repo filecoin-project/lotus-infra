@@ -6,5 +6,5 @@ namespace: ntwk-butterflynet
 resources:
 - ../../../../base/applications/common
 - fullnode
-- bootstrap
-- disputer
+# - bootstrap
+# - disputer
