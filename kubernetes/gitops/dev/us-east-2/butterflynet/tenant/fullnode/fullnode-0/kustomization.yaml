@@ -5,6 +5,7 @@ resources:
 - ../../../../../../base/applications/fullnode/
 - ../../../base/fullnode
 - ../../../../../../base/applications/volume-snapshotter/
+- ../../../../../../base/applications/secrets-creator/
 
 namePrefix: node-0-
 
@@ -19,3 +20,6 @@ configMapGenerator:
 - files:
   - values.yaml=volume-snapshotter-values.yaml
   name: volume-snapshotter-values
+- files:
+  - values.yaml=secrets-creator-values.yaml
+  name: secrets-creator-values
