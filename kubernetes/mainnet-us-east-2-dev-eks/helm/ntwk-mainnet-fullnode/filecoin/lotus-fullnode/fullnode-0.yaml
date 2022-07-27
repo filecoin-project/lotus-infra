@@ -6,3 +6,14 @@ secrets:
   jwt:
     enabled: true
     secretName: fullnode-0-jwt-secrets
+
+importSnapshot:
+  enabled: true
+  strategy: url
+  url: https://fil-chain-snapshots-fallback.s3.amazonaws.com/mainnet/complete_chain_with_finality_stateroots_1905600_2022-06-17_14-00-00.car
+
+persistence:
+  datastore:
+    enabled: true
+    storageClassName: "ebs-csi"
+    size: "16000Gi"
