@@ -24,3 +24,6 @@ daemonConfig: |
   [Libp2p]
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
 
+persistence:
+  datastore:
+    storageClassName: gp2
