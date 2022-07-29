@@ -5,6 +5,11 @@ locals {
 
   map_users = [
     {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/jesse.xie"
+      username = "jesse.xie"
+      groups   = ["system:masters"]
+    },
+    {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/marcus"
       username = "marcus"
       groups   = ["system:masters"]
