@@ -7,4 +7,4 @@ namespace: ntwk-butterflynet
 resources:
 - fullnode-0
 - fullnode-1
-# - fullnode-2
+- fullnode-2
