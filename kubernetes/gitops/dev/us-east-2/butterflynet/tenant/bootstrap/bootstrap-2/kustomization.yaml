@@ -6,6 +6,7 @@ resources:
 
 namePrefix: bootstrap-node-2-
 
+
 configMapGenerator:
 - files:
   - values.yaml=fullnode-values.yaml
