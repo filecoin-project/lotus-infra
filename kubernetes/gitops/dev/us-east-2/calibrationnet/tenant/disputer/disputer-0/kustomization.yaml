@@ -7,9 +7,6 @@ resources:
 namePrefix: disputer-node-0-
 
 
-patchesStrategicMerge:
-  - fullnode-helmrelease-patch.yaml
-
 configMapGenerator:
 - files:
   - values.yaml=fullnode-values.yaml
