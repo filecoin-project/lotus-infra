@@ -7,6 +7,6 @@ secrets:
     secretName: disputer-2-jwt-secrets
   wallets:
     enabled: true
-    secretName: wallet-disputer-2
+    secretName: disputer-2-wallet
 loadBalancer:
   enabled: false
