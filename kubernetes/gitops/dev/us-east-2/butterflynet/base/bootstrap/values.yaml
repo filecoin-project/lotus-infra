@@ -12,7 +12,7 @@ resources:
     cpu: 12
 
 importSnapshot:
-  enabled: true
+  enabled: false
   strategy: url
 
 daemonEnvs:
