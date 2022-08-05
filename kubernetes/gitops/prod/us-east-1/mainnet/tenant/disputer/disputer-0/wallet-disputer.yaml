@@ -1,0 +1,38 @@
+apiVersion: v1
+data:
+    f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da: ENC[AES256_GCM,data:7MisRqVDiZUeaCpnaNarvORKFszOiBfHShhjntgiDA5FpRXTmHnXKn3nwn9nU7eZU2UH6IZn0W22jOHJZYXcususdmUIFxy2x7h7kpK+fbLr4IRSL9eYN174TMfeFFowi/MQL/PPUQVx13Vkm4azpaOEg4Yd97mAEwVIflXB8aVrEKKBWr1PPM16m4O4qzpW/kvZy+YkK2ZHJkGvETJHIlaqFYiDmeJ0IvHZXgs4v4CIivi9oWbh8EknJzQEHiLLvpOQrK1rsCEVrpcYSQSaoIJmYUVcd5VL,iv:Qx1t8yStnI4MozoDfg3SbFvkizBkeOxDTpoEP4HUQmA=,tag:NuRb3s09yHhT9izRrCvLQg==,type:str]
+kind: Secret
+metadata:
+    name: wallet
+type: Opaque
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2022-08-05T23:10:58Z"
+    mac: ENC[AES256_GCM,data:fr1cKYP/TKOtZdOjX4IzsZJM+GOb0ig2FP8ETfYwGZgUTT9JyH/R2cadD5ypRSr7ngofG4dTtumKFXAGoDBjgpT3AG6/ukLhO3u3o6jlPyMNZjnXOvDKhp33XWspmtiwycy2mKmWPAEpJ0pUMkgmBHlxTEuwe13vJd8E/51A5Ag=,iv:b2IsGzLcXwP44V16YdZj4Yxekd58Je4YT+7v3pvnPxM=,tag:GrPyRPE3lUThZMa0ZvKBJQ==,type:str]
+    pgp:
+        - created_at: "2022-08-05T23:10:57Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA10BBd9Ja1tnARAAvdfOmLOL+NNik43UOy4o7oqbb5WFoZdUtU88TRz0g++k
+            CMzJn2BlbhLvDx2G152M913ZgPg1DmrIqVmVFcVRjzyDpV17pNPT38C74nu6yReq
+            3Q7yg7DXM2SU17yI67ikCfumJ/O696hLfuZ41GMn5VfJezzAZLD4040ScWjDjizh
+            68HeBeZWp2FxiZ0mge0MnqLCw0/UQNDpq1HCSXHIRr67OcLwPCwx+b98HKa0XjQk
+            1gLjbHmJIHzwtl5ro+4m1bqeKIoBWEw/iS8sE7ON+SD9DYycsicP+i6pb28SqQ0H
+            hSaMm48W+ji1nT/Tu6nffcf7rVOXgaVpyg/JJFN5VRjNzvFbM5MxdQJa9Eky8U3d
+            gHPyjIgJALGRBmSrYgDBrlYZbf7v+GDxPI7XPrjE7SREb0NU/SbK0DSjvtAbvJuF
+            /B4Ut4EaaU29ogRO+ZJAp96WAO75KufCzh2jN11LpT6iXOfu5dTVDBK0tmgewspe
+            MRAEVVLiu2fRGP/JhgbU+jZU+hZVfftxV18E+g6z3TSL66xXOfui61lEeo1a7kli
+            BRWQCnh2SkX+LDFvX541HeY57fNH0d1gICTo8r4MP+q6P6WRD8HaQV/7q351rQPV
+            enGBs0BmYp7rhA0g4Ltd1e7E8XjkQmDMTEcOg9g9FrzAw4+tvFZiJanO33Nvl+bS
+            XgGuOOnCiKKMiG7SpICtZtwFWJhy3rdNCEB1JCTJvBgitB3Z9oFM42qy+YWVz2fK
+            TunOenVyHW1qbbo1Xv6G0dgnea/15XfT++osNODnFazvdZIFfUPPZ/px5J5BI3Q=
+            =gatE
+            -----END PGP MESSAGE-----
+          fp: 82B6F581AA9BAC43F18A9D2E8F13E77F0EF448C4
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3
