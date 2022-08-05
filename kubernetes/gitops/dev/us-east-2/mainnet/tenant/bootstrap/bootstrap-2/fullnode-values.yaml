@@ -6,3 +6,11 @@ secrets:
   jwt:
     enabled: true
     secretName: bootstrap-2-jwt-secrets
+
+loadBalancer:
+  enabled: true
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: bootstrap-2.mainnet.filops.net
+    external-dns.alpha.kubernetes.io/alias: "true"
+    external-dns.alpha.kubernetes.io/ttl: "60"
+

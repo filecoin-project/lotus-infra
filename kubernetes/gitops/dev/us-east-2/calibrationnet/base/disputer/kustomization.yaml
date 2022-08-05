@@ -7,7 +7,6 @@ resources:
 patchesStrategicMerge:
   - fullnode-helmrelease-patch.yaml
 
-
 configMapGenerator:
 - files:
   - values.yaml=values.yaml

@@ -6,5 +6,5 @@ namespace: ntwk-calibrationnet
 resources:
 - ../../../../base/applications/common
 - fullnode
-# - bootstrap
-# - disputer
+- bootstrap
+- disputer

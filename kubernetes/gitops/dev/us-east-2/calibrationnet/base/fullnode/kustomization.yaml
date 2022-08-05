@@ -4,6 +4,8 @@ kind: Kustomization
 resources:
   - ../../../../../base/applications/fullnode
 
+patchesStrategicMerge:
+  - fullnode-helmrelease-patch.yaml
 
 configMapGenerator:
 - files:
