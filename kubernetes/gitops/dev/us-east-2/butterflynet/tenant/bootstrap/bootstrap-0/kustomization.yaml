@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
 - ../../../base/bootstrap
+- ../../../../../../base/applications/secrets-creator/
 
 namePrefix: bootstrap-node-0-
 
@@ -11,3 +12,6 @@ configMapGenerator:
 - files:
   - values.yaml=fullnode-values.yaml
   name: fullnode-values
+- files:
+  - values.yaml=secrets-creator-values.yaml
+  name: secrets-creator-values
