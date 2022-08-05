@@ -1,0 +1,51 @@
+---
+image:
+  repository: coryschwartz/lotus-gateway
+  tag: rate-limiter
+  pullPolicy: Always
+
+application:
+  name: lotus-gateway
+  labels: []
+  replicas: 3
+  container:
+    name: lotus-gateway
+    image: 
+    args:
+      - run
+      - --max-api-lookback
+      - "2000"
+      - --rate-limit
+      - "3000"
+      - --per-conn-rate-limit
+      - "100"
+      - --rate-limit-timeout
+      - 10s
+      - --conn-per-minute
+      - "6"
+    env:
+      - name: FULLNODE_API_INFO
+        value: /ip4/127.0.0.1/tcp/1234
+    ports:
+      - containerPort: 2346
+        name: lotus-gw
+    livenessProbe:
+      httpGet:
+        port: 2346
+        path: /health/livez
+    readinessProbe:
+      httpGet:
+        port: 2346
+        path: /health/readyz
+  secrets: []
+  configMaps: []
+  services:
+    - type: LoadBalancer
+      selector:
+        app: lotus-gateway
+      ports:
+        - protocol: TCP
+          port: 2346
+          targetPort: 2346
+          name: lotus-gw
+  storage: []

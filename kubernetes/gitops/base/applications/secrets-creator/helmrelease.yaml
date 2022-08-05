@@ -1,0 +1,28 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: secrets-creator
+spec:
+  install:
+    timeout: 5m
+    remediation:
+      retries: 100
+  upgrade:
+    timeout: 5m
+    remediation:
+      retries: 100
+  chart:
+    spec:
+      chart: lotus-secrets-creator
+      sourceRef:
+        apiVersion: source.toolkit.fluxcd.io/v1beta1
+        kind: HelmRepository
+        name: filecoin-project-charts
+      version: 0.1.x
+  interval: 1m0s
+  # The values are merged in the order given, with the later values overwriting earlier. These values always have a lower priority 
+  valuesFrom:
+  - kind: ConfigMap
+    name: secrets-creator-common-values
+  - kind: ConfigMap
+    name: secrets-creator-values

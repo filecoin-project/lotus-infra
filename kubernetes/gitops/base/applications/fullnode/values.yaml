@@ -1,0 +1,29 @@
+prometheusOperatorServiceMonitor: true
+
+importSnapshot:
+  enabled: false
+
+daemonEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+  - name: GODEBUG
+    value: madvdontneed=1
+  - name: DISABLE_PRE_MIGRATIONS
+    value: "1"
+  # - name: LOTUS_JAEGER_AGENT_HOST
+  #   valueFrom:
+  #     fieldRef:
+  #       apiVersion: v1
+  #       fieldPath: status.hostIP
+  # - name: LOTUS_JAEGER_AGENT_PORT
+  #   value: "6831"
+
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+
+persistence:
+  datastore:
+    storageClassName: gp2

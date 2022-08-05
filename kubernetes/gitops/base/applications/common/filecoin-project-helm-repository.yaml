@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  creationTimestamp: null
+  name: filecoin-project-charts
+spec:
+  interval: 5m0s
+  timeout: 1m0s
+  url: https://filecoin-project.github.io/helm-charts/
+status: {}

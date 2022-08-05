@@ -1,0 +1,38 @@
+apiVersion: v1
+data:
+    f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da: ENC[AES256_GCM,data:jsOLCrMLZX/e2VMDJj7ozO0Sbooq62mkZ5t14hQqbnuln6/FlxDZsrO4DMMehglhgX4pE4PWleg4wPK0JJPXkNzAh2cuUaEP36ygSKwh8zEKeISr90XFJHbWwNi5lA+IpUFlP3jnZ0KqfPmINwxOyrTCotQAqvUv+P0+5MRv6bzqf97E3vPP4SB2NUy8pNt/vAFX1zEs1YKLqviWnb+zrCDJZpOr1Q5TaA/4deT5pDY76UuP4oYq6zt2S+kUxSDqX46DbzjD2IZ3qmQ/AFsTzAcgLNPAPRzj,iv:aHUFr1q3x3O8kGT+6G/O+kxoIlZOTuL5WwRr3Qr8f6g=,tag:yPJP/yTNHxco78eGs1bJEQ==,type:str]
+kind: Secret
+metadata:
+    name: wallet
+type: Opaque
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2022-08-05T19:49:30Z"
+    mac: ENC[AES256_GCM,data:RF/q0xOPfOMz1BGgUyy/5Mp25cQ8LyrhDFT9PZPceI6JsnRaR5lTEbVsN40nuz+50w8XSpGF1ecRBYuPe426aRIaU2okr8xyojFeAHjAiRsQGBQFiuHeU87hxXPckDNq+cF9Tdmx/mwWbIpEk0CWkVUxO9ZdzrLvLz6FldbmFI0=,iv:5jDp6cTbeDr4aKAJOV2qYbBjUwet5D0KLf7ttUvhcjE=,tag:sYViK7zugszwQ2kB3UdrOw==,type:str]
+    pgp:
+        - created_at: "2022-08-05T19:49:29Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA0/wsdIQ6fOrAQ/+JPIj0gmhKlHfUjmlUIOIAuz8uw/JPmnMdU3n2i2BsSHE
+            bS7Uu9K8HJ9VWUv9X3mT7cKhQa7HqFitttooNIoialo3VS5l5k/NquT0tdYbysnz
+            6JRGVvCPWLuS3y/xysEfh5k6CqwxSPCyKv6PQjs9JwleqFhvI2NTgZRBd+Zc8Wxy
+            8byVYktV1JGa22D8uRH+IvtSVptYYraZlSC8c8C/Iln7HLYpkwTT3+zIL9FETHSF
+            yr+0rCHvkhxFUoJxngbCmMXSsmSpuBtvdeScUCHfztA7olkSfuAlhkQ2eTRF9Dfa
+            KItjwLBvmgQfJFJm/aGnMYP8uGHUkNIJ6weBkFZZRR22FRrLZoQ1QPwrnv124tQS
+            r2OMIzfpRtA0B5+PHywrX7VMwguSkO/qHNnpOseVus6uPJvureFcy8jJbIeUSQpW
+            akAmXfdwoZk2CCUQ/i8HBwZ/uuRvsCI8b9eXXSg0+7njBZtVnBgyzvYDr+duFlDG
+            Y0qmvifqOteCpq2YWy26hGKZDu0pLE+FJ9QGiJ+5n1lDVlqu9VLuh41fiuDoNv7o
+            6WYNHyOSw6V7EQJpNw6t8R829Vc9C53d5ZHtHTNqQVsP0s5crv5Tff5RItlwSLYL
+            IdV8OvbB+1S3uxDcl5t6a/p5ZPzvjQQi71X4Uc0F1eYtZXf0pPiC6B1O3utiwF3S
+            XgGTxY+DgdbOBYdzvJ3dfUvWTVc0OjvwXycSxrT5igikBDb5fiKEbHf3Z/FxOrJA
+            86iI7iO/zi0mXzj+y/KQCvlpFp94Q6v5V9eF3K20D4Vk5BPQ9D4GN22q5TiYI58=
+            =TkW8
+            -----END PGP MESSAGE-----
+          fp: BFF6F3B5DBE7E1143CC98471BA014E8FC4D56CCB
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3

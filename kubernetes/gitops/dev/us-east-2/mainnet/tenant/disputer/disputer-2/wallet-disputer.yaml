@@ -1,0 +1,38 @@
+apiVersion: v1
+data:
+    f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da: ENC[AES256_GCM,data:kPMkY+u90+FGCgLZZ89C3zQT8/6F5q9kdrZTHiMTgdxPPL9tCNjjvQIoTUMTqC7ieJYS/t5JA46/aVeukDSR5X3HzH9QDo5SLfZnar45AJwJIsO/UyesdxPZUDEB0OX5SE56V4HLIbCukMUCAZFXV7qKcADctRl/jzkmA4EhUKBcLSuTrSRsAdu7SanzJpG6DLADKbUdFZ6dPi34yHtvWPrAQXDVl1TiVcDMyi+O6FvfZ0kei64OSerLdBNlIyqwZZwZm7dEjaFbznZLLrFR/zPBoLfUMniS,iv:NrYxRxEeUYopqwIhPIzZ9z2UmQ6v46VRn5Q+Ql2Uotk=,tag:BnmL7q+o6xo0CbJleNSx0g==,type:str]
+kind: Secret
+metadata:
+    name: wallet
+type: Opaque
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2022-08-05T19:49:47Z"
+    mac: ENC[AES256_GCM,data:vWsdKnrAdvFikROkWoAWl7DbyaGCMPBvra93W3jv80tnxJWDBVsNqFbrOq3t2Zp2n83F4zhWEp9ycdDmqd2EmcA4vi4Ed5DCPi1ojFitbyWDBCRRwhgBqjGRUJIV9PspVDX9VKuEW036/HrT/EeC3GFjQpXFDtWXA7nXn6lulww=,iv:D1LyfECZq9tG9u77/1PSJeX5L3v61cpPMaf6llLLfHc=,tag:vjS/cqr7MtwQqpt/dK5tzg==,type:str]
+    pgp:
+        - created_at: "2022-08-05T19:49:46Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA0/wsdIQ6fOrAQ/9G8g9iX4AiEeQCwPyjWEH2T2d889EaoU6J/AQTw5CcoQ+
+            RoUsNftRtbzGljPk91QzWkTpPdhjf71b87Dd5QOykyC0/YSIOAnF8VH9O6ufP4Fu
+            xnYh/qbRyPuhTHJzkrhEzlKuJRgHdUKx+iuaySnCEZ0W8T/XuqL1yPhT2aZFpDv5
+            rxaAMAKBoFXIKZJ8SQ8vFeNYTQwPrxzwDAG7TVARABA2rnJxfaI/EWhkDIYmFdaB
+            c8kqbtfNIHZ4k/P827TCvEZGQOvU/DGz5jcC0zjYwGkCsxm7FigTZDp+MaMugi8/
+            OO/mHsmlGxVSSUA2akzks9QHnQ+KMY2idIf7JlU+Iib0KlwgTd6dtnkW0Gk2pVhc
+            YQfzHDe4VRwCfBX8KRIrb0vfdyTJ5lcIiy+s9PtuCpqM/sgA1FlwBHI1ehSi6z2i
+            Q0jwyDK+f2FWCFkRWfKIll5ta1yy8Cj53Jalim3YoaoU6c+1VIqDLaRa8ifZTj89
+            6mAjHC0wmdrPQjj024PrBu3Ldv6OoqytI603RmsDXhqLZrW/VA3swSVp59D2uIx7
+            +d474ZN1f9Y78rJxsBHJbhbOfsREz26nhZCL9jJeQObmy/7sm/fg7U0fHvKHgVNg
+            tSVMKb1kYJqYHl6POedP85aeXEfFbTzX2tWxJAOH4paVBDstAEc/8p4GzM8RSjXS
+            XgGSMmeZsJ/wmekUoPfyfLgGsYt3xkbONHqHlXFY6D2g1lri+Xw04itn4c8HPWw0
+            RMsFnlUx/rPnkY03BJ9x8bvRMzufMJY9KJiAPlM3sT+f97FAA/cbxl7D/mwDh68=
+            =jxGp
+            -----END PGP MESSAGE-----
+          fp: BFF6F3B5DBE7E1143CC98471BA014E8FC4D56CCB
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3
