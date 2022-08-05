@@ -42,3 +42,8 @@ disputer:
 
 additionalLabels:
   network: mainnet
+
+persistence:
+  datastore:
+    enabled: true
+    size: "16000Gi"

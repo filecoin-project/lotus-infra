@@ -38,3 +38,8 @@ daemonConfig: |
 
 additionalLabels:
   network: calibration
+
+persistence:
+  datastore:
+    enabled: true
+    size: "8000Gi"
