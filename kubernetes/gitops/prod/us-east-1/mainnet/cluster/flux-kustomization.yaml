@@ -22,7 +22,7 @@ spec:
     secretRef:
       name: cluster-sops-gpg
   interval: 5m0s
-  path: ./kubernetes/gitops/dev/us-east-2/mainnet/tenant
+  path: ./kubernetes/gitops/prod/us-east-1/mainnet/tenant
   prune: true
   # serviceAccountName: mainnet
   sourceRef:
