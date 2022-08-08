@@ -1,0 +1,38 @@
+apiVersion: v1
+data:
+    f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da: ENC[AES256_GCM,data:E96DVYE/nj8onLYDZTv23r1N1VLUxPoJZ+FppOJvTYgyZ4+CTX9KHJI6EvKudKTWEMlcwnsAz6EltarBKc/KIqqdZzUZJUVA4ecoiui+Sq7rxMVderrufTo4E8BzDJw6aDWte/voitMhFPvSvFtQi95k4Ony5KibaHEIvqj1/o/HNoEHtP6nlUGYBVIVwzZU1IskCMe6sO2J6tSPTpIMLDiiOdrA27uc4k+oefPddGysEqr4avhCUmJgRgzRxJFCIyMNdiXzLP0av2kXH4iL/lkirvtCb+VH,iv:9wQ9l9+DrNTJmUuvBFaIh6+Ygng92fRnyDZnFmRtkpA=,tag:csLy8ni90kw1Z7Y29m8eEA==,type:str]
+kind: Secret
+metadata:
+    name: wallet-disputer-2
+type: Opaque
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2022-08-08T20:01:35Z"
+    mac: ENC[AES256_GCM,data:Pbk5I18lBE7pWoMc6ky2aEqJW8OIwLHrNcZi0cnjYNwEz2Ceco37oVqnsVqPBQgP3yNdpHuju5cTi4aGYxuTnBdGuxjn/mt4MgliVEJnWdCWkaeWxI3WSH7/VpdRuVX9jUttbBnnlQ4OCuq5ISlFf3eiNnr5aEjW7V+xfbSELbY=,iv:xY3aCypvMGGqj3+EoJ2EgGN7EepMVazdipvCmDDlxdA=,tag:/BBPyHv6QAbjMqUtBgt+Mw==,type:str]
+    pgp:
+        - created_at: "2022-08-08T20:01:35Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA1N1t5oRmloQARAAhQKmZmDH9q2sfXLKOZSM+43WD6Q9m8wSIS8SfD6Tj2KC
+            9/GKfIGb5BB52CdvTgu9B2RvvuY4E/M0gqVkUv5iLsvWWlNCOcdwbi0xKKIeOweE
+            Qdz0e4X/HyhwZlI+J+lZZCwTZXsbpbMhHR9lGTOC+2fxY4OQ5JUkr0mG601b/XLE
+            BpWvmFw+AYyYT3LHMxaEjTkY0FIl8TeLDe2+tbDvlGykHwiUmjW2yVB53LNdlRdS
+            QVPNJDNNfSPPOrzSTqFU1Jc559OiVrjFAca6h0H0VbmkfSbH4FwRnzpZGaQQfHwC
+            srGk6r2XC1CdfyiHWMYTD6YGMV+9Q5Cd9Lc7k3pH6gn9ukz1uuTm8JTEYL7l1Xyy
+            7YwyTQuT71oZzd2TXKYa72fRmDab0lTiF5uUWRUZYYnoeEc0pc6NtAdBmk4ke+hV
+            UeiiS8L2f4/35F9+N4aUWYoeGAC7jbjJU1D/MNvM7zgWs3zpk+wYFtmQ96iQID/y
+            FjH6m1jdRWlx2U/K41o1M4Cwm+3ht0RsqVKrccUY+BXeSxM8A98tMLvOAF2kbK3O
+            4iJIOev99H+y2v1JkgR6S026MiqMGO74YRE3fvinistsFkkYuysozwECin42/GI4
+            K9BcjMoqn/Js59H8BqKfJ7DgmSsNrIBernuEHtbWWGwrEiCSB4zrEdG+mbgaO9jS
+            XgEOOuSZb4FDMpYPCDf1Z/yWqgAYOvflsERMD3To/2zZYcTT9KxC9oWWZFbaZlvp
+            Wgn3CBJQTCIpuihabTAmvigqjuqhJcng/sYBedt2aE0raoWZXGavI6HIYWCVQfM=
+            =Z2bW
+            -----END PGP MESSAGE-----
+          fp: 4FE9A9EFDDC34EC24D56953EA33E5A125E249D39
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3
