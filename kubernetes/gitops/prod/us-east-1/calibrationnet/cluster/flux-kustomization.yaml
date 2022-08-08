@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 1m0s
   ref:
-    branch: gitops-poc
+    branch: master
   secretRef:
     name: github-auth
   url: https://github.com/filecoin-project/lotus-infra
