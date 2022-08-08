@@ -1,40 +1,9 @@
 apiVersion: v1
 stringData:
-    password: ENC[AES256_GCM,data:o+VHpu39hVD83aQu4Gw7LIn4u349OHRzvN2AST3du0IEXiP0guHZDw==,iv:61hJDe1XpIbnhQ/1bq8Y3GcTJlJeP9NqjbnlyJU9Wbk=,tag:WI+YQTR1j66modGrNpyyBg==,type:str]
-    username: ENC[AES256_GCM,data:d5HXAHmi1JJfxumy8A==,iv:h9s+HpRnZhkh2zCAz3dfBuJrFLcOUJpXELdtQatig3E=,tag:+lMkb3R2TI84NxYWqCNrUg==,type:str]
+    password: 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
+    username: pl-deploy-bot
 kind: Secret
 metadata:
     name: github-auth
     namespace: flux-system
 type: Opaque
-sops:
-    kms: []
-    gcp_kms: []
-    azure_kv: []
-    hc_vault: []
-    age: []
-    lastmodified: "2022-08-08T14:00:53Z"
-    mac: ENC[AES256_GCM,data:bG8z206xtgITS7SWoS9bvZ9NbHDNd87956qSBvDe9W3uW0DxOVCotNecRFQOt6zlxpwTOpAxoSdJ6rFHB8zGyF9vwDxlYy5Sy3Tzlp6zVMjIDLgB2l4mJWI22mgw1sLKE4LUeMn7mWc2B8P+Yo7MhQcUKY0IL6OJEOraT8hTTlc=,iv:ZkLxfFIPKMopuYXy4eouC8yWPov3YR2nHUDVNA7LQNA=,tag:Y3k1v+hLTdpPE4gWXoafxg==,type:str]
-    pgp:
-        - created_at: "2022-08-08T14:00:52Z"
-          enc: |
-            -----BEGIN PGP MESSAGE-----
-
-            hQIMA10BBd9Ja1tnAQ/+IMdM6YWuj2gCADgZ9hNadKP5YMS07+GN+dyTHqklhNR5
-            IhMn4V0QZPZjVvhXv9sYhYzQ/jP/EZxBptpQvxJmBBx0UJvm9Aq0DGRbtBH0EGZB
-            +RdZ5bPoV6ZFq7mLRL6k5wofjN+APBW5IosOp3X5SCXlz7/nb0xHDRcf1Nhg3p8i
-            5U8vLN1zRmKDYwp0sGAzpWtaba2qNncmxU04lvLmvRQPDDjUJ86zIkCQhc57GVif
-            iuc2xSsAlPNaiiCl/nNYuDjVDf5mhmCWhZNWIhJAgoWVL+YIXIRr5meK/XqlaZDE
-            VDpxB0BCEZr87gJl+nCF7ZaRdt0y/b6VMWRdjEjCMZ4Lf2rfR4fWKVxN/13lNQS1
-            nuJYY9bTNSPrQVrE6j/ipczAZTIQ6M2TFJf8LizNCiyItY7ZZWzbnVbPhY5AlAK8
-            PPm60nKmxstHgea31GCfnxvB1ugyLAR2L3Dp77Jtu2mB3S17s5zd+2/Joq+UFBUY
-            rxn8HulmIi5j1TejyBrlqJuXewgAVIQs/LmJn/QVdbYfhZfYTRCFfMaSeleGwlIJ
-            dcDEXiQvC8RFzKwUM9iBqATbdXi1pPTHxOySxuqw1kIFQMKVqheBgMrO9KkzHC7N
-            zWh0noBjNHam4j0B7hcmhxnWSy9tdrxfz/ghfelWHyvuB2BMDqXgS7KjG1uo7lrS
-            XgEkMQ/mmYq4jaUPgqQI0N5ArplMXKtuA6omGP+/07j3nfHb45akpNUNukeD9ovg
-            cjmF7Nt5Pxu9bGaof5ggJUTQxhRVRVtInK2W1MGwpRbEeSwzN9jnamexd2Vpjik=
-            =69dp
-            -----END PGP MESSAGE-----
-          fp: 82B6F581AA9BAC43F18A9D2E8F13E77F0EF448C4
-    encrypted_regex: ^(data|stringData)$
-    version: 3.7.1
