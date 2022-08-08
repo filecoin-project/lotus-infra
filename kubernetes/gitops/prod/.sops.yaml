@@ -2,3 +2,6 @@ creation_rules:
   - path_regex: .*/us-east-1/.*.yaml
     encrypted_regex: ^(data|stringData)$
     pgp: 82B6F581AA9BAC43F18A9D2E8F13E77F0EF448C4
+  - path_regex: .*/ap-southeast-1/.*.yaml
+    encrypted_regex: ^(data|stringData)$
+    pgp: 4FE9A9EFDDC34EC24D56953EA33E5A125E249D39

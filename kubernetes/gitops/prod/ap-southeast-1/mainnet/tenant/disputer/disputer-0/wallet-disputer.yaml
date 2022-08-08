@@ -1,0 +1,38 @@
+apiVersion: v1
+data:
+    f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da: ENC[AES256_GCM,data:pDs3K1NoJEc0fMs4cDXPdYtye/yHT9o5UhFp07nTLJmHcFoySQ8Sr1KwNbPAEPYp12qrsvEZ00yzl5LNNPMrcJyZEOAFxcglfP+A0RNMPne0wWAN3oV4de3xCV2qcsJXGXYUAe3B11juryOHp+Bj5OfKf7uMJnZGvPqLVJ2xs0/r+frAFqPqXwEEH2x53xLgAHiDyShRe4zmAOmu/8ANs5WhbXYkXdQxg/13aWTGvSf5Hc0e/emu1Kp2Pk+/YNYpv/Szs1zNcD5rTEKMdDtUJ3Z3S6ZBjmRJ,iv:5M+WfJ9x5Cc1FHuiTvlrf8pbA2g/JBHeBsyGckN/neM=,tag:Mymth+RZRbzSobYfakRkxA==,type:str]
+kind: Secret
+metadata:
+    name: wallet
+type: Opaque
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2022-08-08T20:00:10Z"
+    mac: ENC[AES256_GCM,data:0XwqHM2SbYTouyZ4pnVibG6pq+dFSrFHYn72XlcDb+K2qyqVdYXMd6zuK1e5VMmRFHeXkwtB5jr5+GRaEt8dkgHtKVYeOBzeL2+KRB7qdNgODyqPIN6UySXdy0w7x2d0tgbpK2TgHTneidZ2LFP1uMFKYXVRnfyxM53agZLxodY=,iv:lSL6IV0r9a/Ip/XDHJSBKJjjUTZNwB3p7sPB132HoqU=,tag:gKw2y9VRm6sEn1xaC9iAuQ==,type:str]
+    pgp:
+        - created_at: "2022-08-08T20:00:09Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA1N1t5oRmloQAQ/+KPTmacXWlaXB7x9f8Gh3MYKbKc4hon2VB+tUN5U3uZ4a
+            lZ0F0GDYQ/YDJG4RaLuIboDiq4Q4jjjZssOkTCexxTRSU0Haf+XLOvo+KCJYBRat
+            sFknRlO0WDfOOMHavCeaMkP5FchuM6av7WBYEjj3O4++bZVimzEhR3whfAAgCPbI
+            UpfuYxB6QnCW7BYZeDfQiZMXGOxDjXwAHPPFAQjysZ4KM0PScgAeh9BX4y0VFQ9h
+            CAHcloQvb22iLE6Aeo+I9d+4+7Pdo0akju1Z90TfNJLJ30F1fXZQjsAuuKaukmcx
+            qi6sUhh5s3D36+AdoBiQQqmkYSixPhQHBYNgMDV6fnQQQJOWqzHPjRSW1K01LIQa
+            e5w3xWCKpKWIgSapQhpgE4BBS86RNtjvbI2R7n4XAE7S9RPSaqyrL6Q4J35zVLvh
+            AbDJXQyaUAYLx4H//1nt/svAGgHPYwaTTfZGqUt1ZF0QIpvwEIoH5j4P4w6DpiUu
+            J0eCvXglXzq/gEMwkOxstWJ7273JrWs2cpTUZYrEx74It9NJ7OlWLDv83XFfyFYH
+            HXDl3b4iPJAGO1MUBPWlYNYLVMz421n1XvURItewonOMPhDStdpe616EiW5PUUCd
+            DZHzGTSUuhNepDaQxT3A2TR4iigXbUDOcsx1eO3YMKHKyoGAWtXbYjin/D66fEHS
+            XAHFAHWU4+MQswZFP7G3cYJKmFr8dGXdqqHJurAcDJCHY3OgLn6US3YaS4Wysl0l
+            5nG3aU9pyo86KDitZo7x0VXAAsEux/kuD8wH863jglVmtG96xpE85rJSS6yT
+            =PHON
+            -----END PGP MESSAGE-----
+          fp: 4FE9A9EFDDC34EC24D56953EA33E5A125E249D39
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3

@@ -1,0 +1,31 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: calibrationnet
+  namespace: ntwk-calibrationnet
+spec:
+  interval: 1m0s
+  ref:
+    branch: master
+  secretRef:
+    name: github-auth
+  url: https://github.com/filecoin-project/lotus-infra
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+kind: Kustomization
+metadata:
+  name: calibrationnet
+  namespace: ntwk-calibrationnet
+spec:
+  decryption:
+    provider: sops
+    secretRef:
+      name: cluster-sops-gpg
+  interval: 5m0s
+  path: ./kubernetes/gitops/prod/us-east-1/calibrationnet/tenant
+  prune: true
+  # serviceAccountName: calibrationnet
+  sourceRef:
+    kind: GitRepository
+    name: calibrationnet
+  validation: client
