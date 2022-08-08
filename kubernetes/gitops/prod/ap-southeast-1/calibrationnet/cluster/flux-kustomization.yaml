@@ -22,7 +22,7 @@ spec:
     secretRef:
       name: cluster-sops-gpg
   interval: 5m0s
-  path: ./kubernetes/gitops/prod/us-east-1/calibrationnet/tenant
+  path: ./kubernetes/gitops/prod/ap-southeast-1/calibrationnet/tenant
   prune: true
   # serviceAccountName: calibrationnet
   sourceRef:
