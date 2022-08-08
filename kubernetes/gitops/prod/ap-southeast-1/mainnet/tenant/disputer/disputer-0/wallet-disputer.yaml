@@ -1,7 +1,38 @@
 apiVersion: v1
 data:
-  f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da: N2IyMjU0Nzk3MDY1MjIzYTIyNzM2NTYzNzAzMjM1MzY2YjMxMjIyYzIyNTA3MjY5NzY2MTc0NjU0YjY1NzkyMjNhMjI0MzMyNzI1NjZjNjg2ODM4Njg2NjUxNjI3NDQ1NTA2MjY2MzM1MjZlNjUzOTc1NDk2ZjZhNDc2MzZlNTE0NjM1NTAyZjM5MzIyZjQ5NTY2YzcyMzU2YjNkMjI3ZA==
+    f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da: ENC[AES256_GCM,data:iI8C3L/bBTwv5/njkiTpIN45MHyAq/SL24WAttk20IFQ85QiMufI5cLTL0GrowpXBXh37HiJwLar+vGZs7TNQwgcwIVz2usvkFzL3W9zPxmMKhVPBqrVxoP1dWQX3mHvx6djTVifkLiaUc1eIjdL8QJBiaIzsFUG5ifj5Ge6rShwVvBJa429WijDyyytcq2s4MWrz62OvTqixJuQM3jq/z0Nlj+eLVNsm1387AobZZOXXeR7ZLSMo+qlu2YP+rp9jBF8Jt65ZsXgAZrmZ/OwTHHJf60PVAd7,iv:GxmlL88VaAzfsGwmZeTflksBsdYolcFR4SRzvbMb3M8=,tag:Pakj1PI9W9XhaM8Z/91LXA==,type:str]
 kind: Secret
 metadata:
-  name: wallet
+    name: wallet
 type: Opaque
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2022-08-08T19:48:22Z"
+    mac: ENC[AES256_GCM,data:jc8MV477mFU9G1JHSb7ammTNV+hx7op+Z0c6w13454mRaaUhAs8Uzog4zFrnLNV7PrgwVALf6Da04EX1mtnZnzwp+MwNgAe4sETKmEAhlT+GFuadsWyuhpMuUJo+3FlQMxsnD0HwF7UhmH4pWSev8ayOo1lDGfoqRXyoK68tPlA=,iv:F1VgE/0KZc98LX+nHXcp8JR2TsBBwPD7r1q5MCYwjcs=,tag:DKobKQuliXG4jjDtBvE0lg==,type:str]
+    pgp:
+        - created_at: "2022-08-08T19:48:21Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA1N1t5oRmloQAQ//SfCe8WATHReif3DqgMSkYVP5TaalCgpQcgcynxo6TSoz
+            nxePredSVQ8LyeSf7S/1aeUofoOFlJ95T72SNRFgcvYAu5GPZeTfeJWT+bJmb/xc
+            DZdoi8tX3t+LE56TJtmk388ADyIqS1ad6QBkGTkwE5vUbZX8RtKw0nlkPIuRKB5y
+            zvQxAgzGrZ8Y/6xlx/DRMOX7KMcPrV7f8eq3BE6Hb9d4sKa/7smMMcZh/oCy95Pz
+            G2Y20yiGcNCBB6B9tqxJ1JbMD9TsOGVKGQKYNWN0P2SLWN0GrIBY0LTti4v2SDrW
+            Ao+EEBXMI3zpqqFXDQL8xh7Fg9n4/qg3zFRMJZA2Pf4toRciOZ8msByU8eep0Kq+
+            dgPNdLZWSjgzeNjRXYgM/UxZVVqmu08DzUuRHoK0MsoSOHJXmlXPGlmvCFdyb7XS
+            JAsm8lnnJQSNPGZTgIRuCZaL5xcKf7L3kq+fH3CbYOSJYU0Hxf+pnvNORY0/SxT7
+            fkx3sH6KkzbedSwU2nWHbA6gD8/XUo1xJtjxG/4gQZPSu3zGqgTYlvwnAc6BUMMb
+            yCxxn5yeUOlq8HRtihvBlSGZgBy1GQYT2Oe1PaDswUuNlab/2AeSTt14qnzgROcQ
+            lWjFSo1QSq3AfUSWJFCmf7BlRfTG5UpBJ/ai3QGCodUj76kKA/SWwquuL2SkA57S
+            XgECyTAfNFdy/fMo7uiHTqQ+ffs+M0aBn4u0khOGfHAzrL5FRMdEyUpyKC6xkq5G
+            t1HVvyUJFoqY/aly622Gzr93udBM1RADfi4l3Y2ieBquzP4hZLkAMBwCMX60O6M=
+            =tdGk
+            -----END PGP MESSAGE-----
+          fp: 4FE9A9EFDDC34EC24D56953EA33E5A125E249D39
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.1
