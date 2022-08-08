@@ -1,0 +1,7 @@
+apiVersion: v1
+data:
+  f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da: N2IyMjU0Nzk3MDY1MjIzYTIyNzM2NTYzNzAzMjM1MzY2YjMxMjIyYzIyNTA3MjY5NzY2MTc0NjU0YjY1NzkyMjNhMjI0MzMyNzI1NjZjNjg2ODM4Njg2NjUxNjI3NDQ1NTA2MjY2MzM1MjZlNjUzOTc1NDk2ZjZhNDc2MzZlNTE0NjM1NTAyZjM5MzIyZjQ5NTY2YzcyMzU2YjNkMjI3ZA==
+kind: Secret
+metadata:
+  name: wallet
+type: Opaque
