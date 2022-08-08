@@ -1,0 +1,38 @@
+apiVersion: v1
+data:
+    f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da: ENC[AES256_GCM,data:SRUJcfSoBCN+IYc6yvgWKwbbNc04yIcxt1AM0P+zN82nHHuYq0G3xsiLf/ePzOvsA8erbmL/ALlxmPOlKfj7X5FJ/u3n3IuEb4uwNxvxm7wkUZGoKclOoYHkXRk0xUBaElmxnGhVKqkDvC4qG6gLbOnWiNk1U5MPrDEAXPG1o4vgZ8MwTDob84jGFBLxzKwQEvYCckJvvEP/QTdcDsd0nGIsQqdBlHFGBII5QvpnZ7wJvzBFeejiSh5p7Ou8M+wlugE73wRUoyJAUobDKc/sx0pSt8LYPLGS,iv:RGsjw+8W8ZxSDkAMlLx/yO2j2sADg6sX7i1AbzGKNcE=,tag:CQTy5lLTeiK2Hbz+0kwKFA==,type:str]
+kind: Secret
+metadata:
+    name: wallet
+type: Opaque
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2022-08-08T20:26:54Z"
+    mac: ENC[AES256_GCM,data:eOSmbpKA35MU0Y7xrLVrTk+1D/APiPaiznbwQSGYguatK+oqUOPxTnj7CUmulAENUG6rJiiWbCypnAvzPRCICGRF7nkJIqzs5YIQBWHyilotIR4yC7ZbaCVKHOkvHS2pCQpHJf5+CMnjq1bHUDlrihud2MguwNvXPxSz2i6plNA=,iv:NuGb1ZDC9EHZnEkCV8o3Ze5X5IS1nkqhhMm2glget9A=,tag:8ZB5GT3V0JcJORdOTg8Cfg==,type:str]
+    pgp:
+        - created_at: "2022-08-08T20:26:53Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA4VKzs64RjZOARAAjT0u6cr5T/hNntjCx2hM+89ayYVZxs8zP/Tia6f+HREH
+            4NE1fO3iPeliogzntJXDSE7TVsEOBGXW5AhZ8+ZrzdCEv0VxRvHnihcQexj4x0SH
+            gjamay4vlEntiQz7Hzlxsl1eqdmn84x4CF7wVzS0mNwAxtTymM9iBuPqtWsEG/lY
+            dSO9vFGkldw8g5IMmSBGEUo7nex4+KXuLN4ZEnsqb9noq2JTewuuiHgBfAgBM4+m
+            uG8W/Rer2xD7JkjdRwOVyAmv6E3DcDzYbtes4XmV9XWxqRtaB30/pGOwqF0qf4Nw
+            xsiEii5fZilH/49d6sZQKsxNLIeSBDh7k0nZ9d15SUkQO1FcQfPCWA8HMEyqwlGr
+            cghYsmlzoRskKQY0zcbI8FRNZlrOgY7M7D+fvx7PN7GBB39qaUotepEXc3l237dM
+            9gdAXGNQ+q2s49yFKkSYSjbV6KjoO2UETaapHv5Jh7ZflOt5JKCB85F6Jj5zGboz
+            0iBfrmb78pIjNJ8YnTV3w8TPjM2B6Y08JCWHXsYzsJ9BJsPmVjK7C+MEthoHxREY
+            9VjvSDCmkTRC9xvHLVBO9BC8PESe4pED+rCMtyFy+YTtMdw8JlaUm8opiJrE5NP8
+            bkF4KZoZxaDmb2RjpWai2wdbFgrDKuUXcl3yVR1/Lu6X87LstGKbYn51MlY6ajTS
+            XAGHk7e3c/7KpWpSCFFITgaAj2GAKgpbABAPV4AX0eJ6BWCspijT827bRtdSkrXf
+            trm9xXLOKXjTfONKDkeN/wqlwhIV4O6aKMaXv598D8Tpim2YfywXvdCgcrtq
+            =neu3
+            -----END PGP MESSAGE-----
+          fp: ECB5849EF1F46A7CE613ADF814E151263DDC1737
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3
