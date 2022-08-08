@@ -1,0 +1,47 @@
+image:
+  tag: mainnet-v1.16.0
+
+prometheusOperatorServiceMonitor: true
+
+resources:
+  requests:
+    memory: 32Gi
+    cpu: 6
+
+importSnapshot:
+  enabled: true
+  strategy: url
+
+persistence:
+  datastore:
+    enabled: true
+    easyReset: true
+    size: "2000Gi"
+    storageClassName: "gp2"
+
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+    ConnMgrLow = 400
+    ConnMgrHigh = 500
+    ConnMgrGrace = "5m0s"
+  [Pubsub]
+    IPColocationWhitelist = ["10.0.0.0/8"]
+    Bootstrapper = true
+
+daemonEnvs:
+  - name: GOLOG_LOG_FMT
+    value: json
+
+# nodeSelector:
+#   "fil-infra.protocol.ai/node-type": "lotus-standard"
+
+additionalLabels:
+  network: mainnet
+
+persistence:
+  datastore:
+    enabled: true
+    size: "16000Gi"
