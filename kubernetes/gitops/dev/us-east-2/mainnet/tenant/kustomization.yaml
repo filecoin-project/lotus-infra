@@ -8,3 +8,4 @@ resources:
 - fullnode
 - bootstrap
 - disputer
+- volume-snapshotter
