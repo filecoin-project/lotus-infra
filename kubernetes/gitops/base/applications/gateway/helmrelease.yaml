@@ -1,7 +1,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: lotus-gateway
+  name: gateway
 spec:
   install:
     timeout: 5m
@@ -13,14 +13,14 @@ spec:
       retries: 100
   chart:
     spec:
-      chart: lotus-gateway
+      chart: lotus-bundle
       sourceRef:
         apiVersion: source.toolkit.fluxcd.io/v1beta1
         kind: HelmRepository
         name: filecoin-project-charts
-      version: 0.1.6
+      version: 0.0.17
   interval: 1m0s
   # The values are merged in the order given, with the later values overwriting earlier. These values always have a lower priority 
   valuesFrom:
   - kind: ConfigMap
-    name: lotus-gateway-common-values
+    name: gateway-common-values
