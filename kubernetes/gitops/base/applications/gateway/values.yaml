@@ -1,7 +1,7 @@
 ---
 image:
-  repository: coryschwartz/lotus-gateway
-  tag: rate-limiter
+  repository: filecoin/lotus-all-in-one
+  tag: v1.17.1
   pullPolicy: Always
 
 application:
@@ -10,7 +10,8 @@ application:
   replicas: 3
   container:
     name: lotus-gateway
-    image: 
+    command:
+      - /usr/local/bin/lotus-gateway
     args:
       - run
       - --max-api-lookback
@@ -49,3 +50,12 @@ application:
           targetPort: 2346
           name: lotus-gw
   storage: []
+
+lotus:
+  enabled: true
+  image: filecoin/lotus-all-in-one:v1.17.1
+  lite:
+    enabled: false
+  reset:
+    enabled: true
+    percent: 90
