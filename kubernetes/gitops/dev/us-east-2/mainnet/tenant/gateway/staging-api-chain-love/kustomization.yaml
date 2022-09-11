@@ -4,9 +4,9 @@ kind: Kustomization
 resources:
 - ../../../base/gateway
 
-namePrefix: api-chain-love-
+namePrefix: staging-api-chain-love-
 
 configMapGenerator:
 - files:
   - values.yaml=values.yaml
-  name: api-chain-love-values
+  name: staging-api-chain-love-values
