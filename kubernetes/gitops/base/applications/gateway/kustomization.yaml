@@ -7,7 +7,7 @@ resources:
 configMapGenerator:
 - files:
   - values.yaml=values.yaml
-  name: lotus-gateway-common-values
+  name: gateway-common-values
 
 configurations:
   - kustomizeconfig.yaml
