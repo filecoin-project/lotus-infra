@@ -22,8 +22,8 @@ application:
       - "100"
       - --rate-limit-timeout
       - 10s
-      - --conn-per-minute
-      - "6"
+      # - --conn-per-minute
+      # - "6"
     env:
       - name: FULLNODE_API_INFO
         value: /ip4/127.0.0.1/tcp/1234
