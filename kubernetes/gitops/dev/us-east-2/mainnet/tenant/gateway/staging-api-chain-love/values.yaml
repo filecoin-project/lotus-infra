@@ -1,0 +1,69 @@
+---
+image:
+  repository: filecoin/lotus-all-in-one
+  tag: v1.17.1
+  pullPolicy: Always
+
+application:
+  name: lotus-gateway
+  labels: []
+  replicas: 3
+  container:
+    name: lotus-gateway
+    command:
+      - /usr/local/bin/lotus-gateway
+    args:
+      - run
+      - --api-max-lookback
+      - "24h0m0s"
+      - --rate-limit
+      - "3000"
+      - --per-conn-rate-limit
+      - "100"
+      - --rate-limit-timeout
+      - 10s
+      # - --conn-per-minute
+      # - "6"
+    env: []
+    ports:
+      - containerPort: 2346
+        name: lotus-gw
+    livenessProbe:
+      httpGet:
+        port: 2346
+        path: /health/livez
+      initialDelaySeconds: 60
+      periodSeconds: 60
+    readinessProbe:
+      httpGet:
+        port: 2346
+        path: /health/readyz
+      initialDelaySeconds: 60
+      periodSeconds: 60
+  secrets: []
+  configMaps: []
+  services:
+    - type: LoadBalancer
+      externalTrafficPolicy: Local
+      selector:
+        app: lotus-gateway
+      ports:
+        - protocol: TCP
+          port: 80
+          targetPort: 2346
+          name: lotus-gw
+  storage: []
+
+lotus:
+  enabled: true
+  image: filecoin/lotus-all-in-one:v1.17.1
+  lite:
+    enabled: false
+  reset:
+    enabled: true
+    percent: 90
+
+prometheus:
+  serviceMonitor: true
+  path: /debug/metrics
+  port: lotus-gw
