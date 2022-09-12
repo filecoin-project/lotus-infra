@@ -24,9 +24,7 @@ application:
       - 10s
       # - --conn-per-minute
       # - "6"
-    env:
-      - name: FULLNODE_API_INFO
-        value: /ip4/127.0.0.1/tcp/1234
+    env: []
     ports:
       - containerPort: 2346
         name: lotus-gw
