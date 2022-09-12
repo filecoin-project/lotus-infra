@@ -15,7 +15,7 @@ application:
     args:
       - run
       - --api-max-lookback
-      - "2000"
+      - "24h0m0s"
       - --rate-limit
       - "3000"
       - --per-conn-rate-limit
