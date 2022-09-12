@@ -14,7 +14,7 @@ application:
       - /usr/local/bin/lotus-gateway
     args:
       - run
-      - --max-api-lookback
+      - --api-max-lookback
       - "2000"
       - --rate-limit
       - "3000"
@@ -42,6 +42,7 @@ application:
   configMaps: []
   services:
     - type: LoadBalancer
+      externalTrafficPolicy: Local
       selector:
         app: lotus-gateway
       ports:
