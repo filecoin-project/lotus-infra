@@ -64,3 +64,8 @@ lotus:
   reset:
     enabled: true
     percent: 90
+
+prometheus:
+  serviceMonitor: true
+  path: /debug/metrics
+  port: 2346
