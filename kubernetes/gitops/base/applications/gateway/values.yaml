@@ -34,10 +34,14 @@ application:
       httpGet:
         port: 2346
         path: /health/livez
+      initialDelaySeconds: 60
+      periodSeconds: 60
     readinessProbe:
       httpGet:
         port: 2346
         path: /health/readyz
+      initialDelaySeconds: 60
+      periodSeconds: 60
   secrets: []
   configMaps: []
   services:
