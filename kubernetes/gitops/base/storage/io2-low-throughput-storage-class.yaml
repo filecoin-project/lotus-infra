@@ -4,11 +4,11 @@ metadata:
   name: io2-low-throughput
   # annotations:
   #   storageclass.kubernetes.io/is-default-class: "true"
-provisioner: ebs.csi.aws.com
+provisioner: kubernetes.io/aws-ebs
 volumeBindingMode: WaitForFirstConsumer
 reclaimPolicy: Delete
 allowVolumeExpansion: true
 parameters:
   type: io2
   iopsPerGB: "20"
-  allowAutoIOPSPerGBIncrease: "true" 
+  allowAutoIOPSPerGBIncrease: "true"
