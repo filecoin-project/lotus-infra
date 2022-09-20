@@ -10,3 +10,5 @@ persistence:
   datastore:
     size: "32000Gi"
     storageClassName: "io2-high-capacity-low-throughput"
+importSnapshot:
+  enabled: false
