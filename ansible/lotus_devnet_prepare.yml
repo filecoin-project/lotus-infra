@@ -35,11 +35,12 @@
         # value is a unqiue field, so we copy it into the label.
         cmd: |
           /usr/local/bin/lotus-seed aggregate-manifests {{ lotus_miner_presealed_sectors | product([metadatafile]) | map('join', '/') | join(' ') }} \
-          | jq --arg Addr "{{ lotus_miner_wallet_address }}" --arg MinerId "{{ lotus_miner_addr }}" --arg VerifiedDeal "{{ lotus_miner_verified_deals | lower }}" '
+          | jq --arg Addr "{{ lotus_miner_wallet_address }}" --arg MinerId "{{ lotus_miner_addr }}" --arg VerifiedDeal "{{ lotus_miner_verified_deals | lower }}" --arg KeyInfo "$(echo {{vault_lotus_miner_wallet_keyinfo}} | lotus-shed base16 --decode)" '
               .[$MinerId].Owner = $Addr
             | .[$MinerId].Worker = $Addr
             | .[$MinerId].ID = $MinerId
             | .[$MinerId].Sectors[].Deal.Client = $Addr
+            | .[$MinerId].Sectors[].DealClientKey = ($KeyInfo | fromjson)
             | .[$MinerId].Sectors[].Deal.VerifiedDeal = ($VerifiedDeal == "true")
             | .[$MinerId].Sectors[] |= (.Deal.Label = .CommR."/")
           ' > "{{ lotus_miner_presealed_metadata }}"
