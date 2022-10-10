@@ -1,6 +1,6 @@
 image:
   pullPolicy: Always
-  tag: "main"
+  tag: "1.0"
 
 indexResolver:
   replicas: 3
@@ -33,7 +33,7 @@ snapshots:
   interval: "240"
   confidence: "30"
 
-  activeDeadlineSeconds: 7200
+  activeDeadlineSeconds: 10800
 
   uploads:
     enabled: true

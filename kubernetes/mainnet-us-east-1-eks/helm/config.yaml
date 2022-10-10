@@ -183,7 +183,7 @@ deployments:
       - base
   # calibnet snapshots
   - chart: filecoin/filecoin-chain-archiver
-    version: 0.2.0
+    version: 1.0.0
     namespace: ntwk-calibnet-snapshot
     name: calibnet
     values:
@@ -208,7 +208,7 @@ deployments:
       - base
   # mainnet snapshots
   - chart: filecoin/filecoin-chain-archiver
-    version: 0.2.0
+    version: 1.0.0
     namespace: ntwk-mainnet-snapshot
     name: mainnet
     values:
