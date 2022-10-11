@@ -16,6 +16,10 @@ resource "aws_instance" "mod" {
   ami           = each.value.ami != "" ? each.value.ami : var.ami
   instance_type = each.value.ec2_type
   key_name      = var.key_name
+
+  vpc_security_group_ids = var.security_group_ids
+  subnet_id              = var.subnet_id
+
   root_block_device {
     delete_on_termination = false
     tags = {
@@ -25,8 +29,6 @@ resource "aws_instance" "mod" {
     volume_size = each.value.volume_size
     volume_type = "gp2"
   }
-  vpc_security_group_ids = var.security_group_ids
-  subnet_id              = var.subnet_id
 
   tags = {
     github_username = each.value.github_username
@@ -38,4 +40,10 @@ resource "aws_instance" "mod" {
     ubuntu_user     = "ubuntu"
     home_dir        = "/home/ubuntu"
   })
+
+  lifecycle {
+    ignore_changes = [
+      root_block_device[0].volume_size
+    ]
+  }
 }
