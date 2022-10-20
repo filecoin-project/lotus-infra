@@ -1,5 +1,5 @@
 image:
-  tag: calibrationnet-master # {"$imagepolicy": "calibrationnet:calibrationnet-lotus:tag"}
+  tag: calibnet-v1.18.0-rc3 # {"$imagepolicy": "calibrationnet:calibrationnet-lotus:tag"}
 
 prometheusOperatorServiceMonitor: true
 
@@ -12,8 +12,7 @@ resources:
     cpu: 12
 
 importSnapshot:
-  enabled: true
-  strategy: url
+  enabled: false
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
@@ -38,3 +37,8 @@ daemonConfig: |
 
 additionalLabels:
   network: calibration
+
+persistence:
+  datastore:
+    enabled: true
+    size: "8000Gi"
