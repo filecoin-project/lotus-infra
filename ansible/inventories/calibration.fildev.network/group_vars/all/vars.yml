@@ -4,7 +4,7 @@ network_name: calibrationnet
 network_flag: calibnet
 faucet_initial_balance: "250000000000000000000000000"
 miners_initial_balance: "75000000000000000000000"
-verifreg_rootkey: "t1dtu5wnljecifn4iaeatmnsfrvc5skgkitwauocq"
+verifreg_rootkey: "t1zo7ub42i3s5cutljzjuqwnltt4xxm4y4f7l5s2i"
 
 additional_account_balance: {}
 
