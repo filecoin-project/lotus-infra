@@ -31,7 +31,7 @@ sentinel_telegraf_outputs_postgresql_conn: "{{ vault_timescale_conn }}"
 lotus_ipfs_gateway: https://proofs.filecoin.io/ipfs/
 lotus_user: "fc"
 lotus_user_uid: "532"
-proof_version: v27.1
+proof_version: v28
 proof_type: fake
 sector_size: 512MiB
 filebeat_additional_processors: |
