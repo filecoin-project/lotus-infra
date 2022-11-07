@@ -1,13 +1,13 @@
 image:
   pullPolicy: Always
-  tag: "1.0"
+  tag: "1.1.0"
 
 indexResolver:
   replicas: 3
   s3Resolver:
-    bucket: "filecoin-snapshots-mainnet"
-    endpoint: "https://s3.us-east-1.amazonaws.com"
-    secretName: s3-access
+    bucket: "filecoin-snapshots-mainnet-production"
+    endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
+    secretName: r2-access
   additionalEnv:
   - name: "GOLOG_LOG_FMT"
     value: "json"
@@ -33,18 +33,20 @@ snapshots:
   interval: "240"
   confidence: "30"
 
-  activeDeadlineSeconds: 10800
+  activeDeadlineSeconds: 12600
 
   uploads:
     enabled: true
-    secretName: s3-access
-    bucket: "filecoin-snapshots-mainnet"
-    endpoint: "https://s3.us-east-1.amazonaws.com"
+    bucket: "filecoin-snapshots-mainnet-production"
+    endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
+    secretName: r2-access
 
   jwtTokens:
     secretName: lotus-jwt
 
   additionalEnv:
+  - name: "FCA_CREATE_RETRIEVAL_ENDPOINT_PREFIX"
+    value: "https://pub-fd31751bcb69400eb39e694385c19457.r2.dev"
   - name: "GOLOG_LOG_FMT"
     value: "json"
   - name: "FCA_CREATE_PROGRESS_UPDATE"
