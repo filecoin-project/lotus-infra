@@ -5,8 +5,8 @@ prometheusOperatorServiceMonitor: true
 
 resources:
   requests:
-    memory: 32Gi
-    cpu: 4
+    memory: 48Gi
+    cpu: 6 
   limits:
     memory: 48Gi
     cpu: 6
