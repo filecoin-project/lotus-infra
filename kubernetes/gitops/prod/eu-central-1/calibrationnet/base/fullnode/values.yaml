@@ -1,5 +1,5 @@
 image:
-  tag: calibnet-v1.18.0-rc3 # {"$imagepolicy": "calibrationnet:calibrationnet-lotus:tag"}
+  tag: calibnet-v1.18.0-rc5 # {"$imagepolicy": "calibrationnet:calibrationnet-lotus:tag"}
 
 prometheusOperatorServiceMonitor: true
 
