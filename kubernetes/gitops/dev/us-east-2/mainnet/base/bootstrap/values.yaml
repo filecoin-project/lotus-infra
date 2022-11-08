@@ -7,6 +7,10 @@ resources:
   requests:
     memory: 48Gi
     cpu: 6
+  limits:
+    memory: 54Gi
+    cpu: 6
+
 
 importSnapshot:
   enabled: true

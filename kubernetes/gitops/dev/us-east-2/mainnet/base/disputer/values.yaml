@@ -8,7 +8,7 @@ resources:
     memory: 48Gi
     cpu: 6 
   limits:
-    memory: 48Gi
+    memory: 54Gi
     cpu: 6
 
 importSnapshot:
