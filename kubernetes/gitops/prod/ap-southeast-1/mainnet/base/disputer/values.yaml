@@ -14,10 +14,7 @@ resources:
 importSnapshot:
   enabled: true
   strategy: url
-  claimName: chain-exports
-  network: mainnet
-  exportRelease: finality-stateroots
-  exitCodeOnMissing: 1
+  url: https://snapshots.mainnet.filops.net/minimal/latest
 
 persistence:
   datastore:

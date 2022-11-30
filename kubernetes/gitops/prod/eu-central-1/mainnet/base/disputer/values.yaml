@@ -14,6 +14,7 @@ resources:
 importSnapshot:
   enabled: true
   strategy: url
+  ur: https://snapshots.mainnet.filops.net/minimal/latest
 
 persistence:
   datastore:
