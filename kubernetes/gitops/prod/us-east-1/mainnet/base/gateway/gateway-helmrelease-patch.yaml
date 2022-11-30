@@ -1,9 +1,7 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: gateway
-spec:
-  install:
-    timeout: 120m
-  upgrade:
-    timeout: 120m
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: gateway
+# spec:
+#   install:
+#     timeout: "90m"
