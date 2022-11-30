@@ -4,7 +4,9 @@ metadata:
   name: fullnode
 spec:
   install:
-    timeout: "90m"
+    timeout: "120m"
+  upgrade:
+    timeout: "120m"
   chart:
     spec:
       version: 0.3.4
