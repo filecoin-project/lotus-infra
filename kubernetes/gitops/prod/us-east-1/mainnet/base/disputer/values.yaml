@@ -30,7 +30,7 @@ daemonEnvs:
 
 disputer:
   enabled: true
-  walletAddr: f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da
+  walletAddr: f1tq6t4t5qrlosirgoweyb3lgrdwa3zspixwukbfa
   # maxFee:
   env:
     - name: GOLOG_LOG_FMT
