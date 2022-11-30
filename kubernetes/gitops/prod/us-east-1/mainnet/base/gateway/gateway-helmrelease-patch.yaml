@@ -4,4 +4,6 @@ metadata:
   name: gateway
 spec:
   install:
-    timeout: "90m"
+    timeout: 120m
+  upgrade:
+    timeout: 120m
