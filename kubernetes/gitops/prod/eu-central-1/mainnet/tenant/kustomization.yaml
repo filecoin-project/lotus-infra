@@ -5,7 +5,6 @@ namespace: ntwk-mainnet
 
 resources:
 - ../../../../base/applications/common
-- fullnode
 - bootstrap
 - disputer
 - gateway

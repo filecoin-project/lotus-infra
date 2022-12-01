@@ -3,7 +3,3 @@ kind: Kustomization
 
 resources:
   - ../../../../../base/applications/volume-snapshotter
-
-patchesStrategicMerge:
-  - volume-snapshotter-patch.yaml
-
