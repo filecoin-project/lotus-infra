@@ -41,4 +41,4 @@ additionalLabels:
 persistence:
   datastore:
     enabled: true
-    size: "8000Gi"
+    size: "500Gi"
