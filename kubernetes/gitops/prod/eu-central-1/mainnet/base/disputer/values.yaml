@@ -14,16 +14,12 @@ resources:
 importSnapshot:
   enabled: true
   strategy: url
-  claimName: chain-exports
-  network: mainnet
-  exportRelease: finality-stateroots
-  exitCodeOnMissing: 1
 
 persistence:
   datastore:
     enabled: true
     easyReset: true
-    size: "2000Gi"
+    size: "16000Gi"
     storageClassName: "gp2"
 
 daemonEnvs:
@@ -34,7 +30,7 @@ daemonEnvs:
 
 disputer:
   enabled: true
-  walletAddr: f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da
+  walletAddr: f1vkujr5ecab5t6nkstqukbt2vv2ams55pwl3crki
   # maxFee:
   env:
     - name: GOLOG_LOG_FMT
@@ -42,8 +38,3 @@ disputer:
 
 additionalLabels:
   network: mainnet
-
-persistence:
-  datastore:
-    enabled: true
-    size: "16000Gi"
