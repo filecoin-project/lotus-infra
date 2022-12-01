@@ -14,16 +14,12 @@ resources:
 importSnapshot:
   enabled: true
   strategy: url
-  claimName: chain-exports
-  network: mainnet
-  exportRelease: finality-stateroots
-  exitCodeOnMissing: 1
 
 persistence:
   datastore:
     enabled: true
     easyReset: true
-    size: "2000Gi"
+    size: "16000Gi"
     storageClassName: "gp2"
 
 daemonEnvs:
