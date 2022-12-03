@@ -6,9 +6,10 @@ secrets:
   jwt:
     enabled: true
     secretName: fullnode-0-jwt-secrets
-persistence:
-  datastore:
-    size: "32000Gi"
-    storageClassName: "io2-high-capacity-low-throughput"
+
 importSnapshot:
-  enabled: false
+  enabled: true
+  claimName: chain-exports
+  network: mainnet
+  exportRelease: export-full-archive
+  exitCodeOnMissing: 0
