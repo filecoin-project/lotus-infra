@@ -20,7 +20,7 @@ spec:
   decryption:
     provider: sops
     secretRef:
-      name: fil-infra-sops-gpg
+      name: cluster-sops-gpg
   interval: 5m0s
   path: ./kubernetes/gitops/dev/us-east-2/calibrationnet/tenant
   prune: true
