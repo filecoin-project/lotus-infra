@@ -6,5 +6,5 @@ namespace: mainnet
 
 resources:
 - bootstrap-0
-- bootstrap-1
-- bootstrap-2
+# - bootstrap-1
+# - bootstrap-2
