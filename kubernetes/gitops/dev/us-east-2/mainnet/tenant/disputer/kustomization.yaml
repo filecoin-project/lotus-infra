@@ -6,5 +6,5 @@ namespace: mainnet
 
 resources:
 - disputer-0
-- disputer-1
-- disputer-2
+# - disputer-1
+# - disputer-2

@@ -4,8 +4,8 @@ kind: Kustomization
 resources:
   - ../../../../../base/applications/gateway
 
-patchesStrategicMerge:
-  - gateway-helmrelease-patch.yaml
+# patchesStrategicMerge:
+#   - gateway-helmrelease-patch.yaml
 
 configMapGenerator:
 - files:

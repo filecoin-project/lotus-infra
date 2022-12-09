@@ -1,15 +1,15 @@
 image:
-  tag: butterfly-v1.15.1 # {"$imagepolicy": "butterflynet:butterflynet-lotus:tag"}
+  tag: butterfly-v1.18.0 # {"$imagepolicy": "butterflynet:butterflynet-lotus:tag"}
 
 prometheusOperatorServiceMonitor: true
 
 resources:
   requests:
-    memory: 96Gi
-    cpu: 8
+    memory: 4Gi
+    cpu: 4
   limits:
-    memory: 112Gi
-    cpu: 12
+    memory: 6Gi
+    cpu: 6
 
 importSnapshot:
   enabled: false
@@ -42,4 +42,7 @@ additionalLabels:
 persistence:
   datastore:
     enabled: true
-    size: "8000Gi"
+    size: "50Gi"
+
+nodeSelector:
+  "node.kubernetes.io/instance-type": "r5.2xlarge"
