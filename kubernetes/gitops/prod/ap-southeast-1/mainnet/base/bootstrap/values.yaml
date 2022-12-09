@@ -48,3 +48,8 @@ daemonEnvs:
 
 additionalLabels:
   network: mainnet
+
+persistence:
+  datastore:
+    enabled: true
+    size: "2000Gi"
