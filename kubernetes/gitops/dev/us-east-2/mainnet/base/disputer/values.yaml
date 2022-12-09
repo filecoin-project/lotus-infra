@@ -6,7 +6,7 @@ prometheusOperatorServiceMonitor: true
 resources:
   requests:
     memory: 48Gi
-    cpu: 6 
+    cpu: 6
   limits:
     memory: 54Gi
     cpu: 6
@@ -42,3 +42,6 @@ disputer:
 
 additionalLabels:
   network: mainnet
+
+nodeSelector:
+  "node.kubernetes.io/instance-type": "r5.2xlarge"

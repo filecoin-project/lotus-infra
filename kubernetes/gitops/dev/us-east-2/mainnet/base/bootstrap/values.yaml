@@ -39,8 +39,8 @@ daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
 
-# nodeSelector:
-#   "fil-infra.protocol.ai/node-type": "lotus-standard"
+nodeSelector:
+  "node.kubernetes.io/instance-type": "r5.2xlarge"
 
 additionalLabels:
   network: mainnet
