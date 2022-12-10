@@ -1,5 +1,5 @@
 image:
-  tag: butterfly-v1.15.1 # {"$imagepolicy": "butterflynet:butterflynet-lotus:tag"}
+  tag: butterfly-v1.18.0 # {"$imagepolicy": "butterflynet:butterflynet-lotus:tag"}
 
 prometheusOperatorServiceMonitor: true
 
@@ -42,4 +42,4 @@ additionalLabels:
 persistence:
   datastore:
     enabled: true
-    size: "8000Gi"
+    size: "50Gi"
