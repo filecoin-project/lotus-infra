@@ -19,7 +19,7 @@ persistence:
   datastore:
     enabled: true
     easyReset: true
-    size: "16000Gi"
+    size: "2000Gi"
     storageClassName: "gp2"
 
 daemonEnvs:
@@ -38,8 +38,3 @@ disputer:
 
 additionalLabels:
   network: mainnet
-
-persistence:
-  datastore:
-    enabled: true
-    size: "2000Gi"
