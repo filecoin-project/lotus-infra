@@ -3,7 +3,6 @@ kind: Kustomization
 
 resources:
 - ../../../base/fullnode
-- ../../../../../../base/applications/volume-snapshotter/
 - ../../../../../../base/applications/secrets-creator/
 
 namePrefix: node-0-
