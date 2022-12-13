@@ -58,3 +58,11 @@ nodelocker:
   additionalEnv:
   - name: "GOLOG_LOG_FMT"
     value: "json"
+
+podResets:
+  - pod: lotus-a-lotus-0
+    schedule: "0 0 * * 1"
+  - pod: lotus-b-lotus-0
+    schedule: "0 0 * * 3"
+  - pod: lotus-c-lotus-0
+    schedule: "0 0 * * 5"
