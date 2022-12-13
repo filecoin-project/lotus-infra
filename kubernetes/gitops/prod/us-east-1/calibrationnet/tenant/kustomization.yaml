@@ -7,4 +7,3 @@ resources:
 - ../../../../base/applications/common
 - fullnode
 - bootstrap
-# - disputer
