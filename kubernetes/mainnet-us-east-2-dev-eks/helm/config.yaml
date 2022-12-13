@@ -95,7 +95,7 @@ deployments:
     values:
       - base
   - chart: filecoin/filecoin-chain-archiver
-    version: 1.0.0
+    version: 1.0.1
     namespace: ntwk-mainnet-snapshot
     name: mainnet
     values:
