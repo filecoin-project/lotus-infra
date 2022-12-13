@@ -8,7 +8,7 @@ resources:
     memory: 160Gi
 
 importSnapshot:
-  enabled: true
+  enabled: false
   strategy: url
   claimName: chain-exports
   network: mainnet
