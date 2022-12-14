@@ -8,7 +8,7 @@ secrets:
     secretName: fullnode-0-jwt-secrets
 
 importSnapshot:
-  enabled: true
+  enabled: false
   claimName: chain-exports
   network: mainnet
   exportRelease: export-full-archive
