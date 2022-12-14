@@ -7,4 +7,5 @@ resources:
 - ../../../../base/applications/common
 - fullnode
 - bootstrap
+- stats-dashboard
 # - disputer

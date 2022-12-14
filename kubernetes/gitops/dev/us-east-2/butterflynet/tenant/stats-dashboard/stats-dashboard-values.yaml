@@ -1,0 +1,73 @@
+domain: stats-staging.butterflynet.filops.net
+mainDashboardID: z6FtI92Zz
+mainDashboardSlug: filecoin-chain-stats
+
+grafana:
+  envFromSecret: "datasource-secrets"
+
+  persistence:
+    enabled: false
+
+  dashboardsConfigMaps:
+    default: "chainstats-dashboard"
+
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: true
+        editable: false
+        options:
+          path: /var/lib/grafana/dashboards/default
+
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+      - name: ntwk-butterflynet
+        type: influxdb
+        access: proxy
+        database: chainstats-ntwk-butterflynet
+        user: lotus-grafana
+        url: https://eightyeight-1b1e0a69.influxcloud.net:8086
+        jsonData:
+          httpMode: POST
+        secureJsonData:
+          password: $INFLUXDB_PASSWORD
+
+  # nginx side car configuration
+
+  extraConfigmapMounts:
+  - configMap: stats-dashboard-nginx-sidecar
+    mountPath: /opt/bitnami/nginx/conf/grafana-restricted
+    subPath: ''
+    name: config-volume
+    readOnly: true
+
+  extraContainers: |
+    - image: bitnami/nginx:1.16
+      name: nginx
+      ports:
+      - containerPort: 8000
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsUser: 0
+      volumeMounts:
+      - mountPath: /opt/bitnami/nginx/conf/grafana-restricted
+        name: config-volume
+        readOnly: true
+
+  service:
+    port: 443
+    portName: https
+    annotations:
+      # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: #########
+      external-dns.alpha.kubernetes.io/hostname: stats-staging.butterflynet.filops.net
+      external-dns.alpha.kubernetes.io/alias: "true"
+      external-dns.alpha.kubernetes.io/ttl: "60"
+    targetPort: 8000
+    type: LoadBalancer
