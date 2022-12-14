@@ -11,6 +11,3 @@ configMapGenerator:
 - files:
   - values.yaml=stats-dashboard-values.yaml
   name: stats-dashboard-values
-- files:
-  - chain.dashboard.json=chain.dashboard.json
-  name: chainstats-dashboard
