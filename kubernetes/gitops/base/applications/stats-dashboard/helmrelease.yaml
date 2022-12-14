@@ -1,0 +1,28 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: stats-dashboard
+spec:
+  install:
+    timeout: 5m
+    remediation:
+      retries: 100
+  upgrade:
+    timeout: 5m
+    remediation:
+      retries: 100
+  chart:
+    spec:
+      chart: lotus-grafana
+      sourceRef:
+        apiVersion: source.toolkit.fluxcd.io/v1beta1
+        kind: HelmRepository
+        name: filecoin-project-charts
+      version: 0.2.0
+  interval: 1m0s
+  # The values are merged in the order given, with the later values overwriting earlier. These values always have a lower priority 
+  valuesFrom:
+  - kind: ConfigMap
+    name: stats-dashboard-common-values
+  - kind: ConfigMap
+    name: stats-dashboard-values
