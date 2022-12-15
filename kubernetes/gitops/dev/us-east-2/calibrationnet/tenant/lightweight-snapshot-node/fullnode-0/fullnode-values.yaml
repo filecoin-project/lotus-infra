@@ -1,4 +1,4 @@
-secrets:
-  jwt:
-    enabled: true
-    secretName: lightweight-snapshot-node-jwt-secrets
+#secrets:
+#  jwt:
+#    enabled: true
+#    secretName: lightweight-snapshot-node-jwt-secrets
