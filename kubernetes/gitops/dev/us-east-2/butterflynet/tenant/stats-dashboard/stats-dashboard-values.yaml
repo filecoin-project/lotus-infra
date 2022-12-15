@@ -3,7 +3,7 @@ mainDashboardID: z6FtI92Zz
 mainDashboardSlug: filecoin-chain-stats
 
 grafana:
-  envFromSecret: "datasource-secrets"
+  envFromSecret: "butterfly-datasource-secrets"
   env:
     GF_AUTH_ANONYMOUS_ENABLED: "true"
     GF_AUTH_BASIC_ENABLED: "false"
@@ -13,7 +13,7 @@ grafana:
     enabled: false
 
   dashboardsConfigMaps:
-    default: "chainstats-dashboard"
+    default: "butterfly-chainstats-dashboard"
 
   dashboardProviders:
     dashboardproviders.yaml:
@@ -46,7 +46,7 @@ grafana:
   # nginx side car configuration
 
   extraConfigmapMounts:
-  - configMap: stats-dashboard-nginx-sidecar
+  - configMap: butterfly-stats-dashboard-nginx-sidecar
     mountPath: /opt/bitnami/nginx/conf/grafana-restricted
     subPath: ''
     name: config-volume
