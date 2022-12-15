@@ -65,7 +65,7 @@ grafana:
     port: 443
     portName: https
     annotations:
-      # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: #########
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-2:759815798766:certificate/3ec544f8-ec91-47d7-839d-6871c1338569
       external-dns.alpha.kubernetes.io/hostname: stats-staging.calibrationnet.filops.net
       external-dns.alpha.kubernetes.io/alias: "true"
       external-dns.alpha.kubernetes.io/ttl: "60"
