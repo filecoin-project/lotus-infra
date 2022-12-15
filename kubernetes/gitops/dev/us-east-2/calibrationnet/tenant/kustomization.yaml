@@ -8,4 +8,5 @@ resources:
 - fullnode
 - bootstrap
 - stats-dashboard
+- lightweight-snapshot-node
 # - disputer
