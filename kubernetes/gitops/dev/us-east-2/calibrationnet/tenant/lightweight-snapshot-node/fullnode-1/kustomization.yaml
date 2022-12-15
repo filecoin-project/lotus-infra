@@ -5,7 +5,7 @@ resources:
 - ../../../base/lightweight-snapshot-node
 - ../../../../../../base/applications/secrets-creator/
 
-namePrefix: lightweight-snapshot-node-0-
+namePrefix: lightweight-snapshot-node-1-
 
 configMapGenerator:
 - files:
