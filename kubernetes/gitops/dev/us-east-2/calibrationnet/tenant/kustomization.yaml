@@ -9,4 +9,5 @@ resources:
 - bootstrap
 - stats-dashboard
 - lightweight-snapshot-node
+- lightweight-snapshot-chain-archiver
 # - disputer

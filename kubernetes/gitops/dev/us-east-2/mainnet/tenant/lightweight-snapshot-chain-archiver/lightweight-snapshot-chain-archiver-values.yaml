@@ -1,0 +1,19 @@
+image:
+  pullPolicy: Always
+  tag: "1.1.1"
+
+indexResolver:
+  replicas: 0
+  s3Resolver:
+    bucket: "filecoin-snapshots-calibnet-staging"
+    endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
+    secretName: r2-access
+
+  loadBalancer:
+    enabled: false
+
+  uploads:
+    enabled: true
+    bucket: "filecoin-snapshots-calibnet-staging"
+    endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
+    secretName: r2-access
