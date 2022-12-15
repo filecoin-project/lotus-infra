@@ -4,6 +4,10 @@ mainDashboardSlug: filecoin-chain-stats
 
 grafana:
   envFromSecret: "datasource-secrets"
+  env:
+    GF_AUTH_ANONYMOUS_ENABLED: "true"
+    GF_AUTH_BASIC_ENABLED: "false"
+    GF_AUTH_DISABLE_LOGIN_FORM: "false"
 
   persistence:
     enabled: false
