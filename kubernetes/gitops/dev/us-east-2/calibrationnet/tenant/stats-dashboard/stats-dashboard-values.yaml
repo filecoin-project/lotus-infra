@@ -57,7 +57,7 @@ grafana:
         allowPrivilegeEscalation: false
         runAsUser: 0
       volumeMounts:
-      - mountPath: /opt/bitnami/nginx/conf/grafana-restricted
+      - mountPath: /opt/bitnami/nginx/conf/server_blocks
         name: config-volume
         readOnly: true
 
