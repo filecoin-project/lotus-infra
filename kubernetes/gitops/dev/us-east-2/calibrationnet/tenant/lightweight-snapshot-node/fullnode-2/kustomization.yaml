@@ -3,7 +3,6 @@ kind: Kustomization
 
 resources:
 - ../../../base/lightweight-snapshot-node
-- ../../../../../../base/applications/secrets-creator/
 
 namePrefix: lightweight-snapshot-node-2-
 
