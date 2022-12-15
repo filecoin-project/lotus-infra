@@ -4,6 +4,10 @@ mainDashboardSlug: filecoin-chain-stats
 
 grafana:
   envFromSecret: "datasource-secrets"
+  env:
+    GF_AUTH_ANONYMOUS_ENABLED: "true"
+    GF_AUTH_BASIC_ENABLED: "false"
+    GF_AUTH_DISABLE_LOGIN_FORM: "false"
 
   persistence:
     enabled: false
@@ -57,7 +61,7 @@ grafana:
         allowPrivilegeEscalation: false
         runAsUser: 0
       volumeMounts:
-      - mountPath: /opt/bitnami/nginx/conf/grafana-restricted
+      - mountPath: /opt/bitnami/nginx/conf/server_blocks
         name: config-volume
         readOnly: true
 
@@ -65,7 +69,7 @@ grafana:
     port: 443
     portName: https
     annotations:
-      # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: #########
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-2:759815798766:certificate/3ec544f8-ec91-47d7-839d-6871c1338569
       external-dns.alpha.kubernetes.io/hostname: stats-staging.calibrationnet.filops.net
       external-dns.alpha.kubernetes.io/alias: "true"
       external-dns.alpha.kubernetes.io/ttl: "60"

@@ -3,6 +3,8 @@ kind: Kustomization
 
 resources:
 - ../../../../../base/applications/stats-dashboard
+- datasource-secrets.yaml
+- chainstats-dashboard.yaml
 
 patchesStrategicMerge:
   - stats-dashboard-helmrelease-patch.yaml
@@ -11,6 +13,3 @@ configMapGenerator:
 - files:
   - values.yaml=stats-dashboard-values.yaml
   name: stats-dashboard-values
-- files:
-  - chain.dashboard.json=chain.dashboard.json
-  name: chainstats-dashboard
