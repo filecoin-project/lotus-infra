@@ -10,9 +10,6 @@ resources:
 importSnapshot:
   enabled: true
   strategy: url
-  network: mainnet
-  exportRelease: export-full-archive
-  exitCodeOnMissing: 0
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
