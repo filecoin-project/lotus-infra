@@ -1,6 +1,6 @@
 image:
   pullPolicy: Always
-  tag: "1.1.0"
+  tag: "1.1.1"
 
 indexResolver:
   replicas: 3
@@ -61,8 +61,8 @@ nodelocker:
 
 podResets:
   - pod: lotus-a-lotus-0
-    schedule: "0 0 * * 1"
+    schedule: "0 0 * * 1,4"
   - pod: lotus-b-lotus-0
-    schedule: "0 0 * * 3"
+    schedule: "0 0 * * 2,5"
   - pod: lotus-c-lotus-0
-    schedule: "0 0 * * 5"
+    schedule: "0 0 * * 3,6"

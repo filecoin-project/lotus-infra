@@ -4,3 +4,4 @@ kind: Kustomization
 # common components specific for dev accross multiple networks
 resources:
 - github-auth.yaml
+- cluster-sops-gpg.yaml
