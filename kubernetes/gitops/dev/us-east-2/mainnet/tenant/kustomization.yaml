@@ -10,3 +10,4 @@ resources:
 - disputer
 - gateway
 - lightweight-snapshot-node
+- lightweight-snapshot-chain-archiver

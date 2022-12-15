@@ -1,0 +1,39 @@
+apiVersion: v1
+data:
+    ACCESS_KEY: ENC[AES256_GCM,data:8mvr1UjJhZ2MkqBj9dvY44SoVxyFMEO43/isCgkGN02Nc5+8BbwOKA1DqoE=,iv:twdbvMj+qEYWieFdge2vHOhBFeqyZv/xm8rbLwc0I9c=,tag:YGNpG7yUUYsA8Ha1z2BBlA==,type:str]
+    SECRET_KEY: ENC[AES256_GCM,data:03Z72XaY7S/4ZZr/eFZ82w2Y+ZtjkyqkgHrfsCPsMK3LkgqKgE5bvxo7X2D/8cPX8rPEnxVHWG8yvdWvtTnmDVr371GPZiR8uxJ36MImJskyqbeQ1BUK8g==,iv:wRaJLz2U3R0sfRR6KSziI4eCgyE6Ag+sMIcNDvxLVlM=,tag:Ppt34k3Gs9QW3xCS8FbkHg==,type:str]
+kind: Secret
+metadata:
+    name: r2-access
+type: Opaque
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2022-12-15T21:34:08Z"
+    mac: ENC[AES256_GCM,data:YSocZ/55oEtdrjguDcLAqrQq0G2Od/EAqGj+ZUAgLrQZtDgzoAhEKf0kMv5jXIkbjuBmKdwnvQOGPT2JlHXTkHS2kJ71A44TETNOcHM4H+GLLzxsxhlfqY9whh0Lk4nOVJ0/dsunpchoPbemZvu6sKoQXcxp07+NTaVQuNPkOZc=,iv:Pmgx+qzASM+0t2FsylV3DdTAvtAedsfUdb0cpnl0aIg=,tag:81vgDFMXYDST7sacSy85Tw==,type:str]
+    pgp:
+        - created_at: "2022-12-15T21:34:07Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMAzhHTTGTeReUARAAhpj163sZNjfodQpa4I1OiiRPeD41i4wR/oI6fivdk5YI
+            prY+WoggoqbZA/p95fI74fy14y0BbT3bwSqqW97RiQzL19OXXPs3MJIxkbBfND2H
+            nUp/EG9tRfGVSOtLpo0Ae+993pfDSshnAdXhSzu81dNPLA6oc2dS9c81SKLqTo67
+            voc9UFipM1olaEY5T/piMQJ9pEOt0/+DSo9NotG3j2HHpPaVd8JPYwilYy91/jE/
+            b5kcPIBjvgODL7f2y5nxEzDkACjK4iDHLB0PFz3kBaMW1mHDCgDxEa80lSysDau1
+            BZinx0ps+V86uGAR+68TVV0YchzTr9QhmMFR2heDVQcc8Yy3di2uPBed/8FxnreL
+            3/MWsjwjNguocivCu0uvys71Gh6/VHHuiC99VNyiW8mJxLkORULq4LpbRmQh2fEE
+            k77QEm0829snuiu+V91R1AnQ6+4FQZ7dLp2aa35V/yeUSav6ml49/CLKDaaxTN5m
+            7r335rIm8VJIOodT0LbbGAByQzKjbDR/wxkyntWBd0NAxNKOiwy8FYpWRrx0ykwm
+            oogE1kywgAFJsDJ04qAg5vztSHYxS0bFRB6/ecuXfNfWeQpHJR6WRY8UUIaAgClr
+            nf/KqLw4ACHG965q34Fg22DM5JVwAuo2hTs7TvsjQ1SjX8F0OzgG841onUKr/ZnS
+            XgGurrBwtO1z1YkDgjSiN3fQyLwxga6DLn/RiiGKErWRT+iFVOxk4waIyp2O/SyD
+            fiJTAPiKXM8GUmfflQRXVskEP/wV1fJMw5dyVqs/w2Xd9QNe0MDPLdF/d4Z8Ea8=
+            =4jr8
+            -----END PGP MESSAGE-----
+          fp: A50558D3030D9A1513E0C44C473253F56BEC6FF5
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3
