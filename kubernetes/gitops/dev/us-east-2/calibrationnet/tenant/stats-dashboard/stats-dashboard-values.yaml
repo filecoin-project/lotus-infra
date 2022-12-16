@@ -3,7 +3,7 @@ mainDashboardID: z6FtI92Zz
 mainDashboardSlug: filecoin-chain-stats
 
 grafana:
-  envFromSecret: "calibration-stats-dashboard-datasource-secrets"
+  envFromSecret: "calibration-datasource-secrets"
   env:
     GF_AUTH_ANONYMOUS_ENABLED: "true"
     GF_AUTH_BASIC_ENABLED: "false"
@@ -13,7 +13,7 @@ grafana:
     enabled: false
 
   dashboardsConfigMaps:
-    default: "calibration-stats-dashboard-chainstats-dashboard"
+    default: "calibration-chainstats-dashboard"
 
   dashboardProviders:
     dashboardproviders.yaml:
