@@ -42,3 +42,6 @@ persistence:
   datastore:
     enabled: true
     size: "2000Gi"
+
+nodeSelector:
+  "node.kubernetes.io/instance-type": "r5.2xlarge"
