@@ -7,7 +7,7 @@ resources:
 configMapGenerator:
 - files:
   - values.yaml=lighweight-snapshot-chain-archiver.yaml
-  name: lighweight-snapshot-chain-archiver
+  name: lighweight-snapshot-chain-archiver-common-values
 
 configurations:
   - kustomizeconfig.yaml
