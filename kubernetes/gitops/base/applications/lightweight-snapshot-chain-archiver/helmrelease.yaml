@@ -23,6 +23,6 @@ spec:
   # The values are merged in the order given, with the later values overwriting earlier. These values always have a lower priority
   valuesFrom:
   - kind: ConfigMap
-    name: lighweight-snapshot-chain-archiver-common-values
+    name: lightweight-snapshot-chain-archiver-common-values
   - kind: ConfigMap
-    name: lighweight-snapshot-chain-archiver-values
+    name: lightweight-snapshot-chain-archiver-values
