@@ -6,3 +6,6 @@ secrets:
   jwt:
     enabled: true
     secretName: fullnode-0-jwt-secrets
+
+importSnapshot:
+  enabled: false
