@@ -1,0 +1,47 @@
+image:
+  tag: "1.1.1"
+
+indexResolver:
+  replicas: 0
+  additionalEnv:
+  - name: "GOLOG_LOG_FMT"
+    value: "json"
+
+  loadBalancer:
+    enabled: false
+
+snapshots:
+  nodes:
+  - /dns/lightweight-snapshot-node-0-fullnode-lotus-daemon/tcp/1234
+  - /dns/lightweight-snapshot-node-1-fullnode-lotus-daemon/tcp/1234
+  - /dns/lightweight-snapshot-node-2-fullnode-lotus-daemon/tcp/1234
+
+  schedule: "0 */2 * * *"
+
+  interval: "240"
+  confidence: "30"
+
+  activeDeadlineSeconds: 12600
+
+  uploads:
+    enabled: false
+
+  jwtTokens:
+    secretName: lightweight-snapshot-node-jwt-secret
+
+  additionalEnv:
+  - name: "GOLOG_LOG_FMT"
+    value: "json"
+
+nodelocker:
+  additionalEnv:
+  - name: "GOLOG_LOG_FMT"
+    value: "json"
+
+podResets:
+  - pod: lightweight-snapshot-node-0-fullnode-lotus-0
+    schedule: "0 0 * * 1,4"
+  - pod: lightweight-snapshot-node-1-fullnode-lotus-0
+    schedule: "0 0 * * 2,5"
+  - pod: lightweight-snapshot-node-2-fullnode-lotus-0
+    schedule: "0 0 * * 3,6"
