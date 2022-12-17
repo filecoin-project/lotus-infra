@@ -67,3 +67,6 @@ prometheus:
   serviceMonitor: true
   path: /debug/metrics
   port: lotus-gw
+
+nodeSelector:
+  "node.kubernetes.io/instance-type": "r5.2xlarge"

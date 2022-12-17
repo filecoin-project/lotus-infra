@@ -18,7 +18,7 @@ spec:
         name: fil-infra-bot
         email: fil-infra-bot@protocol.ai
       messageTemplate: |
-        Update {{ .AutomationObject.Namespace }}/{{ .AutomationObject.Name }} in `staging` environment
+        Update {{ .AutomationObject.Namespace }}/{{ .AutomationObject.Name }} in `production` environment
         
         Files:
         {{ range $filename, $_ := .Updated.Files -}}
@@ -38,4 +38,4 @@ spec:
       branch: 'main'
   update:
     strategy: Setters
-    path: "./kubernetes/gitops/dev/us-east-2/calibrationnet"
+    path: "./kubernetes/gitops/prod/us-east-1/calibrationnet"

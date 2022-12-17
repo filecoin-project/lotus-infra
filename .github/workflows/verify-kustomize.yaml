@@ -7,5 +7,5 @@ jobs:
   kustomize-build-script:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@v3
       - run: ./scripts/verify_kustomize.bash
