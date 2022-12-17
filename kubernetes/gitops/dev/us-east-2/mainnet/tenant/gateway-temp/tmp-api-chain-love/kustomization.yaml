@@ -9,4 +9,4 @@ namePrefix: tmp-
 configMapGenerator:
 - files:
   - values.yaml=values.yaml
-  name: tmp-api-chain-love-values
+  name: gateway-values
