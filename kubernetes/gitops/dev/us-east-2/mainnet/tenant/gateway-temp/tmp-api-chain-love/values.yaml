@@ -44,7 +44,6 @@ application:
   configMaps: []
   services:
     - type: ClusterIP
-      externalTrafficPolicy: Local
       selector:
         app: lotus-gateway
       ports:
