@@ -10,3 +10,6 @@ secrets:
     secretName: disputer-node-0-wallet
 loadBalancer:
   enabled: false
+
+nodeSelector:
+  "node.kubernetes.io/instance-type": "r5.2xlarge"
