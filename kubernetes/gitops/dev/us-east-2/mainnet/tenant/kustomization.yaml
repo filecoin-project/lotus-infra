@@ -9,3 +9,4 @@ resources:
 - bootstrap
 - disputer
 - gateway
+- gateway-temp
