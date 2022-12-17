@@ -9,5 +9,6 @@ resources:
 - bootstrap
 - disputer
 - gateway
+- gateway-temp
 # - lightweight-snapshot-node
 # - lightweight-snapshot-chain-archiver
