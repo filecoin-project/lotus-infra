@@ -55,6 +55,8 @@ application:
     - annotations:
         nginx.ingress.kubernetes.io/configuration-snippet: |
           more_set_headers "Access-Control-Allow-Origin: *";
+          more_set_headers "Access-Control-Allow-Methods: POST, GET, OPTIONS";
+          more_set_headers "Access-Control-Max-Age: 300";
           more_set_headers "X-is-this-working: yes";
       spec:
         ingressClassName: nginx
