@@ -10,4 +10,4 @@ resources:
 configMapGenerator:
 - files:
   - values.yaml=values.yaml
-  name: gateway-network-common
+  name: gateway-network-values
