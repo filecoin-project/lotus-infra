@@ -1,2 +1,28 @@
+application:
+  ingresses:
+    - annotations:
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          more_set_headers "Access-Control-Allow-Origin: *";
+          more_set_headers "Access-Control-Allow-Headers: content-type";
+          more_set_headers "Access-Control-Allow-Methods: POST, OPTIONS";
+          more_set_headers "Access-Control-Max-Age: 300";
+          if ($request_method = OPTIONS) {
+            more_set_headers "Content-Length: 0";
+            return 204;
+          }
+      spec:
+        ingressClassName: nginx
+        rules:
+          - host: api.chain.love
+            http:
+              paths:
+                - pathType: Prefix
+                  path: "/"
+                  backend:
+                    service:
+                      name: api-chain-love-gateway-lotus-gateway-0
+                      port:
+                        name: lotus-gw
+
 nodeSelector:
   "node.kubernetes.io/instance-type": "r5.2xlarge"
