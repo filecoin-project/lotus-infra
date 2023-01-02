@@ -77,8 +77,8 @@ nodelocker:
 
 podResets:
   - pod: lotus-a-lotus-0
-    schedule: "0 0 1-30/3 * *"
+    schedule: "15 0 1-30/3 * *"
   - pod: lotus-b-lotus-0
-    schedule: "0 8 2/3,31 * *"
+    schedule: "15 0 2/3,31 * *"
   - pod: lotus-c-lotus-0
-    schedule: "0 16 3/3 * *"
+    schedule: "15 0 3/3 * *"
