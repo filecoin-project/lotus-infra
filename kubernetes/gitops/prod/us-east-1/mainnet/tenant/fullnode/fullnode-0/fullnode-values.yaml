@@ -6,3 +6,9 @@ secrets:
   jwt:
     enabled: true
     secretName: fullnode-0-jwt-secrets
+
+importSnapshot:
+  enabled: false
+
+nodeSelector:
+  "node.kubernetes.io/instance-type": "r5b.8xlarge"

@@ -5,4 +5,5 @@ resources:
 - ../../../base/storage/
 - ../mainnet/cluster
 - ../calibrationnet/cluster
+- ../butterflynet/cluster
 

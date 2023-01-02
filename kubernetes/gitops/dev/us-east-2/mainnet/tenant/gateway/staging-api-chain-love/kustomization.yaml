@@ -9,4 +9,4 @@ namePrefix: staging-api-chain-love-
 configMapGenerator:
 - files:
   - values.yaml=values.yaml
-  name: staging-api-chain-love-values
+  name: gateway-values
