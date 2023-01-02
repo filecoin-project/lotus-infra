@@ -59,10 +59,26 @@ nodelocker:
   - name: "GOLOG_LOG_FMT"
     value: "json"
 
+# What day of the week will each reset run?
+# Generally, each instance gets reset every
+# three days. On months with 29 or 31 days,
+# instance C or A, respectively, will have
+# four days between resets
+#
+#     A    B    C
+#     -----------
+#     1    2    3
+#     4    5    6
+#     7    8    9
+#     ...
+#     25   26   27
+#     28   29   30
+#          31
+
 podResets:
   - pod: lotus-a-lotus-0
-    schedule: "0 0 * * 1,4"
+    schedule: "0 0 1-30/3 * *"
   - pod: lotus-b-lotus-0
-    schedule: "0 0 * * 2,5"
+    schedule: "0 8 2/3,31 * *"
   - pod: lotus-c-lotus-0
-    schedule: "0 0 * * 3,6"
+    schedule: "0 16 3/3 * *"
