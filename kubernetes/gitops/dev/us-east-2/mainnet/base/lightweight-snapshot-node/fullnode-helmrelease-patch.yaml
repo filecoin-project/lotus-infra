@@ -3,6 +3,7 @@ kind: HelmRelease
 metadata:
   name: fullnode
 spec:
+  releaseName: lws-nodes
   install:
     timeout: "90m"
   chart:
