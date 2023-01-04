@@ -9,3 +9,4 @@ resources:
 - bootstrap
 - disputer
 - gateway
+#- lightweight-snapshot-node

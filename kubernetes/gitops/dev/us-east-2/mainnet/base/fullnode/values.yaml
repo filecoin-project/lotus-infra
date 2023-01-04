@@ -8,7 +8,7 @@ resources:
     memory: 160Gi
 
 importSnapshot:
-  enabled: true
+  enabled: false
   strategy: url
   claimName: chain-exports
   network: mainnet
@@ -42,7 +42,8 @@ additionalLabels:
 persistence:
   datastore:
     enabled: true
-    size: "16000Gi"
+    size: "32000Gi"
+    storageClassName: "io2-high-capacity-low-throughput"
 
 nodeSelector:
   "node.kubernetes.io/instance-type": "r5b.8xlarge"

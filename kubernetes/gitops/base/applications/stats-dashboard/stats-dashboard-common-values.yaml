@@ -1,0 +1,3 @@
+grafana:
+  image:
+    tag: 7.2.1
