@@ -1,6 +1,0 @@
-image:
-  tag: mainnet-v1.11.3
-
-schedule: "*/15 * * * *"
-lookback: 30
-height: "@common"
