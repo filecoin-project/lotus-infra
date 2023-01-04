@@ -2,7 +2,6 @@ lotus_seed_sector_size: 34359738368
 lotus_seed_sector_count: 1
 lotus_seed_env:
   RUST_LOG: info
-  FIL_PROOFS_MAXIMIZE_CACHING: 1
 lotus_seed_workers:
   - path: "/mnt/disk0/data"
     index: 0

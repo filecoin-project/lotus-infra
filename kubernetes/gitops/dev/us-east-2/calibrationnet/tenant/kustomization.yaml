@@ -8,6 +8,6 @@ resources:
 - fullnode
 - bootstrap
 - stats-dashboard
-# - lightweight-snapshot-node
-# - lightweight-snapshot-chain-archiver
+- lightweight-snapshot-node
+- lightweight-snapshot-chain-archiver
 # - disputer
