@@ -38,3 +38,6 @@ disputer:
 
 additionalLabels:
   network: mainnet
+
+nodeSelector:
+  "node.kubernetes.io/instance-type": "r5.2xlarge"

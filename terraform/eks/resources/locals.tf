@@ -156,6 +156,16 @@ locals {
       username = "chris.harden"
       groups   = ["system:masters"]
     },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/laith.alissa"
+      username = "laith.alissa"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/sean.pankanin"
+      username = "sean.pankanin"
+      groups   = ["system:masters"]
+    },
   ]
 
   tags = {

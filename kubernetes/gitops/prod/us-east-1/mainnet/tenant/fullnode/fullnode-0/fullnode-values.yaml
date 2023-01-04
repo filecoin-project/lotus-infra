@@ -9,3 +9,6 @@ secrets:
 
 importSnapshot:
   enabled: false
+
+nodeSelector:
+  "node.kubernetes.io/instance-type": "r5b.8xlarge"

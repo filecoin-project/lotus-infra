@@ -18,9 +18,13 @@ spec:
         apiVersion: source.toolkit.fluxcd.io/v1beta1
         kind: HelmRepository
         name: filecoin-project-charts
-      version: 0.0.18
+      version: 0.0.21
   interval: 1m0s
   # The values are merged in the order given, with the later values overwriting earlier. These values always have a lower priority 
   valuesFrom:
   - kind: ConfigMap
     name: gateway-common-values
+  - kind: ConfigMap
+    name: gateway-network-values
+  - kind: ConfigMap
+    name: gateway-values

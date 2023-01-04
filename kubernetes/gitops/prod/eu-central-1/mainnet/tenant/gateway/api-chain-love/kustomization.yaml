@@ -9,4 +9,4 @@ namePrefix: api-chain-love-
 configMapGenerator:
 - files:
   - values.yaml=values.yaml
-  name: api-chain-love-values
+  name: gateway-values
