@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
 - ../../../base/lightweight-snapshot-node
 
-namePrefix: lightweight-snapshot-node-0-
+namePrefix: lws-node-0-
 
 configMapGenerator:
 - files:

@@ -3,6 +3,7 @@ kind: HelmRelease
 metadata:
   name: filecoin-chain-archiver
 spec:
+  releaseName: lws-chain-archiver
   install:
     timeout: 5m
     remediation:
