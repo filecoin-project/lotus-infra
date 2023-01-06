@@ -10,3 +10,6 @@ secrets:
     secretName: wallet-disputer-0
 loadBalancer:
   enabled: false
+
+nodeSelector:
+  "node.kubernetes.io/instance-type": "r5.2xlarge"

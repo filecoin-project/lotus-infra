@@ -1,0 +1,11 @@
+name: verify-kustomize
+run-name: verify kustomizations are valid
+on:
+  pull_request:
+    types: [synchronize, opened, reopened, labeled, unlabeled]
+jobs:
+  kustomize-build-script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: ./scripts/verify_kustomize.bash

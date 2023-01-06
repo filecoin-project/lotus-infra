@@ -41,4 +41,7 @@ additionalLabels:
 persistence:
   datastore:
     enabled: true
-    size: "8000Gi"
+    size: "500Gi"
+
+nodeSelector:
+  "node.kubernetes.io/instance-type": "r5.2xlarge"

@@ -20,19 +20,26 @@ resource "aws_instance" "mod" {
   vpc_security_group_ids = var.security_group_ids
   subnet_id              = var.subnet_id
 
+  volume_tags = {
+    github_username = each.value.github_username
+    role            = "development"
+    isproduction    = "1"
+    project         = "lotus"
+    dri             = "${each.value.github_username}@protocol.ai"
+  }
+
   root_block_device {
     delete_on_termination = false
-    tags = {
-      github_username = each.value.github_username
-      role            = "development"
-    }
-    volume_size = each.value.volume_size
-    volume_type = "gp2"
+    volume_size           = each.value.volume_size
+    volume_type           = "gp2"
   }
 
   tags = {
     github_username = each.value.github_username
     role            = "development"
+    isproduction    = "1"
+    project         = "lotus"
+    dri             = "${each.value.github_username}@protocol.ai"
   }
 
   user_data = templatefile("${path.module}/templates/fetch_ssh_key.bash.tpl", {
