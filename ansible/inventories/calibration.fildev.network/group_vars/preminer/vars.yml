@@ -7,7 +7,7 @@ lotus_miner_env:
 
 lotus_miner_verified_deals: true
 lotus_miner_ensure_params: true
-lotus_miner_data_root: "/fildev-network"
+lotus_miner_data_root: "/fildev-network-sectors"
 lotus_miner_presealed_metadata: "{{ lotus_miner_data_root }}/presealed-metadata.json"
 
 lotus_miner_presealed_sectors:
