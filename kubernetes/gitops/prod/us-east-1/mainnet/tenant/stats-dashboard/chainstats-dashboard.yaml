@@ -2168,6 +2168,7 @@ data:
                   "type": "fill"
                 }
               ],
+              "hide": true,
               "limit": "",
               "measurement": "chain.miner_power",
               "orderByTime": "ASC",
@@ -2210,10 +2211,10 @@ data:
                   "type": "fill"
                 }
               ],
-              "hide": true,
+              "hide": false,
               "orderByTime": "ASC",
               "policy": "default",
-              "query": "SELECT mean(\"value\") FROM \"chain.miner_power\" WHERE $timeFilter AND value >  1125899906842624 GROUP BY time($__interval), \"miner\" fill(null)",
+              "query": "SELECT mean(\"value\") FROM \"chain.miner_power\" WHERE $timeFilter AND value > 5 * 1048576 GROUP BY time($__interval), \"miner\" fill(null)",
               "rawQuery": true,
               "refId": "B",
               "resultFormat": "time_series",
@@ -2238,7 +2239,7 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Top Miner Power",
+          "title": "Top Miner Power (Over 5PB)",
           "tooltip": {
             "shared": true,
             "sort": 2,
