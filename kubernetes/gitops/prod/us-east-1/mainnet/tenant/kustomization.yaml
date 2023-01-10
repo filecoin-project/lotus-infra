@@ -10,3 +10,5 @@ resources:
 - disputer
 - gateway
 #- lightweight-snapshot-node
+- stats-dashboard
+

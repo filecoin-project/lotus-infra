@@ -562,7 +562,7 @@ data:
           },
           "yaxes": [
             {
-              "format": "bytes",
+              "format": "gbytes",
               "label": null,
               "logBase": 1,
               "max": null,
