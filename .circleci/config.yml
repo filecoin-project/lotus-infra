@@ -801,39 +801,6 @@ workflows:
           context:
             - filecoin-dev-aws-ec2
 
-  butterfly-nightly:
-    when:
-      equal: [ "none", << pipeline.parameters.api_workflow_requested >> ]
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - /^(main|master)$/
-    jobs:
-      - lotus-build-containers:
-          tag: master
-          repo: coryschwartz
-          network: butterflynet
-          use_gitsha: true
-      - helm-deploy:
-          context: sentinel-staging-deploy
-          requires:
-            - lotus-build-containers
-          cluster: mainnet-us-east-2-dev-eks
-          region: us-east-2
-          namespace: ntwk-butterfly-fullnode
-          chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
-          override_from_workspace: true
-          matrix:
-            parameters:
-              release:
-                - fullnode-0
-                - fullnode-1
-                - fullnode-2
-
   api-helm-deploy:
     when:
       equal: [ "helm-deploy", << pipeline.parameters.api_workflow_requested >> ]
