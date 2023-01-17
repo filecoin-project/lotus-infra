@@ -12,6 +12,7 @@ indexResolver:
   loadBalancer:
     enabled: false
 
+snapshots:
   uploads:
     enabled: true
     bucket: "filecoin-snapshots-mainnet-staging"
