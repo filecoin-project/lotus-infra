@@ -5,6 +5,8 @@ metadata:
 spec:
   install:
     timeout: "90m"
+  upgrade:
+    timeout: "90m"
   chart:
     spec:
       version: 0.4.2
