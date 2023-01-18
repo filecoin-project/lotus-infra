@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
 - ../../../../../base/applications/lightweight-snapshot-chain-archiver
+- r2-access.yaml
 
 configMapGenerator:
 - files:
