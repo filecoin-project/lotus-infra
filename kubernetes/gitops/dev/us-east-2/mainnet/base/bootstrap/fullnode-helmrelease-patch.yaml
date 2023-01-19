@@ -6,7 +6,8 @@ spec:
   install:
     timeout: "90m"
   upgrade:
-    timeout: "90m"
+    # XXX: This is temporary so I can see if I can get this to upgrade
+    timeout: "12h"
   chart:
     spec:
       version: 0.4.2
