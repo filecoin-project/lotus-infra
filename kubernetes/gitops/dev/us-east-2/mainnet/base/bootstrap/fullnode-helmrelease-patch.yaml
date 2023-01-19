@@ -6,8 +6,8 @@ spec:
   install:
     timeout: "90m"
   upgrade:
-    # XXX: This is temporary so I can see if I can get this to upgrade
-    timeout: "12h"
+    # Chain imports are reportedly taking over 8 hours
+    timeout: "9h"
   chart:
     spec:
       version: 0.4.2

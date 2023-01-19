@@ -5,6 +5,9 @@ metadata:
 spec:
   install:
     timeout: "90m"
+  upgrade:
+    # Chain imports are reportedly taking over 8 hours
+    timeout: "9h"
   chart:
     spec:
-      version: 0.3.5
+      version: 0.4.2
