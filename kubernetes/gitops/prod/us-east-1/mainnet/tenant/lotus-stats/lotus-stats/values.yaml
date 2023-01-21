@@ -1,0 +1,10 @@
+image:
+  tag: mainnet-v1.18.0
+
+height: 2532000
+#lotusApiInfo: /dns/node-0-fullnode-lotus-daemon/tcp/1234
+lotusApiInfo: /dns/api-chain-love-gateway-lotus-gateway-0/ws
+
+influxDatabase: chainstats-ntwk-mainnet
+influxSecrets: lotus-stats
+
