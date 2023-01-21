@@ -6,5 +6,5 @@ height: 2532000
 lotusApiInfo: /dns/api-chain-love-gateway-lotus-gateway-0/ws
 
 influxDatabase: chainstats-ntwk-mainnet
-influxSecrets: lotus-stats
+influxSecrets: lotus-stats-lotus-stats
 
