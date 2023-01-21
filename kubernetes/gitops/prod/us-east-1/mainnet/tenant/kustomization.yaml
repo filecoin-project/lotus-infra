@@ -11,4 +11,4 @@ resources:
 - gateway
 #- lightweight-snapshot-node
 - stats-dashboard
-
+- lotus-stats
