@@ -23,8 +23,8 @@ spec:
   # The values are merged in the order given, with the later values overwriting earlier. These values always have a lower priority 
   valuesFrom:
   - kind: ConfigMap
-    name: gateway-common-values
+    name: lotus-stats-common-values
   - kind: ConfigMap
-    name: gateway-network-values
+    name: lotus-stats-network-values
   - kind: ConfigMap
-    name: gateway-values
+    name: lotus-stats-values
