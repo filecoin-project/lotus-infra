@@ -9,7 +9,6 @@ metadata:
             {"apiVersion":"v1","data":{"ACCESS_KEY":"MGZiMjZlODU4MDM2YWIwMTMyYTVjZWZmODI5ZTI0NDk=","SECRET_KEY":"OTk2YTk1MmNmMTc1MTEwZjc5MzM3MWM1Zjc1OGY4NTk0ZGM4ZjViYmY5YmE5YmI1YjY4NGM2N2NkOWU0Y2Y5NQ=="},"kind":"Secret","metadata":{"annotations":{},"name":"r2-access","namespace":"ntwk-mainnet-snapshot"},"type":"Opaque"}
     creationTimestamp: "2022-11-04T21:35:23Z"
     name: r2-access
-    namespace: ntwk-mainnet-snapshot
     resourceVersion: "384587620"
     selfLink: /api/v1/namespaces/ntwk-mainnet-snapshot/secrets/r2-access
     uid: 7b5b1e3b-3bda-43f4-9cd2-11fc5cb48b8a
