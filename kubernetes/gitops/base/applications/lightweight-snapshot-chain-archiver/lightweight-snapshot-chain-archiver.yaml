@@ -32,6 +32,10 @@ snapshots:
   additionalEnv:
   - name: "GOLOG_LOG_FMT"
     value: "json"
+  - name: "FCA_CREATE_PROGRESS_UPDATE"
+    value: "60s"
+  - name: "FCA_CREATE_NAME_PREFIX"
+    value: "minimal/"
 
 nodelocker:
   additionalEnv:
