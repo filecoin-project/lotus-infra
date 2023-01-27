@@ -5,7 +5,7 @@ image:
 indexResolver:
   replicas: 1
   s3Resolver:
-    bucket: "filecoin-snapshots-mainnet-staging"
+    bucket: "filecoin-snapshots-calibnet-staging"
     endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
     secretName: r2-access
 
@@ -15,7 +15,7 @@ indexResolver:
 snapshots:
   uploads:
     enabled: true
-    bucket: "filecoin-snapshots-mainnet-staging"
+    bucket: "filecoin-snapshots-calibnet-staging"
     endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
     secretName: r2-access
   additionalEnv:
