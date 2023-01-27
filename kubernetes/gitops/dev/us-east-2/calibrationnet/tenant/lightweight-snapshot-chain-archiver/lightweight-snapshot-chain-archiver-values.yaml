@@ -21,3 +21,9 @@ snapshots:
   additionalEnv:
   - name: "FCA_CREATE_RETRIEVAL_ENDPOINT_PREFIX"
     value: "https://pub-72366a891cfb4f1d8d3d518390c52e6e.r2.dev"
+  - name: "FCA_CREATE_PROGRESS_UPDATE"
+    value: "60s"
+  - name: "FCA_CREATE_NAME_PREFIX"
+    value: "minimal/"
+  - name: "GOLOG_LOG_FMT"
+    value: "json"
