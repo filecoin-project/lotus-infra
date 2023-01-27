@@ -47,7 +47,7 @@ then
 fi
 
 echo ----------------------- NOTES
-echo you now hoave a flux-enabled cluster running locally.
+echo you now have a flux-enabled cluster running locally.
 echo this means, you can apply HelmReleases, HelmCharts, Kustomizations and they will be operated
 echo by the same controllers in the weave gitops cluster.
 echo
