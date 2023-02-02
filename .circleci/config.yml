@@ -836,10 +836,10 @@ workflows:
       #     delay: "0"
       #     branch: << pipeline.parameters.override_tag >>
       #     check: true
-      - reset-approval:
-          type: approval
-          requires:
-            - ansible-reset-careful-check
+      # - reset-approval:
+      #     type: approval
+      #     requires:
+      #       - ansible-reset-careful-check
       - lotus-ansible-reset:
           name: ansible-reset-careful
           deploy_network: << pipeline.parameters.lotus_deploy_network >>
