@@ -825,21 +825,21 @@ workflows:
             - << pipeline.parameters.api_workflow_requested >>
         - << pipeline.parameters.be_careful >>
     jobs:
-      # - lotus-ansible-reset:
-      #     name: ansible-reset-careful-check
-      #     deploy_network: << pipeline.parameters.lotus_deploy_network >>
-      #     install_network: << pipeline.parameters.lotus_install_network >>
-      #     preseal: true
-      #     create_cert: true
-      #     build_flags: ""
-      #     reset: true
-      #     delay: "0"
-      #     branch: << pipeline.parameters.override_tag >>
-      #     check: true
-      # - reset-approval:
-      #     type: approval
-      #     requires:
-      #       - ansible-reset-careful-check
+      - lotus-ansible-reset:
+          name: ansible-reset-careful-check
+          deploy_network: << pipeline.parameters.lotus_deploy_network >>
+          install_network: << pipeline.parameters.lotus_install_network >>
+          preseal: true
+          create_cert: true
+          build_flags: ""
+          reset: true
+          delay: "0"
+          branch: << pipeline.parameters.override_tag >>
+          check: true
+      - reset-approval:
+          type: approval
+          requires:
+            - ansible-reset-careful-check
       - lotus-ansible-reset:
           name: ansible-reset-careful
           deploy_network: << pipeline.parameters.lotus_deploy_network >>
@@ -851,8 +851,8 @@ workflows:
           delay: "0"
           branch: << pipeline.parameters.override_tag >>
           check: false
-          # requires:
-          #   - reset-approval
+          requires:
+            - reset-approval
 
   api-lotus-ansible-reset-nocareful:
     when:
