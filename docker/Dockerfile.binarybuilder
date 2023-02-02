@@ -24,7 +24,7 @@ ENV RUSTUP_HOME=/usr/local/rustup \
     PATH=/usr/local/cargo/bin:$PATH
 
 RUN addgroup -gid $GID filecoin && \
-    adduser --no-create-home --disabled-password -uid $UID --ingroup filecoin --gecos "" filecoin && \
+    adduser --disabled-password -uid $UID --ingroup filecoin --gecos "" filecoin && \
     mkdir -p "/go/pkg/mod" && \
     chown -R filecoin "/go/pkg/mod"
 
@@ -41,5 +41,6 @@ VOLUME /go/pkg/mod
 
 USER filecoin
 WORKDIR /opt/build
+
 
 ENTRYPOINT ["make"]
