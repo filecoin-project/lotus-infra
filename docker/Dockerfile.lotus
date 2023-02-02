@@ -7,7 +7,7 @@ ARG BUILDER_BASE=builder-local
 FROM debian:stretch AS builder-deps
 MAINTAINER Lotus Development Team
 
-RUN apt-get update && apt-get install -y ca-certificates build-essential clang ocl-icd-opencl-dev ocl-icd-libopencl1 jq libhwloc-dev curl
+RUN apt-get update && apt-get install -y ca-certificates build-essential clang ocl-icd-opencl-dev ocl-icd-libopencl1 jq libhwloc-dev curl wget
 RUN curl -Ls https://golang.org/dl/go1.18.8.linux-amd64.tar.gz | tar -C /usr/local -xzf -
 
 ARG RUST_VERSION=nightly
