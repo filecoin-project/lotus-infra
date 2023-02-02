@@ -15,7 +15,7 @@ ENV XDG_CACHE_HOME="/tmp"
 
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
-    PATH=/usr/local/cargo/bin:$PATH
+    PATH=/usr/local/cargo/bin:/usr/local/go/bin:$PATH
 
 RUN wget "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
     chmod +x rustup-init; \
@@ -42,7 +42,7 @@ ARG GOFLAGS
 
 COPY ./lotus/ /opt/filecoin
 WORKDIR /opt/filecoin
-RUN make clean deps
+RUN make deps
 
 # ---------------------
 # builder-git
@@ -63,7 +63,7 @@ ARG GOFLAGS
 
 RUN git clone $REPO --single-branch --branch $TAG /opt/filecoin
 WORKDIR /opt/filecoin
-RUN make clean deps
+RUN make deps
 
 # ---------------------
 # builder

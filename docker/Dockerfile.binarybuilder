@@ -17,6 +17,7 @@ ENV FFI_USE_BLST=""
 ENV GOFLAGS=""
 ENV GFC_DEPS_SKIP_PARAMETERS="true"
 ENV IPFS_GATEWAY="http://172.17.0.1:8080/ipfs/"
+ENV PATH="${PATH}:/usr/local/go/bin"
 
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
