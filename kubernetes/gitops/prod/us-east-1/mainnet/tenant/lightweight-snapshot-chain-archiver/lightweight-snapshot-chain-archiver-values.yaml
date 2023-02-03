@@ -1,0 +1,29 @@
+image:
+  pullPolicy: Always
+  tag: "1.1.1"
+
+indexResolver:
+  replicas: 1
+  s3Resolver:
+    bucket: "filecoin-snapshots-mainnet-staging"
+    endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
+    secretName: r2-access
+
+  loadBalancer:
+    enabled: false
+
+snapshots:
+  uploads:
+    enabled: true
+    bucket: "filecoin-snapshots-mainnet-staging"
+    endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
+    secretName: r2-access
+  additionalEnv:
+  - name: "FCA_CREATE_RETRIEVAL_ENDPOINT_PREFIX"
+    value: "https://pub-125dc2d5e54f44e4af7593c5b2985ec1.r2.dev"
+  - name: "FCA_CREATE_PROGRESS_UPDATE"
+    value: "60s"
+  - name: "FCA_CREATE_NAME_PREFIX"
+    value: "minimal/"
+  - name: "GOLOG_LOG_FMT"
+    value: "json"
