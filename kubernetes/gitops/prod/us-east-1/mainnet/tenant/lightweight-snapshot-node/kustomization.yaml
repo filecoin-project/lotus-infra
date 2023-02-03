@@ -7,6 +7,6 @@ resources:
 - fullnode-0
 - fullnode-1
 - fullnode-2
-- fullnode-3
-- fullnode-4
+#- fullnode-3
+#- fullnode-4
 - node-jwt-secret.yaml

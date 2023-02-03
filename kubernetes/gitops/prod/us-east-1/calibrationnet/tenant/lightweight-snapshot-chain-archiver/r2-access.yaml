@@ -1,0 +1,39 @@
+apiVersion: v1
+data:
+    ACCESS_KEY: ENC[AES256_GCM,data:hykBOz8PDZsXQP0XDDidYn/b4MEOmeODPfn80POktfOL/ncqCm8kFBnGh5s=,iv:HfJCiIEzwxWxom7xm44k6JcEpPA7n1nAirljKSkfuoQ=,tag:LNwYRdQfQ2IqImtVq4lbdw==,type:str]
+    SECRET_KEY: ENC[AES256_GCM,data:vZ2pq9KZpBuh5O1ks+Mb4VYgfRnKxtZ/RDruBID5FfqXoFiw9t1DEpuIRjxXk59q6l/2OVnUo7ROJ01zOZ/I5tf+WRRfaZBDJBerl/2KYaiT52S6+AcBNg==,iv:M56cebu1lo2bw5/m1CnztZJ0xB1KzSjxoacLBCxT1fY=,tag:kBRyEw6USbHY6VxI6dnizA==,type:str]
+kind: Secret
+metadata:
+    name: r2-access
+type: Opaque
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2023-02-03T14:57:53Z"
+    mac: ENC[AES256_GCM,data:8XERln75V1zBWqlMNgMRkKg+V5Y7YHrEYMqBpTCYNYUInwEDfgtskBzjGQbUhzu+OA8QvyGQXpKKehrFrY8PD1TJDeTvmGK/DSywlMBvR8mGJnOCJ4NEYSEc+cRqM6QtAy+NHzLdhUicJdfYctWUsNI0H+99k1vh3tsK/BKfXLc=,iv:tSwLWELttPapndOhlL8eJ6ktB5myI0qpf9FQck5804A=,tag:miuT6AWXToa4dN9EumBxvg==,type:str]
+    pgp:
+        - created_at: "2023-02-03T14:57:52Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA10BBd9Ja1tnARAAmt9wyKudyTCjOAYWXK0M9itiwujKO9vOFENPL1hfpPHV
+            vyUHAkMKr1sm6fLbkLrxbGgEBADXKEtCNmI0U+C5zFG9QckSE0bwOhGo5FINQMzw
+            PW/XWB/+vGUvtoaIV+Z3n7+/B3rFH+Fcai2B3FvF8r6VM9cXi6zcaCVVRgpLXw/9
+            /kPlc7MkQZNC0m+TfJxgPl8qI4UjG+ktllbILcx9QuBWT690Tjy1mr2cijrvgAZ1
+            Riq6oZcVJ5Kle4/bssjy//ns6mlWl53LaTxUO8ChADX1tWGJ0dG/FOzeqV6K7Lxg
+            69GRFiFMC1LAczNP32SFR2D/ohLosO1JgU2cRW1+tgiPuuIGAtx09GBT2YcgsWc2
+            UQapf22WJrnqyG1NlwfhCzmId0aO7MdKSWjUadYHErb1qwG48+vpvCNzZkH1szJA
+            FpnfqEaNqwjBJte4P5AivIoD6jjLhFSlWskQ7oXIfFn1sXAABckZEObpjGK3TcYS
+            /BbZj4i1wXmDY90+1ulcxAMc9YpbyjzNlxfsIxnarBmyY8uIZ2mFhlqi+QbeJ9qe
+            vwwo6+B6k2WHPuQmWG73piAD4hiY92mX2PTa6MgBq5xd95hTwcvMFxCImAs+WoAe
+            bC2ZVOtooLhyHSQh3TewWtOzBVkhdCxkB5YRG6cXhx2nDJ+kv4GwrtbAevOcFTDS
+            XAHufZRh6ZOjta8SpX38ZmyJGKDzbeKDAkmQ0bsxGIJT5LFrlBUKzstdfLkM2/PH
+            OLygQ9Dupu0fPdF8IFpb61uzxh2HvD4PBBIF7Yprszzi43MJp12hhYl8J4gR
+            =ocyo
+            -----END PGP MESSAGE-----
+          fp: 82B6F581AA9BAC43F18A9D2E8F13E77F0EF448C4
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3
