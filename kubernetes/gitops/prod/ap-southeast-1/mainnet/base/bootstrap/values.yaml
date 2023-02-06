@@ -16,7 +16,7 @@ persistence:
   datastore:
     enabled: true
     easyReset: true
-    size: "16000Gi"
+    size: "2000Gi"
     storageClassName: "gp2"
 
 daemonConfig: |
@@ -48,11 +48,6 @@ daemonEnvs:
 
 additionalLabels:
   network: mainnet
-
-persistence:
-  datastore:
-    enabled: true
-    size: "2000Gi"
 
 nodeSelector:
   "node.kubernetes.io/instance-type": "r5.2xlarge"
