@@ -19,8 +19,7 @@ persistence:
   datastore:
     enabled: true
     easyReset: true
-    size: "16000Gi"
-    storageClassName: "gp2"
+    size: "2000Gi"
 
 daemonEnvs:
   - name: GOLOG_LOG_FMT
@@ -38,11 +37,6 @@ disputer:
 
 additionalLabels:
   network: mainnet
-
-persistence:
-  datastore:
-    enabled: true
-    size: "2000Gi"
 
 nodeSelector:
   "node.kubernetes.io/instance-type": "r5.2xlarge"
