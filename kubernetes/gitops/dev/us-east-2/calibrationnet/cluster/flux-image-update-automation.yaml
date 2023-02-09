@@ -12,7 +12,7 @@ spec:
   git:
     checkout:
       ref:
-        branch: main
+        branch: master
     commit:
       author:
         name: fil-infra-bot
@@ -35,7 +35,7 @@ spec:
         - {{.}}
         {{ end -}}
     push:
-      branch: 'main'
+      branch: 'master'
   update:
     strategy: Setters
     path: "./kubernetes/gitops/dev/us-east-2/calibrationnet"
