@@ -35,7 +35,7 @@ spec:
         - {{.}}
         {{ end -}}
     push:
-      branch: releases/flux-image-updates
+      branch: master
   update:
     strategy: Setters
     path: "./kubernetes/gitops/dev/us-east-2/calibrationnet"
