@@ -18,7 +18,7 @@ spec:
         name: fil-infra-bot
         email: fil-infra-bot@protocol.ai
       messageTemplate: |
-        Update {{ .AutomationObject.Namespace }}/{{ .AutomationObject.Name }} in `staging` environment
+        Update {{ .AutomationObject.Namespace }}/{{ .AutomationObject.Name }} in dev/us-east-2
 
         Files:
         {{ range $filename, $_ := .Updated.Files -}}

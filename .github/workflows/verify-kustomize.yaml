@@ -3,10 +3,7 @@ run-name: verify kustomizations are valid
 on:
   pull_request:
     types: [synchronize, opened, reopened, labeled, unlabeled]
-  workflow_run:
-    workflows: ["Flux-image-updates auto PR"]
-    types:
-      - completed
+
 jobs:
   kustomize-build-script:
     runs-on: ubuntu-latest
