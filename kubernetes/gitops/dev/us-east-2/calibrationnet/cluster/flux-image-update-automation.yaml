@@ -19,23 +19,23 @@ spec:
         email: fil-infra-bot@protocol.ai
       messageTemplate: |
         Update {{ .AutomationObject.Namespace }}/{{ .AutomationObject.Name }} in `staging` environment
-        
+
         Files:
         {{ range $filename, $_ := .Updated.Files -}}
         - {{ $filename }}
         {{ end -}}
-        
+
         Objects:
         {{ range $resource, $_ := .Updated.Objects -}}
         - {{ $resource.Kind }} {{ $resource.Name }}
         {{ end -}}
-        
+
         Images:
         {{ range .Updated.Images -}}
         - {{.}}
         {{ end -}}
     push:
-      branch: 'master'
+      branch: 'flux-image-update'
   update:
     strategy: Setters
     path: "./kubernetes/gitops/dev/us-east-2/calibrationnet"
