@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: verify-kustomize
     steps:
+    - uses: actions/checkout@v2
+      name: checkout
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4.2.3
       id: open-pr
