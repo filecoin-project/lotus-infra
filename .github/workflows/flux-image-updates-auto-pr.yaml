@@ -18,7 +18,7 @@ jobs:
   open-pr:
     name: Create PR
     runs-on: ubuntu-latest
-    needs: verify-kustomize
+    needs: kustomize-build-script
     steps:
     - uses: actions/checkout@v2
       name: checkout
