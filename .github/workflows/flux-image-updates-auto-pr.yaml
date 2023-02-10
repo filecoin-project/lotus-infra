@@ -25,8 +25,8 @@ jobs:
       with:
         fetch-depth: 0
     - name: Create Pull Request
-      uses: devops-infra/action-pull-request@v0.5.3 
-      id: open-pr
+      uses: GlacierWalrus/action-pull-request@v0.5.4
+      id: create-pr
       with:
         source_branch: releases/flux-image-updates
         target_branch: master
@@ -46,5 +46,5 @@ jobs:
       uses: juliangruber/merge-pull-request-action@v1.1.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        number: ${{ steps.open-pr.outputs.pr_number }}
+        number: ${{ steps.create-pr.outputs.pr_number }}
         method: rebase
