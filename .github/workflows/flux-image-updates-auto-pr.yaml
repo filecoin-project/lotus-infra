@@ -29,7 +29,7 @@ jobs:
         title: "Pulling ${{ github.ref }} into master"
         body: |
           🐳 Auto image update
-        label: "flux-image-automation,automerge"
+        labels: "flux-image-automation,automerge"
         token: ${{ secrets.GITHUB_TOKEN }}
         delete-branch: true
 
