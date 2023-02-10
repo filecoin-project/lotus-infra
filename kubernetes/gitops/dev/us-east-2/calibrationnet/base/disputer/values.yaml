@@ -1,8 +1,6 @@
 image:
-  tag: calibnet-v1.18.0-rc5 # {"$imagepolicy": "ntwk-calibrationnet:calibrationnet-lotus:tag"}
-
+  tag: v1.18.0-calibnet # {"$imagepolicy": "ntwk-calibrationnet:calibrationnet-lotus:tag"}
 prometheusOperatorServiceMonitor: true
-
 resources:
   requests:
     memory: 8Gi
@@ -12,7 +10,6 @@ resources:
     cpu: 6
 importSnapshot:
   enabled: false
-
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
@@ -20,27 +17,24 @@ daemonEnvs:
     value: madvdontneed=1
   - name: DISABLE_PRE_MIGRATIONS
     value: "1"
-  # - name: LOTUS_JAEGER_AGENT_HOST
-  #   valueFrom:
-  #     fieldRef:
-  #       apiVersion: v1
-  #       fieldPath: status.hostIP
-  # - name: LOTUS_JAEGER_AGENT_PORT
-  #   value: "6831"
+# - name: LOTUS_JAEGER_AGENT_HOST
+#   valueFrom:
+#     fieldRef:
+#       apiVersion: v1
+#       fieldPath: status.hostIP
+# - name: LOTUS_JAEGER_AGENT_PORT
+#   value: "6831"
 
 daemonConfig: |
   [API]
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
   [Libp2p]
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
-
 additionalLabels:
   network: calibration
-
 persistence:
   datastore:
     enabled: true
     size: "500Gi"
-
 nodeSelector:
   "node.kubernetes.io/instance-type": "r5.2xlarge"
