@@ -5,17 +5,21 @@ on:
     - releases/flux-image-updates
 
 jobs:
-  pull-request:
-    name: Open PR to master
+  verify-kustomize:
+    name: Verify Kustomizations
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       name: checkout
 
     - name: verify-kustomize
-      id: verify-kustomize
       run: ./scripts/verify_kustomize.bash
 
+  open-pr:
+    name: Create PR
+    runs-on: ubuntu-latest
+    needs: verify-kustomize
+    steps:
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4
       id: open-pr
@@ -35,9 +39,7 @@ jobs:
     #     with:
     #       github-token: ${{ secrets.GITHUB_TOKEN }}
     #       number: ${{ steps.open-pr.pull-request-number }}
-
     - name: Merge Pull Request
-      needs: [verify-kustomize, open-pr]
       uses: juliangruber/merge-pull-request-action@v2.0.0
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
