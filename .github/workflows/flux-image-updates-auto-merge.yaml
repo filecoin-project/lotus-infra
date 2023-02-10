@@ -9,6 +9,7 @@ jobs:
   pull-request:
     name: Auto merge flux PRs
     runs-on: ubuntu-latest
+    steps:
     - name: automerge
       uses: pascalgn/automerge-action@v0.15.5
       env:
