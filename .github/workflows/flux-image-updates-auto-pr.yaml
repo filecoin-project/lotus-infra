@@ -45,5 +45,5 @@ jobs:
       uses: juliangruber/merge-pull-request-action@v1.1.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        number: ${{ steps.open-pr.pull-request-number }}
+        number: ${{ steps.open-pr.outputs.pull-request-number }}
         method: rebase
