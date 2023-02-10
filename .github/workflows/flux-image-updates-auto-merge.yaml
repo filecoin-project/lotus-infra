@@ -1,25 +1,24 @@
-name: Flux-image-updates PR auto merge
-on:
-  pull_request:
-    types:
-      - opened
-    branches:
-      - releases/flux-image-updates
-jobs:
-  pull-request:
-    name: Auto merge flux PRs
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: verify-kustomize
-      run: ./scripts/verify_kustomize.bash
-    - name: automerge
-      needs: verify-kustomize
-      uses: pascalgn/automerge-action@v0.15.5
-      env:
-        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        MERGE_LABELS: "flux-image-automation,automerge"
-        MERGE_FILTER_AUTHOR: fil-infra-bot
-        # This retry config allows time for merge checks to run
-        MERGE_RETRY_SLEEP: 10000 # 10s in milliseconds
-        MERGE_RETRIES: 6
+# name: Flux-image-updates PR auto merge
+# on:
+#   workflow_run:
+#     workflows: [Flux-image-updates auto PR]
+#     types:
+#     - completed
+# jobs:
+#   pull-request:
+#     name: Auto merge flux PRs
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: verify-kustomize
+#       run: ./scripts/verify_kustomize.bash
+#     - name: automerge
+#       needs: verify-kustomize
+#       uses: pascalgn/automerge-action@v0.15.5
+#       env:
+#         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+#         MERGE_LABELS: "flux-image-automation,automerge"
+#         MERGE_FILTER_AUTHOR: fil-infra-bot
+#         # This retry config allows time for merge checks to run
+#         MERGE_RETRY_SLEEP: 10000 # 10s in milliseconds
+#         MERGE_RETRIES: 6
