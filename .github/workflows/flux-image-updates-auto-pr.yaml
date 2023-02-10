@@ -42,9 +42,15 @@ jobs:
     #     with:
     #       github-token: ${{ secrets.GITHUB_TOKEN }}
     #       number: ${{ steps.open-pr.pull-request-number }}
-    - name: Merge Pull Request
-      uses: juliangruber/merge-pull-request-action@v1.1.1
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        number: ${{ steps.create-pr.outputs.pr_number }}
-        method: rebase
+
+    - name: automerge
+      needs: verify-kustomize
+      uses: pascalgn/automerge-action@v0.15.5
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        MERGE_LABELS: "flux-image-automation,automerge"
+        MERGE_FILTER_AUTHOR: fil-infra-bot
+        PULL_REQUEST: ${{ steps.create-pr.outputs.pr_number }}
+        # This retry config allows time for merge checks to run
+        MERGE_RETRY_SLEEP: 10000 # 10s in milliseconds
+        MERGE_RETRIES: 6
