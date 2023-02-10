@@ -21,7 +21,7 @@ jobs:
     needs: verify-kustomize
     steps:
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v4
+      uses: peter-evans/create-pull-request@v4.2.3
       id: open-pr
       with:
         branch: releases/flux-image-updates
@@ -40,7 +40,7 @@ jobs:
     #       github-token: ${{ secrets.GITHUB_TOKEN }}
     #       number: ${{ steps.open-pr.pull-request-number }}
     - name: Merge Pull Request
-      uses: juliangruber/merge-pull-request-action@v2.0.0
+      uses: juliangruber/merge-pull-request-action@v1.1.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         number: ${{ steps.open-pr.pull-request-number }}
