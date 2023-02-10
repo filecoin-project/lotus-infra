@@ -5,7 +5,7 @@ on:
     - releases/flux-image-updates
 
 jobs:
-  verify-kustomize:
+  kustomize-build-script:
     name: Verify Kustomizations
     runs-on: ubuntu-latest
     steps:
