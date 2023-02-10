@@ -22,17 +22,19 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       name: checkout
+      with:
+        fetch-depth: 0
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v4.2.3
+      uses: devops-infra/action-pull-request@v0.5.3 
       id: open-pr
       with:
-        branch: releases/flux-image-updates
-        base: master
+        source_branch: releases/flux-image-updates
+        target_branch: master
         title: "Pulling ${{ github.ref }} into master"
         body: |
           🐳 Auto image update
-        labels: "flux-image-automation,automerge"
-        token: ${{ secrets.GITHUB_TOKEN }}
+        label: "flux-image-automation,automerge"
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     # - name: Approve Pull Request
         # needs: open-pr
@@ -44,5 +46,5 @@ jobs:
       uses: juliangruber/merge-pull-request-action@v1.1.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        number: ${{ steps.open-pr.outputs.pull-request-number }}
+        number: ${{ steps.open-pr.outputs.pr_number }}
         method: rebase
