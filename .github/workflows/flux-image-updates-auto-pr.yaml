@@ -33,7 +33,6 @@ jobs:
           🐳 Auto image update
         labels: "flux-image-automation,automerge"
         token: ${{ secrets.GITHUB_TOKEN }}
-        delete-branch: true
 
     # - name: Approve Pull Request
         # needs: open-pr
