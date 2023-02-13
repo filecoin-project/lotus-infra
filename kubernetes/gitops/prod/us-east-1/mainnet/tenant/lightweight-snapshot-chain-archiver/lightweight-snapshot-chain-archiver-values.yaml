@@ -5,7 +5,7 @@ image:
 indexResolver:
   replicas: 1
   s3Resolver:
-    bucket: "filecoin-snapshots-mainnet-staging"
+    bucket: "filecoin-snapshots-mainnet-production"
     endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
     secretName: r2-access
 
@@ -15,12 +15,12 @@ indexResolver:
 snapshots:
   uploads:
     enabled: true
-    bucket: "filecoin-snapshots-mainnet-staging"
+    bucket: "filecoin-snapshots-mainnet-production"
     endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
     secretName: r2-access
   additionalEnv:
   - name: "FCA_CREATE_RETRIEVAL_ENDPOINT_PREFIX"
-    value: "https://pub-125dc2d5e54f44e4af7593c5b2985ec1.r2.dev"
+    value: "https://pub-fd31751bcb69400eb39e694385c19457.r2.dev"
   - name: "FCA_CREATE_PROGRESS_UPDATE"
     value: "60s"
   - name: "FCA_CREATE_NAME_PREFIX"
