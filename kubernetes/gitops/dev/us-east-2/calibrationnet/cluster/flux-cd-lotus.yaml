@@ -21,6 +21,6 @@ spec:
     extract: '$hopefully_semver2'
   policy:
     semver:
-      range: '~1.18.x'
+      range: '~1.x'
   imageRepositoryRef:
     name: calibrationnet-lotus
