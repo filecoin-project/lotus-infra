@@ -16,6 +16,6 @@ metadata:
 spec:
   policy:
     semver:
-      range: '~1.19.x'
+      range: '~1.x'
   imageRepositoryRef:
     name: mainnet-lotus
