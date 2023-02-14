@@ -7,3 +7,4 @@ resources:
 - ../../common
 - flux-tenant.yaml
 - flux-kustomization.yaml
+- flux-cd-lotus.yaml

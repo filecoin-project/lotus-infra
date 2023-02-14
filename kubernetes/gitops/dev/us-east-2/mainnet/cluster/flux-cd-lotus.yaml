@@ -6,7 +6,7 @@ metadata:
   namespace: ntwk-mainnet
 spec:
   interval: 5m
-  image: docker.io/travisperson/lotus
+  image: docker.io/filecoin/lotus-all-in-one
 ---
 apiVersion: image.toolkit.fluxcd.io/v1alpha1
 kind: ImagePolicy
@@ -14,11 +14,8 @@ metadata:
   name: mainnet-lotus
   namespace: ntwk-mainnet
 spec:
-  filterTags:
-   pattern: 'mainnet-.*'
   policy:
     semver:
-      range: mainnet-v0.x.x
+      range: '~1.18.x'
   imageRepositoryRef:
     name: mainnet-lotus
-
