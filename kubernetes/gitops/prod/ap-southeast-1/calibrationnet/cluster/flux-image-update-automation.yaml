@@ -19,23 +19,23 @@ spec:
         email: fil-infra-bot@protocol.ai
       messageTemplate: |
         Update {{ .AutomationObject.Namespace }}/{{ .AutomationObject.Name }} in prod/ap-southeast-1/calibrationnet
-        
+
         Files:
         {{ range $filename, $_ := .Updated.Files -}}
         - {{ $filename }}
         {{ end -}}
-        
+
         Objects:
         {{ range $resource, $_ := .Updated.Objects -}}
         - {{ $resource.Kind }} {{ $resource.Name }}
         {{ end -}}
-        
+
         Images:
         {{ range .Updated.Images -}}
         - {{.}}
         {{ end -}}
     push:
-      branch: 'flux-image-automation'
+      branch: 'releases/flux-image-automation'
   update:
     strategy: Setters
     path: "./kubernetes/gitops/prod/ap-southeast-1/calibrationnet"
