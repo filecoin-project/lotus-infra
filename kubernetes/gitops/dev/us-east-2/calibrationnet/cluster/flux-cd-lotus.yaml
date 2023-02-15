@@ -21,6 +21,8 @@ spec:
     extract: '$hopefully_semver2'
   policy:
     semver:
-      range: '~1.x'
+      # "-0" suffix is required to consider pre-releases, e.g. v1.20.0-rc0-calibnet
+      # see https://github.com/Masterminds/semver#checking-version-constraints
+      range: '~1.x-0'
   imageRepositoryRef:
     name: calibrationnet-lotus
