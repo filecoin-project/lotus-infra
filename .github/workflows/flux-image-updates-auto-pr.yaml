@@ -1,0 +1,31 @@
+name: Flux-image-updates auto PR
+on:
+  push:
+    branches:
+    - releases/flux-image-automation
+
+jobs:
+  pull-request:
+    name: Open PR to master
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: checkout
+
+    - name: verify-kustomize
+      id: verify-kustomize
+      run: ./scripts/verify_kustomize.bash
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4.2.3
+      id: open-pr
+      with:
+        branch: releases/flux-image-updates
+        base: master
+        title: "Pulling ${{ github.ref }} into master"
+        body: |
+          🐳 Auto image update
+        label: "flux-image-automation"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        delete-branch: true
+
