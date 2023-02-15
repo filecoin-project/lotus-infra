@@ -2,7 +2,9 @@ name: Flux-image-updates auto PR
 on:
   push:
     branches:
-    - releases/flux-image-automation
+    # Match any branch with this prefix, allows us to have separate branches and
+    # therefore PRs for different networks
+    - releases/flux-image-automation*
 
 jobs:
   pull-request:
