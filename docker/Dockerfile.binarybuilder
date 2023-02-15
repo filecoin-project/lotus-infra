@@ -1,7 +1,7 @@
 FROM debian:stretch AS builder
 MAINTAINER Filecoin Development Team
 
-RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1 libhwloc-dev curl wget pkg-config
+RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1 libhwloc-dev curl wget pkg-config git
 RUN curl -Ls https://golang.org/dl/go1.18.8.linux-amd64.tar.gz | tar -C /usr/local -xzf -
 
 ARG UID=1000
