@@ -22,7 +22,7 @@ jobs:
       name: Create Pull Request
       with:
         destination_branch: "master"
-        pr_label: "flux-image-automation" 
+        pr_label: "flux-image-automation"
         pr_title: "Pulling ${{ github.ref }} into master"
         pr_body: |
           🐳 Auto image update
