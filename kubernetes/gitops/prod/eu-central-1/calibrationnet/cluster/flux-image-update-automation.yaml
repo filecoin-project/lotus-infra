@@ -38,4 +38,4 @@ spec:
       branch: 'releases/flux-image-automation-calibrationnet-ec1'
   update:
     strategy: Setters
-    path: "./kubernetes/gitops/dev/eu-central-1/calibrationnet"
+    path: "./kubernetes/gitops/prod/eu-central-1/calibrationnet"
