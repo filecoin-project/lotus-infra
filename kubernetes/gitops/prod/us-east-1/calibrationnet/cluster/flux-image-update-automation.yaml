@@ -12,7 +12,7 @@ spec:
   git:
     checkout:
       ref:
-        branch: main
+        branch: master
     commit:
       author:
         name: fil-infra-bot
@@ -23,12 +23,12 @@ spec:
         {{ range $filename, $_ := .Updated.Files -}}
         - {{ $filename }}
         {{ end -}}
-        
+
         Objects:
         {{ range $resource, $_ := .Updated.Objects -}}
         - {{ $resource.Kind }} {{ $resource.Name }}
         {{ end -}}
-        
+
         Images:
         {{ range .Updated.Images -}}
         - {{.}}
