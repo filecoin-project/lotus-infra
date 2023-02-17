@@ -229,42 +229,42 @@ jobs:
         description: override image.repository and image.tag using the workspace.
     executor: aws-eks/python3
     steps:
-      # - slack/notify:
-      #     event: always
-      #     channel: << pipeline.parameters.slack_channel >>
-      #     custom: |
-      #       {
-      #         "blocks": [
-      #           {
-      #             "type": "header",
-      #             "text": {
-      #               "type": "plain_text",
-      #               "text": "HELM DEPLOYMENT :shipitparrot: :rocket:",
-      #               "emoji": true
-      #             }
-      #           },
-      #           {
-      #             "type": "section",
-      #             "text": {
-      #               "type": "mrkdwn",
-      #               "text": "This looks like a real winner if you ask me.\n\n*release:* << parameters.release >>\n*chart:* << parameters.chart >>/<< parameters.chart_version >>\n*cluster:* << parameters.cluster >>\n*namespace:* << parameters.namespace >>"
-      #             }
-      #           },
-      #           {
-      #             "type": "actions",
-      #             "elements": [
-      #               {
-      #                 "type": "button",
-      #                 "url": "${CIRCLE_BUILD_URL}",
-      #                 "text": {
-      #                   "type": "plain_text",
-      #                   "text": "View on CircleCI"
-      #                 }
-      #               }
-      #             ]
-      #           }
-      #         ]
-      #       }
+      - slack/notify:
+          event: always
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "HELM DEPLOYMENT :shipitparrot: :rocket:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "This looks like a real winner if you ask me.\n\n*release:* << parameters.release >>\n*chart:* << parameters.chart >>/<< parameters.chart_version >>\n*cluster:* << parameters.cluster >>\n*namespace:* << parameters.namespace >>"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
       - checkout
       - setup-eks:
           cluster: << parameters.cluster >>
@@ -290,42 +290,42 @@ jobs:
             echo "all helm overrides being applied:"
             echo $HELM_APPEND
             helm --namespace << parameters.namespace >> upgrade --wait --install --timeout 30m0s << parameters.release >> << parameters.chart >> --version << parameters.chart_version >> --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/base.yaml --values kubernetes/<< parameters.cluster >>/helm/<< parameters.namespace >>/<< parameters.chart >>/<< parameters.release >>.yaml $HELM_APPEND
-      # - slack/notify:
-      #     event: fail
-      #     channel: << pipeline.parameters.slack_channel >>
-      #     custom: |
-      #       {
-      #         "blocks": [
-      #            {
-      #              "type": "header",
-      #              "text": {
-      #                "type": "plain_text",
-      #                "text": ":alert: :fire: HELM DEPLOYMENT FAILURE :dumpster_fire: :alert:",
-      #                "emoji": true
-      #               }
-      #            },
-      #            {
-      #              "type": "section",
-      #              "text": {
-      #                "type": "mrkdwn",
-      #                "text": "Sound the alarm, captain! This ship is going down!\n\nhelm encountered a failure while deploying this code.\n\n*release:* << parameters.release >>\n*chart:* << parameters.chart >>/<< parameters.chart_version >>\n*cluster:* << parameters.cluster >>"
-      #              }
-      #            },
-      #            {
-      #             "type": "actions",
-      #             "elements": [
-      #               {
-      #                 "type": "button",
-      #                 "url": "${CIRCLE_BUILD_URL}",
-      #                 "text": {
-      #                   "type": "plain_text",
-      #                   "text": "View on CircleCI"
-      #                 }
-      #               }
-      #             ]
-      #           }
-      #         ]
-      #       }
+      - slack/notify:
+          event: fail
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                 {
+                   "type": "header",
+                   "text": {
+                     "type": "plain_text",
+                     "text": ":alert: :fire: HELM DEPLOYMENT FAILURE :dumpster_fire: :alert:",
+                     "emoji": true
+                    }
+                 },
+                 {
+                   "type": "section",
+                   "text": {
+                     "type": "mrkdwn",
+                     "text": "Sound the alarm, captain! This ship is going down!\n\nhelm encountered a failure while deploying this code.\n\n*release:* << parameters.release >>\n*chart:* << parameters.chart >>/<< parameters.chart_version >>\n*cluster:* << parameters.cluster >>"
+                   }
+                 },
+                 {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
 
   lotus-ansible-reset:
     parameters:
@@ -361,42 +361,42 @@ jobs:
     environment:
       LOTUSROOT: /home/circleci/.go_workspace/src/github.com/filecoin-project/lotus
     steps:
-      # - slack/notify:
-      #     event: always
-      #     channel: << pipeline.parameters.slack_channel >>
-      #     custom: |
-      #       {
-      #         "blocks": [
-      #           {
-      #             "type": "header",
-      #             "text": {
-      #               "type": "plain_text",
-      #               "text": "DEVNET ANSIBLE DEPLOYMENT :filecoin-new:",
-      #               "emoji": true
-      #             }
-      #           },
-      #           {
-      #             "type": "section",
-      #             "text": {
-      #               "type": "mrkdwn",
-      #               "text": "The network will be reset in about 30 mintues.\nplease check functionality manually once this is complete\n\n*network:* << parameters.deploy_network >>\n*branch:* << parameters.branch >>"
-      #             }
-      #           },
-      #           {
-      #             "type": "actions",
-      #             "elements": [
-      #               {
-      #                 "type": "button",
-      #                 "url": "${CIRCLE_BUILD_URL}",
-      #                 "text": {
-      #                   "type": "plain_text",
-      #                   "text": "View on CircleCI"
-      #                 }
-      #               }
-      #             ]
-      #           }
-      #         ]
-      #       }
+      - slack/notify:
+          event: always
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "DEVNET ANSIBLE DEPLOYMENT :filecoin-new:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "The network will be reset in about 30 mintues.\nplease check functionality manually once this is complete\n\n*network:* << parameters.deploy_network >>\n*branch:* << parameters.branch >>"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
       - checkout
       - aws-cli/install
       - rust/install
@@ -553,42 +553,42 @@ jobs:
       python-version: "3.8"
       debian-release: "buster"
     steps:
-      # - slack/notify:
-      #     event: always
-      #     channel: "#netops-circleci-test"
-      #     custom: |
-      #       {
-      #         "blocks": [
-      #           {
-      #             "type": "header",
-      #             "text": {
-      #               "type": "plain_text",
-      #               "text": "LOTUS RELEASE TESTNET UPDATE :filecoin-new:",
-      #               "emoji": true
-      #             }
-      #           },
-      #           {
-      #             "type": "section",
-      #             "text": {
-      #               "type": "mrkdwn",
-      #               "text": "A lotus release has triggered an update to the calibration network.\n\n*release*: << parameters.gitref >>\n*group*: << parameters.group >>\n\n"
-      #             }
-      #           },
-      #           {
-      #             "type": "actions",
-      #             "elements": [
-      #               {
-      #                 "type": "button",
-      #                 "url": "${CIRCLE_BUILD_URL}",
-      #                 "text": {
-      #                   "type": "plain_text",
-      #                   "text": "View on CircleCI"
-      #                 }
-      #               }
-      #             ]
-      #           }
-      #         ]
-      #       }
+      - slack/notify:
+          event: always
+          channel: "#netops-circleci-test"
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "LOTUS RELEASE TESTNET UPDATE :filecoin-new:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "A lotus release has triggered an update to the calibration network.\n\n*release*: << parameters.gitref >>\n*group*: << parameters.group >>\n\n"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
       - checkout
       - ansible-playbook/install
       - attach_workspace:
@@ -632,42 +632,42 @@ jobs:
     environment:
       LOTUSROOT: /home/circleci/.go_workspace/src/github.com/filecoin-project/lotus
     steps:
-      # - slack/notify:
-      #     event: always
-      #     channel: << pipeline.parameters.slack_channel >>
-      #     custom: |
-      #       {
-      #         "blocks": [
-      #           {
-      #             "type": "header",
-      #             "text": {
-      #               "type": "plain_text",
-      #               "text": "DEVNET ANSIBLE UPGRADE :filecoin-new:",
-      #               "emoji": true
-      #             }
-      #           },
-      #           {
-      #             "type": "section",
-      #             "text": {
-      #               "type": "mrkdwn",
-      #               "text": "network binaries will be upgraded in about 10 mintues.\nplease check functionality manually once this is complete\n\n*network:* << parameters.deploy_network >>\n*branch:* << parameters.branch >>"
-      #             }
-      #           },
-      #           {
-      #             "type": "actions",
-      #             "elements": [
-      #               {
-      #                 "type": "button",
-      #                 "url": "${CIRCLE_BUILD_URL}",
-      #                 "text": {
-      #                   "type": "plain_text",
-      #                   "text": "View on CircleCI"
-      #                 }
-      #               }
-      #             ]
-      #           }
-      #         ]
-      #       }
+      - slack/notify:
+          event: always
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "DEVNET ANSIBLE UPGRADE :filecoin-new:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "network binaries will be upgraded in about 10 mintues.\nplease check functionality manually once this is complete\n\n*network:* << parameters.deploy_network >>\n*branch:* << parameters.branch >>"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
       - checkout
       - aws-cli/install
       - rust/install
@@ -730,42 +730,42 @@ jobs:
     environment:
       AWS_REGION: << parameters.aws_region >>
     steps:
-      # - slack/notify:
-      #     event: always
-      #     channel: << pipeline.parameters.slack_channel >>
-      #     custom: |
-      #       {
-      #         "blocks": [
-      #           {
-      #             "type": "header",
-      #             "text": {
-      #               "type": "plain_text",
-      #               "text": "Lotus Dev Machines DEPLOYMENT :shipitparrot: :rocket:",
-      #               "emoji": true
-      #             }
-      #           },
-      #           {
-      #             "type": "section",
-      #             "text": {
-      #               "type": "plain_text",
-      #               "text": "Lotus Dev Machines are being deployed. Check the last step (terraform apply) for SSH connection strings"
-      #             }
-      #           },
-      #           {
-      #             "type": "actions",
-      #             "elements": [
-      #               {
-      #                 "type": "button",
-      #                 "url": "${CIRCLE_BUILD_URL}",
-      #                 "text": {
-      #                   "type": "plain_text",
-      #                   "text": "View on CircleCI"
-      #                 }
-      #               }
-      #             ]
-      #           }
-      #         ]
-      #       }
+      - slack/notify:
+          event: always
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Lotus Dev Machines DEPLOYMENT :shipitparrot: :rocket:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Lotus Dev Machines are being deployed. Check the last step (terraform apply) for SSH connection strings"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
       - checkout
       - run:
           name: write machines json to file
@@ -957,47 +957,47 @@ workflows:
       equal: [ "lotus-rollout", << pipeline.parameters.api_workflow_requested >> ]
     jobs:
       # butterflynet ansible
-      # - slack/on-hold:
-      #     name: slack-on-hold
-      #     channel: << pipeline.parameters.slack_channel >>
-      #     custom: |
-      #       {
-      #         "blocks": [
-      #           {
-      #             "type": "header",
-      #             "text": {
-      #               "type": "plain_text",
-      #               "text": "LOTUS ROLLOUT",
-      #               "emoji": true
-      #             }
-      #           },
-      #           {
-      #             "type": "section",
-      #             "text": {
-      #               "type": "mrkdwn",
-      #               "text": "woah, woah, woah!\nThis marks the start of a lotus rollout.\nFor safety, this doesn't start by default. Go to CircleCI and click the approval buttons to move this thing along.\n\n*lotus branch:* << pipeline.parameters.override_tag >>"
-      #             },
-      #             "accessory": {
-      #               "type": "image",
-      #               "image_url": "https://gist.githubusercontent.com/coryschwartz/69939cdc09bbc032e71099d4a679247d/raw/a1685f215311c0d1e37e879ad63a5336f619f1b4/slow.jpg",
-      #               "alt_text": "slow it down"
-      #             }
-      #           },
-      #           {
-      #             "type": "actions",
-      #             "elements": [
-      #               {
-      #                 "type": "button",
-      #                 "url": "${CIRCLE_BUILD_URL}",
-      #                 "text": {
-      #                   "type": "plain_text",
-      #                   "text": "View on CircleCI"
-      #                 }
-      #               }
-      #             ]
-      #           }
-      #         ]
-      #       }
+      - slack/on-hold:
+          name: slack-on-hold
+          channel: << pipeline.parameters.slack_channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "LOTUS ROLLOUT",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "woah, woah, woah!\nThis marks the start of a lotus rollout.\nFor safety, this doesn't start by default. Go to CircleCI and click the approval buttons to move this thing along.\n\n*lotus branch:* << pipeline.parameters.override_tag >>"
+                  },
+                  "accessory": {
+                    "type": "image",
+                    "image_url": "https://gist.githubusercontent.com/coryschwartz/69939cdc09bbc032e71099d4a679247d/raw/a1685f215311c0d1e37e879ad63a5336f619f1b4/slow.jpg",
+                    "alt_text": "slow it down"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "url": "${CIRCLE_BUILD_URL}",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View on CircleCI"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
       - start-rollout:
           type: approval
           requires:
