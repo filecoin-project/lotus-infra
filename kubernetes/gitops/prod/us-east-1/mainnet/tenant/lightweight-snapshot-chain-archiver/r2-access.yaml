@@ -1,0 +1,39 @@
+apiVersion: v1
+data:
+    ACCESS_KEY: ENC[AES256_GCM,data:Dfe+XUoHCPaOf1Gn03iCcwh7Df90Kvyxg19XhH07pRS7KDi+nuFUAROSBhg=,iv:H+PlXmjALDuFUurxN/Oy0BcBVgHZTzgY0IzBRr+tA8A=,tag:w8n3HKtVTKHRTIVAeutwkQ==,type:str]
+    SECRET_KEY: ENC[AES256_GCM,data:Tt9bEgYzqFHebvAnYIsqxbW5U8yaIljKj4OLeKgdu4ZM+h4p+vrqif7rwa+x4Iusnp94qOD3AJ0Ek8uNqF2kCPHIB4LnssFgmYbxGn+rSFra8YTSBVbT1w==,iv:3LP5VmzHljqmQRHNDkGY5SklMaiMCA5Qlkt1kpSsO+M=,tag:po82/negQvtuFP9K1TKW7g==,type:str]
+kind: Secret
+metadata:
+    name: r2-access
+type: Opaque
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2023-02-03T14:56:59Z"
+    mac: ENC[AES256_GCM,data:WgxQ1Ko1W22jKQZPousFI/jM/RIPaGQxVp5vZycYjuAgT4K+TN8Hx2fQ8/DIEsekWQnGMV6EIS4rwg7ZwzykbQo/PDNY/wh0E4VXZz2pIEmrjZoCZKruh/gpo6xBDAjRp6UuC+Qsim3wQKgxXQXlza/6li6v6XWCsMQOTKEPd0E=,iv:bOod4nWpdYt/WOgne+W6zHRF+3c+m3OI3fUnXWHk2m4=,tag:shIBSq3IbTUCBaUVCV2SiQ==,type:str]
+    pgp:
+        - created_at: "2023-02-03T14:56:58Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA10BBd9Ja1tnAQ/+Ob99Y78y4Cf6FhMMcm4SE+WOBVjNtRI1IniQCYQYE+r1
+            zEh7nvLozVtWETMp8xgOw3kLzRH8OhOwnFjzo254l8DhqewC3LgAtXumAha5NRbb
+            XVwLHBqKGthBLghGKm/cVmZxL2dewDPHD74Rpb5l34BnCbLFdc3Wp5TnPGdAq5WE
+            +GAYvYc8VbB6D/8+2UtuFYWFhTCP8lVOWkhpk7qUH+Sy82CEg0yByjI3XxwPVjt6
+            OZPCFohl3vcU93PA5yjBTwrG7uAruprLKqafCU8rDSUkCX0cSWrbjG0GGCOdTdlm
+            yCxmLbmFyUrWU5d9ZsUy10waOxhy+4pkw18WR6b7Hvmz2VxxA/G0yMkbIS2nNvNI
+            NuaRGMfQVK8r2JNg6ujyzBuZi7H/DWJk4jLGt+kEIEUGh0Q+hbANVs+bTH+9O7ab
+            NWGEQh7naZ7mKYsxMnKlKTchq32v8u7xVVjwGoYlOKuELdSEs0A4fkS2mKON2Lqu
+            6QkOWsAzHbbsOx1YThD+RmOvFA8PPXmKgTDiI2yY4FulOCkk1H/uZBt9hoU/XEEu
+            iUO9UfEyCunyk1BedF2AB4M1Rub6scsLxEtqMcc+hEbygNgsmmkLqY3EDDC8o+6R
+            a+TRWvPSQdae5xDRfLWoH/0Z+1g9x/Y9+MXSVSHpA/8Objt+SXd3GG6ctW+tYPjS
+            XgE6B7v/PJE/WFwbGBvEP4XbJvsYMXPIw2Xvmkja61lSJ9wUzj5/z4VAxzeudlAY
+            pyAHy6fuqtr+eArlZdj1bGVp/fimp8Z7uuX3wGZu4sCGEUaiep/vYayYxvc62q8=
+            =NgXa
+            -----END PGP MESSAGE-----
+          fp: 82B6F581AA9BAC43F18A9D2E8F13E77F0EF448C4
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3

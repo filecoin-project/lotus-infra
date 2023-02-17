@@ -1,0 +1,30 @@
+name: Flux-image-updates auto PR
+on:
+  push:
+    branches:
+    # Match any branch with this prefix, allows us to have separate branches and
+    # therefore PRs for different networks
+    - releases/flux-image-automation*
+
+jobs:
+  pull-request:
+    name: Open PR to master
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: checkout
+
+    - name: verify-kustomize
+      id: verify-kustomize
+      run: ./scripts/verify_kustomize.bash
+
+    - uses: repo-sync/pull-request@v2
+      name: Create Pull Request
+      with:
+        destination_branch: "master"
+        pr_label: "flux-image-automation"
+        pr_title: "Pulling ${{ github.ref }} into master"
+        pr_body: |
+          🐳 Auto image update
+        pr_reviewer: "ognots,GlacierWalrus"
+        github_token: ${{ secrets.GITHUB_TOKEN }}

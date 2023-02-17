@@ -12,30 +12,29 @@ spec:
   git:
     checkout:
       ref:
-        branch: main
+        branch: master
     commit:
       author:
         name: fil-infra-bot
         email: fil-infra-bot@protocol.ai
       messageTemplate: |
-        Update {{ .AutomationObject.Namespace }}/{{ .AutomationObject.Name }} in `production` environment
-        
+        Update {{ .AutomationObject.Namespace }}/{{ .AutomationObject.Name }} in prod/us-east-1/calibrationnet
         Files:
         {{ range $filename, $_ := .Updated.Files -}}
         - {{ $filename }}
         {{ end -}}
-        
+
         Objects:
         {{ range $resource, $_ := .Updated.Objects -}}
         - {{ $resource.Kind }} {{ $resource.Name }}
         {{ end -}}
-        
+
         Images:
         {{ range .Updated.Images -}}
         - {{.}}
         {{ end -}}
     push:
-      branch: 'main'
+      branch: 'releases/flux-image-automation-calibrationnet-ue1'
   update:
     strategy: Setters
     path: "./kubernetes/gitops/prod/us-east-1/calibrationnet"
