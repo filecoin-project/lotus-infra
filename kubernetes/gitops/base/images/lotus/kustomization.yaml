@@ -1,16 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: flux-system
 
 resources:
 - image-repository.yaml
 - image-policy.yaml
-
-patches:
-  - patch: |
-      apiVersion: image.toolkit.fluxcd.io/v1alpha1
-      kind: ImagePolicy
-      metadata:
-        namespace: flux-system
-    target:
-      kind: ImagePolicy
-      name: lotus-.*
