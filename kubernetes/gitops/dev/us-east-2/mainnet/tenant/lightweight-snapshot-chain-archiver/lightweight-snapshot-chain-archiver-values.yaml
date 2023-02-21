@@ -28,5 +28,3 @@ snapshots:
     value: "minimal/"
   - name: "GOLOG_LOG_FMT"
     value: "json"
-  - name: "MINIO_REGION"
-    value: "wnam"
