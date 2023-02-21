@@ -1,0 +1,46 @@
+apiVersion: image.toolkit.fluxcd.io/v1alpha1
+kind: ImagePolicy
+metadata:
+  name: lotus-latest-release
+spec:
+  policy:
+    semver:
+      range: '~1.x'
+  imageRepositoryRef:
+    name: filecoin-lotus-all-in-one
+---
+apiVersion: image.toolkit.fluxcd.io/v1alpha1
+kind: ImagePolicy
+metadata:
+  name: lotus-calibnet-latest-rc
+spec:
+  filterTags:
+    # XXX: This may end up being too liberal since it will match non-semver2 prefixes
+    #      but a regex literal matching semver2 is not worth including imho
+    pattern: '(?P<hopefully_semver2>.*)-calibnet'
+    extract: '$hopefully_semver2'
+  policy:
+    semver:
+      # "-0" suffix is required to consider pre-releases, e.g. v1.20.0-rc0-calibnet
+      # see https://github.com/Masterminds/semver#checking-version-constraints
+      range: '~1.x-0'
+  imageRepositoryRef:
+    name: filecoin-lotus-all-in-one
+---
+apiVersion: image.toolkit.fluxcd.io/v1alpha1
+kind: ImagePolicy
+metadata:
+  name: lotus-butterflynet-latest-rc
+spec:
+  filterTags:
+    # XXX: This may end up being too liberal since it will match non-semver2 prefixes
+    #      but a regex literal matching semver2 is not worth including imho
+    pattern: '(?P<hopefully_semver2>.*)-butterflynet'
+    extract: '$hopefully_semver2'
+  policy:
+    semver:
+      # "-0" suffix is required to consider pre-releases, e.g. v1.20.0-rc0-calibnet
+      # see https://github.com/Masterminds/semver#checking-version-constraints
+      range: '~1.x-0'
+  imageRepositoryRef:
+    name: filecoin-lotus-all-in-one
