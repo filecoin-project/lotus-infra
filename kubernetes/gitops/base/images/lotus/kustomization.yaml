@@ -4,3 +4,13 @@ kind: Kustomization
 resources:
 - image-repository.yaml
 - image-policy.yaml
+
+patches:
+  - patch: |
+      apiVersion: image.toolkit.fluxcd.io/v1alpha1
+      kind: ImagePolicy
+      metadata:
+        namespace: flux-system
+    target:
+      kind: ImagePolicy
+      name: lotus-.*
