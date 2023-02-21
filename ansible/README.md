@@ -26,7 +26,7 @@ To run playbooks, it's suggested you create a vault password file for convenienc
 ### Instructions
 
 1. In 1password `filecoin dev` vault, get the `lotus ansible vault` password
-2. Storge the password in a file called `$HOME/.ansible_vault_pass.txt`
+2. Store the password in a file called `./ansible/.vault_password`
 
 ## Current playbooks
 
