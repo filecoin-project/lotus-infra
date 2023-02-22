@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
 - ../../../base/storage/
+- ../../../base/images/
 - ../mainnet/cluster
 - ../calibrationnet/cluster
 
