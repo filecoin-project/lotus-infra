@@ -20,6 +20,7 @@ patches:
           # The -calibnet suffix is truncated at this point, so we can just specify the rc version
           range: '<=1.20.0-rc1'
   target:
-    version: image.toolkit.fluxcd.io/v1alpha1
+    group: image.toolkit.fluxcd.io
+    version: v1alpha1
     kind: ImagePolicy
     name: lotus-calibnet-latest-rc
