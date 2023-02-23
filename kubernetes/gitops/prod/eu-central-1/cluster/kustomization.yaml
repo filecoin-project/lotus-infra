@@ -8,3 +8,17 @@ resources:
 - ../mainnet/cluster
 - ../calibrationnet/cluster
 - flux-slack-url.yaml
+
+patches:
+- patch: |
+    apiVersion: notification.toolkit.fluxcd.io/v1beta1
+    kind: Alert
+    metadata:
+      name: slack-alerts
+    spec:
+      summary: "prod/eu-central-1"
+  target:
+    group: notification.toolkit.fluxcd.io
+    version: v1beta1
+    kind: Alert
+    name: slack-alerts
