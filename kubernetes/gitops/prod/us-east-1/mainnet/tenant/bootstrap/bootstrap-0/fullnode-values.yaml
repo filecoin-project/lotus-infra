@@ -1,4 +1,5 @@
 image:
+  repository: filecoin/lotus-all-in-one
   tag: v1.20.0-rc2
 secrets:
   libp2p:
