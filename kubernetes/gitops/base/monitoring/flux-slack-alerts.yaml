@@ -18,7 +18,7 @@ spec:
   summary: "[[[ YOU FOOL! YOU FORGOT TO OVERRIDE ME! ]]]"
   providerRef:
     name: slack
-  eventSeverity: error
+  eventSeverity: info
   eventSources:
   - kind: HelmRepository
     name: '*'
