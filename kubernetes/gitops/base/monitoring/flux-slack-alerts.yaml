@@ -1,0 +1,30 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta1
+kind: Provider
+metadata:
+  name: slack
+  namespace: flux-system
+spec:
+  type: slack
+  channel: flux
+  secretRef:
+    name: flux-slack-url
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta1
+kind: Alert
+metadata:
+  name: slack-alerts
+  namespace: flux-system
+spec:
+  summary: "[[[ YOU FOOL! YOU FORGOT TO OVERRIDE ME! ]]]"
+  providerRef:
+    name: slack
+  eventSeverity: error
+  eventSources:
+  - kind: HelmRepository
+    name: '*'
+  - kind: GitRepository
+    name: '*'
+  - kind: HelmRelease
+    name: '*'
+  - kind: Kustomization
+    name: "*"
