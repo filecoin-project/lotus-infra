@@ -27,3 +27,15 @@ snapshots:
     value: "minimal/"
   - name: "GOLOG_LOG_FMT"
     value: "json"
+
+podResets:
+  - pod: lws-node-0-fullnode-lotus-0
+    schedule: "0 0 * * 1,4"
+  - pod: lws-node-1-fullnode-lotus-0
+    schedule: "0 0 * * 2,5"
+  - pod: lws-node-2-fullnode-lotus-0
+    schedule: "0 0 * * 3,6"
+  - pod: lws-node-3-fullnode-lotus-0
+    schedule: "0 12 * * 4,7"
+  - pod: lws-node-4-fullnode-lotus-0
+    schedule: "0 12 * * 5,1"
