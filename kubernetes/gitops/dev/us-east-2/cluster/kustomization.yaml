@@ -8,6 +8,7 @@ resources:
 - ../mainnet/cluster
 - ../calibrationnet/cluster
 - ../butterflynet/cluster
+- flux-slack-url.yaml
 
 patches:
 - patch: |
