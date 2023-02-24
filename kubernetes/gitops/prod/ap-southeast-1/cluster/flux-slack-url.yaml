@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+    name: flux-slack-url
+    namespace: flux-system
+stringData:
+    address: ENC[AES256_GCM,data:paiarjUePsxl+eVoQsq8Ad9oMsrTp+rIXXh0yzWt7wLOmRHK05Md3lnGUNAYGgrjtZemKAAQZ9T8LPu0NpBPqZJ/nN0fgiYD8AdPtUu9Ww==,iv:dY6R5Jhp5RO9zJdQ9WV+b1XXPJLVyT2C61431XOPW/Y=,tag:Z+9hZTPii3vg4s5sF0AHTA==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2023-02-23T18:55:01Z"
+    mac: ENC[AES256_GCM,data:pqDqVTRVsJMtdWEqC1GU5OdteOxE5N0zKVyvKN/X+yR8JrRNhiBwvDlOBnaq0VC0zyoEiWxw6tw4qQ+a07AtF+TE5DO6r1+W/kCD9/ffvBSV7c88gbL1WdB+F1S+JBdBQvnJVpUW4/Qz32j/psNnXXSvH4+1XV9sHRcOFZNOEBM=,iv:XHMv7dWJngtDrCrP56xWn+sulAxzMXh6QnzKxCM5aU0=,tag:tRqRNVUxjIV4vJexGVIuMQ==,type:str]
+    pgp:
+        - created_at: "2023-02-23T18:55:01Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA1N1t5oRmloQAQ//S6SU6pum3AF09xhswL9CFBYSkI24IHeU4wq3V6LDUBPE
+            xktgn3ev0yNyjDBYyaeoJH6glC9VH6ZKlVRFnb5nXnwJsC/eM+97To39M3Z2WHom
+            O1WG5o/iSziisvrSMwQZfzVALrXWfP2e7XLZTUyWW/DEf8+4hV4zLkn72MfJ/0sU
+            e+/St0CP+OO9H4GxPShMFQYMOTTw8htK4OUIVFshmhpj+wDAQGnAdT6z7ywsd5lk
+            9W7SZhtAvE825PLT2cYMsU8u96vOkI2dowAd9pblU+S4QBEK/ILwqb00DBgnlBlr
+            ni0l5kIvkiOk9pCGE6iYOnNy9bdZNoUfNMhlmqlYWzcs/4pi8ixeVSEio8VRaFov
+            sAhp0iS0en4yUnb5nfm0wBon7AoYJ06CoUhQ/xlIhcBcYKIVgK/JKruUgWvPb6jb
+            OTYpcvGDWL03mo1uU8INwC4pczBvf6JnvpIINtgbPZR5wGimoKVhowcd5rClIhd3
+            GMMQm3Yw+ewCj0yZ04nUacrSaN2Q1r9MTl03611Xkzdh/c/F6yMDHs9bIpAeGMaP
+            H4gZHQeBAYQMqHPGIj2LKZobEGrTsOqgXXUqfG9l+b3ioFqxQvftUnZPYwhI2I1W
+            cZlx2L4rQVFvub+BPj6Rk/B/2WpKVPdIUA13jj4sbCBlcoQ/hs+MMYh5ThJofgbS
+            XgEepMll7FvrTPge0R38bghfli+tTh1hvQDUVLF9cyW1ALLc5OjBbIt6vgsIMaDS
+            KZ9I1gW9MDzH3n0sGbl9pz6KtvV1lUlw25E9ZW5C/18jL7er0BPsmV1gNzM8ul0=
+            =dXPD
+            -----END PGP MESSAGE-----
+          fp: 4FE9A9EFDDC34EC24D56953EA33E5A125E249D39
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3

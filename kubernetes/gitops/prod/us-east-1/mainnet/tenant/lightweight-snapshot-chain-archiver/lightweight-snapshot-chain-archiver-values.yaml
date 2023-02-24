@@ -44,6 +44,6 @@ podResets:
   - pod: lws-node-2-fullnode-lotus-0
     schedule: "0 0 * * 3,6"
   - pod: lws-node-3-fullnode-lotus-0
-    schedule: "0 12 * * 4,7"
+    schedule: "0 12 * * 4,0"
   - pod: lws-node-4-fullnode-lotus-0
     schedule: "0 12 * * 5,1"
