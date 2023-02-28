@@ -14,10 +14,9 @@ indexResolver:
     enabled: true
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-      # THIS SSL CERT IS FOR snapshots.mainnet.filops.net
-      # service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:759815798766:certificate/5e9eb742-7d50-4ac9-b1e2-4fe4c1f5f5a1
-      # service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
-      external-dns.alpha.kubernetes.io/hostname: snapshots2.mainnet.filops.net
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:759815798766:certificate/5e9eb742-7d50-4ac9-b1e2-4fe4c1f5f5a1
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+      external-dns.alpha.kubernetes.io/hostname: snapshots.mainnet.filops.net
       external-dns.alpha.kubernetes.io/alias: "true"
       external-dns.alpha.kubernetes.io/ttl: "60"
 
