@@ -5,6 +5,7 @@ namespace: ntwk-calibrationnet
 
 resources:
 - ../../common
+- ../../../base/images/lotus/calibrationnet
 - flux-tenant.yaml
 - flux-kustomization.yaml
 - flux-image-update-automation.yaml
