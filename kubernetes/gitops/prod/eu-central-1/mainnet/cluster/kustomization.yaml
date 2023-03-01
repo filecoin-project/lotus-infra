@@ -8,4 +8,4 @@ resources:
 - flux-tenant.yaml
 - flux-kustomization.yaml
 - flux-image-update-automation.yaml
-- flux-cd-lotus.yaml
+- ../../../../base/images/lotus/mainnet
