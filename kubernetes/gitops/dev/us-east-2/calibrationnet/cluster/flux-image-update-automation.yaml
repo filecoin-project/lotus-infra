@@ -2,14 +2,13 @@
 apiVersion: image.toolkit.fluxcd.io/v1beta1
 kind: ImageUpdateAutomation
 metadata:
-  name: lotus-calibrationnet
-  namespace: flux-system
+  name: calibrationnet
+  namespace: ntwk-calibrationnet
 spec:
   interval: 5m
   sourceRef:
     kind: GitRepository
     name: calibrationnet
-    namespace: ntwk-calibrationnet
   git:
     checkout:
       ref:
