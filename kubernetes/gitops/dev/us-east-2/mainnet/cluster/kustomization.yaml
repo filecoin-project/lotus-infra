@@ -5,7 +5,7 @@ namespace: ntwk-mainnet
 
 resources:
 - ../../common
-- ../../../base/images/lotus/mainnet
+- ../../../../base/images/lotus/mainnet
 - flux-tenant.yaml
 - flux-kustomization.yaml
 - flux-image-update-automation.yaml
