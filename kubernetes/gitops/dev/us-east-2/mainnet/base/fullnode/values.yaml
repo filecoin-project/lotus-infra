@@ -1,12 +1,9 @@
 image:
-  tag: v1.18.0  # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
-
+  tag: v1.20.0 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 prometheusOperatorServiceMonitor: true
-
 resources:
   requests:
     memory: 160Gi
-
 importSnapshot:
   enabled: false
   strategy: url
@@ -14,7 +11,6 @@ importSnapshot:
   network: mainnet
   exportRelease: export-full-archive
   exitCodeOnMissing: 0
-
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
@@ -22,28 +18,25 @@ daemonEnvs:
     value: madvdontneed=1
   - name: DISABLE_PRE_MIGRATIONS
     value: "1"
-  # - name: LOTUS_JAEGER_AGENT_HOST
-  #   valueFrom:
-  #     fieldRef:
-  #       apiVersion: v1
-  #       fieldPath: status.hostIP
-  # - name: LOTUS_JAEGER_AGENT_PORT
-  #   value: "6831"
+# - name: LOTUS_JAEGER_AGENT_HOST
+#   valueFrom:
+#     fieldRef:
+#       apiVersion: v1
+#       fieldPath: status.hostIP
+# - name: LOTUS_JAEGER_AGENT_PORT
+#   value: "6831"
 
 daemonConfig: |
   [API]
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
   [Libp2p]
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
-
 additionalLabels:
   network: mainnet
-
 persistence:
   datastore:
     enabled: true
     size: "32000Gi"
     storageClassName: "io2-high-capacity-low-throughput"
-
 nodeSelector:
   "node.kubernetes.io/instance-type": "r5b.8xlarge"
