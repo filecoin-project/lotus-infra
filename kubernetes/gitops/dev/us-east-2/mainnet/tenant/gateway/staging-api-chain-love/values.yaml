@@ -77,7 +77,7 @@ application:
   storage: []
 lotus:
   enabled: true
-  image: filecoin/lotus-all-in-one:v1.18.0
+  image: filecoin/lotus-all-in-one:v1.18.0 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release"}
   lite:
     enabled: false
   reset:
