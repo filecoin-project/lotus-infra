@@ -6,3 +6,5 @@ spec:
   chart:
     spec:
       version: 0.0.22
+  # XXX: Temporary to try to fix stuck reconciliation
+  interval: 10m
