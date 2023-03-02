@@ -1,8 +1,6 @@
 image:
-  tag: v1.19.0  # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
-
+  tag: v1.20.0 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 prometheusOperatorServiceMonitor: true
-
 resources:
   requests:
     memory: 48Gi
@@ -10,19 +8,15 @@ resources:
   limits:
     memory: 54Gi
     cpu: 6
-
-
 importSnapshot:
   enabled: true
   strategy: url
-
 persistence:
   datastore:
     enabled: true
     easyReset: true
     size: "2000Gi"
     storageClassName: "gp2"
-
 daemonConfig: |
   [API]
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
@@ -34,13 +28,10 @@ daemonConfig: |
   [Pubsub]
     IPColocationWhitelist = ["10.0.0.0/8"]
     Bootstrapper = true
-
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
-
 nodeSelector:
   "node.kubernetes.io/instance-type": "r5.2xlarge"
-
 additionalLabels:
   network: mainnet
