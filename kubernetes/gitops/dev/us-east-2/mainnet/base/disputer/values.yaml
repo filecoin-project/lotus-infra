@@ -1,5 +1,5 @@
 image:
-  tag: v1.18.0  # {"$imagepolicy": "ntwk-mainnet:mainnet-lotus:tag"}
+  tag: v1.18.0  # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 
 prometheusOperatorServiceMonitor: true
 
