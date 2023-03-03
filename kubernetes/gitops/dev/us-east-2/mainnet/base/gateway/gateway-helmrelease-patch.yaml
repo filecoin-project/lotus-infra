@@ -1,7 +1,10 @@
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: gateway
-# spec:
-#   install:
-#     timeout: "90m"
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: gateway
+spec:
+  chart:
+    spec:
+      version: 0.0.22
+  # XXX: Temporary to try to fix stuck reconciliation
+  interval: 10m
