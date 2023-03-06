@@ -10,7 +10,6 @@ indexResolver:
     secretName: r2-access
 
   loadBalancer:
-  loadBalancer:
     enabled: true
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
@@ -21,6 +20,7 @@ indexResolver:
       external-dns.alpha.kubernetes.io/ttl: "60"
 
 snapshots:
+  activeDeadlineSeconds: 21600 # 6 hours
   uploads:
     enabled: true
     bucket: "filecoin-snapshots-mainnet-production"
