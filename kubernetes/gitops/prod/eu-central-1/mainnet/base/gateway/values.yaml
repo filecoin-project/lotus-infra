@@ -1,0 +1,2 @@
+image:
+  tag: v1.19.0 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
