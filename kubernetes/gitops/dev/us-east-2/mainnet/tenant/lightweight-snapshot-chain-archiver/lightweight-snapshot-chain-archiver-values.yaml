@@ -28,3 +28,5 @@ snapshots:
     value: "minimal/"
   - name: "GOLOG_LOG_FMT"
     value: "json"
+  nodes:
+  - /dns/lws-node-0-fullnode-lotus-daemon/tcp/1234
