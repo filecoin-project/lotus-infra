@@ -20,7 +20,7 @@ indexResolver:
       external-dns.alpha.kubernetes.io/ttl: "60"
 
 snapshots:
-  activeDeadlineSeconds: 18000 # 5 hours
+  activeDeadlineSeconds: 28800 # 8 hours
   uploads:
     enabled: true
     bucket: "filecoin-snapshots-mainnet-production"
