@@ -1,2 +1,2 @@
 image:
-  tag: v1.19.0 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  tag: v1.20.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
