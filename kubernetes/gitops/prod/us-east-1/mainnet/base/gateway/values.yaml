@@ -1,0 +1,5 @@
+image:
+  tag: v1.20.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+
+lotus:
+  image: docker.io/filecoin/lotus-all-in-one:v1.20.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release"}
