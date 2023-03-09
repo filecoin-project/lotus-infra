@@ -7,8 +7,10 @@ spec:
     timeout: "90m"
   upgrade:
     # XXX: Temporary to prevent fullnode rollback
-    remediateLastFailure: false
-    retries: 0
+    remediation:
+      remediateLastFailure: false
+      retries: 0
+    timeout: 5m
   chart:
     spec:
       version: 0.4.2
