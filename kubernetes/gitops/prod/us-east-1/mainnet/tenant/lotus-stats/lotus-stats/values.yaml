@@ -1,7 +1,8 @@
 image:
   tag: mainnet-v1.18.0
 
-height: "2554519"
+# you may need to change this to a recent epoch if there's been a prolonged stats outage
+height: "0"
 #lotusApiInfo: /dns/node-0-fullnode-lotus-daemon/tcp/1234
 lotusApiInfo: /dns/api-chain-love-gateway-lotus-gateway-0/ws
 
