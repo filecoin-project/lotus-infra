@@ -1,9 +1,4 @@
 ---
-image:
-  repository: travisperson/lotus-stats
-  pullPolicy: IfNotPresent
-  tag: v1.1.2
-
 serviceAccountName: ""
 
 nosync: true
@@ -39,4 +34,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-

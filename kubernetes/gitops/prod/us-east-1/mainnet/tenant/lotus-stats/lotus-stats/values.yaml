@@ -1,5 +1,5 @@
 image:
-  tag: mainnet-v1.18.0
+  tag: v1.20.1
 
 height: "2554519"
 #lotusApiInfo: /dns/node-0-fullnode-lotus-daemon/tcp/1234
@@ -7,4 +7,3 @@ lotusApiInfo: /dns/api-chain-love-gateway-lotus-gateway-0/ws
 
 influxDatabase: chainstats-ntwk-mainnet
 influxSecrets: lotus-stats-lotus-stats
-
