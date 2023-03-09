@@ -5,6 +5,12 @@ metadata:
 spec:
   install:
     timeout: "90m"
+  upgrade:
+    # XXX: Temporary to prevent fullnode rollback
+    remediation:
+      remediateLastFailure: false
+      retries: 0
+    timeout: 5m
   chart:
     spec:
       version: 0.4.2
