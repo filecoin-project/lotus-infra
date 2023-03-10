@@ -1,3 +1,6 @@
+image:
+  tag: v1.20.3
+
 secrets:
   jwt:
     enabled: true
