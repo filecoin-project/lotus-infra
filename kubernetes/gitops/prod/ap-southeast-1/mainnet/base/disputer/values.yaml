@@ -1,8 +1,6 @@
 image:
-  tag: v1.20.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
-
+  tag: v1.20.2 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 prometheusOperatorServiceMonitor: true
-
 resources:
   requests:
     memory: 32Gi
@@ -10,23 +8,19 @@ resources:
   limits:
     memory: 48Gi
     cpu: 6
-
 importSnapshot:
   enabled: true
   strategy: url
-
 persistence:
   datastore:
     enabled: true
     easyReset: true
     size: "2000Gi"
-
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
   - name: GODEBUG
     value: madvdontneed=1
-
 disputer:
   enabled: true
   walletAddr: f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da
@@ -34,9 +28,7 @@ disputer:
   env:
     - name: GOLOG_LOG_FMT
       value: json
-
 additionalLabels:
   network: mainnet
-
 nodeSelector:
   "node.kubernetes.io/instance-type": "r5.2xlarge"
