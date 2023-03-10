@@ -1,5 +1,5 @@
 image:
-  tag: v1.21.3
+  tag: v1.20.3
 
 prometheusOperatorServiceMonitor: true
 
