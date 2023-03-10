@@ -1,5 +1,5 @@
 image:
-  tag: v1.20.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  tag: v1.20.2 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 secrets:
   libp2p:
     enabled: true
