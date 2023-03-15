@@ -77,7 +77,7 @@ application:
   storage: []
 lotus:
   enabled: true
-  image: docker.io/filecoin/lotus-all-in-one:v1.20.3 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release"}
+  image: docker.io/filecoin/lotus-all-in-one:v1.20.3-rpc-p01-hf02
   lite:
     enabled: false
   reset:
