@@ -75,14 +75,16 @@ application:
                       port:
                         name: lotus-gw
   storage: []
+
 lotus:
   enabled: true
   image: docker.io/filecoin/lotus-all-in-one:v1.20.3-rpc-p01-hf02
-  lite:
-    enabled: false
+  extraEnv:
+    LOTUS_API_LISTEN_ADDRESS: /ip4/0.0.0.0/tcp/1234/http
   reset:
     enabled: true
     percent: 90
+
 prometheus:
   serviceMonitor: true
   path: /debug/metrics
