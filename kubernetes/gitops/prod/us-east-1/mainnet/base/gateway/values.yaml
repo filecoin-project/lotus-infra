@@ -3,3 +3,5 @@ image:
 
 lotus:
   image: docker.io/filecoin/lotus-all-in-one:v1.20.3-rpc-p01-hf02 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release"}
+  extraEnv:
+    LOTUS_API_LISTENADDRESS: /ip4/0.0.0.0/tcp/1234/http
