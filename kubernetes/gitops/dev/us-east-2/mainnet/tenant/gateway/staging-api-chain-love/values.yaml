@@ -1,6 +1,6 @@
 image:
   repository: filecoin/lotus-all-in-one
-  tag: v1.20.4 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  tag: v1.20.3-rpc-p01-hf02
   pullPolicy: Always
 application:
   name: lotus-gateway
