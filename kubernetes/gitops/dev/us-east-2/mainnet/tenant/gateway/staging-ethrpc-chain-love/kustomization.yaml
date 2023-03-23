@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
 - ../../../base/gateway
 
-namePrefix: staging-ethrpc-chain-love-
+namePrefix: staging-eth-clove-
 
 configMapGenerator:
 - files:
