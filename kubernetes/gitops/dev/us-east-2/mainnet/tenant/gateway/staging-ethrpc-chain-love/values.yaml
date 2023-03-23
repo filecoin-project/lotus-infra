@@ -71,7 +71,7 @@ application:
                   path: "/"
                   backend:
                     service:
-                      name: staging-ethrpc-chain-love-gateway-lotus-gateway-ethrpc-0
+                      name: staging-eth-clove-gateway-lotus-gateway-ethrpc-0
                       port:
                         name: lotus-gw
   storage: []
