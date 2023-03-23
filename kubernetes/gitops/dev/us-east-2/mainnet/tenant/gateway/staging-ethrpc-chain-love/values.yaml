@@ -2,6 +2,18 @@ image:
   repository: filecoin/lotus-all-in-one
   tag: v1.20.3-rpc-p01-hf02
   pullPolicy: Always
+
+# volumeClaims:
+volumeClaimTemplates:
+- metadata:
+    name: lotus-sqlite
+  spec:
+    storageClassName: standard
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 50Gi
 application:
   name: lotus-gateway-ethrpc
   labels: []
@@ -85,6 +97,9 @@ lotus:
   reset:
     enabled: true
     percent: 90
+  extraVolumeMounts:
+  - name: lotus-sqlite
+    mountPath: /var/lib/lotus/sqlite
 
 prometheus:
   serviceMonitor: true

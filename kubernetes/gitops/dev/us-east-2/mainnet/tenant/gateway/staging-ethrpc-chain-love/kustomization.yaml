@@ -4,6 +4,9 @@ kind: Kustomization
 resources:
 - ../../../base/gateway
 
+patchesStrategicMerge:
+  - gateway-helmrelease-patch.yaml
+
 namePrefix: staging-eth-clove-
 
 configMapGenerator:
