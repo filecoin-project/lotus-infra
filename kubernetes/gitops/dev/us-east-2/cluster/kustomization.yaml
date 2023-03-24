@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
 - ../../../base/storage/
+- ./gp3-storage-class.yaml
 - ../../../base/monitoring/
 - ../mainnet/cluster
 - ../calibrationnet/cluster
