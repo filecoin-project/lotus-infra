@@ -8,12 +8,13 @@ volumeClaimTemplates:
 - metadata:
     name: lotus-sqlite
   spec:
+    reclaimPolicy: Retain
     storageClassName: gp2
     accessModes:
     - ReadWriteOnce
     resources:
       requests:
-        storage: 50Gi
+        storage: 20Gi
 application:
   name: lotus-gateway-ethrpc
   labels: []
