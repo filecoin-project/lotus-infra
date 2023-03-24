@@ -8,7 +8,7 @@ volumeClaimTemplates:
 - metadata:
     name: lotus-sqlite
   spec:
-    storageClassName: gp3
+    storageClassName: gp3-retain
     accessModes:
     - ReadWriteOnce
     resources:
