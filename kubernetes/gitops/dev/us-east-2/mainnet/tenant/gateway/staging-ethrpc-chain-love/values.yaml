@@ -8,7 +8,7 @@ volumeClaimTemplates:
 - metadata:
     name: lotus-sqlite
   spec:
-    reclaimPolicy: Retain
+    persistentVolumeReclaimPolicy: Retain
     storageClassName: gp2
     accessModes:
     - ReadWriteOnce
