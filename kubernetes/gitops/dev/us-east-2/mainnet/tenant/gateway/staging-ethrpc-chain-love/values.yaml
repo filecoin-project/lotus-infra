@@ -8,7 +8,7 @@ volumeClaimTemplates:
 - metadata:
     name: lotus-sqlite
   spec:
-    storageClassName: standard
+    storageClassName: gp2
     accessModes:
     - ReadWriteOnce
     resources:
