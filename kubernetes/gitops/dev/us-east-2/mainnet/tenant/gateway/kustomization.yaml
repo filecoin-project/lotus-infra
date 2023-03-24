@@ -5,4 +5,3 @@ namespace: mainnet
 
 resources:
 - staging-api-chain-love
-- staging-ethrpc-chain-love
