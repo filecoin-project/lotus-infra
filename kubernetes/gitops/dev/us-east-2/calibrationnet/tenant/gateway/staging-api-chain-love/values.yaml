@@ -14,6 +14,10 @@ volumeClaimTemplates:
     resources:
       requests:
         storage: 20Gi
+
+snapshotImporter:
+  snapshotUrl: "https://snapshots.calibrationnet.filops.net/minimal/latest"
+
 application:
   name: lotus-gateway-ethrpc
   labels: []
