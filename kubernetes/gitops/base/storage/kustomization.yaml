@@ -5,3 +5,4 @@ resources:
 - io2-storage-class.yaml
 - io2-low-throughput-storage-class.yaml
 - io2-high-capacity-low-throughput.yaml
+- gp3-storage-class.yaml
