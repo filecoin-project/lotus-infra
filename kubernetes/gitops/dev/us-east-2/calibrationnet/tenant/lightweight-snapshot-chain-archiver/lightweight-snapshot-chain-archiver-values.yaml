@@ -1,6 +1,6 @@
 image:
   pullPolicy: Always
-  tag: "1.1.1"
+  tag: "pr-67"
 
 indexResolver:
   replicas: 1
@@ -15,15 +15,16 @@ indexResolver:
 snapshots:
   schedule: "0 */12 * * *"
   uploads:
-    enabled: true
-    bucket: "filecoin-snapshots-calibnet-staging"
-    endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
-    secretName: r2-access
+    enabled: false
+    # enabled: true
+    # bucket: "filecoin-snapshots-calibnet-staging"
+    # endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
+    # secretName: r2-access
   additionalEnv:
   - name: "FCA_CREATE_RETRIEVAL_ENDPOINT_PREFIX"
     value: "https://pub-72366a891cfb4f1d8d3d518390c52e6e.r2.dev"
   - name: "FCA_CREATE_PROGRESS_UPDATE"
-    value: "60s"
+    value: "0"
   - name: "FCA_CREATE_NAME_PREFIX"
     value: "minimal/"
   - name: "GOLOG_LOG_FMT"
