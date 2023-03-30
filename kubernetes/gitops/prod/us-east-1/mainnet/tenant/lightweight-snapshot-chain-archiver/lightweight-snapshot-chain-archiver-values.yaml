@@ -2,9 +2,6 @@ image:
   pullPolicy: Always
   tag: "1.2.0"
 
-commonLabels:
-  app.kubernetes.io/name: filecoin-chain-archiver
-
 indexResolver:
   replicas: 3
   s3Resolver:
