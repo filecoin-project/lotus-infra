@@ -17,7 +17,7 @@ volumeClaimTemplates:
 application:
   name: lotus-gateway-ethrpc
   labels: []
-  replicas: 2
+  replicas: 1
   container:
     name: lotus-gateway
     command:
