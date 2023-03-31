@@ -5,3 +5,4 @@ namespace: mainnet
 
 resources:
 - api-chain-love
+- ethrpc-chain-love
