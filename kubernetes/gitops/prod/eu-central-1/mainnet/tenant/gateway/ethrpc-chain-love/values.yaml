@@ -76,7 +76,7 @@ application:
     spec:
       ingressClassName: nginx
       rules:
-      - host: ethrpc.chain.love
+      - host: eth.api.chain.love
         http:
           paths:
           - pathType: Prefix
