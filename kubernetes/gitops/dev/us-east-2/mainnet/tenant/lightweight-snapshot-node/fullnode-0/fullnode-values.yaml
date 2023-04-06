@@ -1,5 +1,6 @@
 image:
-  tag: v1.20.3
+  repository: ognots/lotus-all-in-one
+  tag: v1.21
 
 secrets:
   jwt:
