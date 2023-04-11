@@ -1,7 +1,5 @@
 image:
-  repository: docker.io/laith/lotus-all-in-one
-  tag: metrics-test
-
+  tag: v1.20.3 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 secrets:
   libp2p:
     enabled: true
