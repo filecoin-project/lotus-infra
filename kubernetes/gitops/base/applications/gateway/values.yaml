@@ -1,7 +1,7 @@
 ---
 image:
   repository: filecoin/lotus-all-in-one
-  tag: v1.19.0
+  tag: v1.20.3-rpc-p01-hf02
   pullPolicy: Always
 
 application:
@@ -56,14 +56,30 @@ application:
 
 lotus:
   enabled: true
-  image: filecoin/lotus-all-in-one:v1.19.0
-  lite:
-    enabled: false
+  image: docker.io/filecoin/lotus-all-in-one:v1.20.3-rpc-p01-hf02
+  extraEnv:
+    LOTUS_API_LISTENADDRESS: /ip4/0.0.0.0/tcp/1234/http
+    LOTUS_FEVM_ENABLEETHRPC: "true"
   reset:
     enabled: true
     percent: 90
+  extraVolumeMounts:
+  - name: lotus-sqlite
+    mountPath: /var/lib/lotus/sqlite
 
 prometheus:
   serviceMonitor: true
   path: /debug/metrics
   port: lotus-gw
+
+# volumeClaims:
+volumeClaimTemplates:
+- metadata:
+    name: lotus-sqlite
+  spec:
+    storageClassName: gp3-retain
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 20G
