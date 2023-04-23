@@ -1,5 +1,7 @@
 image:
-  tag: v1.23.0-rc1-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
+  # Set version to fix fork incident
+  # https://www.notion.so/pl-strflt/nv20-wdpost-failure-7ec6d48afe1441c59940ef58dde721d7#4b486515a23145ae9af0b4f4dd4b48cb
+  tag: v1.22.0
 prometheusOperatorServiceMonitor: true
 resources:
   requests:
