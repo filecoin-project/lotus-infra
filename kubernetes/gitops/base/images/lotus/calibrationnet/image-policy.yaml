@@ -10,7 +10,11 @@ spec:
     extract: '$hopefully_semver2'
   policy:
     semver:
-      range: '~1.x'
+      # # Temporarily disable this since there's a stable 1.23.0 release and
+      # # we want to deploy 1.22.0 instead
+      # # The latest stable release (not a pre-release). e.g. 1.20.3
+      # range: '~1.x'
+      range: '1.22.0'
   imageRepositoryRef:
     name: filecoin-lotus-all-in-one
 ---
@@ -26,9 +30,12 @@ spec:
     extract: '$hopefully_semver2'
   policy:
     semver:
-      # "-0" suffix is required to consider pre-releases, e.g. v1.20.0-rc0-calibnet
-      # see https://github.com/Masterminds/semver#checking-version-constraints
-      range: '~1.x-0'
+      # # Temporarily disable this since there's a stable 1.23.0 release and
+      # # we want to deploy 1.22.0 instead
+      # # "-0" suffix is required to consider pre-releases, e.g. v1.20.0-rc0-calibnet
+      # # see https://github.com/Masterminds/semver#checking-version-constraints
+      # range: '~1.x-0'
+      range: '1.22.0'
   imageRepositoryRef:
     name: filecoin-lotus-all-in-one
 ---
