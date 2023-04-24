@@ -8,4 +8,4 @@ importSnapshot:
   # period before the nv20 wdpost failure fork.
   enabled: true
   url: https://pub-f851d666b9a54f60bd93202926618941.r2.dev/minimal/461280_2023_04_10T22_13_00Z.car
-  strategy: "volume"
+  strategy: "url"
