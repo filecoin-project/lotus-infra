@@ -2,3 +2,9 @@ secrets:
   jwt:
     enabled: true
     secretName: lightweight-snapshot-node-jwt-secret
+
+importSnapshot:
+  # Temporarily use this snapshot so we can provision a node quickly. The date is a comfortable
+  # period before the nv20 wdpost failure fork.
+  enabled: true
+  url: https://pub-f851d666b9a54f60bd93202926618941.r2.dev/minimal/461280_2023_04_10T22_13_00Z.car
