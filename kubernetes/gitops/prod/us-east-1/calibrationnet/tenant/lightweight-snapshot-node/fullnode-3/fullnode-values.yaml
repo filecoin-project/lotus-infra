@@ -3,6 +3,9 @@ secrets:
     enabled: true
     secretName: lightweight-snapshot-node-jwt-secret
 
+image:
+  tag: v1.22.1-calibnet
+
 importSnapshot:
   enabled: true
   url: https://snapshots.calibrationnet.filops.net/minimal/latest.zst
