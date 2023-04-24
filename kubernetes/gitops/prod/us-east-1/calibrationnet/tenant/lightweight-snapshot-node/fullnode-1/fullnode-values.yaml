@@ -4,8 +4,8 @@ secrets:
     secretName: lightweight-snapshot-node-jwt-secret
 
 importSnapshot:
-  # Temporarily use this snapshot so we can provision a node quickly. The date is a comfortable
-  # period before the nv20 wdpost failure fork.
+  # Using the snapshot provided by TippyFlits
+  # see https://filecoinproject.slack.com/archives/C0328U5N4HL/p1682357430913569?thread_ts=1682271745.395409&cid=C0328U5N4HL
   enabled: true
-  url: https://pub-f851d666b9a54f60bd93202926618941.r2.dev/minimal/461280_2023_04_10T22_13_00Z.car
+  url: https://pub-f851d666b9a54f60bd93202926618941.r2.dev/filecoin-snapshots-calibnet-production/manual/499775_2023_04_24T15_00_00_UTC8.car
   strategy: "url"
