@@ -8,6 +8,6 @@ spec:
       # # Temporarily disable this since there's a stable 1.23.0 release and
       # # we want to deploy 1.22.0 instead
       # range: '~1.x'
-      range: '1.22.0'
+      range: '1.22.1'
   imageRepositoryRef:
     name: filecoin-lotus-all-in-one
