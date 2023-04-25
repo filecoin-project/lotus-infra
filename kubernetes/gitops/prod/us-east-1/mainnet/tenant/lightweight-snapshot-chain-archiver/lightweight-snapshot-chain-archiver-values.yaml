@@ -1,6 +1,6 @@
 image:
   pullPolicy: Always
-  tag: "1.1.1"
+  tag: "1.2.0"
 
 indexResolver:
   replicas: 3
@@ -42,7 +42,25 @@ snapshots:
   - /dns/lws-node-3-fullnode-lotus-daemon/tcp/1234
   - /dns/lws-node-4-fullnode-lotus-daemon/tcp/1234
   schedule: "*/90 * * * *"
-
+  resources:
+    requests:
+      cpu: "1500m"
+      memory: "90Gi"
+    limits:
+      cpu: "2"
+      memory: "95Gi"
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+              - filecoin-chain-archiver
+          topologyKey: kubernetes.io/hostname
 podResets:
   - pod: lws-node-0-fullnode-lotus-0
     schedule: "0 0 * * 0,2,4"

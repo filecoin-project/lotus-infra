@@ -1,6 +1,6 @@
 image:
   repository: filecoin/lotus-all-in-one
-  tag: v1.20.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  tag: v1.22.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
   pullPolicy: Always
 application:
   name: lotus-gateway
@@ -77,9 +77,9 @@ application:
   storage: []
 lotus:
   enabled: true
-  image: docker.io/filecoin/lotus-all-in-one:v1.20.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release"}
-  lite:
-    enabled: false
+  image: docker.io/filecoin/lotus-all-in-one:v1.22.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release"}
+  extraEnv:
+    LOTUS_API_LISTENADDRESS: /ip4/0.0.0.0/tcp/1234/http
   reset:
     enabled: true
     percent: 90
@@ -87,5 +87,5 @@ prometheus:
   serviceMonitor: true
   path: /debug/metrics
   port: lotus-gw
-nodeSelector:
-  "node.kubernetes.io/instance-type": "r5.2xlarge"
+# nodeSelector:
+#   "node.kubernetes.io/instance-type": "r5.2xlarge"

@@ -1,5 +1,5 @@
 image:
-  tag: v1.20.2-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
+  tag: v1.23.0-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
 prometheusOperatorServiceMonitor: true
 resources:
   requests:
@@ -30,6 +30,8 @@ daemonConfig: |
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
   [Libp2p]
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+  [Chainstore]
+    EnableSplitstore = false
 additionalLabels:
   network: calibration
 persistence:

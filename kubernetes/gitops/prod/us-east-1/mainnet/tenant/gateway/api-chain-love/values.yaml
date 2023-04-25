@@ -23,6 +23,3 @@ application:
                       name: api-chain-love-gateway-lotus-gateway-0
                       port:
                         name: lotus-gw
-
-nodeSelector:
-  "node.kubernetes.io/instance-type": "r5.2xlarge"
