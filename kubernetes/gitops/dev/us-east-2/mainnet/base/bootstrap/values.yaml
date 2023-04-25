@@ -16,7 +16,6 @@ persistence:
     enabled: true
     easyReset: true
     size: "2000Gi"
-    storageClassName: "gp2"
 daemonConfig: |
   [API]
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"

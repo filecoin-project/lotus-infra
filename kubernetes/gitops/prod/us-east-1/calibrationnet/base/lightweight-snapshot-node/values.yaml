@@ -1,5 +1,7 @@
 image:
-  tag: v1.20.0-rc1-calibnet # {"$imagepolicy": "flux-system:lotus-calibnet-latest-rc:tag"}
+  # Set version to fix fork incident
+  # https://www.notion.so/pl-strflt/nv20-wdpost-failure-7ec6d48afe1441c59940ef58dde721d7#4b486515a23145ae9af0b4f4dd4b48cb
+  tag: v1.22.0-calibnet
 prometheusOperatorServiceMonitor: true
 resources:
   requests:
@@ -30,6 +32,8 @@ daemonConfig: |
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
   [Libp2p]
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+  [Chainstore]
+    EnableSplitstore = false
 additionalLabels:
   network: calibration
 persistence:

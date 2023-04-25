@@ -36,7 +36,7 @@ additionalLabels:
 persistence:
   datastore:
     enabled: true
-    size: "32000Gi"
+    size: "42000Gi"
     storageClassName: "io2-high-capacity-low-throughput"
 nodeSelector:
   "node.kubernetes.io/instance-type": "r5b.8xlarge"

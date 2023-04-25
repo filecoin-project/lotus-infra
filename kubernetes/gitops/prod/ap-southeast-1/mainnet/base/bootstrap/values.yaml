@@ -17,7 +17,6 @@ persistence:
     enabled: true
     easyReset: true
     size: "2000Gi"
-    storageClassName: "gp2"
 
 daemonConfig: |
   [API]
