@@ -1,5 +1,3 @@
-image:
-  tag: v1.22.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 secrets:
   libp2p:
     enabled: true
