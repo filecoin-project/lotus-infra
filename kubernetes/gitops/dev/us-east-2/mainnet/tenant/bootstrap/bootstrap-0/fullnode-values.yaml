@@ -13,7 +13,6 @@ loadBalancer:
     external-dns.alpha.kubernetes.io/alias: "true"
     external-dns.alpha.kubernetes.io/ttl: "60"
 
-
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
