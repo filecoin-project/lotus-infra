@@ -23,4 +23,4 @@ daemonEnvs:
   - name: LOTUS_CHAINSTORE_ENABLESPLITSTORE
     value: "true"
   - name: LOTUS_CHAINSTORE_SPLITSTORE_COLDSTORETYPE
-    values: "discard"
+    value: "discard"
