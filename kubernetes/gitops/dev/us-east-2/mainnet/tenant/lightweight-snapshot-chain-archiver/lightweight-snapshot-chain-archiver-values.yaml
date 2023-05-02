@@ -1,6 +1,6 @@
 image:
   pullPolicy: Always
-  tag: "pr-67"
+  tag: "pr-69"
 
 indexResolver:
   replicas: 1
