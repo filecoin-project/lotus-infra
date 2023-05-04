@@ -1,8 +1,7 @@
 image:
   repository: filecoin/lotus-all-in-one
-  tag: v1.20.4-calibnet
+  tag: v1.23.1-rc1-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
   pullPolicy: Always
-
 # volumeClaims:
 volumeClaimTemplates:
 - metadata:
@@ -14,10 +13,8 @@ volumeClaimTemplates:
     resources:
       requests:
         storage: 20Gi
-
 snapshotImporter:
   snapshotUrl: "https://snapshots.calibrationnet.filops.net/minimal/latest"
-
 application:
   name: lotus-gateway-ethrpc
   labels: []
@@ -25,23 +22,24 @@ application:
   container:
     name: lotus-gateway
     command:
-      - /usr/local/bin/lotus-gateway
+    - /usr/local/bin/lotus-gateway
     args:
-      - run
-      - --api-max-lookback
-      - "24h0m0s"
-      - --rate-limit
-      - "3000"
-      - --per-conn-rate-limit
-      - "100"
-      - --rate-limit-timeout
-      - 10s
-      # - --conn-per-minute
-      # - "6"
+    - run
+    - --api-max-lookback
+    - "24h0m0s"
+    - --rate-limit
+    - "3000"
+    - --per-conn-rate-limit
+    - "100"
+    - --rate-limit-timeout
+    - 10s
+    # - --conn-per-minute
+    # - "6"
+
     env: []
     ports:
-      - containerPort: 2346
-        name: lotus-gw
+    - containerPort: 2346
+      name: lotus-gw
     livenessProbe:
       httpGet:
         port: 2346
@@ -57,41 +55,40 @@ application:
   secrets: []
   configMaps: []
   services:
-    - type: LoadBalancer
-      externalTrafficPolicy: Local
-      selector:
-        app: lotus-gateway-ethrpc
-      ports:
-        - protocol: TCP
-          port: 80
-          targetPort: 2346
-          name: lotus-gw
+  - type: LoadBalancer
+    externalTrafficPolicy: Local
+    selector:
+      app: lotus-gateway-ethrpc
+    ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 2346
+      name: lotus-gw
   ingresses:
-    - annotations:
-        nginx.ingress.kubernetes.io/configuration-snippet: |
-          more_set_headers "Access-Control-Allow-Origin: *";
-          more_set_headers "Access-Control-Allow-Headers: content-type";
-          more_set_headers "Access-Control-Allow-Methods: POST, OPTIONS";
-          more_set_headers "Access-Control-Max-Age: 300";
-          if ($request_method = OPTIONS) {
-            more_set_headers "Content-Length: 0";
-            return 204;
-          }
-      spec:
-        ingressClassName: nginx
-        rules:
-          - host: api-calibnet.chain.love
-            http:
-              paths:
-                - pathType: Prefix
-                  path: "/"
-                  backend:
-                    service:
-                      name: staging-api-chain-love-gateway-lotus-gateway-0
-                      port:
-                        name: lotus-gw
+  - annotations:
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        more_set_headers "Access-Control-Allow-Origin: *";
+        more_set_headers "Access-Control-Allow-Headers: content-type";
+        more_set_headers "Access-Control-Allow-Methods: POST, OPTIONS";
+        more_set_headers "Access-Control-Max-Age: 300";
+        if ($request_method = OPTIONS) {
+          more_set_headers "Content-Length: 0";
+          return 204;
+        }
+    spec:
+      ingressClassName: nginx
+      rules:
+      - host: api-calibnet.chain.love
+        http:
+          paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: staging-api-chain-love-gateway-lotus-gateway-0
+                port:
+                  name: lotus-gw
   storage: []
-
 lotus:
   enabled: true
   image: docker.io/filecoin/lotus-all-in-one:v1.20.4-calibnet
@@ -104,7 +101,6 @@ lotus:
   extraVolumeMounts:
   - name: lotus-sqlite
     mountPath: /var/lib/lotus/sqlite
-
 prometheus:
   serviceMonitor: true
   path: /debug/metrics
