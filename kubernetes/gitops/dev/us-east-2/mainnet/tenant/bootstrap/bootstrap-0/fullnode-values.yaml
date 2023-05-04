@@ -12,13 +12,3 @@ loadBalancer:
     external-dns.alpha.kubernetes.io/hostname: bootstrap-0.mainnet.filops.net
     external-dns.alpha.kubernetes.io/alias: "true"
     external-dns.alpha.kubernetes.io/ttl: "60"
-
-daemonConfig: |
-  [API]
-    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
-  [Libp2p]
-    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
-  [Chainstore]
-    EnableSplitstore = true
-  [Chainstore.Splitstore]
-    ColdStoreType = "discard"
