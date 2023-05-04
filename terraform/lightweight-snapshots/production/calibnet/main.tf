@@ -34,5 +34,4 @@ provider "aws" {
 module "lifecycle-policy" {
   source               = "../../modules/lifecycle-policy"
   bucket_name          = "filecoin-snapshots-calibnet-production"
-  expiration_timeframe = 90  # Temporary until Marcus works out what to do with `latest`
 }
