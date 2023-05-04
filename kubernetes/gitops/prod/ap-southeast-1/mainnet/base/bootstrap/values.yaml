@@ -32,6 +32,10 @@ daemonConfig: |
   [Pubsub]
     IPColocationWhitelist = ["10.0.0.0/8"]
     Bootstrapper = true
+  [Chainstore]
+    EnableSplitstore = true
+  [Chainstore.Splitstore]
+    ColdStoreType = "discard"
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
