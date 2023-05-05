@@ -3,6 +3,5 @@ kind: HelmRelease
 metadata:
   name: fullnode
 spec:
-  chart:
-    spec:
-      version: 0.4.2
+  install:
+    timeout: 6h
