@@ -16,6 +16,15 @@ persistence:
     enabled: true
     easyReset: true
     size: "2000Gi"
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+  [Chainstore]
+    EnableSplitstore = true
+  [Chainstore.Splitstore]
+    ColdStoreType = "discard"
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
