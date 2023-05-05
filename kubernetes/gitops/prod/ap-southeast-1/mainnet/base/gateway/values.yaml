@@ -10,3 +10,6 @@ lotus:
     LOTUS_FEVM_ENABLEETHRPC: "true"
     LOTUS_CHAINSTORE_ENABLESPLITSTORE: "true"
     LOTUS_CHAINSTORE_SPLITSTORE_COLDSTORETYPE: "discard"
+    ## We need 4 finalities: 1 finality = 900 epochs, 1 epoch = 30s
+    ## 24h worth of data = 24h / (900epochs * 30s / 3600s)
+    LOTUS_CHAINSTORE_SPLITSTORE_HOTSTOREMESSAGERETENTION: "4"
