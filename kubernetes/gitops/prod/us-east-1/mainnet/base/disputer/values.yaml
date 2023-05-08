@@ -16,7 +16,6 @@ persistence:
     enabled: true
     easyReset: true
     size: "2000Gi"
-    storageClassName: "gp2"
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
