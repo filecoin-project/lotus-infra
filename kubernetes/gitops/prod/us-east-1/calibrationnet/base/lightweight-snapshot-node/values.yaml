@@ -33,7 +33,11 @@ daemonConfig: |
   [Libp2p]
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
   [Chainstore]
-    EnableSplitstore = false
+    EnableSplitstore = true
+  [Chainstore.Splitstore]
+    ColdStoreType = "discard"
+    # 52.5h retention so we have breathing room in case of snapshot slowdown
+    HotStoreMessageRetention = 7
 additionalLabels:
   network: calibration
 persistence:
