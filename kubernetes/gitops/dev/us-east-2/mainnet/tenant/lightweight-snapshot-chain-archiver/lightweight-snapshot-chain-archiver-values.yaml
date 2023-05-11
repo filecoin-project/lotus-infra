@@ -1,6 +1,6 @@
 image:
   pullPolicy: Always
-  tag: "pr-71"
+  tag: "1.3.0-rc0"
 
 indexResolver:
   replicas: 1
@@ -10,7 +10,7 @@ indexResolver:
     secretName: r2-access
 
   loadBalancer:
-    enabled: false
+    enabled: true
 
 snapshots:
   activeDeadlineSeconds: 28800 # 8 hours
