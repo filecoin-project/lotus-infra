@@ -1,5 +1,5 @@
 image:
-  tag: "1.1.1"
+  tag: "1.3.0"
 
 indexResolver:
   replicas: 0
