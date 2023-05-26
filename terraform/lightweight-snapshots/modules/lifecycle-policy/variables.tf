@@ -5,7 +5,7 @@ variable "bucket_name" {
 
 variable "expiration_timeframe" {
   type        = number
-  default     = 30
+  default     = 10
   description = "The number of days to keep the objects before expiration."
 }
 
