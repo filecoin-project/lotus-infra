@@ -39,8 +39,8 @@ snapshots:
   - /dns/lws-node-0-fullnode-lotus-daemon/tcp/1234
   - /dns/lws-node-1-fullnode-lotus-daemon/tcp/1234
   - /dns/lws-node-2-fullnode-lotus-daemon/tcp/1234
-  - /dns/lws-node-3-fullnode-lotus-daemon/tcp/1234
-  - /dns/lws-node-4-fullnode-lotus-daemon/tcp/1234
+  # - /dns/lws-node-3-fullnode-lotus-daemon/tcp/1234
+ #  - /dns/lws-node-4-fullnode-lotus-daemon/tcp/1234
   schedule: "*/120 * * * *"
   resources:
     requests:
@@ -63,12 +63,12 @@ snapshots:
           topologyKey: kubernetes.io/hostname
 podResets:
   - pod: lws-node-0-fullnode-lotus-0
-    schedule: "0 0 * * 0,2,4"
+    schedule: "0 0 * * 0"
   - pod: lws-node-1-fullnode-lotus-0
-    schedule: "0 8 * * 0,2,4"
+    schedule: "0 0 * * 2"
   - pod: lws-node-2-fullnode-lotus-0
-    schedule: "0 16 * * 0,2,4"
-  - pod: lws-node-3-fullnode-lotus-0
-    schedule: "0 12 * * 1,3,6"
-  - pod: lws-node-4-fullnode-lotus-0
-    schedule: "0 0 * * 1,3,6"
+    schedule: "0 0 * * 4"
+#  - pod: lws-node-3-fullnode-lotus-0
+#    schedule: "0 12 * * 1,3,6"
+#  - pod: lws-node-4-fullnode-lotus-0
+#    schedule: "0 0 * * 1,3,6"
