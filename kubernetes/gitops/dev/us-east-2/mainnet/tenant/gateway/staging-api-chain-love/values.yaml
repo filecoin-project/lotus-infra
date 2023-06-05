@@ -78,8 +78,6 @@ application:
 lotus:
   enabled: true
   image: docker.io/filecoin/lotus-all-in-one:v1.22.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release"}
-  extraEnv:
-    LOTUS_API_LISTENADDRESS: /ip4/0.0.0.0/tcp/1234/http
   reset:
     enabled: true
     percent: 90
