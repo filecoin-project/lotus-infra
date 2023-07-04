@@ -1,6 +1,6 @@
 image:
   repository: filecoin/lotus-all-in-one
-  tag: v1.23.2-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
+  tag: v1.23.3-rc1-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
   pullPolicy: Always
 # volumeClaims:
 volumeClaimTemplates:
