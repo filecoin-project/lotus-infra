@@ -25,6 +25,15 @@ daemonEnvs:
     value: json
   - name: GODEBUG
     value: madvdontneed=1
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+  [Chainstore]
+    EnableSplitstore = true
+  [Chainstore.Splitstore]
+    ColdStoreType = "discard"
 disputer:
   enabled: true
   walletAddr: f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da
