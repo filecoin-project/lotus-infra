@@ -4,7 +4,7 @@ ConnMgrLow = {{ lotus_daemon_conn_mgr_low }}
 ConnMgrHigh = {{ lotus_daemon_conn_mgr_high }}
 
 [Chainstore]
-EnableSplitstore = {{ lotus_daemon_enable_splitstore }}
+EnableSplitstore = {{ lotus_daemon_enable_splitstore | lower }}
 
 {%  if lotus_pubsub_tracker is defined %}
 [PubSub]
