@@ -11,4 +11,4 @@ lotus_daemon_profile: ""
 lotus_daemon_conn_mgr_low: 1024
 lotus_daemon_conn_mgr_high: 2048
 lotus_drand_bootstrap: false
-lotus_daemon_enable_splitstore: true
+lotus_daemon_enable_splitstore: false
