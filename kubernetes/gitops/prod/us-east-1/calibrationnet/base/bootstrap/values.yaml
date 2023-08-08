@@ -31,7 +31,9 @@ daemonConfig: |
   [Libp2p]
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
   [Chainstore]
-    EnableSplitstore = false
+    EnableSplitstore = true
+  [Chainstore.Splitstore]
+    ColdStoreType = "discard"
 additionalLabels:
   network: calibration
 persistence:

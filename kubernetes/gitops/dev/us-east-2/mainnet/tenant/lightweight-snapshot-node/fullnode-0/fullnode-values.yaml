@@ -1,7 +1,5 @@
 image:
-  repository: ognots/lotus-all-in-one
-  tag: v1.21
-
+  tag: v1.22.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 secrets:
   jwt:
     enabled: true

@@ -1,5 +1,5 @@
 image:
-  tag: v1.20.3 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  tag: v1.23.0
 prometheusOperatorServiceMonitor: true
 resources:
   requests:
@@ -27,6 +27,10 @@ daemonConfig: |
   [Pubsub]
     IPColocationWhitelist = ["10.0.0.0/8"]
     Bootstrapper = true
+  [Chainstore]
+    EnableSplitstore = true
+  [Chainstore.Splitstore]
+    ColdStoreType = "discard"
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json

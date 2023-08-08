@@ -1,5 +1,5 @@
 image:
-  tag: v1.20.3 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  tag: v1.22.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 prometheusOperatorServiceMonitor: true
 resources:
   requests:
@@ -20,12 +20,20 @@ persistence:
     enabled: true
     easyReset: true
     size: "2000Gi"
-    storageClassName: "gp2"
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
   - name: GODEBUG
     value: madvdontneed=1
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+  [Chainstore]
+    EnableSplitstore = true
+  [Chainstore.Splitstore]
+    ColdStoreType = "discard"
 disputer:
   enabled: true
   walletAddr: f1xfr2bh23j2s7rmvwxx4linma4luxqxpyrfax5da

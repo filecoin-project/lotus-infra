@@ -1,6 +1,6 @@
 image:
   pullPolicy: Always
-  tag: "pr-67"
+  tag: "1.3.0"
 
 indexResolver:
   replicas: 1
@@ -10,13 +10,13 @@ indexResolver:
     secretName: r2-access
 
   loadBalancer:
-    enabled: false
+    enabled: true
 
 snapshots:
   activeDeadlineSeconds: 28800 # 8 hours
   schedule: "0 */12 * * *"
   uploads:
-    enabled: false
+    enabled: true
     bucket: "filecoin-snapshots-mainnet-staging"
     endpoint: "https://eafecb340a3ce23027e1eba779ed4d91.r2.cloudflarestorage.com"
     secretName: r2-access

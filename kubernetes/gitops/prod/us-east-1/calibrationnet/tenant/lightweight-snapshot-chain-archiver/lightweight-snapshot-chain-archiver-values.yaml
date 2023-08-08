@@ -1,6 +1,6 @@
 image:
   pullPolicy: Always
-  tag: "1.1.1"
+  tag: "1.3.0"
 
 indexResolver:
   replicas: 3
@@ -34,3 +34,9 @@ snapshots:
     value: "minimal/"
   - name: "GOLOG_LOG_FMT"
     value: "json"
+  nodes:
+  - /dns/lws-node-0-fullnode-lotus-daemon/tcp/1234
+  - /dns/lws-node-1-fullnode-lotus-daemon/tcp/1234
+# Exclude 2 as we're testing a genesis sync on it and it man not be not safe for snapshots
+#  - /dns/lws-node-2-fullnode-lotus-daemon/tcp/1234
+  - /dns/lws-node-3-fullnode-lotus-daemon/tcp/1234

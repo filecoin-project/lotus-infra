@@ -1,5 +1,5 @@
 image:
-  tag: v1.20.3 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  tag: v1.22.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 prometheusOperatorServiceMonitor: true
 resources:
   requests:
@@ -36,7 +36,7 @@ additionalLabels:
 persistence:
   datastore:
     enabled: true
-    size: "42000Gi"
+    size: "44000Gi"
     storageClassName: "io2-high-capacity-low-throughput"
 nodeSelector:
   "node.kubernetes.io/instance-type": "r5b.8xlarge"

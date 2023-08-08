@@ -1,13 +1,14 @@
-FROM debian:stretch AS builder
+FROM ubuntu:18.04 AS builder
 MAINTAINER Filecoin Development Team
 
 RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1 libhwloc-dev curl wget pkg-config git
-RUN curl -Ls https://golang.org/dl/go1.18.8.linux-amd64.tar.gz | tar -C /usr/local -xzf -
 
+ARG GOLANG_VERSION="1.19.7"
 ARG UID=1000
 ARG GID=1000
 ARG RUST_VERSION=nightly
 
+RUN curl -Ls https://go.dev/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz | tar -C /usr/local -xzf -
 ENV XDG_CACHE_HOME="/tmp"
 ENV RUSTFLAGS=""
 ENV FFI_BUILD_FROM_SOURCE=""
