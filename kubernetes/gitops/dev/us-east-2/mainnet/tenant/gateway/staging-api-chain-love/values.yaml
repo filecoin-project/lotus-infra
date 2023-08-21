@@ -1,6 +1,6 @@
 image:
   repository: filecoin/lotus-all-in-one
-  tag: v1.22.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  tag: v1.23.3 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
   pullPolicy: Always
 application:
   name: lotus-gateway
@@ -77,7 +77,7 @@ application:
   storage: []
 lotus:
   enabled: true
-  image: docker.io/filecoin/lotus-all-in-one:v1.22.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release"}
+  image: docker.io/filecoin/lotus-all-in-one:v1.23.3 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release"}
   reset:
     enabled: true
     percent: 90
@@ -89,7 +89,6 @@ lotus:
     ## We need 4 finalities: 1 finality = 900 epochs, 1 epoch = 30s
     ## Finalities required for 24h of data: 24h / (900epochs * 30s / 3600s) = 3.2
     LOTUS_CHAINSTORE_SPLITSTORE_HOTSTOREMESSAGERETENTION: "4"
-
 prometheus:
   serviceMonitor: true
   path: /debug/metrics
