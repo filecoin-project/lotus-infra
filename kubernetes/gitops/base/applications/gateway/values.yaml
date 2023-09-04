@@ -98,4 +98,4 @@ volumeClaimTemplates:
     - ReadWriteOnce
     resources:
       requests:
-        storage: 20G
+        storage: 25G
