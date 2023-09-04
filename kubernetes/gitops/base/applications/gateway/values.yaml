@@ -5,6 +5,9 @@ image:
   repository: filecoin/lotus-all-in-one
   pullPolicy: Always
 
+snapshotImporter:
+  useAria2c: "true"
+
 application:
   name: lotus-gateway
   labels: []
@@ -85,7 +88,6 @@ prometheus:
   path: /debug/metrics
   port: lotus-gw
 
-# volumeClaims:
 volumeClaimTemplates:
 - metadata:
     name: lotus-sqlite
