@@ -7,7 +7,6 @@ resources:
 - ../../../../base/applications/common
 - fullnode
 - bootstrap
-- gateway
 - stats-dashboard
 - lightweight-snapshot-node
 - lightweight-snapshot-chain-archiver
