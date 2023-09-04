@@ -75,11 +75,8 @@ lotus:
         # Required due to bug in lotus
         # see https://github.com/filecoin-project/lotus/issues/11198
         EnableSplitstore = true
-
         [Chainstore.Splitstore]
           ColdStoreType = "discard"
-          # TODO: We can turn this down to 0 now that we only have 3h lookback
-          HotStoreMessageRetention = 4
       [Fevm]
         EnableEthRPC = true
 
