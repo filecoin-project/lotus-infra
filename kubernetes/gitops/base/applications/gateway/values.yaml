@@ -60,6 +60,7 @@ application:
 
 lotus:
   enabled: true
+  storage: 550Gi
   reset:
     enabled: true
     percent: 90
