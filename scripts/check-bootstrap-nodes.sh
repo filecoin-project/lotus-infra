@@ -1,18 +1,70 @@
 #!/bin/bash
-set -eou pipefail
+set -eo pipefail
 
+usage() {
+  set +x
+  echo "usage: build_containers.bash
+    [--output        ] output formatting: plain (DEFAULT), json"
+}
+
+while [ "$1" != "" ]; do
+    case $1 in
+        --output )              shift
+                                if [ "${1}" = "json" ]; then
+                                  output="json"
+                                else
+                                  output="plain"
+                                fi
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+
+set -u
 COLOR_REST="$(tput sgr0)"
 COLOR_GREEN="$(tput setaf 2)"
 COLOR_RED="$(tput setaf 1)"
 
 function info() {
-  echo "${COLOR_GREEN}$1${COLOR_REST}"
+  local msg="$1"
+  if [ "$output" = "json" ]; then
+    local time="$(date -Iseconds)"
+    echo $(jq -nr --arg time "$time" --arg msg "$msg" '.time = $time| .msg = $msg| .level = "info"')
+  else
+    echo "${COLOR_GREEN}$msg${COLOR_REST}"
+  fi
 }
 
 function error() {
-  echo "${COLOR_RED}$1${COLOR_REST}"
+  local msg="$1"
+  if [ "$output" = "json" ]; then
+    local time="$(date -Iseconds)"
+    echo $(jq -nr --arg time "$time" --arg msg "$msg" '.time = $time| .msg = $msg| .level = "error"') >&2
+  else
+    echo "${COLOR_RED}$msg${COLOR_REST}"
+  fi
 }
 
+function check_jq() {
+  if ! which jq 2>&1 > /dev/null; then
+    error "jq not found. You must have jq available when output option is set 'json'"
+  fi
+}
+function format_result_line() {
+  local peer="$1"
+  local result="$2"
+  local line=""
+  if [ "$output" = "json" ]; then
+    local time="$(date -Iseconds)"
+    line=$(jq -nr --arg peer "$peer" --arg result "$result" --arg time "$time" '.time = $time| .result = {"type": "connection", "peer": $peer, "success": $result}'
+)
+  else
+    line="$peer"
+  fi
+  echo "$line"
+}
 function handle_trap() {
   interrupted=true
 }
@@ -21,6 +73,10 @@ trap handle_trap SIGINT SIGTERM;
 if ! which lotus 2>&1 > /dev/null; then
   error "lotus not found. You must have lotus available on your path to use this command"
   exit 1
+fi
+
+if [ i"$output" = "json" ]; then
+  check_jq
 fi
 
 if ! lotus net id; then
@@ -54,18 +110,25 @@ done
 set +u  # So that empty array doesn't error
 echo ""
 if [[ ${#working_peers[@]} -ne 0 ]]; then
-  info "[Summary]: Successfully connected to the following peers:"
+  if [ $output = "plain" ]; then
+    info "[Summary]: Successfully connected to the following peers:"
+  fi
   for peer in "${working_peers[@]}"; do
-    echo $peer;
+    format_result_line "$peer" "true"
   done
 fi
 
 echo ""
 if [[ ${#failed_peers[@]} -ne 0 ]]; then
-  info "[Summary]: We were unable to connect to the following peers:"
+  if [ "$output" = "plain" ]; then
+    info "[Summary]: We were unable to connect to the following peers:"
+  fi
   for peer in "${failed_peers[@]}"; do
-    echo $peer;
+    format_result_line "$peer" "false"
   done
 else
-  info "[Summary]: All peers were reachable"
+  if [ "$output" = "plain" ]; then
+    info "[Summary]: All peers were reachable"
+  fi
 fi
+
