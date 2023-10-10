@@ -15,7 +15,7 @@ persistence:
   datastore:
     enabled: true
     easyReset: true
-    size: "2000Gi"
+    size: "800Gi"
 daemonEnvs:
   - name: GOLOG_LOG_FMT
     value: json
