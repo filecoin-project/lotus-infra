@@ -4,7 +4,7 @@ secrets:
     secretName: lightweight-snapshot-node-jwt-secret
 
 image:
-  tag: v1.22.1-calibnet
+  tag: v1.24.0-rc1-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
 
 importSnapshot:
   # Using the snapshot provided by TippyFlits
