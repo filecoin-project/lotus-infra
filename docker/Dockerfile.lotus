@@ -8,7 +8,7 @@ FROM debian:stretch AS builder-deps
 MAINTAINER Lotus Development Team
 
 RUN apt-get update && apt-get install -y ca-certificates build-essential clang ocl-icd-opencl-dev ocl-icd-libopencl1 jq libhwloc-dev curl wget pkg-config git
-RUN curl -Ls https://golang.org/dl/go1.19.12.linux-amd64.tar.gz | tar -C /usr/local -xzf -
+RUN curl -Ls https://golang.org/dl/go1.20.7.linux-amd64.tar.gz | tar -C /usr/local -xzf -
 
 ARG RUST_VERSION=nightly
 ENV XDG_CACHE_HOME="/tmp"
