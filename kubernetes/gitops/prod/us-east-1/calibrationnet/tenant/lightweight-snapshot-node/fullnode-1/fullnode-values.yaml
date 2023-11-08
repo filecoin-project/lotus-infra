@@ -1,9 +1,9 @@
+image:
+  tag: v1.25.0-rc4-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
 secrets:
   jwt:
     enabled: true
     secretName: lightweight-snapshot-node-jwt-secret
-image:
-  tag: v1.25.0-rc4-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
 importSnapshot:
   enabled: true
   # Attempt to fix a fork by reverting to a pre-upgrade snapshot
