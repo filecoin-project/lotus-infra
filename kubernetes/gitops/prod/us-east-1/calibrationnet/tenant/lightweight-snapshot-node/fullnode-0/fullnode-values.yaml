@@ -5,7 +5,7 @@ secrets:
 image:
   tag: v1.25.0-rc4-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
 importSnapshot:
-  # For reference: previously used for DR
-  enabled: false
-  url: https://pub-f851d666b9a54f60bd93202926618941.r2.dev/filecoin-snapshots-calibnet-production/manual/499775_2023_04_24T15_00_00_UTC8.car
+  enabled: true
+  # Attempt to fix a fork by reverting to a pre-upgrade snapshot
+  url: https://pub-f851d666b9a54f60bd93202926618941.r2.dev/minimal/1070160_2023_11_08T08_13_00Z.car.zst
   strategy: "url"
