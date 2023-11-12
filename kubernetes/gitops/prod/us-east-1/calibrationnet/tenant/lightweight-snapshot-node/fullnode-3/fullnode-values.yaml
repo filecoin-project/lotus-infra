@@ -5,6 +5,6 @@ secrets:
 image:
   tag: v1.25.0-rc4-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
 importSnapshot:
-  enabled: true
+  enabled: false
   url: https://snapshots.calibrationnet.filops.net/minimal/latest.zst
   strategy: "url"
