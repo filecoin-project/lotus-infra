@@ -2,10 +2,8 @@ secrets:
   jwt:
     enabled: true
     secretName: lightweight-snapshot-node-jwt-secret
-
 image:
-  tag: v1.24.0-rc1-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
-
+  tag: v1.25.0-rc4-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
 importSnapshot:
   # Using the snapshot provided by TippyFlits
   # see https://filecoinproject.slack.com/archives/C0328U5N4HL/p1682357430913569?thread_ts=1682271745.395409&cid=C0328U5N4HL
