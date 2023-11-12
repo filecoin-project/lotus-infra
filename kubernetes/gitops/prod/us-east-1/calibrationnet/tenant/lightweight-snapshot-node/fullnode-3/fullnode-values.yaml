@@ -2,10 +2,8 @@ secrets:
   jwt:
     enabled: true
     secretName: lightweight-snapshot-node-jwt-secret
-
 image:
-  tag: v1.24.0-rc1-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
-
+  tag: v1.25.0-rc4-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
 importSnapshot:
   enabled: true
   url: https://snapshots.calibrationnet.filops.net/minimal/latest.zst
