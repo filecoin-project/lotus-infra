@@ -12,7 +12,7 @@ persistence:
   datastore:
     enabled: true
     easyReset: true
-    size: "800Gi"
+    size: "850Gi"
 daemonConfig: |
   [API]
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"

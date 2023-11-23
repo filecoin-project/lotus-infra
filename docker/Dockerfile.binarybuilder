@@ -3,7 +3,7 @@ MAINTAINER Filecoin Development Team
 
 RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1 libhwloc-dev curl wget pkg-config git
 
-ARG GOLANG_VERSION="1.19.12"
+ARG GOLANG_VERSION="1.20.7"
 ARG UID=1000
 ARG GID=1000
 ARG RUST_VERSION=nightly
