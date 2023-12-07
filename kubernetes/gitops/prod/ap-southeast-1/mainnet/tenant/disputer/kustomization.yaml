@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: mainnet
 
 
-resources:
-- disputer-0
+resources: []
+# - disputer-0
 # - disputer-1
 # - disputer-2
