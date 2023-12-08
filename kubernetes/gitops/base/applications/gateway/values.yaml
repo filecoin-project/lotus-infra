@@ -3,8 +3,10 @@ podManagementPolicy: Parallel
 
 image:
   repository: filecoin/lotus-all-in-one
-  tag: v1.20.3-rpc-p01-hf02
   pullPolicy: Always
+
+snapshotImporter:
+  useAria2c: "true"
 
 application:
   name: lotus-gateway
@@ -58,23 +60,35 @@ application:
 
 lotus:
   enabled: true
-  image: docker.io/filecoin/lotus-all-in-one:v1.20.3-rpc-p01-hf02
-  extraEnv:
-    LOTUS_API_LISTENADDRESS: /ip4/0.0.0.0/tcp/1234/http
-    LOTUS_FEVM_ENABLEETHRPC: "true"
+  storage: 800Gi
   reset:
     enabled: true
     percent: 90
   extraVolumeMounts:
   - name: lotus-sqlite
     mountPath: /var/lib/lotus/sqlite
+  config:
+    create: true
+    content: |-
+      [API]
+        # We need to listen on 0.0.0.0 rather than 127.0.0.1 to
+        # because the same web server server both API and metric requests
+        # and prometheus is an external scraper
+        ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+      [Chainstore]
+        # Required due to bug in lotus
+        # see https://github.com/filecoin-project/lotus/issues/11198
+        EnableSplitstore = true
+        [Chainstore.Splitstore]
+          ColdStoreType = "discard"
+      [Fevm]
+        EnableEthRPC = true
 
 prometheus:
   serviceMonitor: true
   path: /debug/metrics
   port: lotus-gw
 
-# volumeClaims:
 volumeClaimTemplates:
 - metadata:
     name: lotus-sqlite
@@ -84,4 +98,4 @@ volumeClaimTemplates:
     - ReadWriteOnce
     resources:
       requests:
-        storage: 20G
+        storage: 25Gi

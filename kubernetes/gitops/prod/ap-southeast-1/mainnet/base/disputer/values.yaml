@@ -1,5 +1,5 @@
 image:
-  tag: v1.22.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  tag: v1.25.0 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 prometheusOperatorServiceMonitor: true
 resources:
   requests:
@@ -15,7 +15,7 @@ persistence:
   datastore:
     enabled: true
     easyReset: true
-    size: "2000Gi"
+    size: "850Gi"
 daemonConfig: |
   [API]
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"

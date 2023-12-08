@@ -1,5 +1,5 @@
 image:
-  tag: v1.22.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  tag: v1.23.3 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 prometheusOperatorServiceMonitor: true
 resources:
   requests:
@@ -31,6 +31,8 @@ daemonConfig: |
     ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
   [Libp2p]
     ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+  [Chainstore]
+    EnableSplitstore = false
 additionalLabels:
   network: mainnet
 persistence:

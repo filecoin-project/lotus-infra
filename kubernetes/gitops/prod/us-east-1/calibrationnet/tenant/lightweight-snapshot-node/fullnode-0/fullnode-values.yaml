@@ -2,13 +2,10 @@ secrets:
   jwt:
     enabled: true
     secretName: lightweight-snapshot-node-jwt-secret
-
 image:
-  tag: v1.22.1-calibnet
-
+  tag: v1.25.0-rc5-calibnet # {"$imagepolicy": "ntwk-calibrationnet:lotus-calibnet-latest-rc:tag"}
 importSnapshot:
-  # Using the snapshot provided by TippyFlits
-  # see https://filecoinproject.slack.com/archives/C0328U5N4HL/p1682357430913569?thread_ts=1682271745.395409&cid=C0328U5N4HL
   enabled: true
-  url: https://pub-f851d666b9a54f60bd93202926618941.r2.dev/filecoin-snapshots-calibnet-production/manual/499775_2023_04_24T15_00_00_UTC8.car
+  # Attempt to fix a fork by reverting to a pre-upgrade snapshot
+  url: https://pub-f851d666b9a54f60bd93202926618941.r2.dev/minimal/1070160_2023_11_08T08_13_00Z.car.zst
   strategy: "url"

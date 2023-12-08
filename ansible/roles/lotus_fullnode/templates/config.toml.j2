@@ -3,6 +3,9 @@ ListenAddresses = ["/ip4/0.0.0.0/tcp/{{ lotus_libp2p_port }}"]
 ConnMgrLow = {{ lotus_daemon_conn_mgr_low }}
 ConnMgrHigh = {{ lotus_daemon_conn_mgr_high }}
 
+[Chainstore]
+EnableSplitstore = {{ lotus_daemon_enable_splitstore | lower }}
+
 {%  if lotus_pubsub_tracker is defined %}
 [PubSub]
 RemoteTracer = "{{ lotus_pubsub_tracker }}"
