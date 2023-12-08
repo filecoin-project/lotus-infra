@@ -1,6 +1,12 @@
----
 image:
-  tag: v1.23.3 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
-
+  tag: v1.25.0 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
 lotus:
-  image: docker.io/filecoin/lotus-all-in-one:v1.23.3 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release"}
+  image: docker.io/filecoin/lotus-all-in-one:v1.25.0 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release"}
+  extraEnv:
+    LOTUS_API_LISTENADDRESS: /ip4/0.0.0.0/tcp/1234/http
+    LOTUS_FEVM_ENABLEETHRPC: "true"
+    LOTUS_CHAINSTORE_ENABLESPLITSTORE: "true"
+    LOTUS_CHAINSTORE_SPLITSTORE_COLDSTORETYPE: "discard"
+    ## We need 4 finalities: 1 finality = 900 epochs, 1 epoch = 30s
+    ## Finalities required for 24h of data: 24h / (900epochs * 30s / 3600s) = 3.2
+    LOTUS_CHAINSTORE_SPLITSTORE_HOTSTOREMESSAGERETENTION: "4"
