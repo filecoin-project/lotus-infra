@@ -9,4 +9,3 @@ resources:
 - bootstrap
 - lightweight-snapshot-chain-archiver
 - lightweight-snapshot-node
-- stats-dashboard
