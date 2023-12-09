@@ -1,5 +1,6 @@
 image:
-  tag: v1.25.0 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  tag: cx-maxlen-1.25.0 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+  repository: ognots/lotus-all-in-one
 prometheusOperatorServiceMonitor: true
 resources:
   requests:
