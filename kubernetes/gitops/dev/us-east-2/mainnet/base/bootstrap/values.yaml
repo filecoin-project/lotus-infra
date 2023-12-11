@@ -1,5 +1,6 @@
 image:
-  tag: v1.23.0
+  tag: cx-maxlen-1.25.0
+  repository: ognots/lotus-all-in-one
 prometheusOperatorServiceMonitor: true
 resources:
   requests:

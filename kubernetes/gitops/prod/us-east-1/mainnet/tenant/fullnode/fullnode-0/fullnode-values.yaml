@@ -12,3 +12,11 @@ importSnapshot:
 
 nodeSelector:
   "node.kubernetes.io/instance-type": "r5b.8xlarge"
+
+daemonConfig: |
+  [API]
+    ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  [Libp2p]
+    ListenAddresses = ["/ip4/0.0.0.0/tcp/1347"]
+  [Chainstore]
+    EnableSplitstore = false
