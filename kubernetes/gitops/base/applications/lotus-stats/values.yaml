@@ -1,4 +1,7 @@
 ---
+image:
+  tag: v1.25.1 # {"$imagepolicy": "ntwk-mainnet:lotus-latest-release:tag"}
+
 serviceAccountName: ""
 
 nosync: true
