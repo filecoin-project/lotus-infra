@@ -1,7 +1,7 @@
 apiVersion: v1
 stringData:
-    ACCESS_KEY: ENC[AES256_GCM,data:w3UfuslMjTGB3Anq5z+KvGRKAENLIDZGh1vQGYQIYKM=,iv:NktonRVNFMYq5yDButzwg6dR/EGFFrMv+6tHxTFdVjQ=,tag:7pIXAQ4oSS+IWMfMlvezVA==,type:str]
-    SECRET_KEY: ENC[AES256_GCM,data:4UH5A2+hqv/ICDFWBbIUspfFTZXal94cV/DxdG6VD00EUkZ7dDeGpXgDEJW+1Yey1OXqQWxQw3zqsNQIPLaE9A==,iv:pzMCznq5E+xPAQo5HrWPrqB0/vVQM9MwGFcT5DNkc+U=,tag:DvNLLrVO9isElWRS/uXl4w==,type:str]
+    ACCESS_KEY: ENC[AES256_GCM,data:dx9CitXqxbHaJNUAfvmnM6HZ6aqMFz2ujioNhkKOBMQ=,iv:4DS5MFI8BeMrM55xRWvS4+wQZedL9Op5KxSyGo6OFEI=,tag:OhyyKkQfyolmHot/Liexug==,type:str]
+    SECRET_KEY: ENC[AES256_GCM,data:eEvzoTAZ6T9HKWq+GG10LfmXy4ApYrC0eIuKlyMkr7MEyyXsjv66379OHqdMN/4J45LP8EPLc8MVrJ1WTuqQig==,iv:e8+fRItxHd8uQKFj5Q7zFZDSoCZE2TRQvn33htcJIA4=,tag:63raOl6rmYII1gm3aWqBlg==,type:str]
 kind: Secret
 metadata:
     name: r2-access
@@ -12,8 +12,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2023-10-12T08:29:57Z"
-    mac: ENC[AES256_GCM,data:1CgaOQH0bTp5ya5lPFY8Tz0jj5kfRKTp7U/uQOJO7HSwI5XFl2Q0dtAjikKAwD3KbV2Brkfd8LlbNyv698NPccqzmd1gEX/JwxUOmxP8c7DbHz+yny3Am6xOcDgQ+qsas9Gh36ixgwNrfOJhfuCRZMS6bgU4xPNYc/9dU17ukXw=,iv:cRPnD3y/CIQLeDRaFyqVugYRziH5I+dDWcVNlOueb/E=,tag:cFZq4bWSGWXTsaHa3XI/8Q==,type:str]
+    lastmodified: "2023-12-12T14:09:23Z"
+    mac: ENC[AES256_GCM,data:EmJqHHwYkPwv6zDikXAA7Jq++XmtHwHgc6ruIcKX0+mXkQFTlDthscmePRp/YW1RC6TWh/PT5LiYH42KdbuWQd903o5NqN0k561Tqd7gLF9P/Gg0fVPfwG0E3L2BWaWnWz4qllzGuu5cnzRHJrz31WkccHImn3VnsN1Fpb4H5xM=,iv:/d1RAe3FujuvOBBk5aLBhx8SUOLaD+o8nAG2WBlCK/4=,tag:I2PGfE1Ic0hxdD5uzPR/rw==,type:str]
     pgp:
         - created_at: "2023-10-12T08:28:03Z"
           enc: |-
