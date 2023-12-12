@@ -13,3 +13,15 @@ importSnapshot:
   network: mainnet
   exportRelease: export-full-archive
   exitCodeOnMissing: 0
+
+# Set LOTUS_MIGRATION_MAX_WORKER_COUNT for full nodes to prevent
+# OOM, copy the base envs so we don't unset anything
+daemonEnvs:
+- name: GOLOG_LOG_FMT
+  value: json
+- name: GODEBUG
+  value: madvdontneed=1
+- name: DISABLE_PRE_MIGRATIONS
+  value: "1"
+- name: LOTUS_MIGRATION_MAX_WORKER_COUNT
+  value: "8"
