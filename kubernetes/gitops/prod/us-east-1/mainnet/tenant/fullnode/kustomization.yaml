@@ -4,6 +4,6 @@ kind: Kustomization
 namespace: mainnet
 
 
-resources:
-- fullnode-0
+resources: []
+# - fullnode-0
 # - fullnode-1
