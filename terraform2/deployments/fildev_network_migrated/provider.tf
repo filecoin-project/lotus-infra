@@ -9,14 +9,12 @@ provider "aws" {
   region = "us-east-1"
 }
 
-/*
 terraform {
   backend "s3" {
     bucket         = "filecoin-mainnet-terraform-state"
-    key            = "filecoin-mainnet-fildev-network.tfstate"
+    key            = "filecoin-mainnet-fildev-network-updated.tfstate"
     dynamodb_table = "filecoin-mainnet-terraform-state"
     region         = "us-east-1"
     profile        = "mainnet"
   }
 }
-*/
