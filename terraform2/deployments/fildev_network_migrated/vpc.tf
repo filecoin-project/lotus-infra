@@ -15,4 +15,5 @@ module "fildev_network_vpc" {
   enable_dns_hostnames               = true
   create_database_subnet_group       = true 
   create_database_subnet_route_table = true 
+  map_public_ip_on_launch = true
 }
