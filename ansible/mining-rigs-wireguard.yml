@@ -1,5 +1,0 @@
----
-- hosts: pl_mining_rigs
-  tasks:
-    - include_role:
-        name: wireguard
