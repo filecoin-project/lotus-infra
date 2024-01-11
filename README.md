@@ -7,6 +7,7 @@ A repository holding Lotus related infrastructure
 ### Calibration and Butterfly Networks  
 
 Located in `terraform/testnets` this manages AWS assets for Calibration and Butterfly Network core infrastructure.
+It's recommended to install [asdf](https://github.com/asdf-vm/asdf) and the [terraform plugin](https://github.com/asdf-community/asdf-hashicorp) locally, for proper terraform version management.
 
 ## Ansible
 
