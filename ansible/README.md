@@ -6,16 +6,6 @@ Playbooks are organized in to individual files with `lotus.yml` being a single p
 
 Roles are used to modularize components and allow re-usability.
 
-## Vagrant
-
-Vagrant can be used to test role / playbook development agasint a locally running vm.
-
-```
-$ vagrant up --provision
-$ ansible-playbook -i hosts-vagrant <playbook>.yml --vault-password-file $HOME/.ansible_vault_pass.txt
-```
-
-When provisioning vagrant will run the `vagrant.yml` playbook. This playbook should maintain a minimal amount of configuration.
 
 ## Secrets
 
@@ -65,3 +55,16 @@ This playbook is the intended playbook for setting up machines running lotus nod
         ansible-playbook -i devnet_hosts ltous.yml --vault-password-file $HOME/.ansible_vault_pass.txt --check
    To target a single host, include the limit flag ie. `--limit some.host.com`
 3. If step 2 is satisfactory, run the same command without `--check` flag
+
+## Vagrant
+
+NOTE: this has not maintained, and is not recently tested.
+
+Vagrant can be used to test role / playbook development agasint a locally running vm.
+
+```
+$ vagrant up --provision
+$ ansible-playbook -i hosts-vagrant <playbook>.yml --vault-password-file $HOME/.ansible_vault_pass.txt
+```
+
+When provisioning vagrant will run the `vagrant.yml` playbook. This playbook should maintain a minimal amount of configuration.
