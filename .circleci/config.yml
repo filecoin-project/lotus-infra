@@ -26,6 +26,9 @@ parameters:
     type: string
     default: us-east-2
     description: aws region. should be the region where the kubernetes cluster is running.
+  release:
+    type: string
+    default: "lotus-infra_circleci_default_release_changeme"
   override_repository:
     type: string
     default: ""
@@ -788,26 +791,6 @@ workflows:
           network: calibnet
           requires:
             - start-rollout
-      # calibrationnet on kubernetes
-      - helm-deploy:
-          name: helm-deploy-calibrationnet
-          context: sentinel-staging-deploy
-          cluster: mainnet-us-east-2-dev-eks
-          region: us-east-2
-          namespace: ntwk-calibnet-fullnode
-          chart: filecoin/lotus-fullnode
-          chart_version: 0.3.1
-          override_repository: << pipeline.parameters.override_repository >>
-          override_tag: << pipeline.parameters.override_tag >>
-          helm_append: << pipeline.parameters.helm_append >>
-          matrix:
-            parameters:
-              release:
-                - fullnode-0
-                - fullnode-1
-                - fullnode-2
-          requires:
-           - build-containers-calibrationnet
       # calibrationnet ansible
       - lotus-ansible-reset:
           name: ansible-deploy-calibrationnet
