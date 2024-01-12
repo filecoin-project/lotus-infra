@@ -810,21 +810,3 @@ workflows:
           repo: << pipeline.parameters.override_repository >>
           use_gitsha: false
           network: mainnet
-      # Manual approvals for mainnet
-      - start-bootstrap-mainnet-us-east-1-eks:
-          type: approval
-          requires:
-           - build-containers-mainnet
-      - start-bootstrap-mainnet-eu-central-1-eks:
-          type: approval
-          requires:
-           - build-containers-mainnet
-      - start-bootstrap-mainnet-ap-southeast-1-eks:
-          type: approval
-          requires:
-           - build-containers-mainnet
-      - start-fullnode-mainnet-us-east-1-eks:
-          type: approval
-          requires:
-           - build-containers-mainnet
-
