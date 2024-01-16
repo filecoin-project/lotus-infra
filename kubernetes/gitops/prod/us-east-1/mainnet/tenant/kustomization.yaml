@@ -5,10 +5,10 @@ namespace: ntwk-mainnet
 
 resources:
 - ../../../../base/applications/common
-- fullnode
+# - fullnode
 - bootstrap
-- disputer
+# - disputer
 - gateway
-- lightweight-snapshot-chain-archiver
-- lightweight-snapshot-node
-- lotus-stats
+# - lightweight-snapshot-chain-archiver
+# - lightweight-snapshot-node
+# - lotus-stats
