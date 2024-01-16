@@ -5,4 +5,4 @@ namespace: ntwk-calibrationnet
 
 resources:
 - ../../../../base/applications/common
-- bootstrap
+# - bootstrap
