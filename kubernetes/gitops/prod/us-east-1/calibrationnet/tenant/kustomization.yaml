@@ -5,7 +5,7 @@ namespace: ntwk-calibrationnet
 
 resources:
 - ../../../../base/applications/common
-- fullnode
-- bootstrap
-- lightweight-snapshot-chain-archiver
-- lightweight-snapshot-node
+# - fullnode
+# - bootstrap
+# - lightweight-snapshot-chain-archiver
+# - lightweight-snapshot-node
