@@ -1,7 +1,0 @@
-required_vars:
-  - gfc_path
-  - gfc_golog_file
-  - gfc_proof_params_path
-  - gfc_service_state
-  - gfc_block_time
-gfc_ufw_name: "GFC Daemon"

@@ -1,25 +1,6 @@
 ---
-logz_io_shared_token: "foobar"
 network_name: vagrantnet
 faucet_initial_balance: "256000000000000000000000000"
-telegraf_global_tags:
-  network: "{{ network_name }}"
-
-# influx monitoring options
-telegraf_outputs_influxdb_enabled: false
-telegraf_outputs_influxdb_username: lotus
-telegraf_outputs_influxdb_password: ""
-telegraf_outputs_influxdb_database: lotus
-telegraf_outputs_influxdb_url: http://10.10.100.1:18086
-
-# Sentinel monitoring options
-telegraf_outputs_postgresql_enabled: true
-telegraf_outputs_postgresql_conn: "host=10.10.100.1 user=tsdbadmin password=protocol sslmode=disable port=25432"
-telegraf_inputs_lotus_enabled: true
-lotus_api_multiaddr: "/ip4/127.0.0.1/tcp/1234"
-telegraf_inputs_prometheus_enabled: true
-inputs_prometheus_urls:
-  - "http://127.0.0.1:1234/debug/metrics"
 
 lotus_ipfs_gateway: http://10.10.100.1:8080/ipfs/
 lotus_user: "fc"
@@ -27,8 +8,3 @@ lotus_user_uid: "532"
 proof_version: v27
 proof_type: fake
 sector_size: 2KiB
-filebeat_additional_processors: |
-  - drop_event:
-      when:
-        regexp:
-          message: "^received message from router graylisted peer"

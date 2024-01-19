@@ -32,12 +32,3 @@
   loop: "{{ lotus_seed_migrate }}"
   when: lotus_seed_migrate is defined
 
-- set_fact:
-    lotus_seed_filebeat_input:
-      paths: "{{ lotus_seed_workers | map(attribute='log_file') | list }}"
-      fields:
-        type: "lotus-seed"
-
-- set_fact:
-    lotus_seed_telegraf_tags:
-      miner: "{{ lotus_seed_miner_addr }}"

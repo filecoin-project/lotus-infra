@@ -5,7 +5,6 @@ Available group selectors (see testnet_hosts.yml for source)
 - miners
 - bootstrappers
 - fountain
-- stats
 - aws
 - packet
 

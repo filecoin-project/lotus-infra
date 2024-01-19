@@ -19,12 +19,6 @@
         state: started
       when: start_services|bool
 
-    - name: Ensure telegraf started
-      service:
-        name: "telegraf"
-        state: started
-      when: start_services|bool
-
 - hosts: preminer
   become: true
   vars:
@@ -34,17 +28,6 @@
       service:
         name: "lotus-miner"
         state: restarted
-      when: start_services|bool
-
-- hosts: stats
-  become: true
-  vars:
-    start_services: true
-  tasks:
-    - name: Ensure stats started
-      service:
-        name: "stats"
-        state: started
       when: start_services|bool
 
 - hosts: faucet
