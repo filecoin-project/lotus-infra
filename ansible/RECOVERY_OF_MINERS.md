@@ -42,7 +42,6 @@ this is important because preminer-0 by default has a `nosync` flag set on the m
 to fork from genessi.
 ```
 ansible -i $hostfile -b -m service -a 'name=lotus-daemon state=started' preminer
-ansible -i $hostfile -b -m service -a 'name=telegraf state=restarted' preminer
 ```
 7. Wait for the daemons to be sync, this might take a while depending on the age of the network
 ```

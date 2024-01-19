@@ -1,6 +1,0 @@
-stats_influxdb_url: https://eightyeight-1b1e0a69.influxcloud.net:8086
-stats_golog_file: "/var/log/lotus-stats.log"
-stats_influxdb_database: "chainstats-ntwk-{{ network_name }}"
-stats_influxdb_username: lotus
-stats_influxdb_password: "{{ vault_stats_influxdb_password }}"
-stats_nosync: true

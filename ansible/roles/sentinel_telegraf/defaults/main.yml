@@ -1,2 +1,0 @@
----
-sentinel_telegraf_log_file: /var/log/stelegraf/stelegraf.log

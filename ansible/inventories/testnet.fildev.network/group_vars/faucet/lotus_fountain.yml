@@ -1,6 +1,0 @@
-lotus_fountain_server_name: faucet.testnet.filecoin.io
-lotus_fountain_enable_https: true
-lotus_fountain_address: "{{ lotus_wallet_address }}"
-lotus_fountain_amount: 1000
-lotus_fountain_external: true
-lotus_fountain_external_redirect: "https://spacerace.faucet.glif.io"

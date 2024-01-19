@@ -30,7 +30,6 @@
     lotus_binary_src: "{{ binary_src }}/lotus"
     lotus_shed_binary_src: "{{ binary_src }}/lotus-shed"
     lotus_fountain_binary_src: "{{ binary_src }}/lotus-fountain"
-    stats_binary_src: "{{ binary_src }}/lotus-stats"
   module_defaults:
     package:
       force_apt_get: yes
@@ -38,8 +37,6 @@
     - include_role: name=lotus_fullnode
     - include_role: name=lotus_fountain
       when: "'faucet' in group_names"
-    - include_role: name=stats
-      when: "'stats' in group_names"
 
 - hosts: scratch
   become: true

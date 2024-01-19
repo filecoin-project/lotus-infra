@@ -9,14 +9,6 @@
     - include_role: name=common
     - include_role: name=ntp
     - include_role: name=lotus_miner
-    - include_role: name=filebeat_logz_io
-      vars:
-        logz_inputs:
-          - "{{ lotus_fullnode_filebeat_input }}"
-          - "{{ lotus_miner_filebeat_input }}"
-      when:
-        - lotus_fullnode_filebeat_input is defined
-        - lotus_miner_filebeat_input is defined
     - include_role: name=ufw
       vars:
         ufw_profiles:
@@ -24,15 +16,3 @@
           - "{{ lotus_miner_ufw_profile }}"
       when:
         - lotus_fullnode_ufw_profile is defined
-    - include_role: name=sentinel
-      vars:
-        telegraf_global_tag_groups:
-          - component: presealed_miner
-          - "{{ lotus_fullnode_telegraf_tags }}"
-          - "{{ lotus_miner_telegraf_tags }}"
-        telegraf_inputs_procstat:
-          - "{{ lotus_fullnode_telegraf_inputs_procstat }}"
-          - "{{ lotus_miner_telegraf_inputs_procstat }}"
-      when:
-        - lotus_fullnode_telegraf_tags is defined
-        - lotus_miner_telegraf_tags is defined
