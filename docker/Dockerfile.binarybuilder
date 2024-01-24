@@ -1,6 +1,7 @@
-FROM ubuntu:18.04 AS builder
+FROM ubuntu:20.04 AS builder
 MAINTAINER Filecoin Development Team
 
+ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1 libhwloc-dev curl wget pkg-config git
 
 ARG GOLANG_VERSION="1.20.7"

@@ -107,7 +107,7 @@ RUN useradd -r -u 532 -U fc
 # base_opencl
 # ---------------------
 
-FROM nvidia/opencl:runtime-ubuntu18.04 AS base_opencl
+FROM nvidia/opencl:runtime-ubuntu20.04 AS base_opencl
 MAINTAINER Lotus Development Team
 
 # Base resources

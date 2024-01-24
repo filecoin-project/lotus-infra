@@ -5,7 +5,7 @@
     update_cache: yes
     state: present
 
-- include: default_rules.yml
+- include_tasks: default_rules.yml
 
 - name: Enable ufw
   ufw:

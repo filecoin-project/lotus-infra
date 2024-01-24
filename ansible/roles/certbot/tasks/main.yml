@@ -3,10 +3,6 @@
     name:
       - software-properties-common
 
-- name: Add certbot ppa
-  apt_repository:
-    repo: ppa:certbot/certbot
-
 - name: Update apt cache
   apt:
     update_cache: true
