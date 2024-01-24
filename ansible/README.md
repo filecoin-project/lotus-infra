@@ -26,7 +26,7 @@ This playbook is the intended playbook for setting up machines running lotus nod
 
 1. Optionally add your host to `devnet_hosts` in global section. Hosts should also be added to the `[lotus]` section of inventory. See [working with inventory](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html) for more details.
 2. Run `ansible-playbook` in check mode. This performs a dry run.
-        ansible-playbook -i devnet_hosts ltous.yml --vault-password-file $HOME/.ansible_vault_pass.txt --check
+        ansible-playbook -i devnet_hosts lotus.yml --vault-password-file $HOME/.ansible_vault_pass.txt --check
    To target a single host, include the limit flag ie. `--limit some.host.com`
 3. If step 2 is satisfactory, run the same command without `--check` flag
 
