@@ -15,6 +15,7 @@
       - jq
       - unzip
       - libhwloc-dev
+      - acl
 
 - name: Ensure hostname
   hostname:
