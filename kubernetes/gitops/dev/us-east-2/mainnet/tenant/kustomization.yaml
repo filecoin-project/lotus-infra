@@ -8,6 +8,6 @@ resources:
 - fullnode
 - bootstrap
 - disputer
-- gateway
+# - gateway
 - lightweight-snapshot-node
 - lightweight-snapshot-chain-archiver

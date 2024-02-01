@@ -8,7 +8,7 @@ resources:
 # - fullnode
 - bootstrap
 # - disputer
-- gateway
+# - gateway
 # - lightweight-snapshot-chain-archiver
 # - lightweight-snapshot-node
 # - lotus-stats
