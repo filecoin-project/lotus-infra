@@ -42,7 +42,6 @@
 
 - name: Ensure certbot configured
   include_tasks: nginx_certbot.yml
-  when: (lotus_fountain_enable_https | bool) and (certbot_create_certificate | bool)
 
 - name: Ensure maintenance page exists
   template:

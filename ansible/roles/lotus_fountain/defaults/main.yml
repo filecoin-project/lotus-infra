@@ -5,4 +5,4 @@ lotus_fountain_amount: 50
 lotus_fountain_env: {}
 lotus_fountain_external: false
 # lotus_fountain_external_redirect: ""
-certbot_create_certificate: false
+certbot_create_certificate: true 

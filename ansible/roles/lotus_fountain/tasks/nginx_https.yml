@@ -29,7 +29,6 @@
 
 - name: Create let's encrypt certificate
   command: "certbot certonly --webroot -w /var/www/{{ lotus_fountain_server_name }} -d {{ lotus_fountain_server_name }} --non-interactive --agree-tos -m infra-accounts@protocol.ai"
-  run_once: true
 
 # We remove this because all other configurations support the `.well-known` path
 - name: Ensure certbot site is disabled

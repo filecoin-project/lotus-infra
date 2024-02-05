@@ -161,6 +161,7 @@ additional_accounts=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ additional
 
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
+    --flush-cache \
     -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                      \
     -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-miner"          \
     -e lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-shed"            \
@@ -168,7 +169,7 @@ ansible-playbook -i $hostfile lotus_devnet_provision.yml                        
     -e lotus_pcr_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-pcr"              \
     -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-fountain"    \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e lotus_pcr_reset=yes          \
-    -e certbot_create_certificate=${create_certificate}                                            \
+    -e certbot_create_certificate=True                                            \
     --diff "${ansible_args[@]}"
 
 if [ "$check_mode" = true ]; then
