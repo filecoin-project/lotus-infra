@@ -1,0 +1,22 @@
+{
+  "name": "ansible-runner",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.ansible",
+        "zainchen.json"
+      ]
+    },
+    "settings": {
+    }
+  },
+  "forwardPorts": [],
+  "mounts": [
+      "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind",
+      "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind"
+  ],
+  "remoteUser": "vscode"
+}
