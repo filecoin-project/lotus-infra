@@ -1,5 +1,7 @@
 {
   "name": "ansible-runner",
+  "runArgs": ["--init", "--privileged"],
+  "overrideCommand": false,
   "build": {
     "dockerfile": "Dockerfile"
   },
@@ -16,7 +18,18 @@
   "forwardPorts": [],
   "mounts": [
       "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind",
-      "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind"
+      "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind",
+      "source=ansible-runner,target=/var/lib/docker,type=volume"
   ],
-  "remoteUser": "vscode"
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "username": "vscode"
+    },
+    "docker-in-docker": {
+        "version": "latest",
+        "moby": true,
+        "dockerDashComposeVersion": "v1"
+    }
+  }
 }
