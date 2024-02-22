@@ -6,7 +6,7 @@ namespace: ntwk-mainnet
 resources:
 - ../../../../base/applications/common
 # - fullnode
-- bootstrap
+# - bootstrap
 # - disputer
 # - gateway
 # - lightweight-snapshot-chain-archiver
