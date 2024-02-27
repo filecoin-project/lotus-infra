@@ -57,10 +57,10 @@ module "butterflynet" {
   key_name                    = "filecoin-mainnet"
   vpc_id                      = module.fildev_network_vpc.vpc_id
   environment                 = "prod"
-  toolshed_count              = 2
-  bootstrapper_count          = 2
-  preminer_count              = 6
-  scratch_count               = 2
+  toolshed_count              = 0
+  bootstrapper_count          = 0
+  preminer_count              = 0
+  scratch_count               = 0
   toolshed_instance_type      = "m5a.large"
   chainwatch_db_instance_type = "db.m5.large"
   chainwatch_password         = var.nerpanet_chainwatch_password
