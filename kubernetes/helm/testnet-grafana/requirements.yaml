@@ -1,4 +1,0 @@
-dependencies:
-- name: grafana
-  version: "3.10.0"
-  repository: "@stable"

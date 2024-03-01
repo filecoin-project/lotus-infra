@@ -1,8 +1,0 @@
-apiVersion: v1
-appVersion: 0.0.1
-description: Lotus Dashboards
-engine: gotpl
-home: https://github.com/filecoin-project/lotus
-name: lotus-dashboards
-sources:
-version: 0.0.1

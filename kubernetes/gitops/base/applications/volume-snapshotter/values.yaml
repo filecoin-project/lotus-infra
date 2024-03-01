@@ -1,3 +1,0 @@
-schedule: "0 0 * * *"
-# desired is the number of volumesnapshots that should exist
-desired: 3

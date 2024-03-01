@@ -1,7 +1,0 @@
-ImageFullNode: "657871693752.dkr.ecr.us-east-1.amazonaws.com/stats-lotus:latest"
-ImageStats: "657871693752.dkr.ecr.us-east-1.amazonaws.com/stats-stats:latest"
-StorageClassName: "standard-resize"
-InfluxAddr: "http://localhost:8086"
-InfluxUser: ""
-InfluxPass: ""
-InfluxDatabase: "lotus"
