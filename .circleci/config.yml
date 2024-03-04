@@ -94,7 +94,7 @@ jobs:
         default: false
         description: append gitsha to image tag (useful when tag is master)
     machine:
-      image: ubuntu-2004:202010-01
+      image: default
     steps:
       - checkout
       - docker-login
@@ -152,7 +152,7 @@ jobs:
         type: boolean
         default: true
     machine:
-      image: ubuntu-2004:202010-01
+      image: default
       docker_layer_caching: true
     resource_class: 2xlarge
     environment:
@@ -294,7 +294,7 @@ jobs:
         default: "lotus"
     # binary building is done via a docker build image with a mounted filesystem
     machine:
-      image: ubuntu-2004:202010-01
+      image: default
       docker_layer_caching: true
     resource_class: 2xlarge
     environment:
@@ -423,7 +423,7 @@ jobs:
         type: boolean
         default: true
     machine:
-      image: ubuntu-2004:202010-01
+      image: default
       docker_layer_caching: true
     resource_class: 2xlarge
     environment:
@@ -522,7 +522,7 @@ jobs:
         type: string
         default: "#netops-circleci-test"
     machine:
-      image: ubuntu-2004:202010-01
+      image: default
       docker_layer_caching: true
     environment:
       AWS_REGION: << parameters.aws_region >>
