@@ -2,7 +2,7 @@ FROM ubuntu:20.04 AS builder
 MAINTAINER Filecoin Development Team
 
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && apt-get install -y ca-certificates build-essential clang jq ocl-icd-opencl-dev ocl-icd-libopencl1 libhwloc-dev curl wget pkg-config git
+RUN apt-get update && apt-get install -y mesa-opencl-icd ocl-icd-opencl-dev gcc git bzr jq pkg-config curl clang build-essential hwloc libhwloc-dev wget
 
 ARG GOLANG_VERSION="1.20.7"
 ARG UID=1000
