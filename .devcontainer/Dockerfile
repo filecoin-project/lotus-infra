@@ -23,8 +23,8 @@ RUN apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -ms /bin/bash vscode && usermod -aG docker vscode
-RUN curl -LOs https://golang.org/dl/go1.20.7.linux-amd64.tar.gz && \
-    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.20.7.linux-amd64.tar.gz
+RUN curl -LOs https://golang.org/dl/go1.21.7.linux-amd64.tar.gz && \
+    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.7.linux-amd64.tar.gz
 
 USER vscode
 WORKDIR /home/vscode
