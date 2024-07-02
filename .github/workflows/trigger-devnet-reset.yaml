@@ -18,6 +18,7 @@ on:
         description: "circleci branch (used for testing new lotus-infra deploy code)"
         default: master
 
+# TODO: remove me -- replaced with lotus-ansible-reset-careful workflow.
 jobs:
   trigger-circleci:
     runs-on: ubuntu-latest
