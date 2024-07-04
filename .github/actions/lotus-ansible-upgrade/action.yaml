@@ -16,13 +16,9 @@ inputs:
     description: "Check"
     required: false
     default: "true"
-    # TODO: port equivalent of:
-    # machine:
-    #   image: ubuntu-2004:202010-01
-    #   docker_layer_caching: true
-    # resource_class: 2xlarge
-    # TODO: a question -- why not use the -Makefile- pattern, have most of the automation live in a script called by the action.
-    # this would make the script easier to test and move around.
+  # TODO: we need ANSIBLE_VAULT_PASSWORD in secrets
+  # TODO: we need AWS secrets: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY OR setup OIDC with Github
+  # TODO: we need DOCKERHUB_PASSWORD, DOCKERHUB_USERNAME
 
 runs:
   using: "composite"
@@ -33,11 +29,11 @@ runs:
         echo "GOPATH=${GITHUB_WORKSPACE}/.go_workspace" >> $GITHUB_ENV
         echo "LOTUSROOT=${GITHUB_WORKSPACE}/.go_workspace/src/github.com/filecoin-project/lotus" >> $GITHUB_ENV
 
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    # TODO: setup AWS credentials
-    # https://github.com/aws-actions/configure-aws-credentials
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     - uses: actions-rust-lang/setup-rust-toolchain@v1
 
@@ -48,14 +44,14 @@ runs:
     - name: Install Ansible Playbook
       shell: bash
       run: |
-        pip install ansible # TODO: is this _ideal_?
+        pip install ansible
 
     - name: Clone Lotus Repository
       uses: actions/checkout@v4
       with:
         repository: filecoin-project/lotus
         ref: ${{ inputs.branch }}
-        path: ${{ env.LOTUSROOT }} # TODO: is this valid?
+        path: ${{ env.LOTUSROOT }}
 
     - name: Setup Secrets
       shell: bash
@@ -68,7 +64,6 @@ runs:
     - name: Ansible Upgrade ${{ inputs.deploy_network }}
       shell: bash
       working-directory: ansible
-      # NOTE: we are missing the `no_output_timeout: 30m` setting from circleci
       env:
         DEPLOY_NETWORK: ${{ inputs.deploy_network }}
         BUILD_FLAGS: ${{ inputs.build_flags }}

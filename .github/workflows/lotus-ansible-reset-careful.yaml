@@ -17,10 +17,17 @@ on:
       lotus_branch:
         description: "lotus branch"
         default: "master"
+      dry-run:
+        description: "Run this workflow in dry-run mode first befure setting to false"
+        default: "true"
+        # if we ever switch to Github Enterprise or make this repository public,
+        # we can use an environment with required reviewers.
+        # then run two steps: one with check: true, and the other with check: false and the required env.
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, 2xlarge]
+    timeout-minutes: 35
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -36,21 +43,4 @@ jobs:
           build_flags: ""
           reset: "true"
           delay: "0"
-          check: "true"
-  reset:
-    runs-on: ubuntu-latest
-    environment: production # TODO: double check this setup - require manual approval
-    needs: check
-    steps:
-      - name: Lotus Ansible Reset
-        uses: ./.github/actions/lotus-ansible-reset
-        with:
-          deploy_network: ${{ github.event.inputs.lotus_deploy_network }}
-          install_network: ${{ github.event.inputs.lotus_install_network }}
-          branch: ${{ github.event.inputs.lotus_branch }}
-          preseal: "true"
-          create_cert: "true"
-          build_flags: ""
-          reset: "true"
-          delay: "0"
-          check: "false"
+          check: ${{ github.event.inputs.dry-run }}
