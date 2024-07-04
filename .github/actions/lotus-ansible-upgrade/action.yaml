@@ -1,0 +1,105 @@
+name: "Lotus Ansible Upgrade"
+description: "Composite action to upgrade Lotus using Ansible"
+inputs:
+  deploy_network:
+    description: "Deploy network"
+    required: true
+  build_flags:
+    description: "Build flags"
+    required: false
+    default: "-f"
+  branch:
+    description: "Branch"
+    required: false
+    default: "master"
+  check:
+    description: "Check"
+    required: false
+    default: "true"
+    # TODO: port equivalent of:
+    # machine:
+    #   image: ubuntu-2004:202010-01
+    #   docker_layer_caching: true
+    # resource_class: 2xlarge
+    # TODO: a question -- why not use the -Makefile- pattern, have most of the automation live in a script called by the action.
+    # this would make the script easier to test and move around.
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Env
+      shell: bash
+      run: |
+        echo "GOPATH=${GITHUB_WORKSPACE}/.go_workspace" >> $GITHUB_ENV
+        echo "LOTUSROOT=${GITHUB_WORKSPACE}/.go_workspace/src/github.com/filecoin-project/lotus" >> $GITHUB_ENV
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # TODO: setup AWS credentials
+    # https://github.com/aws-actions/configure-aws-credentials
+
+    - uses: actions-rust-lang/setup-rust-toolchain@v1
+
+    - uses: actions/setup-go@v5
+      with:
+        go-version: "1.21.7"
+
+    - name: Install Ansible Playbook
+      shell: bash
+      run: |
+        pip install ansible # TODO: is this _ideal_?
+
+    - name: Clone Lotus Repository
+      uses: actions/checkout@v4
+      with:
+        repository: filecoin-project/lotus
+        ref: ${{ inputs.branch }}
+        path: ${{ env.LOTUSROOT }} # TODO: is this valid?
+
+    - name: Setup Secrets
+      shell: bash
+      working-directory: ansible
+      env:
+        ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+      run: |
+        echo ${ANSIBLE_VAULT_PASSWORD} > .vault_password
+
+    - name: Ansible Upgrade ${{ inputs.deploy_network }}
+      shell: bash
+      working-directory: ansible
+      # NOTE: we are missing the `no_output_timeout: 30m` setting from circleci
+      env:
+        DEPLOY_NETWORK: ${{ inputs.deploy_network }}
+        BUILD_FLAGS: ${{ inputs.build_flags }}
+        CHECK: ${{ inputs.check }}
+      run: |
+        args=(
+          "-n" "${DEPLOY_NETWORK}"
+          "-s" "${LOTUSROOT}"
+          "-b" "${BUILD_FLAGS}"
+          "--verbose"
+        )
+        [ "${CHECK}" == "true" ] && args+=("--check")
+
+        export TERM=xterm
+        unset GOPATH
+        ./upgrade_fildev_network_binaries.bash "${args[@]}"
+
+    - name: Remove Faucet Maintenance
+      if: ${{ inputs.check }} == 'false'
+      shell: bash
+      working-directory: ansible
+      env:
+        DEPLOY_NETWORK: ${{ inputs.deploy_network }}
+      run: |
+        ansible -i inventories/${DEPLOY_NETWORK}/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
+
+    - name: Restart Machines
+      if: ${{ inputs.check }} == 'false'
+      shell: bash
+      working-directory: ansible
+      env:
+        DEPLOY_NETWORK: ${{ inputs.deploy_network }}
+      run: |
+        ansible -i inventories/${DEPLOY_NETWORK}/hosts.yml -b -m reboot all

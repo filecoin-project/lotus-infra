@@ -1,0 +1,42 @@
+name: Lotus Devnet Ansible Upgrade Careful
+
+# api_worflow_requested = lotus-devnet-ansible-upgrade
+
+on:
+  workflow_dispatch:
+    inputs:
+      override_tag:
+        description: "lotus tag"
+      lotus_deploy_network:
+        description: "network to find ansible host"
+        default: "butterfly.fildev.network"
+      lotus_branch:
+        description: "lotus branch"
+        default: "master"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lotus Ansible Upgrade Check
+        uses: ./.github/actions/lotus-ansible-upgrade
+        with:
+          deploy_network: ${{ github.event.inputs.lotus_deploy_network }}
+          branch: ${{ github.event.inputs.lotus_branch }}
+          build_flags: ""
+          check: "true"
+  reset:
+    runs-on: ubuntu-latest
+    environment: production # TODO: double check this setup - require manual approval
+    needs: check
+    steps:
+      - name: Lotus Ansible Upgrade
+        uses: ./.github/actions/lotus-ansible-upgrade
+        with:
+          deploy_network: ${{ github.event.inputs.lotus_deploy_network }}
+          branch: ${{ github.event.inputs.lotus_branch }}
+          build_flags: ""
+          check: "true"
