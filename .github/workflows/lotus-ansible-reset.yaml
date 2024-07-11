@@ -52,4 +52,4 @@ jobs:
           build_flags: ""
           reset: "true"
           delay: "0"
-          check: ${{ github.event.inputs.dry-run || 'false' }}
+          check: ${{ github.event.inputs.dry-run || 'true' }}
