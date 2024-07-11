@@ -16,9 +16,24 @@ inputs:
     description: "Check"
     required: false
     default: "true"
-  # TODO: we need ANSIBLE_VAULT_PASSWORD in secrets
-  # TODO: we need AWS secrets: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY OR setup OIDC with Github
-  # TODO: we need DOCKERHUB_PASSWORD, DOCKERHUB_USERNAME
+  AWS_ACCESS_KEY_ID:
+    description: "AWS Access Key ID"
+    required: true
+  AWS_SECRET_ACCESS_KEY:
+    description: "AWS Secret Access Key"
+    required: true
+  AWS_REGION:
+    description: "AWS Region"
+    required: true
+  ANSIBLE_VAULT_PASSWORD:
+    description: "Ansible Vault Password"
+    required: true
+  DOCKERHUB_USERNAME:
+    description: "Dockerhub Username"
+    required: true
+  DOCKERHUB_PASSWORD:
+    description: "Dockerhub Password"
+    required: true
 
 runs:
   using: "composite"
@@ -29,13 +44,23 @@ runs:
         echo "GOPATH=${GITHUB_WORKSPACE}/.go_workspace" >> $GITHUB_ENV
         echo "LOTUSROOT=${GITHUB_WORKSPACE}/.go_workspace/src/github.com/filecoin-project/lotus" >> $GITHUB_ENV
 
+    - name: Configure SSH - use Ubuntu user and do not check host key
+      shell: bash
+      run: |
+        echo -e "Host *\n  User ubuntu\n  StrictHostKeyChecking no" >> ~/.ssh/config
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ inputs.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ inputs.AWS_REGION }}
 
     - uses: actions-rust-lang/setup-rust-toolchain@v1
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
 
     - uses: actions/setup-go@v5
       with:
@@ -57,7 +82,7 @@ runs:
       shell: bash
       working-directory: ansible
       env:
-        ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+        ANSIBLE_VAULT_PASSWORD: ${{ inputs.ANSIBLE_VAULT_PASSWORD }}
       run: |
         echo ${ANSIBLE_VAULT_PASSWORD} > .vault_password
 
@@ -82,7 +107,7 @@ runs:
         ./upgrade_fildev_network_binaries.bash "${args[@]}"
 
     - name: Remove Faucet Maintenance
-      if: ${{ inputs.check }} == 'false'
+      if: ${{ inputs.check == 'false' }}
       shell: bash
       working-directory: ansible
       env:
@@ -91,7 +116,7 @@ runs:
         ansible -i inventories/${DEPLOY_NETWORK}/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
 
     - name: Restart Machines
-      if: ${{ inputs.check }} == 'false'
+      if: ${{ inputs.check == 'false' }}
       shell: bash
       working-directory: ansible
       env:

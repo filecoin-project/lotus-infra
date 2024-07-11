@@ -32,7 +32,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Lotus Ansible Reset Check
+      - name: Setup ssh-agent
+        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
+
+      - name: Lotus Ansible Reset
         uses: ./.github/actions/lotus-ansible-reset
         with:
           deploy_network: ${{ github.event.inputs.lotus_deploy_network }}
@@ -44,3 +49,7 @@ jobs:
           reset: "true"
           delay: "0"
           check: ${{ github.event.inputs.dry-run }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-2"
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
