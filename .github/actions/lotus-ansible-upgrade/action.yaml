@@ -8,26 +8,10 @@ inputs:
     description: "Build flags"
     required: false
     default: "-f"
-  branch:
-    description: "Branch"
-    required: false
-    default: "master"
   check:
     description: "Check"
     required: false
     default: "true"
-  AWS_ACCESS_KEY_ID:
-    description: "AWS Access Key ID"
-    required: true
-  AWS_SECRET_ACCESS_KEY:
-    description: "AWS Secret Access Key"
-    required: true
-  AWS_REGION:
-    description: "AWS Region"
-    required: true
-  ANSIBLE_VAULT_PASSWORD:
-    description: "Ansible Vault Password"
-    required: true
   DOCKERHUB_USERNAME:
     description: "Dockerhub Username"
     required: true
@@ -38,53 +22,17 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup Env
+    - name: Check Env
       shell: bash
       run: |
-        echo "GOPATH=${GITHUB_WORKSPACE}/.go_workspace" >> $GITHUB_ENV
-        echo "LOTUSROOT=${GITHUB_WORKSPACE}/.go_workspace/src/github.com/filecoin-project/lotus" >> $GITHUB_ENV
-
-    - name: Configure SSH - use Ubuntu user and do not check host key
-      shell: bash
-      run: |
-        echo -e "Host *\n  User ubuntu\n  StrictHostKeyChecking no" >> ~/.ssh/config
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ inputs.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ inputs.AWS_REGION }}
-
-    - uses: actions-rust-lang/setup-rust-toolchain@v1
-
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
-
-    - uses: actions/setup-go@v5
-      with:
-        go-version: "1.21.7"
-
-    - name: Install Ansible Playbook
-      shell: bash
-      run: |
-        pip install ansible
-
-    - name: Clone Lotus Repository
-      uses: actions/checkout@v4
-      with:
-        repository: filecoin-project/lotus
-        ref: ${{ inputs.branch }}
-        path: ${{ env.LOTUSROOT }}
-
-    - name: Setup Secrets
-      shell: bash
-      working-directory: ansible
-      env:
-        ANSIBLE_VAULT_PASSWORD: ${{ inputs.ANSIBLE_VAULT_PASSWORD }}
-      run: |
-        echo ${ANSIBLE_VAULT_PASSWORD} > .vault_password
+        if [ -z "$GOPATH" ]; then
+          echo "GOPATH is not set"
+          exit 1
+        fi
+        if [ -z "$LOTUSROOT" ]; then
+          echo "LOTUSROOT is not set"
+          exit 1
+        fi
 
     - name: Ansible Upgrade ${{ inputs.deploy_network }}
       shell: bash

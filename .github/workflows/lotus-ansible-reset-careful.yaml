@@ -32,24 +32,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup ssh-agent
-        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+      - name: Lotus Ansible Prepare
+        uses: ./.github/actions/lotus-ansible-prepare
         with:
-          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
+          branch: ${{ github.event.inputs.lotus_branch || 'master' }}
+          PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-2"
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
 
       - name: Lotus Ansible Reset
         uses: ./.github/actions/lotus-ansible-reset
         with:
-          deploy_network: ${{ github.event.inputs.lotus_deploy_network }}
-          install_network: ${{ github.event.inputs.lotus_install_network }}
-          branch: ${{ github.event.inputs.lotus_branch }}
+          deploy_network: ${{ github.event.inputs.lotus_deploy_network || 'butterfly.fildev.network' }}
+          install_network: ${{ github.event.inputs.lotus_install_network || 'butterflynet' }}
           preseal: "true"
           create_cert: "true"
           build_flags: ""
           reset: "true"
           delay: "0"
-          check: ${{ github.event.inputs.dry-run }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-2"
-          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          check: ${{ github.event.inputs.dry-run || 'false' }}
