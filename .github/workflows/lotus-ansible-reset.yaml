@@ -6,8 +6,6 @@ name: Lotus Ansible Reset Careful
 on:
   workflow_dispatch:
     inputs:
-      override_tag:
-        description: "lotus tag"
       lotus_install_network:
         description: "network to build lotus tools"
         default: "butterflynet"

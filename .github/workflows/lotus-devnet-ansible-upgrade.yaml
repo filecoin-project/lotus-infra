@@ -5,8 +5,6 @@ name: Lotus Devnet Ansible Upgrade Careful
 on:
   workflow_dispatch:
     inputs:
-      override_tag:
-        description: "lotus tag"
       lotus_deploy_network:
         description: "network to find ansible host"
         default: "butterfly.fildev.network"
