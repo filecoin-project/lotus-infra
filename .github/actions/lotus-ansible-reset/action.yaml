@@ -1,0 +1,121 @@
+name: "Lotus Ansible Reset"
+description: "Composite action to reset Lotus using Ansible"
+inputs:
+  install_network:
+    description: "Install network"
+    required: true
+  deploy_network:
+    description: "Deploy network"
+    required: true
+  preseal:
+    description: "Preseal"
+    required: false
+    default: "true"
+  create_cert:
+    description: "Create certificate"
+    required: false
+    default: "true"
+  build_flags:
+    description: "Build flags"
+    required: false
+    default: "-f"
+  reset:
+    description: "Reset"
+    required: false
+    default: "true"
+  delay:
+    description: "Delay"
+    required: false
+    default: "0"
+  check:
+    description: "Check"
+    required: false
+    default: "true"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check Env
+      shell: bash
+      run: |
+        if [ -z "$GOPATH" ]; then
+          echo "::error::GOPATH is not set"
+          exit 1
+        fi
+        if [ -z "$LOTUSROOT" ]; then
+          echo "::error::LOTUSROOT is not set"
+          exit 1
+        fi
+
+    - name: Install Lotus Software
+      shell: bash
+      working-directory: ${{ env.LOTUSROOT }}
+      env:
+        INSTALL_NETWORK: ${{ inputs.install_network }}
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libhwloc-dev ocl-icd-opencl-dev pkg-config
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libhwloc.so.15 /usr/lib/x86_64-linux-gnu/libhwloc.so.5
+        GOFLAGS+=-tags=${INSTALL_NETWORK} make lotus-shed lotus-seed
+        sudo install -o root -g root -m 0755 ./lotus-seed ./lotus-shed /usr/local/bin
+
+    - name: Ansible Reset ${{ inputs.deploy_network }}
+      shell: bash
+      working-directory: ansible
+      env:
+        DEPLOY_NETWORK: ${{ inputs.deploy_network }}
+        BUILD_FLAGS: ${{ inputs.build_flags }}
+        DELAY: ${{ inputs.delay }}
+        RESET: ${{ inputs.reset }}
+        PRESEAL: ${{ inputs.preseal }}
+        CREATE_CERT: ${{ inputs.create_cert }}
+        CHECK: ${{ inputs.check }}
+      run: |
+        args=(
+          "-n" "${DEPLOY_NETWORK}"
+          "-s" "${LOTUSROOT}"
+          "-b" "${BUILD_FLAGS}"
+          "-d" "${DELAY}"
+          "--verbose"
+        )
+        [ "${RESET}" == "true" ] && args+=("-r")
+        [ "${PRESEAL}" == "true" ] && args+=("-p")
+        [ "${CREATE_CERT}" == "true" ] && args+=("-c")
+        [ "${CHECK}" == "true" ] && args+=("--check")
+
+        export TERM=xterm
+        echo | ./setup_fildev_network.bash --start-services false "${args[@]}"
+
+    - name: Remove Faucet Maintenance
+      if: ${{ inputs.check == 'false' }}
+      shell: bash
+      working-directory: ansible
+      env:
+        DEPLOY_NETWORK: ${{ inputs.deploy_network }}
+      run: |
+        ansible -i inventories/${DEPLOY_NETWORK}/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
+
+    - name: Restart Machines
+      if: ${{ inputs.check == 'false' }}
+      shell: bash
+      working-directory: ansible
+      env:
+        DEPLOY_NETWORK: ${{ inputs.deploy_network }}
+      run: |
+        ansible -i inventories/${DEPLOY_NETWORK}/hosts.yml -b -m reboot all
+
+    - name: Capture New Genesis
+      if: ${{ inputs.check == 'false' }}
+      shell: bash
+      run: |
+        mkdir /tmp/reset
+        ./scripts/encrypt_vault_files.bash
+        ./scripts/bundle_changes.bash . /tmp/reset/lotus-infra
+        ./scripts/bundle_changes.bash ${LOTUSROOT} /tmp/reset/lotus
+
+    - name: Store Artifacts
+      if: ${{ inputs.check == 'false' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: reset-artifacts
+        path: /tmp/reset
