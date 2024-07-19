@@ -2,47 +2,55 @@
 
 ## Summary
 
-This runbook is intented for maintainers of the Lotus-Infra repo, and provides instructions on how to reset the Butterfly network infrastructure. It assumes that properly configured branches or tags has been made with the correct network parameters in Lotus. This runbook does not go over how to configure the Butterfly network
+This runbook is intended for maintainers of the Lotus-Infra repo and provides instructions on how to reset the Butterfly network infrastructure. It assumes that properly configured branches or tags have been made with the correct network parameters in Lotus. This runbook does not cover how to configure the Butterfly network.
 
 ## General Information
 
-A list of hosts for the butterfly network infrastructure and their roles can be found [here](https://github.com/filecoin-project/lotus-infra/blob/master/ansible/inventories/butterfly.fildev.network/hosts.yml).
+- A list of hosts for the Butterfly network infrastructure and their roles can be found [here](https://github.com/filecoin-project/lotus-infra/blob/master/ansible/inventories/butterfly.fildev.network/hosts.yml).
+- The instances running the Butterfly network infrastructure are in the FilOz AWS account. FilOz members can get credentials to log in and confirm that these are running in their 1Password account.
 
-## Resetting the network
+## Resetting the Butterfly network
 
-### Start Network Reset Workflow
+Before fully resetting the Butterfly network, it is recommended to do a dry-run reset of the network to confirm that the workflow completes:
 
-1. Navigate to [trigger devnet-reset workflow.](https://github.com/filecoin-project/lotus-infra/actions/workflows/trigger-devnet-reset.yaml)
+### Dry-run Butterfly network reset
 
-2. Select **Run Workflow**
+1. Navigate to [Lotus Ansible Reset Careful](https://github.com/filecoin-project/lotus-infra/actions/workflows/lotus-ansible-reset.yaml) in GitHub Actions.
 
-3. Fill out the **lotus tag** field with the desired branch or tag to be used for the deployment of the Butterfly-network.
+2. Select **Run workflow**.
 
-4. Click **Run Workflow**
+3. Fill out the **lotus branch** field with the desired branch or tag to be used for the deployment of the Butterfly network.
 
-### Monitor Network Reset
+4. Ensure that the `Run this workflow in dry-run mode first before setting to false` is set to `true` and click on the `Run workflow` button.
 
-1. Navigate to CircleCI and monitor your `api-lotus-ansible-reset-careful` workflow. Once `lotus-ansible-reset-careful-check` has completed, approve the Butterfly-network reset by clicking the `reset-approval` workflow step.
+Confirm that the workflow completes successfully, and proceed with the actual Butterfly network reset.
 
-2. Wait and confirm that the the last `lotus-ansible-reset-careful` job to finish.
+### Actual Butterfly network reset
+
+1. Navigate to [Lotus Ansible Reset Careful](https://github.com/filecoin-project/lotus-infra/actions/workflows/lotus-ansible-reset.yaml) in GitHub Actions.
+
+2. Select **Run workflow**.
+
+3. Fill out the **lotus branch** field with the desired branch or tag to be used for the deployment of the Butterfly network.
+
+4. Ensure that the `Run this workflow in dry-run mode first before setting to false` is set to `false` and click on the `Run workflow` button.
 
 ## Backfilling changes
 
 ### Downloading Artifacts
 
-1. Click on the last workflow step **ansible-reset-careful**.
+1. Navigate to [Lotus Ansible Reset Careful](https://github.com/filecoin-project/lotus-infra/actions/workflows/lotus-ansible-reset.yaml) in GitHub Actions, and click into your completed workflow.
 
-2. Clic the **ARTIFACTS** tab.
-
-3. Download the lotus.tar file and take note of the
-downloaded file name.
+2. Download the `reset-artifacts` at the bottom of the page and take note of the downloaded file name.
 
 ### Committing Artifacts to Lotus
 
-1. Checkout the branch that you used for deploying the Butterfly-network,
+1. Checkout the branch that you used for deploying the Butterfly network.
 
-2. Extract the `lotus.tar` file.
+2. Extract the `lotus.tar` file inside of your downloaded `reset-artifacts`.
 
-3. Commit the new `genesis/butterflynet.car` file to `https://github.com/filecoin-project/lotus/tree/master/build/genesis` replacing the old `butterflynet.car` file.
+3. Commit the new `genesis/butterflynet.car` file to `https://github.com/filecoin-project/lotus/tree/master/build/genesis`, replacing the old `butterflynet.car` file.
 
-4. Commit the new `bootstrap/butterflynet.pi` file to `https://github.com/filecoin-project/lotus/tree/master/build/bootstrap`replacing the old butterflynet.pi file.
+4. Commit the new `bootstrap/butterflynet.pi` file to `https://github.com/filecoin-project/lotus/tree/master/build/bootstrap`, replacing the old `butterflynet.pi` file.
+
+👉 Example of a PR submitting the artifacts to [Lotus can be seen here](https://github.com/filecoin-project/lotus/pull/12266).
