@@ -1,0 +1,16 @@
+---
+# This playbook asserts that for a given inventory all configured authorized keys are applied.
+# Run it by running the command below having replaced <network-name> with either "butterfly" or "calibration":
+#
+#  $ ansible-playbook -i inventories/<network-name>.fildev.network/hosts.yml update_ssh_keys.yml
+#
+# Using this Ansible playbook we no longer need to reset the entire network or upgrade it in 
+# order to have SSH keys updated.
+ 
+- name: Update SSH authorized keys
+  hosts: all
+  become: yes
+  vars:
+    ssh_user: "{{ ansible_user }}"
+  roles:
+    - ssh_keys
