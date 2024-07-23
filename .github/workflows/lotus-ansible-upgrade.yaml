@@ -1,0 +1,49 @@
+name: Lotus Ansible Upgrade Careful
+
+# api_worflow_requested = lotus-devnet-ansible-upgrade
+# and be_careful = true
+
+on:
+  workflow_dispatch:
+    inputs:
+      lotus_install_network:
+        description: "network to build lotus tools"
+        default: "butterflynet"
+      lotus_deploy_network:
+        description: "network to find ansible host"
+        default: "butterfly.fildev.network"
+      lotus_branch:
+        description: "lotus branch"
+        default: "master"
+      dry-run:
+        description: "Run this workflow in dry-run mode first befure setting to false"
+        default: "true"
+        # if we ever switch to Github Enterprise or make this repository public,
+        # we can use an environment with required reviewers.
+        # then run two steps: one with check: true, and the other with check: false and the required env.
+
+jobs:
+  check:
+    runs-on: [ self-hosted, linux, x64, 2xlarge ]
+    timeout-minutes: 35
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lotus Ansible Prepare
+        uses: ./.github/actions/lotus-ansible-prepare
+        with:
+          branch: ${{ github.event.inputs.lotus_branch || 'master' }}
+          PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+
+      - name: Lotus Ansible Reset
+        uses: ./.github/actions/lotus-ansible-upgrade
+        with:
+          deploy_network: ${{ github.event.inputs.lotus_deploy_network || 'butterfly.fildev.network' }}
+          install_network: ${{ github.event.inputs.lotus_install_network || 'butterflynet' }}
+          build_flags: ""
+          check: ${{ github.event.inputs.dry-run || 'true' }}
