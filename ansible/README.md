@@ -30,6 +30,38 @@ This playbook is the intended playbook for setting up machines running lotus nod
    To target a single host, include the limit flag ie. `--limit some.host.com`
 3. If step 2 is satisfactory, run the same command without `--check` flag
 
+The following SSH config makes it easier to SSH into butterflynet machines stood up by ansible. Add it to your `~/.ssh/config`, and once added you can simply run `ssh butterflynet-bootstrap-0` as an example. Note, for this to work you must have ssh access to the machines to begin with.
+
+```
+Host butterflynet-bootstrap-0
+ HostName bootstrap-0.butterfly.fildev.network
+ User ubuntu
+
+Host butterflynet-bootstrap-1
+ HostName bootstrap-1.butterfly.fildev.network
+ User ubuntu
+
+Host butterflynet-preminer-0
+ HostName preminer-0.butterfly.fildev.network
+ User ubuntu
+
+Host butterflynet-preminer-1
+ HostName preminer-1.butterfly.fildev.network
+ User ubuntu
+
+Host butterflynet-preminer-2
+ HostName preminer-2.butterfly.fildev.network
+ User ubuntu
+
+Host butterflynet-scratch-0
+ HostName scratch-0.butterfly.fildev.network
+ User ubuntu
+
+Host butterflynet-toolshed-1
+ HostName toolshed-1.butterfly.fildev.network
+ User ubuntu
+```
+
 ## Vagrant
 
 NOTE: this has not maintained, and is not recently tested.
