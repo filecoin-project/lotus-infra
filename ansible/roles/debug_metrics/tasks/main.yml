@@ -1,0 +1,31 @@
+- name: Ensure web folder exists
+  file:
+    path: /var/www/{{ inventory_hostname }}/
+    state: directory
+    owner: www-data
+    mode: 0755
+
+- name: Allow HTTP traffic
+  ufw:
+    rule: allow
+    name: "Nginx HTTP"
+
+- name: Ensure debug-metrics nginx config is available
+  template:
+    src: ../templates/nginx-debug-metrics.conf.j2
+    dest: /etc/nginx/sites-available/debug-metrics.conf
+
+- name: Ensure debug-metrics is enabled
+  file:
+    src: /etc/nginx/sites-available/debug-metrics.conf
+    dest: /etc/nginx/sites-enabled/50-debug-metrics.conf
+    state: link
+  notify: reload_nginx
+  when: debug_metrics_enabled | bool == true
+
+- name: Ensure debug-metrics http site disabled
+  file:
+    path: /etc/nginx/sites-enabled/50-debug-metrics.conf
+    state: absent
+  notify: reload_nginx
+  when: debug_metrics_enabled | bool == false

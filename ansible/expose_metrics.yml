@@ -1,0 +1,14 @@
+---
+# This playbook exposes the prometheus metrics from lotus daemon publically.
+# Run it by running the command below having replaced <network-name> with either "butterfly" or "calibration":
+#
+#  $ ansible-playbook -i inventories/<network-name>.fildev.network/hosts.yml expose_metrics.yml
+#
+# By default, it only exposes them for bootstrap and preminder nodes.
+- name: Ensure dependencies are installed
+  hosts:
+    - bootstrap
+    - preminer
+  become: true
+  roles:
+    - debug_metrics
