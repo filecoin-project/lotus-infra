@@ -29,3 +29,8 @@
     state: absent
   notify: reload_nginx
   when: debug_metrics_enabled | bool == false
+
+- name: Ensure nginx reloaded
+  systemd:
+    name: nginx
+    state: reloaded
