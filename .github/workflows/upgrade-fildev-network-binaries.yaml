@@ -1,0 +1,79 @@
+name: Upgrade
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "Network:"
+        default: "butterflynet"
+        type: choice
+        options:
+          - butterflynet
+          - calibnet
+      lotus_ref:
+        description: "Lotus git ref:"
+        default: "master"
+      dry-run:
+        description: "Dry-run changes?"
+        type: boolean
+        default: true
+
+jobs:
+  upgrade:
+    runs-on: [ self-hosted, linux, x64, 2xlarge ]
+    timeout-minutes: 35
+    env:
+      LOTUS_BINARIES: 'lotus lotus-seed lotus-shed lotus-wallet lotus-gateway lotus-miner lotus-worker lotus-stats lotus-fountain'
+      LOTUS_REF: ${{ github.event.inputs.lotus_ref || 'master' }}
+      NETWORK: ${{ github.event.inputs.network || 'butterflynet'}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Lotus Ansible Prepare
+        uses: ./.github/actions/lotus-ansible-prepare
+        with:
+          branch: ${{ env.LOTUS_REF }}
+          PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Lotus ${{ env.LOTUS_REF }} for ${{ env.NETWORK }}
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.LOTUSROOT }}
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha
+          build-args: |
+            GOFLAGS=-tags=${{ env.NETWORK }}
+      - name: Copy binaries from built container
+        run: |
+          docker create --name built_binaries ${{ steps.build.outputs.imageid }}
+          for binary in ${{ env.LOTUS_BINARIES }}; do
+            docker cp built_binaries:/usr/local/bin/${binary} ${{ env.LOTUSROOT }}
+          done
+          docker rm built_binaries
+      - name: Update binaries
+        shell: bash
+        working-directory: ansible
+        env:
+          DRY_RUN_FLAG: ${{ github.event.inputs.dry-run && '--check' }}
+        run: |
+          # Infer deploy network from network name to reduce unnecessary noise in actions inputs.
+          DEPLOY_NETWORK=$(
+            case ${{ env.NETWORK }} in
+            butterflynet) printf 'butterfly.fildev.network' ;;
+            calibnet) printf 'calibration.fildev.network' ;;
+            *) echo 'Unknown network: ${{ env.NETWORK }}' >&2; exit 1 ;;
+            esac
+          )
+          
+          ansible-playbook -i inventories/${DEPLOY_NETWORK}/hosts.yml \
+          -e binary_src="${{ env.LOTUSROOT }}" \
+          ${{ env.DRY_RUN_FLAG }} \
+          upgrade_binaries.yml

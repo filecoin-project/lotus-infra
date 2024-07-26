@@ -1,0 +1,92 @@
+---
+# Only updates the binaries and restarts the services for daemon, miner and faucet.
+- hosts: preminer
+  become: true
+  vars:
+    binary_paths:
+      - { src: "{{ binary_src }}/lotus", dest: /usr/local/bin/lotus }
+      - { src: "{{ binary_src }}/lotus-miner", dest: /usr/local/bin/lotus-miner }
+      - { src: "{{ binary_src }}/lotus-seed", dest: /usr/local/bin/lotus-seed }
+      - { src: "{{ binary_src }}/lotus-shed", dest: /usr/local/bin/lotus-shed }
+  tasks:
+    - name: Copy binaries
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: "0755"
+      loop: "{{ binary_paths }}"
+
+- hosts: bootstrap
+  become: true
+  vars:
+    binary_paths:
+      - { src: "{{ binary_src }}/lotus", dest: /usr/local/bin/lotus }
+      - { src: "{{ binary_src }}/lotus-shed", dest: /usr/local/bin/lotus-shed }
+  tasks:
+    - name: Copy binaries
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: "0755"
+      loop: "{{ binary_paths }}"
+
+- hosts: faucet
+  become: true
+  vars:
+    binary_paths:
+      - { src: "{{ binary_src }}/lotus", dest: /usr/local/bin/lotus }
+      - { src: "{{ binary_src }}/lotus-shed", dest: /usr/local/bin/lotus-shed }
+      - { src: "{{ binary_src }}/lotus-fountain", dest: /usr/local/bin/lotus-fountain }
+  tasks:
+    - name: Copy binaries
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: "0755"
+      loop: "{{ binary_paths }}"
+
+- hosts: scratch
+  become: true
+  vars:
+    binary_paths:
+      - { src: "{{ binary_src }}/lotus", dest: /usr/local/bin/lotus }
+      - { src: "{{ binary_src }}/lotus-shed", dest: /usr/local/bin/lotus-shed }
+  tasks:
+    - name: Copy binaries
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: "0755"
+      loop: "{{ binary_paths }}"
+
+- hosts: lotus_daemon
+  become: true
+  tasks:
+    - name: reboot lotus daemon
+      service:
+        name: lotus-daemon
+        state: restarted
+
+- hosts: lotus_miner
+  become: true
+  tasks:
+    - name: reboot lotus miner
+      service:
+        name: lotus-miner
+        state: restarted
+
+- hosts: faucet
+  become: true
+  tasks:
+    - name: reboot lotus fountain
+      service:
+        name: lotus-fountain
+        state: restarted
