@@ -1,4 +1,4 @@
-name: Upgrade
+name: Upgrade Lotus Binaries
 
 on:
   workflow_dispatch:
@@ -24,8 +24,8 @@ jobs:
     timeout-minutes: 35
     env:
       LOTUS_BINARIES: 'lotus lotus-seed lotus-shed lotus-wallet lotus-gateway lotus-miner lotus-worker lotus-stats lotus-fountain'
-      LOTUS_REF: ${{ github.event.inputs.lotus_ref || 'master' }}
-      NETWORK: ${{ github.event.inputs.network || 'butterflynet'}}
+      LOTUS_REF: ${{ inputs.lotus_ref || 'master' }}
+      NETWORK: ${{ inputs.network || 'butterflynet'}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,7 +62,7 @@ jobs:
         shell: bash
         working-directory: ansible
         env:
-          DRY_RUN_FLAG: ${{ github.event.inputs.dry-run && '--check' }}
+          DRY_RUN_FLAG: ${{ inputs.dry-run && '--check' || '' }}
         run: |
           # Infer deploy network from network name to reduce unnecessary noise in actions inputs.
           DEPLOY_NETWORK=$(
