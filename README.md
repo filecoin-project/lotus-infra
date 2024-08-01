@@ -17,3 +17,13 @@ Aims to be non-opinionated and modular, allowing targeted provisioning and playb
 
 See `ansible/README.md` for more information
 
+## ArchiOz
+### Physical Infrastructure
+At least as of 2024-08-01, ArchiOz is single machine with these specs:
+- AMD EPYC 7F32 8-Core Processor
+- 512GiB of RAM
+- 7TiB of NVMe
+- 60TiB of HDD iirc (Currently not mounted)
+- RTX 2080 Ti
+
+It is physical hardware located in X that @rjan90 setup.
