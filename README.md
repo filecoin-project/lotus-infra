@@ -23,7 +23,7 @@ At least as of 2024-08-01, ArchiOz is single machine with these specs:
 - AMD EPYC 7F32 8-Core Processor
 - 512GiB of RAM
 - 2x3.5TiB NVMe (RAID0 on /mnt/nvmeraid0)
-- 4x16TiB HDDs (Currently not mounted, but can be found when running `lsblk` in the termina)
+- 4x16TiB HDDs (Currently not mounted, but can be found when running `lsblk` in the terminal)
 - RTX 2080 Ti
 
 It is physical hardware located in the [Basefarm OSL5](https://www.datacentermap.com/norway/oslo/basefarm-osl5/) datacenter that @rjan90 setup.
