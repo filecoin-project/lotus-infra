@@ -19,7 +19,7 @@ on:
 
 jobs:
   upgrade:
-#    runs-on: [ self-hosted, linux, x64, 2xlarge ]
+    runs-on: [ self-hosted, linux, x64, 2xlarge ]
     timeout-minutes: 10
     env:
       NETWORK: ${{ inputs.network || 'butterflynet'}}
