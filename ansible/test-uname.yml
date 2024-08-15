@@ -1,0 +1,14 @@
+---
+- name: Run uname -a on all machines
+  hosts: all
+  gather_facts: no
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+  tasks:
+    - name: Execute uname -a
+      command: uname -a
+      register: uname_output
+
+    - name: Display uname output
+      debug:
+        msg: "{{ uname_output.stdout }}"
