@@ -1,0 +1,55 @@
+# This is a quick way to test that ansible has all the access it needs to a given set of inventory hosts.
+name: Test access to all machines
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "Network:"
+        default: "butterflynet"
+        type: choice
+        options:
+          - butterflynet
+          - calibnet
+      dry-run:
+        description: "Dry-run changes?"
+        type: boolean
+        default: true
+
+jobs:
+  upgrade:
+    runs-on: [ self-hosted, linux, x64, 2xlarge ]
+    timeout-minutes: 10
+    env:
+      NETWORK: ${{ inputs.network || 'butterflynet'}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Lotus Ansible Prepare
+        uses: ./.github/actions/lotus-ansible-prepare
+        with:
+          branch: "main"
+          PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+      - name: Run uname -a on all machines
+        shell: bash
+        working-directory: ansible
+        env:
+          DRY_RUN_FLAG: ${{ inputs.dry-run && '--check' || '' }}
+        run: |
+          # Infer deploy network from network name to reduce unnecessary noise in actions inputs.
+          DEPLOY_NETWORK=$(
+            case ${{ env.NETWORK }} in
+            butterflynet) printf 'butterfly.fildev.network' ;;
+            calibnet) printf 'calibration.fildev.network' ;;
+            *) echo 'Unknown network: ${{ env.NETWORK }}' >&2; exit 1 ;;
+            esac
+          )
+          
+          ansible-playbook -i inventories/${DEPLOY_NETWORK}/hosts.yml \
+          ${{ env.DRY_RUN_FLAG }} \
+          test-uname.yml
