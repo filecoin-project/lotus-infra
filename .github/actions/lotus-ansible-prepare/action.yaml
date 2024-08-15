@@ -7,6 +7,9 @@ inputs:
   PRIVATE_SSH_KEY:
     description: "Private SSH Key used to connect to the network"
     required: true
+  ANOTHER_PRIVATE_SSH_KEY:
+    description: "Private SSH Key used to connect to the network"
+    required: true
   AWS_ACCESS_KEY_ID:
     description: "AWS Access Key ID"
     required: true
@@ -37,7 +40,7 @@ runs:
     - name: Setup ssh-agent
       uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
       with:
-        ssh-private-key: ${{ secrets.EC2_SSH_KEY_F3 }}
+        ssh-private-key: ${{ inputs.ANOTHER_PRIVATE_SSH_KEY }}
 
     - name: Configure SSH - use Ubuntu user and do not check host key
       shell: bash

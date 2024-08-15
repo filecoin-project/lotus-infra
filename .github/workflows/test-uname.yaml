@@ -2,7 +2,6 @@ name: Test access to all machines
 
 on:
   push:
-  pull_request:
   workflow_dispatch:
     inputs:
       network:
@@ -31,6 +30,7 @@ jobs:
         with:
           branch: "main"
           PRIVATE_SSH_KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+          ANOTHER_PRIVATE_SSH_KEY: ${{ secrets.EC2_SSH_KEY_F3 }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "us-east-1"
