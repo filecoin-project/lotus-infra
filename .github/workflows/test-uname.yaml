@@ -1,6 +1,7 @@
 name: Test access to all machines
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       network:
