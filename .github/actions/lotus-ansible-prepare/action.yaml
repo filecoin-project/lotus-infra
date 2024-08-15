@@ -5,10 +5,10 @@ inputs:
     description: "Lotus Branch or Tag"
     required: true
   PRIVATE_SSH_KEY:
-    description: "Private SSH Key used to connect to the network"
+    description: "Private SSH Key used by GitHub bot"
     required: true
-  ANOTHER_PRIVATE_SSH_KEY:
-    description: "Private SSH Key used to connect to the network"
+  EC2_SSH_KEY:
+    description: "Private SSH Key used by EC2 instance spin-up"
     required: true
   AWS_ACCESS_KEY_ID:
     description: "AWS Access Key ID"
@@ -32,15 +32,15 @@ runs:
         echo "GOPATH=${GITHUB_WORKSPACE}/.go_workspace" >> $GITHUB_ENV
         echo "LOTUSROOT=${GITHUB_WORKSPACE}/.go_workspace/src/github.com/filecoin-project/lotus" >> $GITHUB_ENV
 
-    - name: Setup ssh-agent
+    - name: Setup ssh-agent for GitHub Bot SSH Key
       uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
       with:
         ssh-private-key: ${{ inputs.PRIVATE_SSH_KEY }}
 
-    - name: Setup ssh-agent
+    - name: Setup ssh-agent for EC2 SSH Key
       uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
       with:
-        ssh-private-key: ${{ inputs.ANOTHER_PRIVATE_SSH_KEY }}
+        ssh-private-key: ${{ inputs.EC2_SSH_KEY }}
 
     - name: Configure SSH - use Ubuntu user and do not check host key
       shell: bash

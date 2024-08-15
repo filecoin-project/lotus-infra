@@ -4,6 +4,10 @@ A repository holding Lotus related infrastructure
 
 ## Terraform
 
+The keypair used to spin up EC2 instances is set to `lotus-infra-ec2`. This key is added to 1Password at `Infra` vault, `lotus-infra-ec2 SSH Key` secret.
+
+The SSH private key is also present as CI secrets under `EC2_SSH_KEY`.
+
 ### Calibration and Butterfly Networks  
 
 Located in `terraform/testnets` this manages AWS assets for Calibration and Butterfly Network core infrastructure.

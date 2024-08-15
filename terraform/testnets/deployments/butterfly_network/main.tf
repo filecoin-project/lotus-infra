@@ -24,7 +24,7 @@ module "butterflynet" {
   name                        = "butterfly"
   zone_id                     = aws_route53_zone.fildev_domain.id
   ami                         = "ami-06aa3f7caf3a30282"
-  key_name                    = "filoz-admin"
+  key_name                    = "lotus-infra-ec2"
   vpc_id                      = module.fildev_network_vpc.vpc_id
   environment                 = "prod"
   toolshed_count              = 2
