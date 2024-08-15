@@ -2,6 +2,7 @@ name: Test access to all machines
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
     inputs:
       network:
