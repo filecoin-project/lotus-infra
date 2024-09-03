@@ -1,11 +1,8 @@
 name: "Lotus Ansible Reset"
 description: "Composite action to reset Lotus using Ansible"
 inputs:
-  install_network:
-    description: "Install network"
-    required: true
-  deploy_network:
-    description: "Deploy network"
+  network:
+    description: "The network to reset, one of 'butterflynet', or 'calibnet' "
     required: true
   preseal:
     description: "Preseal"
@@ -28,14 +25,14 @@ inputs:
     required: false
     default: "0"
   check:
-    description: "Check"
+    description: "Dry-run ansible"
     required: false
     default: "true"
 
 runs:
   using: "composite"
   steps:
-    - name: Check Env
+    - name: Check environment
       shell: bash
       run: |
         if [ -z "$GOPATH" ]; then
@@ -46,24 +43,32 @@ runs:
           echo "::error::LOTUSROOT is not set"
           exit 1
         fi
-
+    - name: Setup environment variables
+      shell: bash
+      run: |
+        # Infer deploy network from network name to reduce unnecessary noise in actions inputs.
+        DEPLOY_NETWORK=$(
+          case ${{ inputs.network }} in
+          butterflynet) printf 'butterfly.fildev.network' ;;
+          calibnet) printf 'calibration.fildev.network' ;;
+          *) echo 'Unknown network: ${{ env.NETWORK }}' >&2; exit 1 ;;
+          esac
+        )
+        echo "DEPLOY_NETWORK=${DEPLOY_NETWORK}" >> $GITHUB_ENV
     - name: Install Lotus Software
       shell: bash
       working-directory: ${{ env.LOTUSROOT }}
-      env:
-        INSTALL_NETWORK: ${{ inputs.install_network }}
       run: |
         sudo apt-get update
         sudo apt-get install -y libhwloc-dev ocl-icd-opencl-dev pkg-config
         sudo ln -s /usr/lib/x86_64-linux-gnu/libhwloc.so.15 /usr/lib/x86_64-linux-gnu/libhwloc.so.5
-        GOFLAGS+=-tags=${INSTALL_NETWORK} make lotus-shed lotus-seed
+        GOFLAGS+=-tags=${{ inputs.network }} make lotus-shed lotus-seed
         sudo install -o root -g root -m 0755 ./lotus-seed ./lotus-shed /usr/local/bin
 
-    - name: Ansible Reset ${{ inputs.deploy_network }}
+    - name: Ansible Reset ${{ inputs.network }}
       shell: bash
       working-directory: ansible
       env:
-        DEPLOY_NETWORK: ${{ inputs.deploy_network }}
         BUILD_FLAGS: ${{ inputs.build_flags }}
         DELAY: ${{ inputs.delay }}
         RESET: ${{ inputs.reset }}
@@ -90,8 +95,6 @@ runs:
       if: ${{ inputs.check == 'false' }}
       shell: bash
       working-directory: ansible
-      env:
-        DEPLOY_NETWORK: ${{ inputs.deploy_network }}
       run: |
         ansible -i inventories/${DEPLOY_NETWORK}/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
 
@@ -99,8 +102,6 @@ runs:
       if: ${{ inputs.check == 'false' }}
       shell: bash
       working-directory: ansible
-      env:
-        DEPLOY_NETWORK: ${{ inputs.deploy_network }}
       run: |
         ansible -i inventories/${DEPLOY_NETWORK}/hosts.yml -b -m reboot all
 
