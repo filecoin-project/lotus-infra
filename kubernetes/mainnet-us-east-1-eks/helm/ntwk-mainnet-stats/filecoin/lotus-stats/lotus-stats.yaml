@@ -1,7 +1,0 @@
-image:
-  tag: mainnet-v1.18.0
-
-height: 0
-lotusApiInfo: /dns/api-lotus-daemon.ntwk-mainnet-api.svc.cluster.local/tcp/1234
-
-influxDatabase: chainstats-ntwk-mainnet
