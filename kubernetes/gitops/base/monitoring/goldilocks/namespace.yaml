@@ -1,4 +1,0 @@
-namespace:
-- kind: HelmRelease
-  path: spec/chart/spec/sourceRef/namespace
-  create: true
