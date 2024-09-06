@@ -12,8 +12,14 @@
     group: "{{ lotus_user }}"
     system: yes
 
-- name: Ensure login user is added group
+- name: Get groups for ansible_user
+  command: "groups {{ ansible_user }}"
+  register: user_groups
+  changed_when: false
+
+- name: Ensure login user is added to lotus group
   user:
     name: "{{ ansible_user }}"
+    groups: "{{ lotus_user }},{{ user_groups.stdout.split() | join(',') }}"
     append: yes
-    groups: "{{ lotus_user }}"
+  when: lotus_user not in user_groups.stdout.split()
