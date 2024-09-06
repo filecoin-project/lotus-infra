@@ -6,7 +6,7 @@ This runbook is intended for maintainers of the Lotus-Infra repo and provides in
 
 ## General Information
 
-- A list of hosts for the Butterfly network infrastructure and their roles can be found [here](https://github.com/filecoin-project/lotus-infra/blob/master/ansible/inventories/butterfly.fildev.network/hosts.yml).
+- A list of hosts for the Butterfly network infrastructure and their roles can be found [here](https://github.com/filecoin-project/lotus-infra/blob/main/ansible/inventories/butterfly.fildev.network/hosts.yml).
 - The instances running the Butterfly network infrastructure are in the FilOz AWS account. FilOz members can get credentials to log in and confirm that these are running in their 1Password account.
 
 ## Resetting the Butterfly network
