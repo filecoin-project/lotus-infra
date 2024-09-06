@@ -10,7 +10,6 @@ on:
         type: choice
         options:
           - butterflynet
-          - calibnet
       dry-run:
         description: "Dry-run changes?"
         type: boolean
@@ -45,7 +44,6 @@ jobs:
           DEPLOY_NETWORK=$(
             case ${{ env.NETWORK }} in
             butterflynet) printf 'butterfly.fildev.network' ;;
-            calibnet) printf 'calibration.fildev.network' ;;
             *) echo 'Unknown network: ${{ env.NETWORK }}' >&2; exit 1 ;;
             esac
           )

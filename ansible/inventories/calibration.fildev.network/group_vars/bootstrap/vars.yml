@@ -1,6 +1,0 @@
-lotus_daemon_profile: "bootstrapper"
-lotus_drand_peers: |
-  /dnsaddr/api.drand.sh/
-  /dnsaddr/api2.drand.sh/
-  /dnsaddr/api3.drand.sh/
-lotus_drand_bootstrap: true

@@ -2,7 +2,7 @@
 
 ## Summary
 
-This runbook is intented for maintainers of the Lotus-Infra repo, and provides instructions on how to swap binaries across the calib/butterfly network with ones built from a given commit sha.
+This runbook is intented for maintainers of the Lotus-Infra repo, and provides instructions on how to swap binaries across the butterfly network with ones built from a given commit sha.
 
 ## General Information
 
@@ -22,4 +22,4 @@ A list of hosts for the butterfly network infrastructure and their roles can be 
 
 Confirm that the workflow completes successfully, and proceed with the actual Butterfly network reset.
 
-By following these steps, you can ensure that the binaries for Calibration/Butterfly network is swapped out easily. The whole workflow should take approximately 10 minutes. 
+By following these steps, you can ensure that the binaries for Butterfly network is swapped out easily. The whole workflow should take approximately 10 minutes. 

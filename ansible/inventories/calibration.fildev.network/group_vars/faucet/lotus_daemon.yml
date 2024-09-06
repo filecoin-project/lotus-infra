@@ -1,2 +1,0 @@
-lotus_wallet_keyinfo: "{{ vault_lotus_wallet_keyinfo }}"
-lotus_wallet_address: "{{ vault_lotus_wallet_address }}"

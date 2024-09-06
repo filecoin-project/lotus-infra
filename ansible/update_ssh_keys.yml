@@ -1,6 +1,6 @@
 ---
 # This playbook asserts that for a given inventory all configured authorized keys are applied.
-# Run it by running the command below having replaced <network-name> with either "butterfly" or "calibration":
+# Run it by running the command below having replaced <network-name> with "butterfly":
 #
 #  $ ansible-playbook -i inventories/<network-name>.fildev.network/hosts.yml update_ssh_keys.yml
 #
