@@ -1,8 +1,15 @@
+- name: Ensure lotus group exists
+  group:
+    name: "{{ lotus_user }}"
+    state: present
+    gid: "{{ lotus_user_uid }}"
+
 - name: Ensure lotus user exists
   user:
     name: "{{ lotus_user }}"
     state: present
     uid: "{{ lotus_user_uid }}"
+    group: "{{ lotus_user }}"
     system: yes
 
 - name: Ensure login user is added group
