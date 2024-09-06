@@ -14,9 +14,6 @@ while [ "$1" != "" ]; do
                                 ;;
         -c | --create-cert )    cert=true
                                 ;;
-        -b | --build-flags )    shift
-                                buildflags="$1"
-                                ;;
         -r | --reset )          reset=true
                                 ;;
         --delay )               shift
@@ -43,12 +40,15 @@ hostfile="inventories/${network}/hosts.yml"
 generate_new_keys="${reset:-"false"}"
 network_name="${network%%.*}net"
 create_certificate="${cert:-"false"}"
-build_flags="${buildflags:-""}"
 genesis_delay="${delay:-"600"}"
 # genesis_timestamp="2021-06-19T00:00:00Z"
-lotus_src="${src:-"$GOPATH/src/github.com/filecoin-project/lotus"}"
+lotus_src="${src:-"${LOTUSROOT}"}"
 start_services="${start_services:-"true"}"
 check_mode="${check:-"false"}"
+
+lotus-shed() {
+    ${lotus_src}/lotus-shed "$@"
+}
 
 # gets a list of all the hostnames for the preminers
 miners=( $(ansible-inventory -i $hostfile --list | jq -r '.preminer.children[] as $miner | .[$miner].children[0] as $group | .[$group].hosts[]') )
@@ -141,32 +141,14 @@ faucet_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_fountain_add
 pcr_addr=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ lotus_wallet_address }}"' pcr | sed 's/.*=>//' | jq -r '.msg')
 additional_accounts=$(ansible -o -i $hostfile -b -m debug -a 'msg="{{ additional_account_balance }}"' preminer0 | sed 's/.*=>//' | jq -r '.msg')
 
-#ssh ubuntu@192.168.1.240 bash -c "'
-#git -C /home/ubuntu/src/github.com/filecoin-project/lotus fetch black
-#git -C /home/ubuntu/src/github.com/filecoin-project/lotus checkout v0.5.0
-#pushd /home/ubuntu/src/github.com/filecoin-project/lotus-infra
-#./scripts/build_binaries.bash -f -s /home/ubuntu/src/github.com/filecoin-project/lotus
-#popd
-#'"
-
-#pushd $lotus_src/intel
-#rm -rf lotus lotus-miner lotus-shed lotus-seed
-#scp ubuntu@192.168.1.240:/home/ubuntu/src/github.com/filecoin-project/lotus/lotus .
-#scp ubuntu@192.168.1.240:/home/ubuntu/src/github.com/filecoin-project/lotus/lotus-miner .
-#scp ubuntu@192.168.1.240:/home/ubuntu/src/github.com/filecoin-project/lotus/lotus-seed .
-#scp ubuntu@192.168.1.240:/home/ubuntu/src/github.com/filecoin-project/lotus/lotus-shed .
-#popd
-
-../scripts/build_binaries.bash --src "$lotus_src" ${build_flags} --network $network_flag
-
 # runs all the roles
 ansible-playbook -i $hostfile lotus_devnet_provision.yml                                           \
-    -e lotus_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus"                      \
-    -e lotus_miner_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-miner"          \
-    -e lotus_shed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-shed"            \
-    -e lotus_seed_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-seed"            \
-    -e lotus_pcr_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-pcr"              \
-    -e lotus_fountain_binary_src="$GOPATH/src/github.com/filecoin-project/lotus/lotus-fountain"    \
+    -e lotus_binary_src="${LOTUSROOT}/lotus"                      \
+    -e lotus_miner_binary_src="${LOTUSROOT}/lotus-miner"          \
+    -e lotus_shed_binary_src="${LOTUSROOT}/lotus-shed"            \
+    -e lotus_seed_binary_src="${LOTUSROOT}/lotus-seed"            \
+    -e lotus_pcr_binary_src="${LOTUSROOT}/lotus-pcr"              \
+    -e lotus_fountain_binary_src="${LOTUSROOT}/lotus-fountain"    \
     -e lotus_reset=yes -e lotus_miner_reset=yes -e lotus_pcr_reset=yes          \
     -e certbot_create_certificate=${create_certificate}                                            \
     --diff "${ansible_args[@]}"
@@ -242,7 +224,7 @@ popd
 
 # copy the genesis and start up all the services
 ansible-playbook -i $hostfile lotus_devnet_start.yml                                                     \
-    -e lotus_genesis_src="$GOPATH/src/github.com/filecoin-project/lotus/build/genesis/$network_flag.car" \
+    -e lotus_genesis_src="${LOTUSROOT}/build/genesis/$network_flag.car" \
     -e start_services="${start_services}" "${ansible_args[@]}"
 
 set +x
