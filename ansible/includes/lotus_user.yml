@@ -1,8 +1,17 @@
+- name: Debug - Show lotus_user value
+  debug:
+    var: lotus_user
+
+- name: Debug - Show lotus_user_uid value
+  debug:
+    var: lotus_user_uid
+
 - name: Ensure lotus group exists
   group:
     name: "{{ lotus_user }}"
     state: present
     gid: "{{ lotus_user_uid }}"
+  become: yes
 
 - name: Ensure lotus user exists
   user:
@@ -11,6 +20,7 @@
     uid: "{{ lotus_user_uid }}"
     group: "{{ lotus_user }}"
     system: yes
+  become: yes
 
 - name: Get groups for ansible_user
   command: "groups {{ ansible_user }}"
@@ -18,12 +28,9 @@
   changed_when: false
   check_mode: no
 
-- name: Verify lotus group exists
-  command: "getent group {{ lotus_user }}"
-  register: group_check
-  changed_when: false
-  failed_when: false
-  check_mode: no
+- name: Debug - Show user_groups result
+  debug:
+    var: user_groups
 
 - name: Debug - Show group_check result
   debug:
@@ -42,7 +49,8 @@
 - name: Ensure login user is added to lotus group
   user:
     name: "{{ ansible_user }}"
-    groups: "{{ lotus_user }},{{ user_groups.stdout.split() | join(',') }}"
+    groups: "{{ lotus_user }}"
     append: yes
+  become: yes
   when: lotus_user not in user_groups.stdout.split()
 
