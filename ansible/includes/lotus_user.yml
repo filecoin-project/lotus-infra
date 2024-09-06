@@ -23,6 +23,19 @@
   changed_when: false
   failed_when: group_check.rc != 0
 
+- name: Debug - Show all groups
+  command: "getent group"
+  register: all_groups
+  changed_when: false
+
+- name: Debug - Show group_check result
+  debug:
+    var: group_check
+
+- name: Debug - Show all groups
+  debug:
+    var: all_groups.stdout_lines
+
 - name: Ensure login user is added to lotus group
   user:
     name: "{{ ansible_user }}"
