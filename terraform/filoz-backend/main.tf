@@ -16,8 +16,11 @@ resource "aws_dynamodb_table" "filecoin_terraform_state" {
 
 resource "aws_s3_bucket" "filecoin_terraform_state" {
   bucket = "filoz-terraform-state"
+}
 
-  versioning {
-    enabled = true
+resource "aws_s3_bucket_versioning" "filecoin_terraform_state" {
+  bucket = aws_s3_bucket.filecoin_terraform_state.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
