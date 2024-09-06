@@ -2,7 +2,7 @@ name: "Lotus Ansible Reset"
 description: "Composite action to reset Lotus using Ansible"
 inputs:
   network:
-    description: "The network to reset, one of 'butterflynet', or 'calibnet' "
+    description: "The network to reset, e.g. 'butterflynet'"
     required: true
   preseal:
     description: "Preseal"
@@ -50,7 +50,6 @@ runs:
         DEPLOY_NETWORK=$(
           case ${{ inputs.network }} in
           butterflynet) printf 'butterfly.fildev.network' ;;
-          calibnet) printf 'calibration.fildev.network' ;;
           *) echo 'Unknown network: ${{ env.NETWORK }}' >&2; exit 1 ;;
           esac
         )

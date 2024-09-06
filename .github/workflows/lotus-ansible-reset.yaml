@@ -9,7 +9,6 @@ on:
         type: choice
         options:
           - butterflynet
-          - calibnet
       lotus_ref:
         description: "Lotus git ref:"
         default: "master"

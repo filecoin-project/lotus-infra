@@ -43,36 +43,3 @@ module "butterflynet" {
   private_subnet_id           = module.fildev_network_vpc.database_subnets[0]
   private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[0]
 }
-
-/*
-module "calibrationnet" {
-  source = "../../modules/devnet"
-  providers = {
-    aws = aws.us-east-1
-  }
-  name                        = "calibration"
-  zone_id                     = aws_route53_zone.fildev_domain.id
-  ami                         = "ami-053bc2e89490c5ab7"
-  key_name                    = "filecoin-mainnet"
-  vpc_id                      = module.fildev_network_vpc.vpc_id
-  environment                 = "prod"
-  toolshed_count              = 2
-  bootstrapper_count          = 4
-  preminer_count              = 3
-  scratch_count               = 2
-  toolshed_instance_type      = "m5a.xlarge"
-  preminer_instance_type      = "p3.2xlarge"
-  preminer_volume_size        = 1200
-  bootstrapper_volume_size    = 1000
-  scratch_volume_size         = 1000
-  toolshed_volume_size        = 1000
-  bootstrapper_instance_type  = "m5a.xlarge"
-  scratch_instance_type       = "m5a.xlarge"
-  preminer_iam_profile        = aws_iam_instance_profile.sectors.id
-  database_subnet_group       = module.fildev_network_vpc.database_subnet_group
-  public_subnet_id            = module.fildev_network_vpc.public_subnets[0]
-  public_subnet_cidr          = module.fildev_network_vpc.public_subnets_cidr_blocks[0]
-  private_subnet_id           = module.fildev_network_vpc.database_subnets[0]
-  private_subnet_cidr         = module.fildev_network_vpc.database_subnets_cidr_blocks[0]
-}
-*/

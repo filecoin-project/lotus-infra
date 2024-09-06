@@ -8,9 +8,9 @@ The keypair used to spin up EC2 instances is set to `lotus-infra-ec2`. This key 
 
 The SSH private key is also present as CI secrets under `EC2_SSH_KEY`.
 
-### Calibration and Butterfly Networks  
+### Butterfly Networks  
 
-Located in `terraform/testnets` this manages AWS assets for Calibration and Butterfly Network core infrastructure.
+Located in `terraform/testnets` this manages AWS assets for Butterfly Network core infrastructure.
 It's recommended to install [asdf](https://github.com/asdf-vm/asdf) and the [terraform plugin](https://github.com/asdf-community/asdf-hashicorp) locally, for proper terraform version management.
 
 ## Ansible
