@@ -1,3 +1,0 @@
-variable "machines" {
-  type = list
-}
