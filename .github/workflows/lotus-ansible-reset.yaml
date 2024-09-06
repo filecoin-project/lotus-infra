@@ -13,14 +13,18 @@ on:
         description: "Lotus git ref:"
         default: "master"
       dry-run:
-        description: "Dry-run changes?"
+        description: "Dry-run changes"
         type: boolean
         default: true
+      verbose:
+        description: "Verbose ansible output"
+        type: boolean
+        default: false
 
 jobs:
   check:
     runs-on: [ self-hosted, linux, x64, 2xlarge ]
-    timeout-minutes: 35
+    timeout-minutes: 60
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,7 +46,7 @@ jobs:
           network: ${{ inputs.network }}
           preseal: "true"
           create_cert: "true"
-          build_flags: ""
           reset: "true"
           delay: "0"
           check: ${{ inputs.dry-run }}
+          verbose: ${{ inputs.verbose }}

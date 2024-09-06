@@ -12,10 +12,6 @@ inputs:
     description: "Create certificate"
     required: false
     default: "true"
-  build_flags:
-    description: "Build flags"
-    required: false
-    default: "-f"
   reset:
     description: "Reset"
     required: false
@@ -28,6 +24,10 @@ inputs:
     description: "Dry-run ansible"
     required: false
     default: "true"
+  verbose:
+    description: "Verbose ansible output"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -35,17 +35,19 @@ runs:
     - name: Check environment
       shell: bash
       run: |
-        if [ -z "$GOPATH" ]; then
-          echo "::error::GOPATH is not set"
-          exit 1
-        fi
         if [ -z "$LOTUSROOT" ]; then
           echo "::error::LOTUSROOT is not set"
           exit 1
         fi
-    - name: Setup environment variables
+    - name: Set environment variables
       shell: bash
+      working-directory: ${{ env.LOTUSROOT }}
       run: |
+        # Set LOTUS_REF env var to the short commit sha of lotus being deployed.
+        LOTUS_REF="$(git log --pretty=tformat:"%h" -n1 .)"
+        echo "LOTUS_REF=${LOTUS_REF}" >> $GITHUB_ENV
+        echo "LOTUS_REF: ${LOTUS_REF}"
+        
         # Infer deploy network from network name to reduce unnecessary noise in actions inputs.
         DEPLOY_NETWORK=$(
           case ${{ inputs.network }} in
@@ -54,38 +56,73 @@ runs:
           esac
         )
         echo "DEPLOY_NETWORK=${DEPLOY_NETWORK}" >> $GITHUB_ENV
-    - name: Install Lotus Software
+        echo "DEPLOY_NETWORK: ${DEPLOY_NETWORK}"
+        echo "NETWORK=${{ inputs.network }}" >> $GITHUB_ENV
+        echo "NETWORK: ${NETWORK}"
+    - name: Install libhwloc
       shell: bash
-      working-directory: ${{ env.LOTUSROOT }}
       run: |
         sudo apt-get update
-        sudo apt-get install -y libhwloc-dev ocl-icd-opencl-dev pkg-config
+        sudo apt-get install -y libhwloc-dev
         sudo ln -s /usr/lib/x86_64-linux-gnu/libhwloc.so.15 /usr/lib/x86_64-linux-gnu/libhwloc.so.5
-        GOFLAGS+=-tags=${{ inputs.network }} make lotus-shed lotus-seed
-        sudo install -o root -g root -m 0755 ./lotus-seed ./lotus-shed /usr/local/bin
-
+    - name: Restore Cached Built Lotus Binaries for ${{ env.LOTUS_REF }}
+      uses: actions/cache/restore@v4
+      id: cache-lotus-binaries
+      with:
+        path: "${{ env.LOTUSROOT }}/lotus*"
+        key: lotus-${{ env.LOTUS_REF }}
+    - name: Set up Docker Buildx
+      if: ${{ steps.cache-lotus-binaries.outputs.cache-hit != 'true' }}
+      uses: docker/setup-buildx-action@v3
+    - name: Build Lotus ${{ env.LOTUS_REF }} for ${{ env.NETWORK }}
+      id: build
+      if: ${{ steps.cache-lotus-binaries.outputs.cache-hit != 'true' }}
+      uses: docker/build-push-action@v6
+      with:
+        context: ${{ env.LOTUSROOT }}
+        push: false
+        load: true
+        build-args: |
+          GOFLAGS=-tags=${{ env.NETWORK }}
+    - name: Copy binaries from built container
+      if: ${{ steps.cache-lotus-binaries.outputs.cache-hit != 'true' }}
+      shell: bash
+      env:
+        LOTUS_BINARIES: 'lotus lotus-seed lotus-shed lotus-wallet lotus-gateway lotus-miner lotus-worker lotus-stats lotus-fountain'
+      working-directory: ${{ env.LOTUSROOT }}
+      run: |
+        docker create --name built_binaries ${{ steps.build.outputs.imageid }}
+        for binary in ${{ env.LOTUS_BINARIES }}; do
+          docker cp built_binaries:/usr/local/bin/${binary} .
+          ./${binary} -v
+        done
+        docker rm built_binaries
+    - name: Save Cache Built Lotus Binaries for ${{ env.LOTUS_REF }}
+      uses: actions/cache/save@v4
+      with:
+        path: "${{ env.LOTUSROOT }}/lotus*"
+        key: ${{ steps.cache-lotus-binaries.outputs.cache-primary-key }}
     - name: Ansible Reset ${{ inputs.network }}
       shell: bash
       working-directory: ansible
       env:
-        BUILD_FLAGS: ${{ inputs.build_flags }}
         DELAY: ${{ inputs.delay }}
         RESET: ${{ inputs.reset }}
         PRESEAL: ${{ inputs.preseal }}
         CREATE_CERT: ${{ inputs.create_cert }}
         CHECK: ${{ inputs.check }}
+        VERBOSE: ${{ inputs.verbose }}
       run: |
         args=(
           "-n" "${DEPLOY_NETWORK}"
           "-s" "${LOTUSROOT}"
-          "-b" "${BUILD_FLAGS}"
           "-d" "${DELAY}"
-          "--verbose"
         )
         [ "${RESET}" == "true" ] && args+=("-r")
         [ "${PRESEAL}" == "true" ] && args+=("-p")
         [ "${CREATE_CERT}" == "true" ] && args+=("-c")
         [ "${CHECK}" == "true" ] && args+=("--check")
+        [ "${VERBOSE}" == "true" ] && args+=("--verbose")
 
         export TERM=xterm
         echo | ./setup_fildev_network.bash --start-services false "${args[@]}"
