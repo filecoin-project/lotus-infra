@@ -17,9 +17,17 @@
   register: user_groups
   changed_when: false
 
+- name: Verify lotus group exists
+  command: "getent group {{ lotus_user }}"
+  register: group_check
+  changed_when: false
+  failed_when: group_check.rc != 0
+
 - name: Ensure login user is added to lotus group
   user:
     name: "{{ ansible_user }}"
     groups: "{{ lotus_user }},{{ user_groups.stdout.split() | join(',') }}"
     append: yes
-  when: lotus_user not in user_groups.stdout.split()
+  when: 
+    - lotus_user not in user_groups.stdout.split()
+    - group_check.rc == 0
