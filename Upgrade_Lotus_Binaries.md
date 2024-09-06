@@ -6,7 +6,7 @@ This runbook is intented for maintainers of the Lotus-Infra repo, and provides i
 
 ## General Information
 
-A list of hosts for the butterfly network infrastructure and their roles can be found [here](https://github.com/filecoin-project/lotus-infra/blob/master/ansible/inventories/butterfly.fildev.network/hosts.yml).
+A list of hosts for the butterfly network infrastructure and their roles can be found [here](https://github.com/filecoin-project/lotus-infra/blob/main/ansible/inventories/butterfly.fildev.network/hosts.yml).
 
 ## Upgrade Lotus Binaries
 
