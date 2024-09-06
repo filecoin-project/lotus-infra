@@ -22,18 +22,18 @@
   command: "getent group {{ lotus_user }}"
   register: group_check
   changed_when: false
-  failed_when: group_check.rc != 0
+  failed_when: false
   check_mode: no
+
+- name: Debug - Show group_check result
+  debug:
+    var: group_check
 
 - name: Debug - Show all groups
   command: "getent group"
   register: all_groups
   changed_when: false
   check_mode: no
-
-- name: Debug - Show group_check result
-  debug:
-    var: group_check
 
 - name: Debug - Show all groups
   debug:
@@ -44,6 +44,5 @@
     name: "{{ ansible_user }}"
     groups: "{{ lotus_user }},{{ user_groups.stdout.split() | join(',') }}"
     append: yes
-  when: 
-    - lotus_user not in user_groups.stdout.split()
-    - group_check.rc == 0
+  when: lotus_user not in user_groups.stdout.split()
+
