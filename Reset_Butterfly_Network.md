@@ -49,8 +49,12 @@ Confirm that the workflow completes successfully, and proceed with the actual Bu
 
 2. Extract the `lotus.tar` file inside of your downloaded `reset-artifacts`.
 
-3. Commit the new `genesis/butterflynet.car` file to `https://github.com/filecoin-project/lotus/tree/master/build/genesis`, replacing the old `butterflynet.car` file.
+3. Prepare `build/genesis/butterflynet.car`:
+   1. Remove built-in actors WASM compiles from the bundle *(install https://github.com/ipld/go-car/ for the `car` command)*: `car ls build/genesis/butterflynet.car | grep ^bafk2bz | car filter --inverse build/genesis/butterflynet.car butterflynet.car` - this will result in a new `butterflynet.car` in the current working directory.
+   2. Compress `butterflynet.car` with `zstd -19 butterflynet.car`.
 
-4. Commit the new `bootstrap/butterflynet.pi` file to `https://github.com/filecoin-project/lotus/tree/master/build/bootstrap`, replacing the old `butterflynet.pi` file.
+4. Commit the new `butterflynet.car.zst` file to `https://github.com/filecoin-project/lotus/tree/master/build/genesis` replacing the old `butterflynet.car.zst` file.
+
+5. Commit the new `bootstrap/butterflynet.pi` file to `https://github.com/filecoin-project/lotus/tree/master/build/bootstrap`, replacing the old `butterflynet.pi` file.
 
 👉 Example of a PR submitting the artifacts to [Lotus can be seen here](https://github.com/filecoin-project/lotus/pull/12266).
