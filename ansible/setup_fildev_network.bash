@@ -128,8 +128,11 @@ EOF
 
   pushd "$lotus_src"
     rm -f ./build/genesis/${network_flag}.car || true
-    # Override bootstrap.pi file even though it doesn't change in case we are deploying a Lotus branch that does not use dnsaddr link.
-    echo "/dnsaddr/bootstrap.${network}" > ./build/bootstrap/${network_flag}.pi
+    truncate -s 0 ./build/bootstrap/${network_flag}.pi
+
+    for multiaddr in ${bootstrap_multiaddrs[@]}; do
+      echo $multiaddr >> ./build/bootstrap/${network_flag}.pi
+    done
   popd
 
   read -p "Press enter to continue"
