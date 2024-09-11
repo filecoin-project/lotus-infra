@@ -123,13 +123,13 @@ EOF
   # generate multiaddrs for the bootstrap peers
   bootstrap_multiaddrs=( $(ansible -o -i $hostfile -b -m debug -a 'msg="/dns4/{{ ansible_host }}/tcp/{{ lotus_libp2p_port }}/p2p/{{ lotus_libp2p_address }}"' bootstrap | sed 's/.* =>//' | jq -r '.msg') )
 
+  # Update dnsaddr link to bootstrap peers
+  ../scripts/update_bootstrap_dnsaddrs.bash "${network_name}" "${bootstrap_multiaddrs[@]}"
+
   pushd "$lotus_src"
     rm -f ./build/genesis/${network_flag}.car || true
-    truncate -s 0 ./build/bootstrap/${network_flag}.pi
-
-    for multiaddr in ${bootstrap_multiaddrs[@]}; do
-      echo $multiaddr >> ./build/bootstrap/${network_flag}.pi
-    done
+    # Override bootstrap.pi file even though it doesn't change in case we are deploying a Lotus branch that does not use dnsaddr link.
+    echo "/dnsaddr/bootstrap.${network}" > ./build/bootstrap/${network_flag}.pi
   popd
 
   read -p "Press enter to continue"

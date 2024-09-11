@@ -55,6 +55,4 @@ Confirm that the workflow completes successfully, and proceed with the actual Bu
 
 4. Commit the new `butterflynet.car.zst` file to `https://github.com/filecoin-project/lotus/tree/master/build/genesis` replacing the old `butterflynet.car.zst` file.
 
-5. Commit the new `bootstrap/butterflynet.pi` file to `https://github.com/filecoin-project/lotus/tree/master/build/bootstrap`, replacing the old `butterflynet.pi` file.
-
 👉 Example of a PR submitting the artifacts to [Lotus can be seen here](https://github.com/filecoin-project/lotus/pull/12266).
