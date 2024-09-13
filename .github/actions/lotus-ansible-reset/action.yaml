@@ -134,6 +134,13 @@ runs:
       run: |
         ansible -i inventories/${DEPLOY_NETWORK}/hosts.yml -b -m file -a 'state=link src=/etc/nginx/sites-available/faucet.conf dest=/etc/nginx/sites-enabled/50-faucet.conf' faucet
 
+    - name: Expose Prometheus metrics
+      if: ${{ inputs.check == 'false' }}
+      shell: bash
+      working-directory: ansible
+      run: |
+        ansible-playbook -i inventories/${DEPLOY_NETWORK}/hosts.yml expose_metrics.yml
+
     - name: Restart Machines
       if: ${{ inputs.check == 'false' }}
       shell: bash
