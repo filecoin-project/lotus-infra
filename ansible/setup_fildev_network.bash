@@ -168,11 +168,11 @@ preseal_metadata=$(mktemp -d)
 ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata} --diff "${ansible_args[@]}"
 
 # Copy additional preseals to the temporary directory if they exist
-if [ -d "@additional_preseals" ] && [ "$(ls -A @additional_preseals)" ]; then
-  cp @additional_preseals/pre-seal-*.json ${preseal_metadata}/
+if [ -d "additional_preseals" ] && [ "$(ls -A additional_preseals)" ]; then
+  cp additional_preseals/pre-seal-*.json ${preseal_metadata}/
   echo "Copied additional preseals to ${preseal_metadata}"
 else
-  echo "No additional preseals found in @additional_preseals directory"
+  echo "No additional preseals found in additional_preseals directory"
 fi
 
 genpath=$(mktemp -d)
@@ -194,7 +194,9 @@ pushd "$lotus_src"
 
   # Add additional miners
   for preseal_file in ${preseal_metadata}/pre-seal-*.json; do
-    ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_file}"
+    if [ -f "$preseal_file" ]; then
+      ./lotus-seed genesis add-miner "${genpath}/genesis.json" "$preseal_file"
+    fi
   done
 
   jq --arg MinerBalance ${miners_balance}  '.Accounts[].Balance = $MinerBalance ' < "${genpath}/genesis.json" > ${genesistmp}
