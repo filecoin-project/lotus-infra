@@ -167,6 +167,8 @@ preseal_metadata=$(mktemp -d)
 # and then downloads the final sector metadata for each preminer
 ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata} --diff "${ansible_args[@]}"
 
+# Copy additional preseals to the temporary directory
+cp additional_preseals/pre-seal-*.json ${preseal_metadata}/
 
 genpath=$(mktemp -d)
 
@@ -183,6 +185,11 @@ pushd "$lotus_src"
 
   for m in "${miners[@]}"; do
     ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/${prepare_tmp}/presealed-metadata.json"
+  done
+
+  # Add additional miners
+  for preseal_file in ${preseal_metadata}/pre-seal-*.json; do
+    ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_file}"
   done
 
   jq --arg MinerBalance ${miners_balance}  '.Accounts[].Balance = $MinerBalance ' < "${genpath}/genesis.json" > ${genesistmp}
