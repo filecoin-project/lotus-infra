@@ -188,19 +188,32 @@ pushd "$lotus_src"
   ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
   ./lotus-seed genesis set-network-version "${genpath}/genesis.json"
 
+  # Add all miners (original and additional)
   for m in "${miners[@]}"; do
     ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/${prepare_tmp}/presealed-metadata.json"
   done
 
-  # Add additional miners
   for preseal_file in ${preseal_metadata}/pre-seal-*.json; do
     if [ -f "$preseal_file" ]; then
       ./lotus-seed genesis add-miner "${genpath}/genesis.json" "$preseal_file"
     fi
   done
 
-  jq --arg MinerBalance ${miners_balance}  '.Accounts[].Balance = $MinerBalance ' < "${genpath}/genesis.json" > ${genesistmp}
+  # Set balance for all miner accounts
+  jq --arg MinerBalance ${miners_balance} '
+    .Accounts |= map(
+      if .Type == "miner" then
+        .Balance = $MinerBalance
+      else
+        .
+      end
+    )
+  ' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
+
+  # Print miner accounts and balances for verification
+  echo "Miner accounts and balances:"
+  jq '.Accounts[] | select(.Type == "miner") | {Owner: .Meta.Owner, Balance: .Balance}' "${genpath}/genesis.json"
 
   if [ -f "${genpath}/multisig.csv" ]; then
     ./lotus-seed genesis add-msigs "${genpath}/genesis.json" "${genpath}/multisig.csv"
@@ -219,10 +232,6 @@ pushd "$lotus_src"
 
   jq --arg VerifyKey ${verifreg_rootkey} '.VerifregRootKey.Meta.Signers = [$VerifyKey] ' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
-
-  # Provide the PCR service the same balance as the faucet
-  # jq --arg Owner ${pcr_addr} --arg Balance ${faucet_balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
-  # mv ${genesistmp} "${genpath}/genesis.json"
 
   while read -r addr balance; do
     if [ -z "${addr}" ]; then
