@@ -167,8 +167,13 @@ preseal_metadata=$(mktemp -d)
 # and then downloads the final sector metadata for each preminer
 ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata} --diff "${ansible_args[@]}"
 
-# Copy additional preseals to the temporary directory
-cp additional_preseals/pre-seal-*.json ${preseal_metadata}/
+# Copy additional preseals to the temporary directory if they exist
+if [ -d "@additional_preseals" ] && [ "$(ls -A @additional_preseals)" ]; then
+  cp @additional_preseals/pre-seal-*.json ${preseal_metadata}/
+  echo "Copied additional preseals to ${preseal_metadata}"
+else
+  echo "No additional preseals found in @additional_preseals directory"
+fi
 
 genpath=$(mktemp -d)
 
