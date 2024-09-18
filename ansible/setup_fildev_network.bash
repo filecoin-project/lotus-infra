@@ -201,6 +201,8 @@ pushd "$lotus_src"
 
   echo "All miners to be added: ${all_miners[@]}"
 
+# ... (previous code remains unchanged)
+
   # Add all miners (original and additional) to genesis
   for miner in "${all_miners[@]}"; do
       preseal_file="${preseal_metadata}/${miner}/${prepare_tmp}/presealed-metadata.json"
@@ -216,28 +218,67 @@ pushd "$lotus_src"
       fi
   done
 
+  echo "Debugging: Checking genesis file structure"
+  jq '.' "${genpath}/genesis.json" | head -n 20
+
+  echo "Debugging: Checking for top-level keys"
+  jq 'keys' "${genpath}/genesis.json"
+
   echo "Miners in genesis before balance update:"
-  jq '.Actors[] | select(.Code == "storageminer") | .ID' "${genpath}/genesis.json"
+  jq '
+    if has("Actors") then
+      .Actors[] | select(.Code == "storageminer") | .ID
+    elif has("Miners") then
+      .Miners[] | .ID
+    else
+      "No miners found in expected structure"
+    end
+  ' "${genpath}/genesis.json"
 
   # Set balance for all miner accounts and miner owner accounts
-  jq --arg MinerBalance ${miners_balance} '
-    .Accounts |= map(
-      if .Type == "miner" or
-         (.Type == "account" and (.Meta.Owner | test("^f[03]"))) then
+  jq --arg MinerBalance "${miners_balance}" '
+    if has("Actors") then
+      .Accounts |= map(
+        if .Type == "miner" or
+           (.Type == "account" and (.Meta.Owner | test("^f[03]"))) then
+          .Balance = $MinerBalance
+        else
+          .
+        end
+      )
+    elif has("Miners") then
+      .Miners |= map(
         .Balance = $MinerBalance
-      else
-        .
-      end
-    )
-  ' < "${genpath}/genesis.json" > ${genesistmp}
-  mv ${genesistmp} "${genpath}/genesis.json"
+      ) |
+      .Accounts |= map(
+        if .Type == "account" and (.Meta.Owner | test("^f[03]")) then
+          .Balance = $MinerBalance
+        else
+          .
+        end
+      )
+    else
+      .
+    end
+  ' < "${genpath}/genesis.json" > "${genesistmp}"
+  mv "${genesistmp}" "${genpath}/genesis.json"
 
   # Print miner accounts and balances for verification
   echo "Miner accounts and balances after update:"
-  jq '.Accounts[] | select(.Type == "miner") | {ID: .ID, Owner: .Meta.Owner, Balance: .Balance}' "${genpath}/genesis.json"
+  jq '
+    if has("Actors") then
+      .Accounts[] | select(.Type == "miner") | {ID: .ID, Owner: .Meta.Owner, Balance: .Balance}
+    elif has("Miners") then
+      .Miners[] | {ID: .ID, Owner: .Owner, Balance: .Balance}
+    else
+      "No miners found in expected structure"
+    end
+  ' "${genpath}/genesis.json"
 
   echo "Miner owner accounts and balances after update:"
   jq '.Accounts[] | select(.Type == "account" and (.Meta.Owner | test("^f[03]"))) | {Owner: .Meta.Owner, Balance: .Balance}' "${genpath}/genesis.json"
+
+# ... (rest of the script remains unchanged)
 
   if [ -f "${genpath}/multisig.csv" ]; then
     ./lotus-seed genesis add-msigs "${genpath}/genesis.json" "${genpath}/multisig.csv"
