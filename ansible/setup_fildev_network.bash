@@ -188,36 +188,47 @@ pushd "$lotus_src"
   ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
   ./lotus-seed genesis set-network-version "${genpath}/genesis.json"
 
-  # Add all miners (original and additional)
-  for m in "${miners[@]}"; do
-    ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/${prepare_tmp}/presealed-metadata.json"
-  done
-
+  # Combine original miners and additional preseals
+  all_miners=("${miners[@]}")
   for preseal_file in ${preseal_metadata}/pre-seal-*.json; do
-    if [ -f "$preseal_file" ]; then
-      ./lotus-seed genesis add-miner "${genpath}/genesis.json" "$preseal_file"
-    fi
+      if [ -f "$preseal_file" ]; then
+          miner_id=$(basename "$preseal_file" .json | sed 's/pre-seal-//')
+          all_miners+=("$miner_id")
+      fi
   done
 
-# Set balance for all miner accounts and miner owner accounts
-jq --arg MinerBalance ${miners_balance} '
-  .Accounts |= map(
-    if .Type == "miner" or
-       (.Type == "account" and (.Meta.Owner | startswith("f3"))) then
-      .Balance = $MinerBalance
-    else
-      .
-    end
-  )
-' < "${genpath}/genesis.json" > ${genesistmp}
-mv ${genesistmp} "${genpath}/genesis.json"
+  # Add all miners (original and additional) to genesis
+  for miner in "${all_miners[@]}"; do
+      preseal_file="${preseal_metadata}/${miner}/${prepare_tmp}/presealed-metadata.json"
+      if [ ! -f "$preseal_file" ]; then
+          preseal_file="${preseal_metadata}/pre-seal-${miner}.json"
+      fi
+      if [ -f "$preseal_file" ]; then
+          ./lotus-seed genesis add-miner "${genpath}/genesis.json" "$preseal_file"
+      else
+          echo "Warning: Preseal file not found for miner $miner"
+      fi
+  done
 
-# Print miner accounts and balances for verification
-echo "Miner accounts and balances:"
-jq '.Accounts[] | select(.Type == "miner") | {Owner: .Meta.Owner, Balance: .Balance}' "${genpath}/genesis.json"
+  # Set balance for all miner accounts and miner owner accounts
+  jq --arg MinerBalance ${miners_balance} '
+    .Accounts |= map(
+      if .Type == "miner" or
+         (.Type == "account" and (.Meta.Owner | startswith("f3"))) then
+        .Balance = $MinerBalance
+      else
+        .
+      end
+    )
+  ' < "${genpath}/genesis.json" > ${genesistmp}
+  mv ${genesistmp} "${genpath}/genesis.json"
 
-echo "Miner owner accounts and balances:"
-jq '.Accounts[] | select(.Type == "account" and (.Meta.Owner | startswith("f3"))) | {Owner: .Meta.Owner, Balance: .Balance}' "${genpath}/genesis.json"
+  # Print miner accounts and balances for verification
+  echo "Miner accounts and balances:"
+  jq '.Accounts[] | select(.Type == "miner") | {Owner: .Meta.Owner, Balance: .Balance}' "${genpath}/genesis.json"
+
+  echo "Miner owner accounts and balances:"
+  jq '.Accounts[] | select(.Type == "account" and (.Meta.Owner | startswith("f3"))) | {Owner: .Meta.Owner, Balance: .Balance}' "${genpath}/genesis.json"
 
   if [ -f "${genpath}/multisig.csv" ]; then
     ./lotus-seed genesis add-msigs "${genpath}/genesis.json" "${genpath}/multisig.csv"
