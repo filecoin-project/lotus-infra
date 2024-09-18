@@ -40,6 +40,11 @@ jobs:
           AWS_REGION: "us-east-1"
           ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
 
+      - name: Copy additional pre-seal files
+        run: |
+          mkdir -p {{ lotus_network_path }}/additional_preseals/
+          cp files/additional_preseals/* {{ lotus_network_path }}/additional_preseals/
+
       - name: Lotus Ansible Reset
         uses: ./.github/actions/lotus-ansible-reset
         with:
