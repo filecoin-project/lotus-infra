@@ -167,6 +167,15 @@ preseal_metadata=$(mktemp -d)
 # and then downloads the final sector metadata for each preminer
 ansible-playbook -i $hostfile lotus_devnet_prepare.yml -e local_preminer_metadata=${preseal_metadata} --diff "${ansible_args[@]}"
 
+# Copy additional preseals to the temporary directory if they exist
+additional_preseals_dir="ansible/files/additional_preseals"
+if [ -d "${additional_preseals_dir}" ] && [ "$(ls -A ${additional_preseals_dir})" ]; then
+  echo "Copying additional preseals from ${additional_preseals_dir} to ${preseal_metadata}"
+  cp ${additional_preseals_dir}/pre-seal-*.json ${preseal_metadata}/
+  echo "Copied $(ls -1 ${additional_preseals_dir}/pre-seal-*.json | wc -l) additional preseal files"
+else
+  echo "No additional preseals found in ${additional_preseals_dir} directory"
+fi
 
 genpath=$(mktemp -d)
 
@@ -181,12 +190,95 @@ pushd "$lotus_src"
   ./lotus-seed genesis new --network-name ${network_name} "${genpath}/genesis.json"
   ./lotus-seed genesis set-network-version "${genpath}/genesis.json"
 
-  for m in "${miners[@]}"; do
-    ./lotus-seed genesis add-miner "${genpath}/genesis.json" "${preseal_metadata}/${m}/${prepare_tmp}/presealed-metadata.json"
+  # Combine original miners and additional preseals
+  all_miners=("${miners[@]}")
+  for preseal_file in ${preseal_metadata}/pre-seal-*.json; do
+      if [ -f "$preseal_file" ]; then
+          miner_id=$(basename "$preseal_file" .json | sed 's/pre-seal-//')
+          all_miners+=("$miner_id")
+      fi
   done
 
-  jq --arg MinerBalance ${miners_balance}  '.Accounts[].Balance = $MinerBalance ' < "${genpath}/genesis.json" > ${genesistmp}
-  mv ${genesistmp} "${genpath}/genesis.json"
+  echo "All miners to be added: ${all_miners[@]}"
+
+# ... (previous code remains unchanged)
+
+  # Add all miners (original and additional) to genesis
+  for miner in "${all_miners[@]}"; do
+      preseal_file="${preseal_metadata}/${miner}/${prepare_tmp}/presealed-metadata.json"
+      if [ ! -f "$preseal_file" ]; then
+          preseal_file="${preseal_metadata}/pre-seal-${miner}.json"
+      fi
+      if [ -f "$preseal_file" ]; then
+          echo "Adding miner $miner from $preseal_file"
+          ./lotus-seed genesis add-miner "${genpath}/genesis.json" "$preseal_file"
+          echo "Miner $miner added successfully"
+      else
+          echo "Warning: Preseal file not found for miner $miner"
+      fi
+  done
+
+  echo "Debugging: Checking genesis file structure"
+  jq '.' "${genpath}/genesis.json" | head -n 20
+
+  echo "Debugging: Checking for top-level keys"
+  jq 'keys' "${genpath}/genesis.json"
+
+  echo "Miners in genesis before balance update:"
+  jq '
+    if has("Actors") then
+      .Actors[] | select(.Code == "storageminer") | .ID
+    elif has("Miners") then
+      .Miners[] | .ID
+    else
+      "No miners found in expected structure"
+    end
+  ' "${genpath}/genesis.json"
+
+  # Set balance for all miner accounts and miner owner accounts
+  jq --arg MinerBalance "${miners_balance}" '
+    if has("Actors") then
+      .Accounts |= map(
+        if .Type == "miner" or
+           (.Type == "account" and (.Meta.Owner | test("^f[03]"))) then
+          .Balance = $MinerBalance
+        else
+          .
+        end
+      )
+    elif has("Miners") then
+      .Miners |= map(
+        .Balance = $MinerBalance
+      ) |
+      .Accounts |= map(
+        if .Type == "account" and (.Meta.Owner | test("^f[03]")) then
+          .Balance = $MinerBalance
+        else
+          .
+        end
+      )
+    else
+      .
+    end
+  ' < "${genpath}/genesis.json" > "${genesistmp}"
+  mv "${genesistmp}" "${genpath}/genesis.json"
+
+  # Print miner accounts and balances for verification
+  echo "Miner accounts and balances after update:"
+  jq '
+    if has("Actors") then
+      .Accounts[] | select(.Type == "miner") | {ID: .ID, Owner: .Meta.Owner, Balance: .Balance}
+    elif has("Miners") then
+      .Miners[] | {ID: .ID, Owner: .Owner, Balance: .Balance}
+    else
+      "No miners found in expected structure"
+    end
+  ' "${genpath}/genesis.json"
+
+  echo "Miner owner accounts and balances after update:"
+  jq '.Accounts[] | select(.Type == "account" and (.Meta.Owner | test("^f[03]"))) | {Owner: .Meta.Owner, Balance: .Balance}' "${genpath}/genesis.json"
+
+# ... (rest of the script remains unchanged)
 
   if [ -f "${genpath}/multisig.csv" ]; then
     ./lotus-seed genesis add-msigs "${genpath}/genesis.json" "${genpath}/multisig.csv"
@@ -205,10 +297,6 @@ pushd "$lotus_src"
 
   jq --arg VerifyKey ${verifreg_rootkey} '.VerifregRootKey.Meta.Signers = [$VerifyKey] ' < "${genpath}/genesis.json" > ${genesistmp}
   mv ${genesistmp} "${genpath}/genesis.json"
-
-  # Provide the PCR service the same balance as the faucet
-  # jq --arg Owner ${pcr_addr} --arg Balance ${faucet_balance}  '.Accounts |= . + [{Type: "account", Balance: $Balance, Meta: {Owner: $Owner}}]' < "${genpath}/genesis.json" > ${genesistmp}
-  # mv ${genesistmp} "${genpath}/genesis.json"
 
   while read -r addr balance; do
     if [ -z "${addr}" ]; then

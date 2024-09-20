@@ -1,0 +1,129 @@
+{
+  "f01007": {
+    "ID": "f01007",
+    "Owner": "f3sbciq3fogpahci4on547otjrjl2q5aa75ayaqwy76pi2h2g6zu6it662wiailfwr3mk6qgupofk4nx5o3c6a",
+    "Worker": "f3sbciq3fogpahci4on547otjrjl2q5aa75ayaqwy76pi2h2g6zu6it662wiailfwr3mk6qgupofk4nx5o3c6a",
+    "PeerId": "12D3KooWQcYPk5voQSmjCpeKn4umQ13vTHysXGDuDw95e3bbKLnK",
+    "MarketBalance": "0",
+    "PowerBalance": "0",
+    "SectorSize": 536870912,
+    "Sectors": [
+      {
+        "CommR": {
+          "/": "bagboea4b5abcaavjqk7gpuwkz5gdstxikql5jm62bjbz6xxhhueyimwxjpigbbk2"
+        },
+        "CommD": {
+          "/": "baga6ea4seaqcfldwq4da6psqphiii2yzfi2vrnfqg22rohv6wdzwe2byat2s6da"
+        },
+        "SectorID": 0,
+        "Deal": {
+          "PieceCID": {
+            "/": "baga6ea4seaqcfldwq4da6psqphiii2yzfi2vrnfqg22rohv6wdzwe2byat2s6da"
+          },
+          "PieceSize": 536870912,
+          "VerifiedDeal": false,
+          "Client": "f3sbciq3fogpahci4on547otjrjl2q5aa75ayaqwy76pi2h2g6zu6it662wiailfwr3mk6qgupofk4nx5o3c6a",
+          "Provider": "f01007",
+          "Label": "0",
+          "StartEpoch": 0,
+          "EndEpoch": 9001,
+          "StoragePricePerEpoch": "0",
+          "ProviderCollateral": "0",
+          "ClientCollateral": "0"
+        },
+        "DealClientKey": {
+          "Type": "bls",
+          "PrivateKey": "3yyadiAwGQ6772YPljGi/fHmWaBGAaDgzunGinuo7Gw="
+        },
+        "ProofType": 2
+      },
+      {
+        "CommR": {
+          "/": "bagboea4b5abcb4pcrtiuq2nj6e7us4bxji7d3xq3ehezqujk7l6vtmlyy64m7ati"
+        },
+        "CommD": {
+          "/": "baga6ea4seaqle7mdk54by2wrcux7x77a262goednqzte5t24aoealu5qkvts4cq"
+        },
+        "SectorID": 1,
+        "Deal": {
+          "PieceCID": {
+            "/": "baga6ea4seaqle7mdk54by2wrcux7x77a262goednqzte5t24aoealu5qkvts4cq"
+          },
+          "PieceSize": 536870912,
+          "VerifiedDeal": false,
+          "Client": "f3sbciq3fogpahci4on547otjrjl2q5aa75ayaqwy76pi2h2g6zu6it662wiailfwr3mk6qgupofk4nx5o3c6a",
+          "Provider": "f01007",
+          "Label": "1",
+          "StartEpoch": 0,
+          "EndEpoch": 9001,
+          "StoragePricePerEpoch": "0",
+          "ProviderCollateral": "0",
+          "ClientCollateral": "0"
+        },
+        "DealClientKey": {
+          "Type": "bls",
+          "PrivateKey": "3yyadiAwGQ6772YPljGi/fHmWaBGAaDgzunGinuo7Gw="
+        },
+        "ProofType": 2
+      },
+      {
+        "CommR": {
+          "/": "bagboea4b5abcboqcign2yfsx223dcrjl7nlcr7nsnwmysu4zcyprz3zdyamlkojv"
+        },
+        "CommD": {
+          "/": "baga6ea4seaqnh6ridi2uzdknfzkioqnfnv6wuunkla6wyn2mturstrjtegjcuha"
+        },
+        "SectorID": 2,
+        "Deal": {
+          "PieceCID": {
+            "/": "baga6ea4seaqnh6ridi2uzdknfzkioqnfnv6wuunkla6wyn2mturstrjtegjcuha"
+          },
+          "PieceSize": 536870912,
+          "VerifiedDeal": false,
+          "Client": "f3sbciq3fogpahci4on547otjrjl2q5aa75ayaqwy76pi2h2g6zu6it662wiailfwr3mk6qgupofk4nx5o3c6a",
+          "Provider": "f01007",
+          "Label": "2",
+          "StartEpoch": 0,
+          "EndEpoch": 9001,
+          "StoragePricePerEpoch": "0",
+          "ProviderCollateral": "0",
+          "ClientCollateral": "0"
+        },
+        "DealClientKey": {
+          "Type": "bls",
+          "PrivateKey": "3yyadiAwGQ6772YPljGi/fHmWaBGAaDgzunGinuo7Gw="
+        },
+        "ProofType": 2
+      },
+      {
+        "CommR": {
+          "/": "bagboea4b5abcbnw5ne4iham2raswy324gpcdfcresjcnmvkaainmx3teorm5gkke"
+        },
+        "CommD": {
+          "/": "baga6ea4seaqi3vz5cmhthiry2z4fc4v2bm5vbi7jvuonrnsk5f44gv7krhou2fq"
+        },
+        "SectorID": 3,
+        "Deal": {
+          "PieceCID": {
+            "/": "baga6ea4seaqi3vz5cmhthiry2z4fc4v2bm5vbi7jvuonrnsk5f44gv7krhou2fq"
+          },
+          "PieceSize": 536870912,
+          "VerifiedDeal": false,
+          "Client": "f3sbciq3fogpahci4on547otjrjl2q5aa75ayaqwy76pi2h2g6zu6it662wiailfwr3mk6qgupofk4nx5o3c6a",
+          "Provider": "f01007",
+          "Label": "3",
+          "StartEpoch": 0,
+          "EndEpoch": 9001,
+          "StoragePricePerEpoch": "0",
+          "ProviderCollateral": "0",
+          "ClientCollateral": "0"
+        },
+        "DealClientKey": {
+          "Type": "bls",
+          "PrivateKey": "3yyadiAwGQ6772YPljGi/fHmWaBGAaDgzunGinuo7Gw="
+        },
+        "ProofType": 2
+      }
+    ]
+  }
+}

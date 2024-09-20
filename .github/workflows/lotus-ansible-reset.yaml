@@ -40,6 +40,15 @@ jobs:
           AWS_REGION: "us-east-1"
           ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
 
+      - name: Copy additional pre-seal files
+        run: |
+          mkdir -p "${{ env.LOTUSROOT }}/build/${{ inputs.network }}/additional_preseals/"
+          if [ -d "files/additional_preseals" ] && [ "$(ls -A files/additional_preseals)" ]; then
+            cp -r files/additional_preseals/* "${{ env.LOTUSROOT }}/build/${{ inputs.network }}/additional_preseals/"
+          else
+            echo "No additional pre-seal files found or directory is empty. Skipping copy."
+          fi
+
       - name: Lotus Ansible Reset
         uses: ./.github/actions/lotus-ansible-reset
         with:
