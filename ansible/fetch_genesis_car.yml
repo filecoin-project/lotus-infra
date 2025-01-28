@@ -1,0 +1,11 @@
+---
+- hosts: preminer0
+  become: true
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+  tasks:
+    - name: Fetch genesis.car
+      fetch:
+        src: "{{ lotus_path }}/genesis.car"
+        dest: "{{ dest }}"
+        flat: yes
