@@ -126,7 +126,6 @@ runs:
 
         export TERM=xterm
         echo | ./setup_fildev_network.bash --start-services false "${args[@]}"
-
     - name: Remove Faucet Maintenance
       if: ${{ inputs.check == 'false' }}
       shell: bash
@@ -153,6 +152,7 @@ runs:
       shell: bash
       run: |
         mkdir /tmp/reset
+        ansible -i inventories/${DEPLOY_NETWORK}/hosts.yml fetch_genesis_car.yml -e dest=/tmp/reset/
         ./scripts/encrypt_vault_files.bash
         ./scripts/bundle_changes.bash . /tmp/reset/lotus-infra
         ./scripts/bundle_changes.bash ${LOTUSROOT} /tmp/reset/lotus
