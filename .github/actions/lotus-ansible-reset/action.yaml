@@ -150,9 +150,15 @@ runs:
     - name: Capture New Genesis
       if: ${{ inputs.check == 'false' }}
       shell: bash
+      working-directory: ansible
       run: |
         mkdir /tmp/reset
-        ansible -i inventories/${DEPLOY_NETWORK}/hosts.yml fetch_genesis_car.yml -e dest=/tmp/reset/
+        ansible-playbook -i inventories/${DEPLOY_NETWORK}/hosts.yml fetch_genesis_car.yml -e dest=/tmp/reset/
+
+    - name: Capture Lotus Artifacts
+      if: ${{ inputs.check == 'false' }}
+      shell: bash
+      run: |
         ./scripts/encrypt_vault_files.bash
         ./scripts/bundle_changes.bash . /tmp/reset/lotus-infra
         ./scripts/bundle_changes.bash ${LOTUSROOT} /tmp/reset/lotus
