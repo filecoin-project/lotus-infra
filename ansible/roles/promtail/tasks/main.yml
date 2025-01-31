@@ -1,0 +1,96 @@
+- name: Install dependencies
+  apt:
+    update_cache: yes
+    name:
+      - unzip
+  when: ansible_os_family == "Debian"
+
+- name: Create promtail group
+  group:
+    name: "{{ promtail_group }}"
+    state: present
+
+- name: Create promtail user
+  user:
+    name: "{{ promtail_user }}"
+    group: "{{ promtail_group }}"
+    shell: /sbin/nologin
+    system: yes
+    create_home: no
+
+- name: Add Promtail user to systemd-journal group
+  user:
+    name: "{{ promtail_user }}"
+    groups:
+      - "adm"
+      - "fc"
+    append: yes
+
+- name: Download Promtail binary
+  get_url:
+    url: "{{ promtail_binary_url }}"
+    dest: "/tmp/promtail-linux-amd64.zip"
+    mode: '0644'
+
+- name: Unzip Promtail binary
+  unarchive:
+    src: "/tmp/promtail-linux-amd64.zip"
+    dest: "/usr/local/bin/"
+    remote_src: yes
+    mode: '0755'
+    creates: "{{ promtail_install_path }}"
+
+- name: Rename Promtail binary
+  command: mv "/usr/local/bin/promtail-linux-amd64" "{{ promtail_install_path }}"
+  args:
+    creates: "{{ promtail_install_path }}"
+
+- name: Cleanup Promtail zip file
+  file:
+    path: "/tmp/promtail-linux-amd64.zip"
+    state: absent
+
+- name: Create configuration directory
+  file:
+    path: "{{ promtail_config_path }}"
+    state: directory
+    owner: "{{ promtail_user }}"
+    group: "{{ promtail_group }}"
+
+- name: Copy Promtail configuration file
+  template:
+    src: "promtail_config.yml.j2"
+    dest: "{{ promtail_config_path }}/config.yml"
+    owner: "{{ promtail_user }}"
+    group: "{{ promtail_group }}"
+    mode: "0644"
+
+- name: Create systemd service file
+  copy:
+    dest: /etc/systemd/system/promtail.service
+    content: |
+      [Unit]
+      Description=Promtail service
+      After=network.target
+
+      [Service]
+      Type=simple
+      User={{ promtail_user }}
+      Group={{ promtail_group }}
+      ExecStart={{ promtail_install_path }} -config.file={{ promtail_config_path }}/config.yml
+      Restart=on-failure
+
+      [Install]
+      WantedBy=multi-user.target
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+
+- name: Enable and start Promtail service
+  systemd:
+    name: promtail
+    enabled: yes
+    state: restarted
