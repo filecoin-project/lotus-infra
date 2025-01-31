@@ -1,0 +1,8 @@
+---
+- name: Install Promtail log forwarder
+  hosts: all
+  become: yes
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+  roles:
+    - promtail

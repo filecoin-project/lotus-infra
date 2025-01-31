@@ -140,6 +140,13 @@ runs:
       run: |
         ansible-playbook -i inventories/${DEPLOY_NETWORK}/hosts.yml expose_metrics.yml
 
+    - name: Set up Promtail log forwarding
+      if: ${{ inputs.check == 'false' }}
+      shell: bash
+      working-directory: ansible
+      run: |
+        ansible-playbook -i inventories/${DEPLOY_NETWORK}/hosts.yml promtail_log_forward.yml
+
     - name: Restart Machines
       if: ${{ inputs.check == 'false' }}
       shell: bash

@@ -1,0 +1,11 @@
+undefined:
+required_vars:
+  - promtail_version
+  - promtail_binary_url
+  - promtail_install_path
+  - promtail_config_path
+  - promtail_user
+  - promtail_group
+  - loki_server
+  - loki_username
+  - loki_password
