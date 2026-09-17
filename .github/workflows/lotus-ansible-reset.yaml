@@ -24,7 +24,7 @@ on:
 jobs:
   check:
     runs-on: [ self-hosted, linux, x64, 2xlarge ]
-    timeout-minutes: 60
+    timeout-minutes: 180
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
