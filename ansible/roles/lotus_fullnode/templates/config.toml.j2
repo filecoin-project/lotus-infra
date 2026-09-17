@@ -10,3 +10,11 @@ EnableSplitstore = {{ lotus_daemon_enable_splitstore | lower }}
 [PubSub]
 RemoteTracer = "{{ lotus_pubsub_tracker }}"
 {% endif %}
+
+{% if lotus_daemon_enable_eth_rpc | default(false) | bool %}
+[Fevm]
+EnableEthRPC = true
+
+[ChainIndexer]
+EnableIndexer = true
+{% endif %}
