@@ -29,6 +29,7 @@
 # Env overrides: FAUCET_HOST (toolshed-0.butterfly.fildev.network), FUND_FIL (100),
 #   TUNNEL_PORT (11234), LOTUS_PATH_REMOTE (/var/lib/lotus), LOTUS_USER_REMOTE (fc).
 #   CHECK_ONLY=1 stops after the read-only checks, before funding or deploying.
+#   MIN_EPOCH_MARGIN (10): refuse to fund or deploy with fewer epochs than this left before the upgrade.
 
 set -euo pipefail
 
@@ -46,6 +47,20 @@ params="${LOTUS_SRC}/build/buildconstants/params_butterfly.go"
 for tool in forge cast jq ssh; do command -v "$tool" >/dev/null || { echo "missing $tool" >&2; exit 1; }; done
 
 log() { printf '\n==> %s\n' "$*"; }
+# Lotus' eth_blockNumber intentionally reports the parent of the heaviest tipset,
+# so use the native head for anything safety-related.
+native_head() { remote_lotus chain head --height | tail -1; }
+# Refuse to continue unless at least MIN_EPOCH_MARGIN epochs remain before the upgrade.
+MIN_EPOCH_MARGIN="${MIN_EPOCH_MARGIN:-10}"
+require_margin() {
+  local stage="$1" head
+  head=$(native_head)
+  if [ -n "$upgrade_height" ] && [ $((head + MIN_EPOCH_MARGIN)) -gt "$upgrade_height" ]; then
+    echo "$stage: native head is $head; fewer than ${MIN_EPOCH_MARGIN} epochs remain before UpgradeSolsticeHeight $upgrade_height. Stopping." >&2
+    exit 1
+  fi
+  echo "$stage: native head $head, upgrade at ${upgrade_height:-unscheduled}"
+}
 remote_lotus() {
   # shellcheck disable=SC2029
   ssh -o BatchMode=yes -o ConnectTimeout=10 "ubuntu@${FAUCET_HOST}" \
@@ -81,11 +96,8 @@ trap 'ssh -S "$ctl" -O exit "ubuntu@${FAUCET_HOST}" >/dev/null 2>&1 || true' EXI
 RPC="http://127.0.0.1:${TUNNEL_PORT}/rpc/v1"
 chain_id=$(cast chain-id --rpc-url "$RPC")
 [ "$chain_id" = "$BUTTERFLY_CHAIN_ID" ] || { echo "unexpected chain id $chain_id (want $BUTTERFLY_CHAIN_ID)" >&2; exit 1; }
-head_epoch=$(cast block-number --rpc-url "$RPC")
-echo "chain id $chain_id, head epoch $head_epoch"
-if [ -n "$upgrade_height" ] && [ "$head_epoch" -ge "$upgrade_height" ]; then
-  echo "head epoch $head_epoch is already past UpgradeSolsticeHeight $upgrade_height; too late to deploy" >&2; exit 1
-fi
+echo "chain id $chain_id, eth block number $(cast block-number --rpc-url "$RPC")"
+require_margin "before funding"
 nonce=$(cast nonce "$deployer_addr" --rpc-url "$RPC")
 if [ "$nonce" != "0" ]; then
   echo "deployer nonce is $nonce, not 0: the proxies cannot land at the expected addresses on this chain" >&2; exit 1
@@ -101,13 +113,18 @@ faucet_addr=$(remote_lotus wallet list | awk 'NR>1 && $1 ~ /^[tf]1/ {print $1; e
 # `lotus send` prints a few informational lines before the message CID.
 msg_cid=$(remote_lotus send --from "$faucet_addr" "$deployer_f410" "$FUND_FIL" | tail -1)
 echo "sent from $faucet_addr, message $msg_cid; waiting for it to land"
-remote_lotus state wait-msg --timeout 5m "$msg_cid" >/dev/null
-echo "deployer balance: $(cast balance "$deployer_addr" --rpc-url "$RPC" --ether) FIL"
+wait_out=$(remote_lotus state wait-msg --timeout 5m "$msg_cid")
+grep -qE '^Exit Code: 0$' <<<"$wait_out" || { echo "funding message did not succeed:" >&2; echo "$wait_out" >&2; exit 1; }
+balance=$(cast balance "$deployer_addr" --rpc-url "$RPC" --ether)
+echo "deployer balance: $balance FIL"
+awk -v b="$balance" -v want="$FUND_FIL" 'BEGIN{exit !(b+0 >= want+0)}' \
+  || { echo "deployer balance $balance is below the requested $FUND_FIL FIL" >&2; exit 1; }
 
 log "Deploying the Solstice contracts with forge from ${SOLSTICE_SRC}"
 cd "$SOLSTICE_SRC"
 jq -e --arg id "$BUTTERFLY_CHAIN_ID" '.[$id]' deployments.json >/dev/null \
   || { echo "deployments.json has no entry for chain $BUTTERFLY_CHAIN_ID" >&2; exit 1; }
+require_margin "before deploying"
 forge script script/Deploy.s.sol --broadcast --skip-simulation --rpc-url "$RPC" --private-key "$deployer_key"
 deployed_sra=$(jq -r --arg id "$BUTTERFLY_CHAIN_ID" '.[$id].sra' deployments.json)
 deployed_swa=$(jq -r --arg id "$BUTTERFLY_CHAIN_ID" '.[$id].swa' deployments.json)
@@ -124,6 +141,6 @@ for pair in "SRA:$expected_sra:$deployed_sra" "SWA:$expected_swa:$deployed_swa";
     echo "$name proxy MISMATCH: expected $want, deployed $got, code bytes $code_len" >&2; ok=0
   fi
 done
-echo "head epoch now $(cast block-number --rpc-url "$RPC")"
+echo "native head now $(native_head)"
 [ "$ok" = 1 ] || { echo "Deployed addresses do not match params_butterfly.go; the Solstice migration will fail." >&2; exit 1; }
 echo "Solstice contracts deployed at the expected addresses."
