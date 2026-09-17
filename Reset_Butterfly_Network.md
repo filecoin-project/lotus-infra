@@ -9,7 +9,8 @@ This runbook is intended for maintainers of the Lotus-Infra repo and provides in
 - A list of hosts for the Butterfly network infrastructure and their roles can be found [here](https://github.com/filecoin-project/lotus-infra/blob/main/ansible/inventories/butterfly.fildev.network/hosts.yml).
 - The instances running the Butterfly network infrastructure are in the FilOz AWS account (us-east-1). FilOz members can get credentials to log in and confirm that these are running in their 1Password account.
 - The hosts are normally torn down after an upgrade's Butterfly testing is complete to save cost (see [Tearing down the Butterfly network](#tearing-down-the-butterfly-network)). Do not assume they exist; check first (see below).
-- A full reset takes roughly 45 minutes of workflow time, most of it building Lotus.
+- A reset on hosts that have been provisioned before takes roughly 45 minutes of workflow time, most of it building Lotus.
+- A reset on freshly created hosts takes closer to two hours. Each preminer downloads about 24 GB of proof parameters for 512MiB sectors (the SnapDeals `empty-sector-update` file alone is 21.7 GB). Where they come from is decided by [go-paramfetch](https://github.com/filecoin-project/go-paramfetch), which Lotus uses for `fetch-params`; the inventory's `lotus_ipfs_gateway` variable overrides its default. The parameters live in `/var/tmp/filecoin-proof-parameters` on each host and are lost when the hosts are destroyed, so this cost is paid once per teardown.
 
 ## Prerequisites
 
