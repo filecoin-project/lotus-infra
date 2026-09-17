@@ -108,6 +108,7 @@ The bootstrap peer list (`build/bootstrap/butterflynet.pi`) no longer needs upda
 2. Prepare the new `butterflynet.car.zst` from the artifact's `genesis.car`:
    1. Remove the built-in actors WASM bundle blocks from the car. Lotus already embeds the actors bundle, so shipping them again only bloats the file. Install [go-car](https://github.com/ipld/go-car/) for the `car` command, then: `car ls genesis.car | grep ^bafk2bz | car filter --inverse genesis.car butterflynet.car`. This writes a new `butterflynet.car` in the current directory.
    2. Compress it: `zstd -19 butterflynet.car`.
+   3. Sanity check: `car root butterflynet.car` must equal the genesis block CID the network reports (`lotus chain list --height 0 --count 1` on any host), and the artifact's `genesis.car` should have the same checksum as `/var/lib/lotus/genesis.car` on preminer-0. For reference, the 2026-09-17 reset went from a 9.2 MB `genesis.car` (7171 blocks, 16 of them actors WASM) to a 1.5 MB filtered car and a 0.5 MB `.zst`. The filter is not required for correctness (the file on master at the time still contained the WASM blocks and worked), but it makes the committed file about three times smaller.
 
 3. Replace `build/genesis/butterflynet.car.zst` in Lotus with the new file and open a PR against `master` (and against any release branch that will be built for butterflynet).
 
