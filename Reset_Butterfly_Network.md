@@ -86,25 +86,32 @@ The real reset also sets up nginx for the faucet, Prometheus metrics, Promtail l
 
 ## Backfilling changes
 
+### Why this is needed
+
+A Lotus binary built with `-tags=butterflynet` embeds `build/genesis/butterflynet.car.zst` (via `build/genesis.go`) and initialises its chain from it on first start. A reset creates a brand new genesis, so until the new file is committed to Lotus, anyone who builds Lotus for butterflynet gets the old genesis and ends up on a chain of their own, unable to sync with the network. Committing the genesis is what makes the reset usable by Forest, other implementers, and anyone not on the reset hosts.
+
+The bootstrap peer list (`build/bootstrap/butterflynet.pi`) no longer needs updating. Since September 2024 it contains a single `/dnsaddr/bootstrap.butterfly.fildev.network` entry, and the reset script updates the `_dnsaddr` TXT record in Route53 with the new bootstrap peer IDs. The reset does overwrite the local `.pi` with explicit addresses (so it shows up as a changed file in the artifact); do not commit that version.
+
 ### Downloading Artifacts
 
 1. Navigate to [Lotus Ansible Reset Careful](https://github.com/filecoin-project/lotus-infra/actions/workflows/lotus-ansible-reset.yaml) in GitHub Actions, and click into your completed workflow.
 
-2. Download the `reset-artifacts` at the bottom of the page and take note of the downloaded file name.
+2. Download the `reset-artifacts` at the bottom of the page. It contains:
+   - `genesis.car`: the new genesis, fetched from preminer-0. This is the file you need.
+   - `lotus.tar`: tracked files in the Lotus checkout that the reset modified (currently just `butterflynet.pi`, which you should not commit; see above).
+   - `lotus-infra.tar`: tracked files in this repo that the reset modified, if any.
 
 ### Committing Artifacts to Lotus
 
 1. Checkout the branch that you used for deploying the Butterfly network.
 
-2. Extract the `lotus.tar` file inside of your downloaded `reset-artifacts`.
+2. Prepare the new `butterflynet.car.zst` from the artifact's `genesis.car`:
+   1. Remove the built-in actors WASM bundle blocks from the car. Lotus already embeds the actors bundle, so shipping them again only bloats the file. Install [go-car](https://github.com/ipld/go-car/) for the `car` command, then: `car ls genesis.car | grep ^bafk2bz | car filter --inverse genesis.car butterflynet.car`. This writes a new `butterflynet.car` in the current directory.
+   2. Compress it: `zstd -19 butterflynet.car`.
 
-3. Prepare `build/genesis/butterflynet.car`:
-   1. Remove built-in actors WASM compiles from the bundle *(install https://github.com/ipld/go-car/ for the `car` command)*: `car ls build/genesis/butterflynet.car | grep ^bafk2bz | car filter --inverse build/genesis/butterflynet.car butterflynet.car` - this will result in a new `butterflynet.car` in the current working directory.
-   2. Compress `butterflynet.car` with `zstd -19 butterflynet.car`.
+3. Replace `build/genesis/butterflynet.car.zst` in Lotus with the new file and open a PR against `master` (and against any release branch that will be built for butterflynet).
 
-4. Commit the new `butterflynet.car.zst` file to `https://github.com/filecoin-project/lotus/tree/master/build/genesis` replacing the old `butterflynet.car.zst` file.
-
-👉 Example of a PR submitting the artifacts to [Lotus can be seen here](https://github.com/filecoin-project/lotus/pull/12266).
+👉 Example: [lotus#12966](https://github.com/filecoin-project/lotus/pull/12966) (March 2025) replaced `butterflynet.car.zst` and adjusted `params_butterfly.go` in the same PR. The older [lotus#12266](https://github.com/filecoin-project/lotus/pull/12266) predates zstd compression and dnsaddr, so its file list is no longer what to copy.
 
 ## Tearing down the Butterfly network
 
