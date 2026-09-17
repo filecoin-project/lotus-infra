@@ -30,7 +30,20 @@ terraform apply
 
 Creating the hosts takes under a minute. DNS records under `butterfly.fildev.network` are updated by the same apply. The state lives in the `filoz-terraform-state` S3 bucket, so anyone with FilOz AWS credentials sees the same view.
 
-When recreating, consider bumping the `ami` in `main.tf` to a current Ubuntu LTS image. The Lotus binaries are built inside the Lotus `Dockerfile` (currently a Debian trixie builder) and are dynamically linked against that image's glibc, so the host OS must have a glibc at least as new as the builder's. Ubuntu 24.04 (glibc 2.39) works with a trixie builder; Ubuntu 20.04 does not.
+`terraform plan` only tells you whether the instances exist in state, not whether they are running. An instance that was stopped from the AWS console still shows as "0 to add". So also confirm they are running and reachable:
+
+```bash
+aws ec2 describe-instances --region us-east-1 \
+  --filters 'Name=tag:Name,Values=preminer-*,bootstrap-*,toolshed-*,scratch-*' \
+  --query 'Reservations[].Instances[].[Tags[?Key==`Name`]|[0].Value,State.Name]' --output text
+
+cd ansible
+ansible -i inventories/butterfly.fildev.network/hosts.yml all -m ping   # needs your SSH key on the hosts
+```
+
+Start any stopped instances with `aws ec2 start-instances --instance-ids <id>`; their public IPs change on start, so run `terraform apply` afterwards to update DNS. If an instance is missing or broken, `terraform apply` replaces it.
+
+When recreating, consider bumping the `ami` in `main.tf` to a current Ubuntu LTS image. The Lotus binaries are built inside the Lotus `Dockerfile` (currently a Debian trixie builder) and are dynamically linked against glibc, so the host needs a glibc that provides every versioned symbol the binaries reference. As of [lotus#13785](https://github.com/filecoin-project/lotus/pull/13785) the highest required symbol version is `GLIBC_2.39`, which Ubuntu 24.04 satisfies; Ubuntu 20.04 (glibc 2.31) does not. To check a freshly built binary: `objdump -T lotus | grep -o 'GLIBC_[0-9.]*' | sort -Vu | tail -1`.
 
 ### Pick a Lotus ref that builds
 
@@ -100,9 +113,13 @@ When Butterfly testing for an upgrade is finished, destroy the hosts with terraf
 cd terraform/testnets/deployments/butterfly_network
 terraform destroy \
   -target=module.butterflynet.module.preminers.aws_instance.node \
+  -target=module.butterflynet.module.preminers.aws_route53_record.node \
   -target=module.butterflynet.module.bootstrappers.aws_instance.node \
+  -target=module.butterflynet.module.bootstrappers.aws_route53_record.node \
   -target=module.butterflynet.module.toolshed.aws_instance.node \
-  -target=module.butterflynet.module.scratch.aws_instance.node
+  -target=module.butterflynet.module.toolshed.aws_route53_record.node \
+  -target=module.butterflynet.module.scratch.aws_instance.node \
+  -target=module.butterflynet.module.scratch.aws_route53_record.node
 ```
 
-Target only the instances. Destroying all of `module.butterflynet` would also remove the Butterfly DNS zone and security groups. This leaves the VPC, DNS zone, S3 bucket, and IAM roles in place for the next reset. If the hosts were terminated some other way, run `terraform plan` and let the next `terraform apply` reconcile the state. Record the teardown in the network upgrade tracking doc so the next upgrade knows to recreate the hosts.
+Target the instances and their per-host A records only. Removing the A records too means the hostnames stop resolving to released IPs that AWS may hand to someone else. Destroying all of `module.butterflynet` would also remove the Butterfly DNS zone and security groups. This leaves the VPC, DNS zone, S3 bucket, and IAM roles in place for the next reset. If the hosts were terminated some other way, run `terraform plan` and let the next `terraform apply` reconcile the state. Record the teardown in the network upgrade tracking doc so the next upgrade knows to recreate the hosts.
