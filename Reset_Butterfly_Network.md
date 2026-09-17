@@ -84,6 +84,20 @@ Note: a dry run does not work on freshly created hosts. Ansible check mode repor
 
 The real reset also sets up nginx for the faucet, Prometheus metrics, Promtail log forwarding, reboots the hosts, and captures the new genesis and a bundle of changed files as the `reset-artifacts` workflow artifact.
 
+## nv29 only: deploy the Solstice contracts after the reset
+
+The nv29 (Solstice, FIP-0118) migration wires two contracts into the reward actor at addresses baked into Lotus' `params_butterfly.go`. They do not survive a reset, and the migration fails at `UpgradeSolsticeHeight` if they are missing. So after every nv29-era reset, and before the upgrade epoch, run:
+
+```bash
+LOTUS_SRC=<checkout of the Lotus branch you reset with> \
+SOLSTICE_SRC=<checkout of filecoin-project/solstice with submodules> \
+scripts/nv29_butterfly_deploy_solstice_contracts.bash
+```
+
+Prerequisites: SSH access as `ubuntu` to `toolshed-0.butterfly.fildev.network` (your key in `ssh_keys_access`), plus `forge`, `cast`, and `jq` locally. The script funds the throwaway deployer from the faucet wallet, deploys through the faucet host's Eth RPC over an SSH tunnel, and refuses to run if the deployer's nonce is not 0 or fewer than 10 epochs remain before the upgrade. `CHECK_ONLY=1` runs the read-only checks first. The chain produces blocks from about epoch 2 after a reset on warm hosts, and a deploy takes about 10 epochs, so an upgrade height of 45 or more leaves comfortable room.
+
+Expect a `FAILED pre-migration: Solstice bootstrap SWAActor ... is not on chain` error in the daemon logs at startup when the upgrade is fewer than 120 epochs away: the pre-migration fires before the contracts exist. It is harmless on butterfly; the real migration at the upgrade epoch does not depend on it.
+
 ## Backfilling changes
 
 ### Why this is needed
