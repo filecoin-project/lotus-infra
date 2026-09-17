@@ -84,9 +84,9 @@ Note: a dry run does not work on freshly created hosts. Ansible check mode repor
 
 The real reset also sets up nginx for the faucet, Prometheus metrics, Promtail log forwarding, reboots the hosts, and captures the new genesis and a bundle of changed files as the `reset-artifacts` workflow artifact.
 
-## nv29 only: deploy the Solstice contracts after the reset
+## Solstice (nv29 and later): deploy the contracts after the reset
 
-The nv29 (Solstice, FIP-0118) migration wires two contracts into the reward actor at addresses baked into Lotus' `params_butterfly.go`. They do not survive a reset, and the migration fails at `UpgradeSolsticeHeight` if they are missing. So after every nv29-era reset, and before the upgrade epoch, run:
+The nv29 (Solstice, FIP-0118) migration wires two contracts into the reward actor at addresses baked into Lotus' `params_butterfly.go`. They do not survive a reset, and the migration fails at `UpgradeSolsticeHeight` if they are missing. Lotus cannot yet bootstrap Solstice at genesis: a network whose genesis network version is 29 or later comes up with a reward actor that has no SWA and no contracts, and no upgrade runs to fix that. So until that changes, butterfly genesis stays at nv28 with Solstice scheduled a few dozen epochs in, even when the branch under test targets a later upgrade. After every such reset, and before the Solstice epoch, run:
 
 ```bash
 LOTUS_SRC=<checkout of the Lotus branch you reset with> \
