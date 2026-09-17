@@ -28,6 +28,7 @@
 #
 # Env overrides: FAUCET_HOST (toolshed-0.butterfly.fildev.network), FUND_FIL (100),
 #   TUNNEL_PORT (11234), LOTUS_PATH_REMOTE (/var/lib/lotus), LOTUS_USER_REMOTE (fc).
+#   CHECK_ONLY=1 stops after the read-only checks, before funding or deploying.
 
 set -euo pipefail
 
@@ -88,6 +89,10 @@ fi
 nonce=$(cast nonce "$deployer_addr" --rpc-url "$RPC")
 if [ "$nonce" != "0" ]; then
   echo "deployer nonce is $nonce, not 0: the proxies cannot land at the expected addresses on this chain" >&2; exit 1
+fi
+
+if [ "${CHECK_ONLY:-0}" = "1" ]; then
+  echo "CHECK_ONLY set; stopping before funding and deploying."; exit 0
 fi
 
 log "Funding the deployer with ${FUND_FIL} FIL from the faucet wallet"
