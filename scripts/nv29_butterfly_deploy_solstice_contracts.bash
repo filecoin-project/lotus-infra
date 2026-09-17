@@ -98,7 +98,8 @@ fi
 log "Funding the deployer with ${FUND_FIL} FIL from the faucet wallet"
 faucet_addr=$(remote_lotus wallet list | awk 'NR>1 && $1 ~ /^[tf]1/ {print $1; exit}')
 [ -n "$faucet_addr" ] || { echo "no faucet wallet found on ${FAUCET_HOST}" >&2; exit 1; }
-msg_cid=$(remote_lotus send --from "$faucet_addr" "$deployer_f410" "$FUND_FIL")
+# `lotus send` prints a few informational lines before the message CID.
+msg_cid=$(remote_lotus send --from "$faucet_addr" "$deployer_f410" "$FUND_FIL" | tail -1)
 echo "sent from $faucet_addr, message $msg_cid; waiting for it to land"
 remote_lotus state wait-msg --timeout 5m "$msg_cid" >/dev/null
 echo "deployer balance: $(cast balance "$deployer_addr" --rpc-url "$RPC" --ether) FIL"
