@@ -67,7 +67,9 @@ echo "deployer/orchestrator: $deployer_addr"
 echo "UpgradeSolsticeHeight: ${upgrade_height:-unscheduled}"
 
 log "Resolving the deployer's f410 address on ${FAUCET_HOST}"
-deployer_f410=$(remote_lotus evm stat "$deployer_addr" | awk '/Filecoin address/{print $NF}')
+# `lotus evm stat` prints both address forms, then exits non-zero because the
+# actor does not exist yet; the addresses are all we need.
+deployer_f410=$( (remote_lotus evm stat "$deployer_addr" 2>/dev/null || true) | awk '/Filecoin address/{print $NF}')
 [ -n "$deployer_f410" ] || { echo "could not resolve f410 address" >&2; exit 1; }
 echo "deployer f410: $deployer_f410"
 
