@@ -23,6 +23,5 @@ EnableIndexer = true
 
 {% if lotus_daemon_enable_actor_events_api | default(false) | bool %}
 [Events]
-# Required by ChainIndexer.EnableIndexer above; lotus errors at startup otherwise.
 EnableActorEventsAPI = true
 {% endif %}
