@@ -11,6 +11,7 @@ This runbook is intended for maintainers of the Lotus-Infra repo and provides in
 - The hosts are normally torn down after an upgrade's Butterfly testing is complete to save cost (see [Tearing down the Butterfly network](#tearing-down-the-butterfly-network)). Do not assume they exist; check first (see below).
 - A reset on hosts that have been provisioned before takes roughly 45 minutes of workflow time, most of it building Lotus.
 - A reset on freshly created hosts takes closer to two hours. Each preminer downloads about 24 GB of proof parameters for 512MiB sectors (the SnapDeals `empty-sector-update` file alone is 21.7 GB). Where they come from is decided by [go-paramfetch](https://github.com/filecoin-project/go-paramfetch), which Lotus uses for `fetch-params`; the inventory's `lotus_ipfs_gateway` variable overrides its default. The parameters live in `/var/tmp/filecoin-proof-parameters` on each host and are lost when the hosts are destroyed, so this cost is paid once per teardown. The workflow job timeout is set with this in mind; a reset on fresh hosts used to be killed at the previous 60 minute limit before the download finished.
+- Only preminers (the `lotus_miner` inventory group) get these params from ansible during a reset. If you stand up a miner anywhere else (e.g. for manual upgrade testing on scratch-0 or toolshed-1, see "Manual upgrade testing" below), prefer copying the missing files directly from a preminer that already has them over re-downloading from the public gateway: it's a same-region, same-VPC transfer (measured at 150-250 MB/s between preminer-0 and scratch-0, vs. the public gateway being slow enough that it drove the 180-minute reset timeout above) and it's read-only on the source host. `scripts/butterfly_manual_testing.bash fetch-params` automates this (throwaway IP-restricted SSH key, diff + rsync, then revokes the key), falling back to the public gateway if the source host is unreachable.
 
 ## Prerequisites
 
@@ -113,6 +114,15 @@ The bootstrap peer list (`build/bootstrap/butterflynet.pi`) no longer needs upda
 3. Replace `build/genesis/butterflynet.car.zst` in Lotus with the new file and open a PR against `master` (and against any release branch that will be built for butterflynet).
 
 👉 Example: [lotus#12966](https://github.com/filecoin-project/lotus/pull/12966) (March 2025) replaced `butterflynet.car.zst` and adjusted `params_butterfly.go` in the same PR. The older [lotus#12266](https://github.com/filecoin-project/lotus/pull/12266) predates zstd compression and dnsaddr, so its file list is no longer what to copy.
+
+## Manual upgrade testing
+
+After a reset, each upgrade's tracking doc has a "Generic Butterfly manual testing items" table (miner
+setup, sector pledge/terminate/extend/batch, actor withdraw/control-address changes) that's meant to be
+re-run every time, independent of what the specific upgrade changes. `scripts/butterfly_manual_testing.bash`
+automates that table against a throwaway miner on a non-preminer host (scratch-0 or toolshed-1; never a
+preminer, for the same reasons as the params-copying note above plus not wanting a disposable test
+miner sharing a preminer's `LOTUS_PATH`) and prints doc-ready command/output blocks for each item.
 
 ## Tearing down the Butterfly network
 
