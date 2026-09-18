@@ -64,6 +64,7 @@ The workflow is [Lotus Ansible Reset Careful](https://github.com/filecoin-projec
 - **Network**: `butterflynet`.
 - **Lotus git ref**: the Lotus branch, tag, or commit to deploy.
 - **Dry-run changes**: runs ansible in check mode. See the note below before relying on it.
+- **Genesis timestamp** (optional, RFC 3339 UTC): pins the genesis time instead of "now + delay". Use it when the branch's upgrade height must land at a specific wall-clock time: height = (upgrade time - genesis time) / 30 s. A pinned time in the future just makes the network idle until then; a time in the past is caught up instantly with null rounds, but deadlines that fell in the gap leave the preminers with faults to recover, so keep the gap small.
 - **Verbose ansible output**: optional.
 
 ### Dry-run Butterfly network reset
