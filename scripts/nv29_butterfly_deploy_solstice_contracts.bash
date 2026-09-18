@@ -22,6 +22,9 @@
 # Requirements on the machine running this: forge, cast, jq, ssh access to the
 # faucet host as ubuntu, a checkout of filecoin-project/solstice with its
 # submodules (forge install), and a checkout of the Lotus branch being tested.
+# Run this over an SSH session with agent forwarding enabled (ssh -A) so the
+# ssh calls below use your own forwarded key; no key needs to live on the
+# machine running this script.
 #
 # Usage:
 #   LOTUS_SRC=~/lotus SOLSTICE_SRC=~/solstice scripts/nv29_butterfly_deploy_solstice_contracts.bash
