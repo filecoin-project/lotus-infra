@@ -13,3 +13,4 @@ lotus_daemon_conn_mgr_high: 2048
 lotus_drand_bootstrap: false
 lotus_daemon_enable_splitstore: false
 lotus_daemon_enable_eth_rpc: false
+lotus_daemon_enable_actor_events_api: false
