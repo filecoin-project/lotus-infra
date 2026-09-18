@@ -6,3 +6,8 @@ lotus_import_wallet: true
 # butterflynet (e.g. the FIP-0118 Solstice contracts before the nv29 upgrade).
 # The API still binds to localhost only; reach it over an SSH tunnel.
 lotus_daemon_enable_eth_rpc: true
+
+# Serve f02 (and other actor) events, e.g. write-queued/claim-payout, over the
+# actor events API so external monitors (e.g. the Solstice watchtower) can see
+# them. Requires ChainIndexer.EnableIndexer, already on via eth_rpc above.
+lotus_daemon_enable_actor_events_api: true

@@ -14,7 +14,15 @@ RemoteTracer = "{{ lotus_pubsub_tracker }}"
 {% if lotus_daemon_enable_eth_rpc | default(false) | bool %}
 [Fevm]
 EnableEthRPC = true
+{% endif %}
 
+{% if lotus_daemon_enable_eth_rpc | default(false) | bool or lotus_daemon_enable_actor_events_api | default(false) | bool %}
 [ChainIndexer]
 EnableIndexer = true
+{% endif %}
+
+{% if lotus_daemon_enable_actor_events_api | default(false) | bool %}
+[Events]
+# Required by ChainIndexer.EnableIndexer above; lotus errors at startup otherwise.
+EnableActorEventsAPI = true
 {% endif %}
