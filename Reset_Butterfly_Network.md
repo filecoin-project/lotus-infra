@@ -64,6 +64,7 @@ The workflow is [Lotus Ansible Reset Careful](https://github.com/filecoin-projec
 - **Network**: `butterflynet`.
 - **Lotus git ref**: the Lotus branch, tag, or commit to deploy.
 - **Dry-run changes**: runs ansible in check mode. See the note below before relying on it.
+- **Genesis timestamp** (optional, RFC 3339 UTC): pins the genesis time instead of "now + delay". Use it when the branch's upgrade height must land at a specific wall-clock time: height = (upgrade time - genesis time) / 30 s. A pinned time in the future just makes the network idle until then; a time in the past is caught up instantly with null rounds, but deadlines that fell in the gap leave the preminers with faults to recover, so keep the gap small.
 - **Verbose ansible output**: optional.
 
 ### Dry-run Butterfly network reset
@@ -83,6 +84,20 @@ Note: a dry run does not work on freshly created hosts. Ansible check mode repor
 3. Uncheck **Dry-run changes** and click **Run workflow**.
 
 The real reset also sets up nginx for the faucet, Prometheus metrics, Promtail log forwarding, reboots the hosts, and captures the new genesis and a bundle of changed files as the `reset-artifacts` workflow artifact.
+
+## Solstice (nv29 and later): deploy the contracts after the reset
+
+The nv29 (Solstice, FIP-0118) migration wires two contracts into the reward actor at addresses baked into Lotus' `params_butterfly.go`. They do not survive a reset, and the migration fails at `UpgradeSolsticeHeight` if they are missing. Lotus cannot yet bootstrap Solstice at genesis: a network whose genesis network version is 29 or later comes up with a reward actor that has no SWA and no contracts, and no upgrade runs to fix that. So until that changes, butterfly genesis stays at nv28 with Solstice scheduled a few dozen epochs in, even when the branch under test targets a later upgrade. After every such reset, and before the Solstice epoch, run:
+
+```bash
+LOTUS_SRC=<checkout of the Lotus branch you reset with> \
+SOLSTICE_SRC=<checkout of filecoin-project/solstice with submodules> \
+scripts/nv29_butterfly_deploy_solstice_contracts.bash
+```
+
+Prerequisites: SSH access as `ubuntu` to `toolshed-0.butterfly.fildev.network` (your key in `ssh_keys_access`), plus `forge`, `cast`, and `jq`. This is normally run from the ida `f3-devbox`, which has Foundry installed; log in with agent forwarding (`ssh -A`) so the tunnel and `remote_lotus` SSH calls the script makes from there authenticate with your own forwarded key rather than a key dropped on the devbox. The script funds the throwaway deployer from the faucet wallet, deploys through the faucet host's Eth RPC over an SSH tunnel, and refuses to run if the deployer's nonce is not 0 or fewer than 10 epochs remain before the upgrade. `CHECK_ONLY=1` runs the read-only checks first. The chain produces blocks from about epoch 2 after a reset on warm hosts, and a deploy takes about 10 epochs, so an upgrade height of 45 or more leaves comfortable room.
+
+Expect a `FAILED pre-migration: Solstice bootstrap SWAActor ... is not on chain` error in the daemon logs at startup when the upgrade is fewer than 120 epochs away: the pre-migration fires before the contracts exist. It is harmless on butterfly; the real migration at the upgrade epoch does not depend on it.
 
 ## Backfilling changes
 

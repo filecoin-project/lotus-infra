@@ -20,6 +20,9 @@ on:
         description: "Verbose ansible output"
         type: boolean
         default: false
+      genesis_timestamp:
+        description: "Pin the genesis timestamp (RFC 3339 UTC, e.g. 2026-09-18T23:00:00Z). Empty = now + delay. Lets a compiled-in upgrade height map to an exact wall-clock time."
+        default: ""
 
 jobs:
   check:
@@ -50,3 +53,4 @@ jobs:
           delay: "0"
           check: ${{ inputs.dry-run }}
           verbose: ${{ inputs.verbose }}
+          genesis_timestamp: ${{ inputs.genesis_timestamp }}

@@ -1,4 +1,7 @@
----
+lotus_wallet_keyinfo: "{{ vault_lotus_wallet_keyinfo }}"
+lotus_wallet_address: "{{ vault_lotus_wallet_address }}"
+lotus_import_wallet: true
+
 # Expose the eth_ JSON-RPC on the faucet host so contracts can be deployed to
 # butterflynet (e.g. the FIP-0118 Solstice contracts before the nv29 upgrade).
 # The API still binds to localhost only; reach it over an SSH tunnel.

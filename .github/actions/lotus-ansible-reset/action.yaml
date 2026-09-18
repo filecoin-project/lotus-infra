@@ -28,6 +28,10 @@ inputs:
     description: "Verbose ansible output"
     required: false
     default: "false"
+  genesis_timestamp:
+    description: "Optional RFC 3339 genesis timestamp; empty means now + delay"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -112,7 +116,14 @@ runs:
         CREATE_CERT: ${{ inputs.create_cert }}
         CHECK: ${{ inputs.check }}
         VERBOSE: ${{ inputs.verbose }}
+        GENESIS_TIMESTAMP: ${{ inputs.genesis_timestamp }}
       run: |
+        # setup_fildev_network.bash honours a genesis_timestamp variable if set.
+        if [ -n "${GENESIS_TIMESTAMP}" ]; then
+          date -u -d "${GENESIS_TIMESTAMP}" +%s >/dev/null || { echo "::error::invalid genesis_timestamp '${GENESIS_TIMESTAMP}'"; exit 1; }
+          export genesis_timestamp="${GENESIS_TIMESTAMP}"
+          echo "Pinning genesis timestamp to ${GENESIS_TIMESTAMP}"
+        fi
         args=(
           "-n" "${DEPLOY_NETWORK}"
           "-s" "${LOTUSROOT}"
