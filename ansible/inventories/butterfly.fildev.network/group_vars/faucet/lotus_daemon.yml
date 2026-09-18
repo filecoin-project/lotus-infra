@@ -9,5 +9,5 @@ lotus_daemon_enable_eth_rpc: true
 
 # Serve f02 (and other actor) events, e.g. write-queued/claim-payout, over the
 # actor events API so external monitors (e.g. the Solstice watchtower) can see
-# them. Requires ChainIndexer.EnableIndexer, already on via eth_rpc above.
+# them. 
 lotus_daemon_enable_actor_events_api: true
