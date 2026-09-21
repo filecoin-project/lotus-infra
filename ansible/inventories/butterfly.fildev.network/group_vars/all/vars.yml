@@ -4,7 +4,8 @@ network_flag: butterflynet
 faucet_initial_balance: "50000000000000000000000000"
 miners_initial_balance: "1000000000000000000000000"
 # f1 form of the published throwaway Solstice deployer key; private key in the comment block of
-# lotus build/buildconstants/params_butterfly.go. Import it into a wallet with `lotus wallet import`
+# lotus build/buildconstants/params_butterfly.go. Import it into a wallet with
+# `lotus wallet import --format hex-eth --type secp256k1`  
 # to act as the verified registry root on butterflynet.
 verifreg_rootkey: "t12w245kubmppah2a2skj2ux2emlekltqrsedyjdy"
 
