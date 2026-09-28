@@ -120,12 +120,17 @@ The bootstrap peer list (`build/bootstrap/butterflynet.pi`) no longer needs upda
 
 1. Checkout the branch that you used for deploying the Butterfly network.
 
-2. Prepare the new `butterflynet.car.zst` from the artifact's `genesis.car`:
-   1. Remove the built-in actors WASM bundle blocks from the car. Lotus already embeds the actors bundle, so shipping them again only bloats the file. Install [go-car](https://github.com/ipld/go-car/) for the `car` command, then: `car ls genesis.car | grep ^bafk2bz | car filter --inverse genesis.car butterflynet.car`. This writes a new `butterflynet.car` in the current directory.
-   2. Compress it: `zstd -19 butterflynet.car`.
-   3. Sanity check: `car root butterflynet.car` must equal the genesis block CID the network reports (`lotus chain list --height 0 --count 1` on any host), and the artifact's `genesis.car` should have the same checksum as `/var/lib/lotus/genesis.car` on preminer-0. For reference, the 2026-09-17 reset went from a 9.2 MB `genesis.car` (7171 blocks, 16 of them actors WASM) to a 1.5 MB filtered car and a 0.5 MB `.zst`. The filter is not required for correctness (the file on master at the time still contained the WASM blocks and worked), but it makes the committed file about three times smaller.
+2. Prepare the new `butterflynet.car.zst` from the artifact's `genesis.car`. Lotus assumes a CARv1 so be sure to not accidentally produce a CARv2 (many go-car commands default to v2). Install [go-car](https://github.com/ipld/go-car/) for the `car` command, then:
+   ```bash
+   car root genesis.car      # must equal `lotus chain list --height 0 --count 1` on any host
+   car verify genesis.car    # must exit 0
+   head -c 11 genesis.car | xxd -p          # must print 3ca265726f6f747381d82a (a CARv1 header)
+   sha256sum genesis.car     # should match `sha256sum /var/lib/lotus/genesis.car` on preminer-0
+   zstd -19 genesis.car -o butterflynet.car.zst
+   ```
+   The 16 `bafk2bz` blocks in the car are the builtin actors WASM for the genesis actors version. Lotus loads that bundle itself at startup, so they should be dropped to shrink the committed file from about 1.6 MB to about 0.5 MB: `car ls genesis.car | grep ^bafk2bz | car filter --inverse --version 1 genesis.car stripped.car` and compress `stripped.car` instead. Keep `--version 1`: without it `car filter` writes a CARv2 that Lotus won't load.
 
-3. Replace `build/genesis/butterflynet.car.zst` in Lotus with the new file and open a PR against `master` (and against any release branch that will be built for butterflynet).
+3. Replace `build/genesis/butterflynet.car.zst` in Lotus with the new file, then prove it before committing: build Lotus for butterflynet (`make butterflynet`, or `go build -tags=butterflynet`), start it on a fresh repo with no `--genesis` flag (`LOTUS_PATH=$(mktemp -d) ./lotus daemon`), and confirm the log reports the same genesis CID as `car root` and that the node syncs past the upgrade epoch. Then open a PR against `master` (and against any release branch that will be built for butterflynet), together with the matching `UpgradeXxHeight` in `build/buildconstants/params_butterfly.go`.
 
 👉 Example: [lotus#12966](https://github.com/filecoin-project/lotus/pull/12966) (March 2025) replaced `butterflynet.car.zst` and adjusted `params_butterfly.go` in the same PR. The older [lotus#12266](https://github.com/filecoin-project/lotus/pull/12266) predates zstd compression and dnsaddr, so its file list is no longer what to copy.
 
