@@ -204,11 +204,11 @@ cmd_ensure_running() {
   # C2_512M_BASE_MIN_MEMORY: the miner also acts as its own worker here (no
   # separate lotus-worker), and the default resource table requires 11GB
   # physical RAM just to *schedule* a 512MiB Commit2 job (10GB "BaseMinMemory
-  # for params" + 1GB MinMemory) -- more than an m5a.large's 8GB has, and this
+  # for params" + 1GB MinMemory), more than an m5a.large's 8GB has, and this
   # specific check is physical-RAM-only, swap does not help. C2 sat scheduled
   # but never running for 30+ minutes before this was found. The real 512MiB
   # PoRep params file is ~2GB, so 3GB is a safe override with headroom. Set
-  # this *before* first pledging a sector, not after -- a restart to add it
+  # this *before* first pledging a sector, not after: a restart to add it
   # later throws away any in-flight PC1/PC2 job.
   admin "$MINER_HOST" "sudo -u ${LOTUS_USER_REMOTE} -H env LOTUS_PATH=${LOTUS_PATH_REMOTE} LOTUS_MINER_PATH=${LOTUS_MINER_PATH_REMOTE} C2_512M_BASE_MIN_MEMORY=3221225472 nohup /usr/local/bin/lotus-miner run --nosync > /tmp/lotus-miner.log 2>&1 & disown"
   local waited=0

@@ -117,12 +117,9 @@ The bootstrap peer list (`build/bootstrap/butterflynet.pi`) no longer needs upda
 
 ## Manual upgrade testing
 
-After a reset, each upgrade's tracking doc has a "Generic Butterfly manual testing items" table (miner
-setup, sector pledge/terminate/extend/batch, actor withdraw/control-address changes) that's meant to be
-re-run every time, independent of what the specific upgrade changes. `scripts/butterfly_manual_testing.bash`
-automates that table against a throwaway miner on a non-preminer host (scratch-0 or toolshed-1; never a
-preminer, for the same reasons as the params-copying note above plus not wanting a disposable test
-miner sharing a preminer's `LOTUS_PATH`) and prints doc-ready command/output blocks for each item.
+After a reset, each upgrade's tracking doc has a "Generic Butterfly manual testing items" table (miner setup, sector pledge/terminate/extend/batch, actor withdraw/control-address changes) that's meant to be re-run every time, independent of what the specific upgrade changes. `scripts/butterfly_manual_testing.bash` automates that table against a throwaway miner on a non-preminer host (scratch-0 or toolshed-1; never a preminer, for the same reasons as the params-copying note above, plus not wanting a disposable test miner sharing a preminer's `LOTUS_PATH`) and prints doc-ready command/output blocks for each item.
+
+Mind the host size. scratch-0 and toolshed-1 are `m5a.large` (2 vCPU, 8GB RAM), much smaller than the preminers (`m5a.4xlarge`, 16 vCPU, 61GB). Sealing 512MiB sectors there is slow (expect a few hours for ten sectors) but works, with one catch: Lotus's default Commit2 resource requirement for 512MiB sectors is 11GB of physical RAM, and when it doesn't fit, Commit2 never gets scheduled and the sector sits in `Committing` with no error. The script's `ensure-running` step works around this by lowering `C2_512M_BASE_MIN_MEMORY`. If you run the miner some other way, on a smaller host, or with a different sector size, set the equivalent override yourself, and before assuming a stuck sector is just slow, check `lotus-miner sealing jobs` for a task with no worker running it and grep `/tmp/lotus-miner.log` for `not enough physical memory`.
 
 ## Tearing down the Butterfly network
 
