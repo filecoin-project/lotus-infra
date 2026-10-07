@@ -6,393 +6,449 @@
 #
 # It runs each table item as a lotus-miner command against a miner on a
 # non-preminer host (scratch-0 or toolshed-1 by convention; never a preminer),
-# and prints a doc-ready block (Command(s) / Output / message CIDs) for each
-# one so it can be pasted straight into the Discussion/Commands/Output column.
+# and prints a doc-ready block (Command(s) / Output) for each one so it can be
+# pasted straight into the Discussion/Commands/Output column. Any command that
+# fails prints its output and stops the script.
 #
-# Requirements on the machine running this: ssh access to MINER_HOST and
-# FAUCET_HOST as ubuntu, jq.
+# Requirements on the machine running this: ssh access as ubuntu to
+# MINER_HOST, FAUCET_HOST and PARAMS_SOURCE_HOST/BINARY_SOURCE_HOST; the aws
+# CLI with access to the FilOz account (only for the direct params copy).
 #
 # Usage:
 #   scripts/butterfly_manual_testing.bash <subcommand> [args...]
 #
-# Subcommands:
-#   fetch-params                       cache 512MiB proof params on MINER_HOST, preferring a direct
-#                                       host-to-host copy from PARAMS_SOURCE_HOST (a preminer already
-#                                       has them) over the public params gateway; read-only on the source
-#   init-miner <owner-fund-tfil>       fetch-params, lotus-miner init, print MinerID/PeerID
-#   fund <amount-tfil>                 send tFIL from the faucet wallet to the miner owner
-#   migration-check <cid>              confirm chain state at <cid> matches after an upgrade migration
-#   pledge <count>                     pledge <count> CC sectors, print sector numbers + CIDs
-#   withdraw <amount-tfil>              withdraw from the miner actor
-#   terminate <sectorNum...>           terminate specific sectors
-#   extend <new-expiration-epoch> <sectorNum...>
-#   precommit-batch                    flush the pending precommit batch
-#   commit-batch                       flush the pending commit batch
-#   control-addresses <addr1> <addr2>  set deal-publish and PoSt control addresses
+# Subcommands, roughly in the order the table uses them:
+#   fetch-params                   copy proof params (*.params, *.srs) that MINER_HOST is missing
+#                                  from PARAMS_SOURCE_HOST over the private network, falling back
+#                                  to `lotus fetch-params` from the public gateway
+#   ensure-running                 start `lotus-miner run` on MINER_HOST if it isn't running
+#   init-miner <owner-fund-tfil>   copy the lotus-miner binary if missing, fetch-params, create
+#                                  and fund an owner wallet, lotus-miner init, ensure-running
+#   fund <amount-tfil>             send tFIL from the faucet wallet to the miner's owner
+#   migration-check [address]      network version, chain head, and an actor's state (default:
+#                                  MINER_ADDR) read back after an upgrade migration
+#   pledge <count>                 pledge <count> CC sectors
+#   withdraw <amount-tfil>         withdraw from the miner actor's available balance
+#   terminate <sectorNum...>       terminate sectors, then flush the termination batch
+#   extend <sectorNum...>          extend sectors' expiration (sectors must be chain-Active)
+#   precommit-batch                send the pending precommit batch now
+#   commit-batch                   send the pending commit batch now
+#   control-addresses [addr...]    set the miner's control addresses; with no args, create and
+#                                  fund two new wallets and use those
 #
-# Env overrides:
-#   MINER_HOST      (scratch-0.butterfly.fildev.network)
-#   FAUCET_HOST     (toolshed-0.butterfly.fildev.network)
-#   PARAMS_SOURCE_HOST (preminer-0.butterfly.fildev.network) - already has 512MiB params cached;
-#                        used as a direct rsync source instead of re-downloading from the public gateway.
-#                        Read-only on this host: we only add a throwaway restricted SSH key to pull
-#                        with, and remove it again afterwards. Set to empty to skip straight to the
-#                        public gateway (`lotus fetch-params`).
-#   AWS_PROFILE_PARAMS (filoz) - profile used to look up PARAMS_SOURCE_HOST/MINER_HOST private IPs
-#                        so the transfer stays inside AWS instead of routing through wherever this
-#                        script runs. Falls back to the public gateway if the lookup fails.
-#   AWS_REGION_PARAMS  (us-east-1)
-#   LOTUS_PATH_REMOTE  (/var/lib/lotus)
-#   LOTUS_USER_REMOTE  (fc)
-#   SECTOR_SIZE     (512MiB)
+# Env overrides (defaults in parentheses):
+#   MINER_HOST           (scratch-0.butterfly.fildev.network)
+#   FAUCET_HOST          (toolshed-0.butterfly.fildev.network)
+#   FAUCET_ADDR          (the --from of the lotus-fountain service on FAUCET_HOST)
+#   PARAMS_SOURCE_HOST   (preminer-0.butterfly.fildev.network): a host that already has the params.
+#                        Set to empty to always use the public gateway.
+#   BINARY_SOURCE_HOST   (preminer-0.butterfly.fildev.network): where to copy lotus-miner from
+#   AWS_PROFILE_PARAMS   (filoz) and AWS_REGION_PARAMS (us-east-1): used to look up private IPs
+#   LOTUS_PATH_REMOTE    (/var/lib/lotus)
+#   LOTUS_USER_REMOTE    (fc)
+#   LOTUS_MINER_PATH_REMOTE (/home/<LOTUS_USER_REMOTE>/.lotusminer)
+#   SECTOR_SIZE          (512MiB)
+#   EXTEND_EPOCHS        (unset: lotus-miner's default --extension) for `extend`
+#   CONTROL_FUND_TFIL    (2): funding for each wallet `control-addresses` creates
+#   MINER_ADDR           (required by every subcommand that changes the miner or sends funds):
+#                        the miner actor you expect, e.g. t01010. init-miner prints it. A
+#                        spare host can be shared, and a stale api file in the repo can reach
+#                        someone else's miner, so the script refuses to act on any other one.
 
 set -euo pipefail
 
 MINER_HOST="${MINER_HOST:-scratch-0.butterfly.fildev.network}"
 FAUCET_HOST="${FAUCET_HOST:-toolshed-0.butterfly.fildev.network}"
+FAUCET_ADDR="${FAUCET_ADDR:-}"
 PARAMS_SOURCE_HOST="${PARAMS_SOURCE_HOST-preminer-0.butterfly.fildev.network}"
+BINARY_SOURCE_HOST="${BINARY_SOURCE_HOST:-preminer-0.butterfly.fildev.network}"
 AWS_PROFILE_PARAMS="${AWS_PROFILE_PARAMS:-filoz}"
 AWS_REGION_PARAMS="${AWS_REGION_PARAMS:-us-east-1}"
 LOTUS_PATH_REMOTE="${LOTUS_PATH_REMOTE:-/var/lib/lotus}"
 LOTUS_USER_REMOTE="${LOTUS_USER_REMOTE:-fc}"
-# Not /var/lib/lotus-miner: that's the daemon's LOTUS_PATH with a suffix
-# tacked on, not the miner's actual repo. lotus-miner's real default is
-# ~/.lotusminer, which for the fc user is this.
+# lotus-miner's default repo is ~/.lotusminer, which for the fc user is this.
 LOTUS_MINER_PATH_REMOTE="${LOTUS_MINER_PATH_REMOTE:-/home/${LOTUS_USER_REMOTE}/.lotusminer}"
 SECTOR_SIZE="${SECTOR_SIZE:-512MiB}"
+EXTEND_EPOCHS="${EXTEND_EPOCHS:-}"
+CONTROL_FUND_TFIL="${CONTROL_FUND_TFIL:-2}"
+MINER_ADDR="${MINER_ADDR:-}"
 PARAMS_DIR_REMOTE="/var/tmp/filecoin-proof-parameters"
 
 log() { printf '\n==> %s\n' "$*" >&2; }
+die() { echo "$*" >&2; exit 1; }
 
-# lotus/lotus-miner commands print verbose multi-line human output, not a
-# bare CID, so callers must never feed the raw command output back into
-# another remote command (a multi-line string as one ssh argument gets
-# parsed as multiple shell commands on the far end). Extract just the CID.
-extract_cid() { grep -oE 'bafy2[a-zA-Z2-7]{20,}' | tail -n1 || true; }
+# Runs "$@", leaving its combined stdout/stderr in $out. On failure it prints
+# that output and exits; a plain out=$(cmd) under set -e would exit with the
+# error message trapped inside the variable, unseen.
+capture() {
+  local rc=0
+  out=$("$@" 2>&1) || rc=$?
+  if [ "$rc" -ne 0 ]; then
+    printf '%s\n' "$out" >&2
+    die "failed (exit ${rc}): $*"
+  fi
+}
+
+# lotus/lotus-miner print multi-line human output with the message CID on its
+# own line. Never pass that raw output on to another remote command (each line
+# would run as a separate shell command on the far end); pull out the CIDs.
+extract_cids() { grep -oE 'bafy2[a-z2-7]{20,}' || true; }
 
 remote() {
   local host="$1"; shift
   # shellcheck disable=SC2029
   ssh -o BatchMode=yes -o ConnectTimeout=10 "ubuntu@${host}" "sudo -u ${LOTUS_USER_REMOTE} -H env LOTUS_PATH=${LOTUS_PATH_REMOTE} $*"
 }
-
 remote_lotus() { remote "$MINER_HOST" lotus "$@"; }
 remote_faucet_lotus() { remote "$FAUCET_HOST" lotus "$@"; }
-remote_miner() {
-  # shellcheck disable=SC2029
-  ssh -o BatchMode=yes -o ConnectTimeout=10 "ubuntu@${MINER_HOST}" \
-    "sudo -u ${LOTUS_USER_REMOTE} -H env LOTUS_PATH=${LOTUS_PATH_REMOTE} LOTUS_MINER_PATH=${LOTUS_MINER_PATH_REMOTE} lotus-miner $*"
-}
+remote_miner() { remote "$MINER_HOST" "LOTUS_MINER_PATH=${LOTUS_MINER_PATH_REMOTE}" lotus-miner "$@"; }
 
-# Plain ubuntu-user SSH, no `sudo -u fc` wrapper: for host administration
-# (authorized_keys, file ownership) rather than lotus/lotus-miner commands.
-# Anything here that needs root uses its own explicit `sudo`.
+# Plain ubuntu-user SSH for host administration (authorized_keys, files);
+# anything that needs root uses its own explicit sudo.
 admin() {
   local host="$1"; shift
   # shellcheck disable=SC2029
   ssh -o BatchMode=yes -o ConnectTimeout=10 "ubuntu@${host}" "$*"
 }
 
-# Prints a doc-ready block: the exact command(s) run and their output, so it
-# can be pasted verbatim into the "Discussion, Commands, Output" column.
-doc_block() {
-  local cmd="$1" out="$2"
-  printf '\nCommand(s):\n%s\n\nOutput:\n%s\n' "$cmd" "$out"
+doc_block() { printf '\nCommand(s):\n%s\n\nOutput:\n%s\n' "$1" "$2"; }
+
+miner_addr() { { remote_miner info 2>/dev/null || true; } | awk '/^Miner:/{print $2; exit}'; }
+
+# Guard for anything that changes the miner or sends funds: the miner answering
+# at LOTUS_MINER_PATH_REMOTE must be the one in MINER_ADDR.
+require_miner() {
+  local running
+  running=$(miner_addr)
+  [ -n "$running" ] || die "no lotus-miner answering at ${LOTUS_MINER_PATH_REMOTE} on ${MINER_HOST}"
+  [ -n "$MINER_ADDR" ] || die "lotus-miner on ${MINER_HOST} is ${running}; set MINER_ADDR=${running} if that's the miner you mean"
+  [ "$running" = "$MINER_ADDR" ] || die "lotus-miner on ${MINER_HOST} is ${running}, not MINER_ADDR=${MINER_ADDR}; refusing"
 }
 
-# Looks up an instance's private IP via AWS (so the rsync stays on AWS's
-# internal network). Prints nothing and returns non-zero on any failure, so
-# callers can fall back to the public params gateway.
+# The faucet wallet is whatever lotus-fountain sends from. The faucet host holds
+# other keys too, so guessing from `wallet list` picks the wrong one.
+faucet_addr() {
+  if [ -n "$FAUCET_ADDR" ]; then echo "$FAUCET_ADDR"; return; fi
+  local a
+  a=$({ admin "$FAUCET_HOST" "systemctl show -p ExecStart --value lotus-fountain" || true; } | grep -oE -- '--from [^ ;]+' | awk '{print $2}' | tr -d '"' || true)
+  [ -n "$a" ] || die "could not read lotus-fountain's --from on ${FAUCET_HOST}; set FAUCET_ADDR"
+  echo "$a"
+}
+
+# Sends <amount> tFIL from the faucet wallet to <to>, waits for it to land, and
+# prints the message CID.
+faucet_send() {
+  local to="$1" amount="$2" from cid
+  from=$(faucet_addr)
+  capture remote_faucet_lotus send --from "$from" "$to" "$amount"
+  cid=$(extract_cids <<<"$out" | tail -n1)
+  [ -n "$cid" ] || die "could not find a message CID in: $out"
+  capture remote_faucet_lotus state wait-msg --timeout 5m "$cid"
+  echo "$cid"
+}
+
 private_ip_for() {
-  local name="$1"
   command -v aws >/dev/null || return 1
   aws ec2 describe-instances --profile "$AWS_PROFILE_PARAMS" --region "$AWS_REGION_PARAMS" \
-    --filters "Name=tag:Name,Values=${name}" \
+    --filters "Name=tag:Name,Values=$1" \
     --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text 2>/dev/null \
     | grep -E '^[0-9.]+$'
 }
 
-# Populates PARAMS_DIR_REMOTE on MINER_HOST with the ${SECTOR_SIZE} proving
-# params. Prefers a direct, read-only rsync from PARAMS_SOURCE_HOST (a
-# preminer, which already paid the ~24GB download cost) over the public
-# params gateway, since preminer-to-scratch/toolshed traffic stays inside
-# AWS and is dramatically faster. Falls back to `lotus fetch-params` if
-# PARAMS_SOURCE_HOST is unset, unreachable, or the AWS lookup fails.
+gateway_fetch() {
+  log "Fetching ${SECTOR_SIZE} params from the public gateway on ${MINER_HOST}"
+  remote "$MINER_HOST" "/usr/local/bin/lotus fetch-params ${SECTOR_SIZE}"
+}
+
+# Copies proof params MINER_HOST is missing from PARAMS_SOURCE_HOST (a preminer,
+# which already paid the ~24GB download) over the AWS private network, which is
+# far faster than the public gateway. It copies every *.params/*.srs file the
+# source has that the miner host lacks; preminers only hold the ones for their
+# own sector size. To pull, it adds a throwaway key to the source's
+# authorized_keys that only allows read-only rsync of the params directory from
+# the miner host's IP (via rrsync), and removes it afterwards.
 cmd_fetch_params() {
-  if [ -z "${PARAMS_SOURCE_HOST}" ]; then
-    log "PARAMS_SOURCE_HOST unset; fetching ${SECTOR_SIZE} params from the public gateway on ${MINER_HOST}"
-    remote "$MINER_HOST" "/usr/local/bin/lotus fetch-params ${SECTOR_SIZE}"
-    return 0
-  fi
+  [ -n "$PARAMS_SOURCE_HOST" ] || { gateway_fetch; return; }
 
   log "Diffing proof params between ${PARAMS_SOURCE_HOST} and ${MINER_HOST}"
-  # "name size" pairs for .params files only (the .vk verifying keys are tiny
-  # and both hosts already fetch those on daemon start regardless of role).
-  # bash -c wraps the cd+find: run plain, `sudo -u fc` can't restore the
-  # shell's starting directory (/home/ubuntu, not readable by fc) and find
-  # exits 1 on that alone despite listing everything correctly.
-  local find_cmd="bash -c 'cd ${PARAMS_DIR_REMOTE} && find . -maxdepth 1 -name \"*.params\" -printf \"%f %s\\n\"'"
-  src_list=$(remote "$PARAMS_SOURCE_HOST" "$find_cmd" 2>/dev/null) || {
-    log "Could not reach ${PARAMS_SOURCE_HOST}; falling back to the public gateway"
-    remote "$MINER_HOST" "/usr/local/bin/lotus fetch-params ${SECTOR_SIZE}"
-    return 0
-  }
+  # bash -c so the cd happens under sudo -u fc; otherwise find exits 1 trying to
+  # return to ubuntu's home directory, which fc can't read.
+  local find_cmd="bash -c 'cd ${PARAMS_DIR_REMOTE} && find . -maxdepth 1 \\( -name \"*.params\" -o -name \"*.srs\" \\) -printf \"%f %s\\n\"'"
+  local src_list dst_list missing
+  if ! src_list=$(remote "$PARAMS_SOURCE_HOST" "$find_cmd" 2>/dev/null); then
+    log "Could not list params on ${PARAMS_SOURCE_HOST}"
+    gateway_fetch; return
+  fi
   dst_list=$(remote "$MINER_HOST" "$find_cmd" 2>/dev/null || true)
-
   missing=$(comm -23 <(sort <<<"$src_list") <(sort <<<"$dst_list") | awk '{print $1}')
   if [ -z "$missing" ]; then
-    echo "${MINER_HOST} already has every .params file ${PARAMS_SOURCE_HOST} has. Nothing to do."
-    return 0
+    echo "${MINER_HOST} already has every param file ${PARAMS_SOURCE_HOST} has."
+    return
   fi
   echo "missing on ${MINER_HOST}:"; echo "$missing"
 
+  local src_ip dst_ip
   src_ip=$(private_ip_for "${PARAMS_SOURCE_HOST%%.*}") || true
   dst_ip=$(private_ip_for "${MINER_HOST%%.*}") || true
   if [ -z "$src_ip" ] || [ -z "$dst_ip" ]; then
-    log "Could not resolve private IPs via AWS; falling back to the public gateway on ${MINER_HOST}"
-    remote "$MINER_HOST" "/usr/local/bin/lotus fetch-params ${SECTOR_SIZE}"
-    return 0
+    log "Could not resolve private IPs via AWS"
+    gateway_fetch; return
   fi
 
-  log "Provisioning a throwaway SSH key so ${MINER_HOST} can pull directly from ${PARAMS_SOURCE_HOST} (${src_ip} -> ${dst_ip})"
+  log "Adding a temporary read-only rsync key on ${PARAMS_SOURCE_HOST} for ${MINER_HOST} (${dst_ip})"
   key_dir=$(mktemp -d)
-  ssh-keygen -t ed25519 -f "${key_dir}/relay" -N "" -C "butterfly-params-relay-$(date +%s)" -q
-  pubkey=$(cat "${key_dir}/relay.pub")
-  admin "$PARAMS_SOURCE_HOST" "echo 'no-pty,no-port-forwarding,no-X11-forwarding,no-agent-forwarding,from=\"${dst_ip}\" ${pubkey}' >> ~/.ssh/authorized_keys"
+  key_tag="butterfly-params-relay-$(date +%s)"
+  ssh-keygen -t ed25519 -f "${key_dir}/relay" -N "" -C "$key_tag" -q
   cleanup_key() {
-    admin "$PARAMS_SOURCE_HOST" "grep -vF '${pubkey#* }' ~/.ssh/authorized_keys > /tmp/ak.new.\$\$ && mv /tmp/ak.new.\$\$ ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys" 2>/dev/null || true
-    admin "$MINER_HOST" "sudo rm -f /tmp/params-relay-key /tmp/params-relay-key.owned" 2>/dev/null || true
+    admin "$PARAMS_SOURCE_HOST" "grep -vF '${key_tag}' ~/.ssh/authorized_keys > /tmp/ak.new.\$\$ && mv /tmp/ak.new.\$\$ ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys" 2>/dev/null || true
+    admin "$MINER_HOST" "sudo rm -f /tmp/params-relay-key" 2>/dev/null || true
     rm -rf "$key_dir"
   }
-  # EXIT (not RETURN): a RETURN trap fires on every nested function return,
-  # not just this one, so it would revoke the key mid-transfer. EXIT only
-  # fires once, when the whole script process ends, so it's a safety net
-  # for errors; the success path below cleans up explicitly and unregisters it.
+  # EXIT, not RETURN: a RETURN trap would also fire when nested functions
+  # return and revoke the key mid-copy. Registered before the key is added so
+  # a failure at any point still removes it.
   trap cleanup_key EXIT
-
-  scp -o BatchMode=yes -o ConnectTimeout=10 "${key_dir}/relay" "ubuntu@${MINER_HOST}:/tmp/params-relay-key" >/dev/null
-  admin "$MINER_HOST" "sudo cp /tmp/params-relay-key /tmp/params-relay-key.owned && sudo chown ${LOTUS_USER_REMOTE} /tmp/params-relay-key.owned && sudo chmod 600 /tmp/params-relay-key.owned"
+  admin "$PARAMS_SOURCE_HOST" "echo 'restrict,from=\"${dst_ip}\",command=\"/usr/bin/rrsync -ro ${PARAMS_DIR_REMOTE}/\" $(cat "${key_dir}/relay.pub")' >> ~/.ssh/authorized_keys"
+  scp -q -o BatchMode=yes -o ConnectTimeout=10 "${key_dir}/relay" "ubuntu@${MINER_HOST}:/tmp/params-relay-key"
+  admin "$MINER_HOST" "sudo chown ${LOTUS_USER_REMOTE} /tmp/params-relay-key && sudo chmod 600 /tmp/params-relay-key"
 
   local includes="" f
   for f in $missing; do includes+=" --include=$(printf '%q' "$f")"; done
-
-  log "rsyncing $(wc -w <<<"$missing") file(s) directly ${PARAMS_SOURCE_HOST} -> ${MINER_HOST} over their private IPs"
-  # shellcheck disable=SC2086
-  admin "$MINER_HOST" "sudo -u ${LOTUS_USER_REMOTE} rsync -av --partial \
-    -e 'ssh -i /tmp/params-relay-key.owned -o StrictHostKeyChecking=accept-new -o BatchMode=yes' \
-    ${includes} --exclude='*' \
-    ubuntu@${src_ip}:${PARAMS_DIR_REMOTE}/ ${PARAMS_DIR_REMOTE}/"
-  echo "done: ${PARAMS_SOURCE_HOST} -> ${MINER_HOST} params sync complete"
+  log "rsyncing $(wc -w <<<"$missing" | tr -d ' ') file(s) ${PARAMS_SOURCE_HOST} -> ${MINER_HOST} over the private network"
+  # Paths are relative to the params directory: rrsync roots the source there.
+  admin "$MINER_HOST" "sudo -u ${LOTUS_USER_REMOTE} rsync -a --partial \
+    -e 'ssh -i /tmp/params-relay-key -o StrictHostKeyChecking=accept-new -o BatchMode=yes' \
+    ${includes} --exclude='*' ubuntu@${src_ip}:./ ${PARAMS_DIR_REMOTE}/"
   cleanup_key
   trap - EXIT
+  echo "params copied from ${PARAMS_SOURCE_HOST}"
 }
 
-# Starts `lotus-miner run` if it isn't already, and waits for its API to come
-# up. There's no systemd unit for this on non-preminer hosts (ansible doesn't
-# manage a miner there), so this is a plain background process; it won't
-# survive a host reboot. Safe/cheap to call even if already running.
+# Starts `lotus-miner run` if it isn't already and waits for its API. Non-
+# preminer hosts have no systemd unit for a miner, so this is a plain
+# background process and won't survive a reboot.
 cmd_ensure_running() {
   if remote_miner info >/dev/null 2>&1; then
     echo "lotus-miner is already running on ${MINER_HOST}"
-    return 0
+    return
   fi
-  log "Starting lotus-miner run on ${MINER_HOST} (logging to /tmp/lotus-miner.log; re-verifies proof param hashes on every start, can take a few minutes)"
-  # Log path must be somewhere `ubuntu` can create the file: the shell doing
-  # the `>` redirect is ubuntu's (sudo hasn't execed yet when it opens the
-  # file), and ubuntu can't write inside fc's home directory.
+  log "Starting lotus-miner run on ${MINER_HOST} (log: /tmp/lotus-miner.log; it re-hashes the proof params on every start, which takes a few minutes)"
+  # The log goes to /tmp because the > redirect is opened by ubuntu's shell
+  # before sudo runs, and ubuntu can't write in fc's home directory.
   #
-  # C2_512M_BASE_MIN_MEMORY: the miner also acts as its own worker here (no
-  # separate lotus-worker), and the default resource table requires 11GB
-  # physical RAM just to *schedule* a 512MiB Commit2 job (10GB "BaseMinMemory
-  # for params" + 1GB MinMemory), more than an m5a.large's 8GB has, and this
-  # specific check is physical-RAM-only, swap does not help. C2 sat scheduled
-  # but never running for 30+ minutes before this was found. The real 512MiB
-  # PoRep params file is ~2GB, so 3GB is a safe override with headroom. Set
-  # this *before* first pledging a sector, not after: a restart to add it
-  # later throws away any in-flight PC1/PC2 job.
-  admin "$MINER_HOST" "sudo -u ${LOTUS_USER_REMOTE} -H env LOTUS_PATH=${LOTUS_PATH_REMOTE} LOTUS_MINER_PATH=${LOTUS_MINER_PATH_REMOTE} C2_512M_BASE_MIN_MEMORY=3221225472 nohup /usr/local/bin/lotus-miner run --nosync > /tmp/lotus-miner.log 2>&1 & disown"
+  # C2_512M_BASE_MIN_MEMORY: the miner is also its own worker here, and Lotus's
+  # default resource table needs 11GB of physical RAM to schedule a 512MiB
+  # Commit2 (10GB BaseMinMemory for params + 1GB MinMemory). An m5a.large has
+  # 8GB, swap doesn't count, and the job just never runs (no error). The 512MiB
+  # PoRep params file is about 2GB, so 3GB leaves headroom. It must be set
+  # before sectors are in flight: restarting to add it throws away running
+  # PC1/PC2 work.
+  admin "$MINER_HOST" "sudo -u ${LOTUS_USER_REMOTE} -H env LOTUS_PATH=${LOTUS_PATH_REMOTE} LOTUS_MINER_PATH=${LOTUS_MINER_PATH_REMOTE} C2_512M_BASE_MIN_MEMORY=3221225472 nohup /usr/local/bin/lotus-miner run --nosync > /tmp/lotus-miner.log 2>&1 < /dev/null & disown"
   local waited=0
-  while ! remote_miner info >/dev/null 2>&1; do
+  until remote_miner info >/dev/null 2>&1; do
     sleep 15; waited=$((waited + 15))
-    if [ "$waited" -ge 600 ]; then
-      echo "lotus-miner still not up after 10m; check /tmp/lotus-miner.log on ${MINER_HOST}" >&2
-      return 1
-    fi
+    [ "$waited" -lt 600 ] || die "lotus-miner still not up after 10m; check /tmp/lotus-miner.log on ${MINER_HOST}"
   done
   echo "lotus-miner API is up after ${waited}s"
+}
+
+# Ansible only installs lotus-miner on preminers. Copy it via a temp file and
+# check the checksum, so an interrupted copy can't leave a truncated binary
+# that later runs pass over.
+copy_miner_binary() {
+  log "Copying lotus-miner from ${BINARY_SOURCE_HOST} to ${MINER_HOST}"
+  local want got
+  want=$(admin "$BINARY_SOURCE_HOST" "sha256sum /usr/local/bin/lotus-miner" | awk '{print $1}')
+  admin "$BINARY_SOURCE_HOST" "cat /usr/local/bin/lotus-miner" | admin "$MINER_HOST" "cat > /tmp/lotus-miner.partial"
+  got=$(admin "$MINER_HOST" "sha256sum /tmp/lotus-miner.partial" | awk '{print $1}')
+  if [ -z "$want" ] || [ "$want" != "$got" ]; then
+    admin "$MINER_HOST" "rm -f /tmp/lotus-miner.partial"
+    die "lotus-miner copy failed checksum (want ${want:-?}, got ${got:-?})"
+  fi
+  admin "$MINER_HOST" "sudo install -m 755 /tmp/lotus-miner.partial /usr/local/bin/lotus-miner && rm -f /tmp/lotus-miner.partial"
 }
 
 cmd_init_miner() {
   local fund_amount="${1:?usage: init-miner <owner-fund-tfil>}"
 
-  log "Checking for an existing miner actor on ${MINER_HOST} (idempotent)"
   if remote "$MINER_HOST" test -f "${LOTUS_MINER_PATH_REMOTE}/config.toml" 2>/dev/null; then
-    echo "A miner actor already exists on ${MINER_HOST} (${LOTUS_MINER_PATH_REMOTE} exists)." >&2
-    echo "Skipping init. Delete ${LOTUS_MINER_PATH_REMOTE} first if you really want a fresh one." >&2
+    echo "A miner repo already exists at ${LOTUS_MINER_PATH_REMOTE} on ${MINER_HOST}; not re-initializing." >&2
+    echo "Remove it first if you really want a fresh miner." >&2
     remote_miner info 2>/dev/null | grep '^Miner:' || true
-    return 0
+    return
   fi
 
-  log "Ensuring the lotus-miner binary exists on ${MINER_HOST} (ansible only installs it on preminers)"
-  if ! remote "$MINER_HOST" test -x /usr/local/bin/lotus-miner 2>/dev/null; then
-    [ -n "$PARAMS_SOURCE_HOST" ] || { echo "no lotus-miner binary on ${MINER_HOST} and PARAMS_SOURCE_HOST is unset to copy one from" >&2; exit 1; }
-    log "Copying it from ${PARAMS_SOURCE_HOST} (small binary, relayed through wherever this script runs)"
-    admin "$PARAMS_SOURCE_HOST" "cat /usr/local/bin/lotus-miner" | admin "$MINER_HOST" "sudo tee /usr/local/bin/lotus-miner > /dev/null && sudo chmod 755 /usr/local/bin/lotus-miner"
-  fi
-
-  log "Ensuring proof params (${SECTOR_SIZE}) are cached on ${MINER_HOST} (~24GB if not already)"
+  remote "$MINER_HOST" test -x /usr/local/bin/lotus-miner 2>/dev/null || copy_miner_binary
   cmd_fetch_params
 
   log "Creating an owner wallet and funding it with ${fund_amount} tFIL from the faucet"
-  owner_addr=$(remote_lotus wallet new bls)
+  capture remote_lotus wallet new bls
+  local owner_addr="$out" fund_cid
   echo "owner wallet: ${owner_addr}"
-  faucet_addr=$(remote_faucet_lotus wallet list | awk 'NR>1 && $1 ~ /^[tf]1/ {print $1; exit}')
-  [ -n "$faucet_addr" ] || { echo "no faucet wallet found on ${FAUCET_HOST}" >&2; exit 1; }
-  fund_out=$(remote_faucet_lotus send --from "$faucet_addr" "$owner_addr" "$fund_amount" 2>&1)
-  echo "$fund_out"
-  fund_cid=$(extract_cid <<<"$fund_out")
-  [ -n "$fund_cid" ] || { echo "could not parse a message CID out of: $fund_out" >&2; exit 1; }
-  remote_faucet_lotus state wait-msg --timeout 5m "$fund_cid" >/dev/null
+  fund_cid=$(faucet_send "$owner_addr" "$fund_amount")
 
-  log "Running lotus-miner init --sector-size=${SECTOR_SIZE} --from=${owner_addr}"
-  init_out=$(remote "$MINER_HOST" "/usr/local/bin/lotus-miner init --sector-size=${SECTOR_SIZE} --from=${owner_addr} --nosync" 2>&1)
-  echo "$init_out"
+  # --owner explicitly: otherwise lotus-miner init uses the daemon's default
+  # wallet, which is only the new one if no default existed yet.
+  log "lotus-miner init --sector-size=${SECTOR_SIZE} --owner=${owner_addr}"
+  capture remote_miner init --sector-size="$SECTOR_SIZE" --owner="$owner_addr" --from="$owner_addr" --nosync
+  echo "$out"
 
   cmd_ensure_running
 
-  log "Miner identity"
-  miner_id=$(remote_miner info 2>/dev/null | awk '/^Miner:/{print $2; exit}')
-  peer_id=$(remote_lotus net id 2>/dev/null || true)
-  echo "MinerID: ${miner_id:-unknown, run: lotus-miner info}"
-  echo "Daemon PeerID: ${peer_id:-unknown, run: lotus net id on ${MINER_HOST}}"
-  doc_block "lotus fetch-params ${SECTOR_SIZE}
-lotus wallet new bls
+  local miner_id daemon_peer miner_peer
+  miner_id=$(miner_addr)
+  daemon_peer=$(remote_lotus net id 2>/dev/null || true)
+  miner_peer=$(remote_miner net id 2>/dev/null || true)
+  doc_block "lotus wallet new bls
 lotus send --from <faucet> ${owner_addr} ${fund_amount}
-lotus-miner init --sector-size=${SECTOR_SIZE} --from=${owner_addr} --nosync" \
-    "owner: ${owner_addr}
-fund msg: ${fund_cid}
-MinerID: ${miner_id:-TBD}
-Daemon PeerID: ${peer_id:-TBD}"
+lotus-miner init --sector-size=${SECTOR_SIZE} --owner=${owner_addr} --from=${owner_addr} --nosync" \
+    "MinerID: ${miner_id:-unknown}
+Owner/worker: ${owner_addr} (funded in ${fund_cid})
+Daemon PeerID: ${daemon_peer:-unknown}
+Miner PeerID: ${miner_peer:-unknown}"
+  echo
+  echo "For the other subcommands: export MINER_ADDR=${miner_id}"
 }
 
 cmd_fund() {
-  local amount="${1:?usage: fund <amount-tfil>}"
-  owner_addr=$(remote_miner actor control list 2>/dev/null | awk 'NR==2{print $1}' || true)
-  [ -n "$owner_addr" ] || owner_addr=$(remote_lotus wallet default)
-  faucet_addr=$(remote_faucet_lotus wallet list | awk 'NR>1 && $1 ~ /^[tf]1/ {print $1; exit}')
-  out=$(remote_faucet_lotus send --from "$faucet_addr" "$owner_addr" "$amount" 2>&1)
-  echo "$out"
-  cid=$(extract_cid <<<"$out")
-  [ -n "$cid" ] || { echo "could not parse a message CID out of: $out" >&2; exit 1; }
-  remote_faucet_lotus state wait-msg --timeout 5m "$cid" >/dev/null
-  echo "funded ${owner_addr} with ${amount} tFIL: ${cid}"
-  doc_block "lotus send --from <faucet> ${owner_addr} ${amount}" "msg: ${cid}"
+  require_miner
+  local amount="${1:?usage: fund <amount-tfil>}" owner cid
+  # The first column of `actor control list` is the row name ("owner"); the
+  # address is the key column, shown in full only with --verbose.
+  owner=$({ remote_miner actor control list --verbose 2>/dev/null || true; } | awk '$1=="owner"{print $3; exit}')
+  [ -n "$owner" ] || die "could not find the miner's owner address (is lotus-miner running on ${MINER_HOST}?)"
+  cid=$(faucet_send "$owner" "$amount")
+  doc_block "lotus send --from <faucet> ${owner} ${amount}" "TX: ${cid}"
 }
 
 cmd_migration_check() {
-  local cid="${1:?usage: migration-check <cid>}"
-  log "Checking chain state at ${cid} on ${MINER_HOST}'s daemon"
-  out=$(remote_lotus state get-actor "$cid" 2>&1) || true
-  echo "$out"
-  head=$(remote_lotus chain head 2>&1)
-  echo "current head: ${head}"
-  doc_block "lotus state get-actor ${cid}" "${out}
-head: ${head}"
+  local addr="${1:-}" nv head actor
+  [ -n "$addr" ] || addr="$MINER_ADDR"
+  [ -n "$addr" ] || die "usage: migration-check <actor-address> (or set MINER_ADDR)"
+  capture remote_lotus state network-version; nv="$out"
+  capture remote_lotus chain head; head="$out"
+  capture remote_lotus state get-actor "$addr"; actor="$out"
+  printf '%s\n%s\n%s\n' "$nv" "$head" "$actor"
+  doc_block "lotus state network-version
+lotus chain head
+lotus state get-actor ${addr}" "${nv}
+head: ${head}
+${actor}"
 }
 
 cmd_pledge() {
-  local count="${1:?usage: pledge <count>}"
-  local cids=() before after
-  before=$(remote_miner sectors list 2>/dev/null | tail -n +2 | wc -l | tr -d ' ')
+  require_miner
+  local count="${1:?usage: pledge <count>}" i sectors=()
   for i in $(seq 1 "$count"); do
     log "Pledging sector ${i}/${count}"
-    out=$(remote_miner sectors pledge 2>&1)
+    capture remote_miner sectors pledge
     echo "$out"
-    cid=$(extract_cid <<<"$out"); [ -n "$cid" ] || cid="$out"
-    echo "pledge ${i}: ${cid}"
-    cids+=("$cid")
+    sectors+=("$(awk '/Created CC sector/{print $NF}' <<<"$out")")
   done
-  after=$(remote_miner sectors list 2>/dev/null | tail -n +2 | wc -l | tr -d ' ')
-  echo "sector count: ${before} -> ${after}"
-  doc_block "lotus-miner sectors pledge   # x${count}" "$(printf '%s\n' "${cids[@]}")
-sector count: ${before} -> ${after}"
+  doc_block "lotus-miner sectors pledge   # x${count}" "created CC sectors: ${sectors[*]}"
 }
 
 cmd_withdraw() {
+  require_miner
   local amount="${1:?usage: withdraw <amount-tfil>}"
-  cid=$(remote_miner actor withdraw "$amount")
-  echo "withdraw msg: ${cid}"
-  doc_block "lotus-miner actor withdraw ${amount}" "TX: ${cid}"
+  capture remote_miner actor withdraw "$amount"
+  echo "$out"
+  doc_block "lotus-miner actor withdraw ${amount}" "TX: $(extract_cids <<<"$out" | tail -n1)
+$(grep -i 'withdrew' <<<"$out" || true)"
 }
 
 cmd_terminate() {
-  [ "$#" -ge 1 ] || { echo "usage: terminate <sectorNum...>" >&2; exit 1; }
-  local sectors=("$@") cids=()
-  for s in "${sectors[@]}"; do
-    cid=$(remote_miner sectors terminate --really-do-it "$s" 2>&1)
-    echo "terminate ${s}: ${cid}"
-    cids+=("sector ${s}: ${cid}")
+  require_miner
+  [ "$#" -ge 1 ] || die "usage: terminate <sectorNum...>"
+  local s cmds="" tries=0
+  for s in "$@"; do
+    capture remote_miner sectors terminate --really-do-it "$s"
+    cmds+="lotus-miner sectors terminate --really-do-it ${s}"$'\n'
   done
-  flush=$(remote_miner sectors terminate flush 2>&1)
-  echo "flush: ${flush}"
-  doc_block "$(for s in "${sectors[@]}"; do echo "lotus-miner sectors terminate --really-do-it ${s}"; done)
-lotus-miner sectors terminate flush" \
-    "$(printf '%s\n' "${cids[@]}")
-flush: ${flush}"
+  # The terminations reach the batcher asynchronously; flush can briefly say
+  # nothing is queued yet.
+  until out=$(remote_miner sectors terminate flush 2>&1); do
+    tries=$((tries + 1))
+    if ! grep -q 'no sectors were queued' <<<"$out" || [ "$tries" -ge 4 ]; then
+      printf '%s\n' "$out" >&2; die "sectors terminate flush failed"
+    fi
+    sleep 15
+  done
+  echo "$out"
+  doc_block "${cmds}lotus-miner sectors terminate flush" "TX: $(extract_cids <<<"$out" | tail -n1)"
 }
 
+# Sectors must be chain-Active (past their first WindowPoSt), not just Proving
+# locally, or lotus-miner refuses with "sector N is not active". It also
+# silently skips sectors whose new expiration would be capped or fall within
+# --tolerance (default 7 days) of the current one, printing "nothing to extend"
+# and exiting 0, so check for the success line.
 cmd_extend() {
-  [ "$#" -ge 2 ] || { echo "usage: extend <new-expiration-epoch> <sectorNum...>" >&2; exit 1; }
-  local new_exp="$1"; shift
-  local sectors=("$@") cids=()
-  for s in "${sectors[@]}"; do
-    cid=$(remote_miner sectors extend --new-expiration "$new_exp" --really-do-it "$s" 2>&1)
-    echo "extend ${s}: ${cid}"
-    cids+=("sector ${s}: ${cid}")
-  done
-  doc_block "$(for s in "${sectors[@]}"; do echo "lotus-miner sectors extend --new-expiration ${new_exp} --really-do-it ${s}"; done)" \
-    "$(printf '%s\n' "${cids[@]}")"
+  require_miner
+  [ "$#" -ge 1 ] || die "usage: extend <sectorNum...>"
+  local flags=(--really-do-it)
+  [ -z "$EXTEND_EPOCHS" ] || flags+=(--extension "$EXTEND_EPOCHS")
+  capture remote_miner sectors extend "${flags[@]}" "$@"
+  echo "$out"
+  grep -q 'sectors extended' <<<"$out" || die "no sectors were extended (see output above)"
+  doc_block "lotus-miner sectors extend ${flags[*]} $*" "$(extract_cids <<<"$out" | sed 's/^/TX: /')
+$(grep 'sectors extended' <<<"$out")"
 }
 
+# Without --publish-now these commands ask "publish now? (yes/no)" and fail on
+# EOF over ssh. If nothing is queued they fail with "no sectors to publish".
 cmd_precommit_batch() {
-  # Without --publish-now, this command prompts "Do you want to publish these
-  # sectors now? (yes/no)" if anything is pending, and hangs/EOFs over a
-  # non-interactive SSH session. --publish-now is the actual flush.
-  out=$(remote_miner sectors batching precommit --publish-now 2>&1)
+  require_miner
+  capture remote_miner sectors batching precommit --publish-now
   echo "$out"
   doc_block "lotus-miner sectors batching precommit --publish-now" "$out"
 }
 
 cmd_commit_batch() {
-  # Same interactive-prompt trap as precommit_batch above.
-  out=$(remote_miner sectors batching commit --publish-now 2>&1)
+  require_miner
+  capture remote_miner sectors batching commit --publish-now
   echo "$out"
   doc_block "lotus-miner sectors batching commit --publish-now" "$out"
 }
 
+# `actor control set` replaces the miner's whole on-chain control address list,
+# and each address must already exist on chain. The addresses get no roles on
+# chain: WindowPoSt uses any control address automatically, while deal
+# publishing uses whichever one is listed under DealPublishControl in the
+# miner's config.toml [Addresses] (only relevant once a market node runs).
 cmd_control_addresses() {
-  local a="${1:?usage: control-addresses <deal-publish-addr> <post-addr>}" b="${2:?usage: control-addresses <deal-publish-addr> <post-addr>}"
-  cid=$(remote_miner actor control set --really-do-it "$a" "$b" 2>&1)
-  echo "control set: ${cid}"
-  doc_block "lotus-miner actor control set --really-do-it ${a} ${b}" "TX: ${cid}"
+  require_miner
+  local addrs=("$@") a funding=""
+  if [ "${#addrs[@]}" -eq 0 ]; then
+    for _ in 1 2; do
+      capture remote_lotus wallet new bls; a="$out"
+      funding+="${a}: $(faucet_send "$a" "$CONTROL_FUND_TFIL")"$'\n'
+      addrs+=("$a")
+    done
+  fi
+  capture remote_miner actor control set --really-do-it "${addrs[@]}"
+  echo "$out"
+  local cid; cid=$(extract_cids <<<"$out" | tail -n1)
+  [ -z "$cid" ] || capture remote_lotus state wait-msg --timeout 5m "$cid"
+  capture remote_miner actor control list; echo "$out"
+  doc_block "lotus-miner actor control set --really-do-it ${addrs[*]}" "${funding:+funded with ${CONTROL_FUND_TFIL} tFIL each:
+${funding}}TX: ${cid}
+${out}"
 }
 
 sub="${1:-}"; shift || true
 case "$sub" in
-  fetch-params)       cmd_fetch_params "$@" ;;
-  ensure-running)     cmd_ensure_running "$@" ;;
-  init-miner)         cmd_init_miner "$@" ;;
-  fund)               cmd_fund "$@" ;;
-  migration-check)    cmd_migration_check "$@" ;;
-  pledge)             cmd_pledge "$@" ;;
-  withdraw)           cmd_withdraw "$@" ;;
-  terminate)          cmd_terminate "$@" ;;
-  extend)             cmd_extend "$@" ;;
-  precommit-batch)    cmd_precommit_batch "$@" ;;
-  commit-batch)       cmd_commit_batch "$@" ;;
-  control-addresses)  cmd_control_addresses "$@" ;;
-  *)
-    echo "usage: $0 <fetch-params|ensure-running|init-miner|fund|migration-check|pledge|withdraw|terminate|extend|precommit-batch|commit-batch|control-addresses> [args...]" >&2
-    exit 1
-    ;;
+  fetch-params)      cmd_fetch_params "$@" ;;
+  ensure-running)    cmd_ensure_running "$@" ;;
+  init-miner)        cmd_init_miner "$@" ;;
+  fund)              cmd_fund "$@" ;;
+  migration-check)   cmd_migration_check "$@" ;;
+  pledge)            cmd_pledge "$@" ;;
+  withdraw)          cmd_withdraw "$@" ;;
+  terminate)         cmd_terminate "$@" ;;
+  extend)            cmd_extend "$@" ;;
+  precommit-batch)   cmd_precommit_batch "$@" ;;
+  commit-batch)      cmd_commit_batch "$@" ;;
+  control-addresses) cmd_control_addresses "$@" ;;
+  *) die "usage: $0 <fetch-params|ensure-running|init-miner|fund|migration-check|pledge|withdraw|terminate|extend|precommit-batch|commit-batch|control-addresses> [args...]" ;;
 esac
